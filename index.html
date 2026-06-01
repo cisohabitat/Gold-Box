@@ -147,10 +147,12 @@
   .banner h2.lose{color:var(--blood);}
   .hint{color:var(--dim);font-size:18px;min-height:22px;}
 
-  .screen{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;
-    background:radial-gradient(circle at 50% 0%, #241a0f 0%, #120d07 70%);padding:20px;overflow-y:auto;}
+  .screen{position:fixed;inset:0;z-index:70;display:none;align-items:flex-start;justify-content:center;
+    background:radial-gradient(circle at 50% 0%, #241a0f 0%, #120d07 70%);padding:20px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
   .screen.show{display:flex;}
-  .sbox{background:var(--panel);border:3px solid var(--frame-hi);padding:26px 30px;max-width:520px;width:100%;
+  /* margin:auto centres the box when it fits, but lets it scroll to BOTH edges when it
+     is taller than the viewport (flex centring alone clips and traps the top on mobile). */
+  .sbox{margin:auto;background:var(--panel);border:3px solid var(--frame-hi);padding:26px 30px;max-width:520px;width:100%;
     box-shadow:0 0 40px rgba(0,0,0,0.8);text-align:center;}
   .sbox.wide{max-width:760px;}
   .game-title{font-family:'IM Fell English SC',serif;color:var(--gold);font-size:46px;margin:0 0 8px;text-shadow:0 0 14px rgba(232,184,75,0.4);}
@@ -313,7 +315,7 @@
 <div class="screen" id="startScreen">
   <div class="sbox">
     <h1 class="game-title">Gold Box Slice</h1>
-    <p class="tag">Descend three levels. Recover the relic. Escape.</p>
+    <p class="tag" id="startTag">Descend into the dark. Recover the relic. Escape.</p>
     <div class="schoices">
       <button id="btnContinue" class="big" style="display:none">Continue Saved Run</button>
       <button id="btnDefault" class="big">Play the Default Party</button>
@@ -2901,6 +2903,8 @@ function showStart(){
   $('#saveScreen').classList.remove('show');
   const hasSave = !!decodeSave(persistRead());
   $('#btnContinue').style.display = hasSave ? '' : 'none';
+  // Tagline scales with the world graph so it never goes stale as floors are added or removed.
+  const tag=$('#startTag'); if(tag) tag.textContent='Descend '+WORLD_MAXDEPTH+' levels. Recover the relic. Escape.';
   $('#startScreen').classList.add('show');
 }
 function startDefault(){
