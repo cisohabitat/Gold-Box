@@ -4,6 +4,8 @@ A single-file, browser-based tactical RPG in the spirit of the classic SSI Gold 
 
 The whole game is one HTML file. No build step, no install, no dependencies. Open it and play.
 
+![Gold Box Slice — the Upper Crypt, with the party panel, event log, and fogged overhead map](Gold-Box.JPG)
+
 ## Play
 
 **[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)**
