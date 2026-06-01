@@ -6,11 +6,11 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 ## Play
 
-**[▶ Play it here](#)** — *(replace this with your GitHub Pages URL, e.g. `https://yourname.github.io/your-repo/`)*
+**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)**
 
 Or just open `index.html` in any modern browser. It works offline (the only network calls are two optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a board-plus-panel view on desktop, stacked panels with large touch targets on a phone.
 
-To publish it on GitHub Pages: push this repo, then in **Settings → Pages** set the source to your main branch root. The site goes live at `https://<user>.github.io/<repo>/` and serves `index.html` automatically.
+The live version is served from GitHub Pages: the repo’s **Settings → Pages** source is set to the main branch root, so `index.html` is published automatically at the link above.
 
 ## The game
 
@@ -69,10 +69,12 @@ Give a node more than one `next` to create a fork; the waystation offers the cho
 
 ## Run locally
 
-No tooling required:
+No tooling required. Clone the repo and open the file:
 
 ```bash
-# just open the file
+git clone https://github.com/cisohabitat/Gold-Box.git
+cd Gold-Box
+
 open index.html        # macOS
 xdg-open index.html    # Linux
 start index.html       # Windows
