@@ -14,6 +14,14 @@ Or just open `index.html` in any modern browser. It works offline (the only netw
 
 The live version is served from GitHub Pages: the repo’s **Settings → Pages** source is set to the main branch root. Changes on a pull request branch become live only after they reach `main`; download that branch's `index.html` to play its version locally.
 
+### Playing on iPhone
+
+The play area adapts to the current browser height, including Safari's expanding or collapsing bars, and leaves safe-area space around the display cutout and home indicator. In portrait, the board sits above the action buttons and movement pad. In landscape, the board and controls sit side by side. The boss bar and horizontally scrollable spell menu fit inside that same play area.
+
+Tap **Party & Log** to inspect the roster and battle history, then **Back to Game** to return. This panel replaces the desktop sidebar on a phone. Equipment, creation, save, and other menus scroll independently when their contents are taller than the screen. Main action and movement buttons have touch targets at least 44 pixels across and tall; pinch zoom remains available.
+
+The layout was checked at 440 × 956, 440 × 780, and 440 × 680 portrait viewports, 956 × 440 and 956 × 350 landscape viewports, and 390 × 844, with simulated safe-area insets. These are Chromium viewport checks for iPhone-sized screens, not physical iPhone or Safari certification. Reload the live page after an update to get the latest layout.
+
 ## The game
 
 You lead a party of four down through a six-floor dungeon, picking your route at each fork. The relic rests in the deepest tomb; lifting it wakes the place — the dead rise to bar your road out and the Crypt Lord seals the only exit, so the back half of a run is a fighting retreat. Win the fight at the sealed door to escape with the relic.
@@ -45,6 +53,7 @@ Every floor is generated fresh each run, so the layout, loot, and encounters cha
 - **Waystation** between floors: rest, shop, manage equipment, and choose your next path.
 - **Signature** uses the current hero's class ability. Its explanation appears below the board while available; the button disables after use.
 - **Chronicle** opens your route and run statistics during exploration.
+- **Party & Log** opens the roster and battle history on phones; **Back to Game** closes it. In portrait, use the four-arrow movement pad. Desktop turning controls and keyboard movement remain available.
 
 ## How it’s built
 

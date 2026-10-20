@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#16110b">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -303,6 +304,89 @@
   #endingStory{font-size:20px;line-height:1.4;color:#d3c6a3;}
   #endingStats{color:var(--party-glow);line-height:1.5;margin-bottom:18px;}
   @media(max-width:680px){#boonChoices{grid-template-columns:1fr;}#startScreen .sbox{padding:22px 16px;}.screen{padding:12px;}.cover-art{height:120px;}.journal-grid{grid-template-columns:repeat(2,1fr);}header.title h1{font-size:25px;}header.title .round{font-size:18px;}.campaign-strip button{min-height:44px;}.sbox{padding:20px 14px;}.row .nm{min-width:0;overflow-wrap:anywhere;}}
+
+  /* Keep the play surface inside Safari's current viewport, including safe areas.
+     Menus and field notes scroll independently; the board and controls stay put. */
+  :root{--safe-top:env(safe-area-inset-top,0px);--safe-right:env(safe-area-inset-right,0px);--safe-bottom:env(safe-area-inset-bottom,0px);--safe-left:env(safe-area-inset-left,0px);}
+  .board-stage{min-width:0;}
+  #btnDetails,#btnDetailsClose{display:none;}
+  button,.chip,.slot,.gslot,.ichip{touch-action:manipulation;}
+  @media(max-width:760px), (max-height:520px) and (pointer:coarse){
+    html{height:100%;}
+    body{height:100vh;height:100dvh;min-height:0;display:block;overflow:hidden;
+      padding:var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);}
+    .cabinet{height:100%;max-width:none;min-height:0;display:flex;flex-direction:column;gap:6px;padding:8px;border-width:1px;box-shadow:inset 0 0 0 1px #5c451f;}
+    header.title{flex:none;align-items:center;gap:8px;margin:0;padding-bottom:4px;}
+    header.title h1{font-size:22px;line-height:1.05;min-width:0;}
+    header.title .round{font-size:16px;white-space:nowrap;flex:none;}
+    .campaign-strip{flex:none;flex-wrap:nowrap;margin:0;padding:4px 8px;gap:8px;}
+    .campaign-strip>div{min-width:0;}
+    #chapterLabel{font-size:12px;letter-spacing:1px;}
+    #objective{font-size:16px;line-height:1.05;margin:2px 0;}
+    .campaign-strip button{flex:none;min-height:44px;font-size:16px;padding:6px;letter-spacing:0;}
+    #bossPanel{flex:none;font-size:15px;padding:6px 8px;margin:0;}
+    #bossHealth{margin-top:4px;height:5px;}
+    .layout{flex:1;min-height:0;display:flex;gap:0;}
+    .board-wrap{flex:1;min-height:0;min-width:0;gap:6px;}
+    .board-stage{flex:1;min-height:0;display:grid;place-items:center;container-type:size;overflow:hidden;}
+    #board{height:100%;max-height:100%;width:100%;aspect-ratio:auto!important;}
+    @supports(width:1cqw){#board:not(.mapboard){width:min(100cqw,100cqh);height:min(100cqw,100cqh);}}
+    #board.mapboard{height:100%;width:100%;max-height:none;padding:2px;aspect-ratio:auto;}
+    .satchel{flex:none;font-size:16px;line-height:1.05;padding:4px 6px;border-width:1px;}
+    .hint{flex:none;font-size:16px;line-height:1.1;min-height:0;max-height:36px;overflow-y:auto;overscroll-behavior:contain;}
+    .board-wrap:has(.mapboard) #hint{display:none;}
+    .spellmenu{flex:none;flex-wrap:nowrap;overflow-x:auto;max-width:100%;padding:2px 0 4px;overscroll-behavior:contain;}
+    .spellbtn{flex:0 0 auto;min-height:44px;font-size:17px;max-width:220px;}
+    .controls{flex:none;display:grid;grid-template-columns:1fr 1fr;gap:6px;align-items:stretch;}
+    .controls .cgrp{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;width:100%;}
+    .controls .cgrp button,.controls>button{min-width:0;min-height:44px;padding:6px 4px;font-size:17px;line-height:1.05;letter-spacing:0;overflow-wrap:anywhere;}
+    .controls .cgrp button{flex:1 1 calc(33.333% - 6px);}
+    #btnDetails{display:block;}
+    #btnRestart{margin:0;min-height:44px;font-size:17px;padding:6px;}
+    .controls .fppad{grid-column:1/-1;grid-template-columns:repeat(3,1fr);grid-template-areas:'. north .' 'west south east';gap:6px;width:min(100%,300px);max-width:none;margin:0 auto;}
+    .fppad button{min-height:44px;padding:6px;font-size:25px;}
+    #btnTurnL,#btnTurnR{display:none;}
+    #btnFwd{grid-area:north;}#btnStrafeL{grid-area:west;}#btnFpBack{grid-area:south;}#btnStrafeR{grid-area:east;}
+    .side{display:none;}
+    .side.open{display:flex;position:fixed;inset:0;z-index:65;overflow-y:auto;overscroll-behavior:contain;background:#161b18;
+      padding:max(12px,var(--safe-top)) max(12px,var(--safe-right)) max(12px,var(--safe-bottom)) max(12px,var(--safe-left));}
+    #btnDetailsClose{display:block;min-height:44px;flex:none;}
+    .side .pane{flex:none;}
+    .side #log{height:auto;max-height:none;}
+    .screen{padding:max(12px,var(--safe-top)) max(12px,var(--safe-right)) max(12px,var(--safe-bottom)) max(12px,var(--safe-left));overscroll-behavior:contain;}
+    .screen button,.banner button{min-height:44px;}
+    .savebox{font-size:16px;}
+    .pool .chip{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;}
+    .slot,.gslot,.ichip{min-height:44px;}
+    #startScreen .sbox{padding:20px 16px;}
+    #startScreen .game-title{font-size:42px;}
+    #startScreen .cover-art{height:90px;margin-bottom:12px;}
+    #startScreen .intro-copy{font-size:17px;margin-bottom:12px;}
+    #startScreen .tag{font-size:17px;margin-bottom:12px;}
+    #startScreen .oath-select{font-size:17px;margin:10px 0 14px;}
+    #startScreen .oath-select select{font-size:17px;padding:8px;}
+    .banner{padding:var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);}
+    .banner .box{max-height:100%;}
+  }
+  @media(max-height:520px) and (pointer:coarse) and (min-width:761px){
+    .cabinet{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr);padding:6px;gap:4px;}
+    header.title{grid-column:1;grid-row:1;border:0;}
+    .campaign-strip{grid-column:2;grid-row:1;}
+    #bossPanel{grid-column:1/-1;grid-row:2;}
+    .layout{grid-column:1/-1;grid-row:3;}
+    header.title h1{font-size:20px;}
+    .campaign-strip{padding:2px 8px;}
+    #chapterLabel{display:none;}
+    .board-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(250px,.8fr);grid-template-rows:auto auto auto minmax(0,1fr);gap:4px 10px;}
+    .board-stage{grid-column:1;grid-row:1/5;align-self:stretch;}
+    .satchel{grid-column:2;grid-row:1;}
+    .hint{display:none;}
+    .spellmenu{grid-column:2;grid-row:3;}
+    .controls{grid-column:2;grid-row:4;align-self:start;}
+    .controls #combatControls button{font-size:16px;line-height:1;padding:4px;}
+    .controls.combat-active{grid-template-columns:repeat(4,minmax(0,1fr));}
+    .controls.combat-active #combatControls{display:contents!important;}
+  }
 </style>
 </head>
 <body>
@@ -315,7 +399,7 @@
   <div id="bossPanel" hidden><span id="bossName"></span><div id="bossHealth"><i></i></div></div>
   <div class="layout">
     <div class="board-wrap">
-      <div id="board"></div>
+      <div class="board-stage"><div id="board"></div></div>
       <div class="satchel" id="satchel"></div>
       <div class="hint" id="hint"></div>
       <div class="spellmenu" id="spellMenu"></div>
@@ -344,10 +428,12 @@
           <button id="btnFpBack" title="South">&#9660;</button>
           <button id="btnStrafeR" title="East">&#9654;</button>
         </div>
+        <button id="btnDetails" aria-controls="fieldNotes" aria-expanded="false">Party &amp; Log</button>
         <button id="btnRestart">Restart</button>
       </div>
     </div>
-    <div class="side">
+    <div class="side" id="fieldNotes" role="region" aria-label="Party and battle log">
+      <button id="btnDetailsClose">Back to Game</button>
       <div class="pane"><h2 id="rosterTitle">The Party</h2><div class="roster" id="roster"></div></div>
       <div class="pane"><h2>Log</h2><div id="log"></div></div>
     </div>
@@ -1989,6 +2075,7 @@ function validSave(s){ return s && s.v===2 && typeof s.nodeId==='string' && WORL
   && s.party.length>0 && s.party.every(h=>CLASSES[h.cls]); }
 function applySave(s){ if(!validSave(s)) return false;
   try{
+    closeFieldNotes(false);
     cancelTurn();autoFight=false;levelUp=null;eventLevelUp=null;curEvent=null;
     for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','saveScreen'])$('#'+id).classList.remove('show');
     party=s.party.map(reviveHero);campaign=restoreCampaign(s.campaign);applyBoons();
@@ -2024,6 +2111,7 @@ function copySave(){ const t=$('#saveCode'); t.select();
 function closeSave(){ $('#saveScreen').classList.remove('show'); }
 
 function newGame(chosenParty){
+  closeFieldNotes(false);
   cancelTurn();autoFight=false;levelUp=null;eventLevelUp=null;curEvent=null;
   for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','saveScreen'])$('#'+id).classList.remove('show');
   campaign=freshCampaign($('#oathChoice').value);
@@ -2043,7 +2131,7 @@ function newGame(chosenParty){
   partyBark('floor');
   $('#banner').classList.remove('show'); render(); autosave();
 }
-function overlayOpen(){ return $('#townScreen').classList.contains('show') || $('#partyScreen').classList.contains('show') || $('#levelScreen').classList.contains('show') || $('#saveScreen').classList.contains('show') || $('#eventScreen').classList.contains('show') || $('#journalScreen').classList.contains('show') || $('#startScreen').classList.contains('show') || $('#banner').classList.contains('show'); }
+function overlayOpen(){ return $('#fieldNotes').classList.contains('open') || $('#townScreen').classList.contains('show') || $('#partyScreen').classList.contains('show') || $('#levelScreen').classList.contains('show') || $('#saveScreen').classList.contains('show') || $('#eventScreen').classList.contains('show') || $('#journalScreen').classList.contains('show') || $('#startScreen').classList.contains('show') || $('#banner').classList.contains('show'); }
 function tryMove(dx,dy){
   if(mode!=='explore'||overlayOpen())return; const r=explore.move(dx,dy);
   if(r.type==='blocked') return;
@@ -2565,7 +2653,7 @@ function grantXp(heroes, amount, into){
     if(by>0){ h.pendingLevels=(h.pendingLevels||0)+by;into.push({hero:h, by}); exploreFeed.push({t:h.name+' reaches level '+h.level+'.',k:'magic'}); const lv=bgLine(h,'levelup'); if(lv) exploreFeed.push({t:lv,k:'flavor'}); } });
   return into;
 }
-function endRun(kind){ cancelTurn();persistClear(); const t=$('#bannerText');
+function endRun(kind){ closeFieldNotes(false);cancelTurn();persistClear(); const t=$('#bannerText');
   if(kind==='win'){ t.textContent='You Escape! Gold: '+bag.gold; t.className='win'; } else { t.textContent='Party Defeated'; t.className='lose'; }
   $('#endingStory').textContent=kind==='win'?'The crown breaks the horizon. For the first time in a thousand years, sunlight touches the kingdom. Four names will be spoken wherever the morning reaches.':'The crypt keeps its silence. Yet above the stone, another ember waits for hands brave enough to carry it.';
   $('#endingStats').textContent=OATHS[campaign.oath].name+' · '+campaign.battles+' battles won · '+campaign.foes+' foes vanquished · '+campaign.secrets+' secrets found · '+campaign.boons.length+' embers claimed';
@@ -2906,6 +2994,7 @@ function renderMinimap(){
   return '<svg viewBox="0 0 '+e.w+' '+e.h+'" class="minimap" preserveAspectRatio="xMidYMid meet">'+s+'</svg>';
 }
 function renderExplore(){
+  $('.controls').classList.remove('combat-active');
   $('#titleLabel').textContent=explore.name; $('#roundLabel').textContent='Floor '+floorDepth()+' / '+WORLD_MAXDEPTH; $('#rosterTitle').textContent='The Party';
   $('#combatControls').style.display='none'; $('#exploreControls').style.display='flex'; $('#fpControls').style.display='grid'; $('#spellMenu').style.display='none';
   $('#satchel').style.display='block';
@@ -2927,6 +3016,7 @@ function renderExplore(){
 }
 
 function renderCombat(){
+  $('.controls').classList.add('combat-active');
   const c=game.current();
   $('#titleLabel').textContent='Battle'; $('#roundLabel').textContent='Round '+game.round; $('#rosterTitle').textContent='Order of Battle';
   $('#combatControls').style.display='flex'; $('#exploreControls').style.display='none'; $('#fpControls').style.display='none'; $('#satchel').style.display='none';
@@ -3013,6 +3103,10 @@ function drawLog(feed){ logEl.innerHTML=''; feed.slice(-40).forEach(e=>{ const d
 
 btnMove.onclick=()=>setMode('move'); btnAttack.onclick=()=>setMode('attack'); btnCast.onclick=()=>setMode('cast'); btnItem.onclick=()=>setMode('item'); btnGuard.onclick=guard; btnWait.onclick=waitTurn; btnEnd.onclick=endTurn;
 $('#btnAuto').onclick=toggleAuto;
+function closeFieldNotes(restoreFocus=true){$('#fieldNotes').classList.remove('open');$('#btnDetails').setAttribute('aria-expanded','false');if(restoreFocus)$('#btnDetails').focus();}
+$('#btnDetails').onclick=()=>{if($('#fieldNotes').classList.contains('open'))closeFieldNotes();else{$('#fieldNotes').classList.add('open');$('#btnDetails').setAttribute('aria-expanded','true');$('#btnDetailsClose').focus();}};
+$('#btnDetailsClose').onclick=()=>closeFieldNotes();
+if(typeof window!=='undefined')window.matchMedia('(max-width:760px), (max-height:520px) and (pointer:coarse)').addEventListener('change',e=>{if(!e.matches)closeFieldNotes(false);});
 $('#btnRest').onclick=makeCamp; $('#btnParty').onclick=openParty; $('#btnPartyClose').onclick=closeParty; $('#btnRestart').onclick=showStart; $('#bannerBtn').onclick=showStart;
 $('#btnAutoGear').onclick=autoAssignGear;
 $('#btnTurnL').onclick=()=>fpAct('turnL'); $('#btnTurnR').onclick=()=>fpAct('turnR'); $('#btnFwd').onclick=()=>moveDir(0,-1);
@@ -3020,7 +3114,7 @@ $('#btnFpBack').onclick=()=>moveDir(0,1); $('#btnStrafeL').onclick=()=>moveDir(-
 $('#btnTownRest').onclick=townRest; $('#btnTownParty').onclick=openParty;
 $('#btnLevelDone').onclick=confirmLevelUp;
 $('#btnLevelAuto').onclick=autoAssignLevelUp;
-document.addEventListener('keydown', e=>{ if(mode!=='explore'||overlayOpen())return;
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'&&$('#fieldNotes').classList.contains('open')){closeFieldNotes();return;}if(mode!=='explore'||overlayOpen())return;
   const dirs={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],
     w:[0,-1],s:[0,1],a:[-1,0],d:[1,0],W:[0,-1],S:[0,1],A:[-1,0],D:[1,0]};
   const turns={q:'turnL',e:'turnR',Q:'turnL',E:'turnR'};
@@ -3032,6 +3126,7 @@ const ABIL_KEYS=['str','dex','con','int','wis','cha'];
 let build=null;   // creation working state
 
 function showStart(){
+  closeFieldNotes(false);
   cancelTurn();autoFight=false;mode='start';
   for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen'])$('#'+id).classList.remove('show');
   $('#banner').classList.remove('show');
