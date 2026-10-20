@@ -41,6 +41,11 @@ Keep this history accurate when behavior changes. Prefer function names to line 
 
 ## Verification and reporting
 
+- Preserve the mobile viewport shell: use dynamic viewport height and safe-area insets without disabling pinch zoom. Keep the board and controls visible together; long menus and field notes scroll independently. Landscape touch layouts use a compact action grid beside the board.
+- Main mobile buttons must remain at least 44 CSS pixels wide and tall. Check boss bars, long class signatures, and an open spell menu at reduced browser heights, not only a full-height device viewport. Do not hide game actions to make a layout fit.
+- Keep the desktop roster/log sidebar and mobile **Party & Log** panel accessible. Close field notes on restart, load, game completion, and transition out of the mobile breakpoint; prevent exploration keyboard movement behind the open panel.
+- Mobile layout validation covered 440 × 956/780/680 portrait, 956 × 440/350 landscape, and 390 × 844 with simulated safe areas, plus desktop. This was Chromium emulation; physical iPhone and Safari behavior remain unverified.
+
 - Run `node tests/regression.cjs` with Node.js 18 or newer after behavioral changes. It executes the real inline script with DOM stubs and seeded randomness. Extend it for meaningful regressions rather than duplicating implementation details.
 - Syntax-check extracted inline JavaScript after script edits. This does not validate browser APIs, rendering, or game flow.
 - Use `python3 -m http.server 8000` for browser checks. Follow the relevant scenarios in the README, including narrow mobile layouts for UI changes.
