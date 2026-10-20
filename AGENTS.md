@@ -104,3 +104,11 @@ Keep this history accurate when behavior changes. Prefer function names to line 
 - CI runs the balance gate in Chromium and uploads `artifacts/balance/` even on failure. Keep generated artifacts out of source control, summarize reviewed evidence in BALANCE.md, and wait for all cross-browser quality jobs before automatic merge/publication.
 
 - Restart confirmation arms after 600 ms. Cancel/load/new game/title must invalidate and clear the arming timer; an early confirmation is rejected. Keep this timing independent of the combat timer and retain the 600×350 double-tap regression in the device matrix.
+
+## Presentation and preferences (0.8.0)
+
+- Presentation must derive from actual HP/state; never consume gameplay RNG or mutate engine data. Keep overlays pointer-transparent, the log visible, and the 350 KiB budget. Transient feedback has its own timer/token and clears on load/new game/title.
+- Store player options under `goldbox_preferences_v1`, independently of v2 campaign saves. Defaults: sound/music off, normal pace, effects on, clean contrast off. Respect OS reduced motion even if effects are on; handle blocked storage and unavailable Web Audio.
+- Audio is opt-in after a gesture, bounded to six effect voices and two ambient voices; mute/visibility/modal/title transitions silence ambience. Do not couple sound to action scheduling or random rolls.
+- Keep settings in overlay guards, cleanup and focus isolation. Opening pauses combat; closing preserves manual aim and resumes one appropriate loop. Mobile settings return focus to Party & Log.
+- Run `tests/polish.cjs` in the three-browser gate for persisted preferences, real disabled effects/contrast styling, audio opt-in/failure, focus, paused combat, HP feedback and blocked storage. Report emulation and deterministic Auto separately from hardware/human validation.

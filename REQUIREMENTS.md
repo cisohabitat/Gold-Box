@@ -149,3 +149,16 @@ Runtime: **294028 bytes**, under 358,400. No new runtime dependency, world node,
 
 
 Restart/build/balance acceptance: **51 engine regressions + 4 balance-criteria checks** pass locally, as do the 25-size device matrix and keyboard/touch restart, double-click, cancel, paused-enemy, Continue, clipboard and build-label scenarios. Build **0.7.0** runs the 96-campaign balance sample without stalls: Wanderer **23/32**, Delver **15/32**, Ironbound **7/32**. Broad balance gates pass; guardian/route watch points and sample limits are documented in BALANCE.md. Runtime: **297,855 bytes**, below 350 KiB. Final cross-browser and publication evidence is recorded in the implementation PR.
+
+## Presentation polish requirements
+
+| ID | Requirement and acceptance |
+| --- | --- |
+| POLISH-01 | Distinct crypt/catacomb/tomb lighting and battlefield materials, improved token/terrain contrast, plus lightweight inline chapter and ending artwork. No external assets, runtime dependencies, or additional world nodes; stay below 350 KiB. |
+| POLISH-02 | Show actual HP changes on the affected tile without obscuring inputs, and expose target HP/AC/range/attack odds through mouse hover or keyboard focus. Victory feedback must not block play. Existing accessible labels and recent/full logs remain authoritative. No presentation code may consume gameplay RNG or mutate engine state. |
+| POLISH-03 | Add persistent player options for effects, high contrast, Auto pace, opt-in sound/ambience, and volume. Defaults keep sound/ambience off and existing pace. Respect OS reduced-motion preference even when effects are enabled; handle blocked storage safely. |
+| POLISH-04 | Settings are reachable from title and Party & Log, isolate focus/input, pause queued combat, preserve manual aim, and resume exactly one appropriate loop. Escape/Close return to the opener or game. Restart/load/new game clear transient settings/feedback safely. |
+| POLISH-05 | Synthesized audio requires a user gesture and preference opt-in, uses bounded voices, stops when muted/hidden/outside active play, and fails gracefully when Web Audio is unavailable. Audio never controls gameplay timing, RNG, saves, or action resolution. |
+| POLISH-06 | Add meaningful browser checks for feedback/inspection, settings persistence, disabled effects/reduced motion, contrast, sound opt-in/failure, pause/resume and existing safe Restart. All engine/device/story/save checks and the 96-run balance gate must pass in the existing cross-browser release workflow. Document quality grades as scope-limited assessments and report remaining hardware/human validation limits. |
+
+0.8.0 local acceptance: extracted script syntax, 51 engine checks, 4 balance-policy checks, 25 Chromium device sizes, existing quality/flow/epic checks, and new presentation/settings checks pass. The 96-run Auto balance gate reproduces Wanderer 23/32, Delver 15/32, Ironbound 7/32, no stalls. Runtime is 315,271 bytes. Cross-browser release/publication evidence is recorded in the implementation PR; physical Safari and human playtesting remain unverified.

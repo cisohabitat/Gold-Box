@@ -82,3 +82,9 @@ The Last Dawn stages 1–4 are implemented. Stage 5 passes the local 48-check su
 
 
 Safe Restart/build/report stages 1–3 are implemented. Local stage-4 checks pass 51 engine tests, four gate-criteria tests, 25 device sizes and the affected browser flows. The 96-run balance gate passes (23/32 Wanderer, 15/32 Delver, 7/32 Ironbound); BALANCE.md records the policy, uncertainty and specific pressure points. Cross-browser CI and Pages publication are the final release gate.
+
+## Presentation and feedback polish (build 0.8.0)
+
+Bring the standalone game toward an A-level player experience within the existing 350 KiB runtime, offline, save, and device limits. Add themed materials/lighting and chapter/ending illustrations; visible HP-change feedback and target inspection; opt-in synthesized sound/ambience; persistent contrast/effects/Auto-pace preferences; and clear victory feedback. Keep engines, balance rules, safe Restart, recent log, and campaign choices intact. Verify settings pause/resume, persistence/storage failures, audio failure recovery, reduced motion, device fitting and the 96-run release gate before auto-publication. This is a bounded polish release, not a claim of commercial AAA production scale.
+
+Implementation: themed materials and inline chapter/end artwork, actual-HP tile feedback, inspection, opt-in synthesized sound/ambient tones, persisted display/audio/pace options, modal combat pause, and cross-browser polish checks are implemented in 0.8.0. The 96-run diagnostic retains the prior 23/15/7 oath victories with no stalls. Remaining work toward a stronger A: physical Safari/device validation, human onboarding and balance sessions, more authored encounters within budget, and richer art direction through careful replacement rather than unlimited payload growth. Commercial AAA content volume/production remains outside this project’s limits.
