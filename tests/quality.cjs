@@ -1,7 +1,7 @@
 // Browser regressions for modal isolation, live feedback, manual combat, and clipboard recovery.
 const browserName=process.env.GOLD_BOX_BROWSER||'chromium';const chromium=require('playwright')[browserName];const assert=require('node:assert/strict');let browser;
 (async()=>{
- browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||(browserName==='chromium'?'/usr/bin/chromium':undefined),headless:true,args:['--no-sandbox']});
+ browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||(browserName==='chromium'?'/usr/bin/chromium':undefined),headless:true,args:browserName==='chromium'?['--no-sandbox']:[]});
  const page=await browser.newPage({viewport:{width:440,height:780}}),errors=[];page.on('pageerror',e=>errors.push(String(e)));await page.route('https://fonts.**/*',r=>r.abort());await page.goto(process.env.GOLD_BOX_URL||'http://127.0.0.1:8000');
  await page.click('#btnDefault');assert.equal(await page.locator('#recentLog .l').count(),2);
  // Creation and inventory custom controls also work from a keyboard.

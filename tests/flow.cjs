@@ -1,6 +1,6 @@
 const browserName=process.env.GOLD_BOX_BROWSER||'chromium';const chromium=require('playwright')[browserName];const assert=require('node:assert/strict');let browser;
 (async()=>{
- browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||(browserName==='chromium'?'/usr/bin/chromium':undefined),headless:true,args:['--no-sandbox']});
+ browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||(browserName==='chromium'?'/usr/bin/chromium':undefined),headless:true,args:browserName==='chromium'?['--no-sandbox']:[]});
  const context=await browser.newContext({viewport:{width:440,height:780},isMobile:browserName!=='firefox',hasTouch:true,deviceScaleFactor:3});
  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));await page.route('https://fonts.**/*',r=>r.abort());await page.goto(process.env.GOLD_BOX_URL||'http://127.0.0.1:8000');
  await page.click('#btnHowToPlay');assert.equal(await page.locator('#tacticsScreen').isVisible(),true);await page.locator('#btnTacticsClose').scrollIntoViewIfNeeded();await page.click('#btnTacticsClose');assert.equal(await page.locator('#startScreen').isVisible(),true);
