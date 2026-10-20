@@ -37,3 +37,16 @@ All five stages are in scope for this implementation. [REQUIREMENTS.md](REQUIREM
 ## Delivery record
 
 Stages 1–4 are implemented. Stage 5 passed 40 regression checks, the mobile/desktop browser scenarios, and 12 seeded campaigns without stalls; publication follows the repository's automatic-publication instruction. The [acceptance record](REQUIREMENTS.md#acceptance-record) contains the evidence and remaining platform limitations. The later backlog above remains explicitly deferred.
+
+## Cross-device release: desktop, iPad, and iPhone
+
+The tactical release above remains the gameplay foundation. This extension delivers the same campaign across input methods and available window sizes, within the existing standalone/offline and 350 KiB limits.
+
+1. **Fit the available window.** Use a dynamic-height shell on every device, retain the roster sidebar only when the window has at least 1200×650 CSS pixels, and offer Party & Log otherwise. Use side-by-side board/controls in short landscape windows. Keep all gameplay actions visible.
+2. **Support touch, mouse, and keyboard.** Keep 44×44 minimum main controls, preserve touch aim confirmation, add a focusable combat grid navigated by arrows and activated with Enter/Space, and protect typing and browser shortcuts from exploration bindings.
+3. **Preserve a run through resizing.** Rotation, iPad split view, and desktop resizing must not recreate the engine, spend an action, or retain a hidden notes overlay. Menus scroll independently; safe areas, zoom, and reduced-motion preferences remain supported.
+4. **Verify and release.** Exercise phone, tablet, split-view, and desktop sizes with exploration, boss combat, and spells; test keyboard focus and resize state; rerun engine regressions; update maintenance/player docs and publish automatically.
+
+Detailed acceptance criteria are DEV-01–06 in REQUIREMENTS.md. More content, networking, and audio remain in the deferred backlog; this release concentrates on making the existing game consistently playable across devices.
+
+Cross-device stages 1–4 are implemented and verified against DEV-01–06. The runtime remains 265,834 bytes; all 40 regressions, 19-size browser matrix, and existing touch/save/offline flow pass. Publication is automatic after these checks; merge/deployment evidence is recorded in the implementation pull request.

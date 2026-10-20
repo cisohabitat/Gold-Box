@@ -10,15 +10,17 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 **[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)**
 
-Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a board and sidebar on desktop, and a fitted board/control shell with a separate Party & Log panel on phones. **How to Play** on the title screen explains the rules.
+Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a fitted board/control shell on every device, with a live sidebar in wide windows and a separate Party & Log panel in smaller windows. **How to Play** on the title screen explains the rules.
 
 The live version is served from GitHub Pages: the repo’s **Settings → Pages** source is set to the main branch root. Changes on a pull request branch become live only after they reach `main`; download that branch's `index.html` to play its version locally.
 
-### Playing on iPhone
+### Playing on desktop, iPad, and iPhone
 
-The play area adapts to the current browser height, including Safari's expanding or collapsing bars, and leaves safe-area space around the display cutout and home indicator. In portrait, the board sits above the action buttons and movement pad. In landscape, the board and controls sit side by side. The boss bar and horizontally scrollable spell menu fit inside that same play area.
+The play area adapts to the current browser height, including Safari's expanding or collapsing bars, and leaves safe-area space around the display cutout and home indicator. In portrait, the board sits above the action buttons and movement pad. In short landscape windows, the board and controls sit side by side. The boss bar and horizontally scrollable spell menu fit inside that same play area.
 
-Tap **Party & Log** to inspect the roster and battle history, then **Back to Game** to return. This panel replaces the desktop sidebar on a phone. Equipment, creation, save, and other menus scroll independently when their contents are taller than the screen. Main action and movement buttons have touch targets at least 44 pixels across and tall; pinch zoom remains available.
+Tap **Party & Log** to inspect the roster and battle history, then **Back to Game** to return. This panel replaces the sidebar on phones, most iPad windows, and smaller desktop windows. Windows at least 1200×650 pixels keep the live sidebar. iPad split view and rotation adapt without restarting the run. Equipment, creation, save, and other menus scroll independently when their contents are taller than the screen. Main action and movement buttons have touch targets at least 44 pixels across and tall; pinch zoom remains available.
+
+Use a mouse or touch to choose actions. With a keyboard, explore using arrows or WASD; in combat, Tab to the grid, move focus with arrows, and press Enter or Space to use the selected action. Area spells still require confirmation. Reduced-motion preferences disable animations and transitions.
 
 The layout was checked at 440 × 956, 440 × 780, and 440 × 680 portrait viewports, 956 × 440 and 956 × 350 landscape viewports, and 390 × 844, with simulated safe-area insets. These are Chromium viewport checks for iPhone-sized screens, not physical iPhone or Safari certification. Reload the live page after an update to get the latest layout.
 
@@ -171,3 +173,8 @@ Check new scenarios when their related behavior changes; the DOM-stub checks do 
 Built as an homage to the SSI Gold Box engine of the late 1980s. This is an original implementation — no original assets or code are used.
 
 Add a licence of your choice (e.g. [MIT](https://choosealicense.com/licenses/mit/)) by dropping a `LICENSE` file in the repo root.
+
+
+### Optional device checks
+
+With Playwright available to Node and Chromium at `/usr/bin/chromium`, serve this directory with `python3 -m http.server 8000`, then run `node tests/devices.cjs`. Set `GOLD_BOX_URL` to check another served URL. The game itself needs neither tool. The matrix covers 19 phone/tablet/desktop window sizes, including iPad split view and short desktop windows; it checks fitted exploration/boss/spell layouts, 44px controls, keyboard grid focus, independently scrolling menus, resize state, reduced motion, and page errors. These are Chromium checks; actual Safari and physical-device testing remain unverified.
