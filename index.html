@@ -387,6 +387,22 @@
     .controls.combat-active{grid-template-columns:repeat(4,minmax(0,1fr));}
     .controls.combat-active #combatControls{display:contents!important;}
   }
+
+  .cell.field-cover{background-image:linear-gradient(135deg,#43637177,#20333944);}
+  .cell.field-sanctum{background-image:radial-gradient(#7fc14f55,#193c2444);}
+  .cell.field-ember{background-image:radial-gradient(#e8823944,#61251b77);}
+  .terrain-mark{position:absolute;top:1px;left:2px;font-size:clamp(9px,1.4vw,15px);line-height:1;color:#f4e6ba;pointer-events:none;}
+  .cell.aimed{box-shadow:inset 0 0 0 2px #e69bdf;}
+  #tacticsScreen{z-index:95;}
+  .tactics-copy{text-align:left;line-height:1.3;}
+  .tactics-copy h3{color:var(--gold);margin:16px 0 8px;}
+  .tactics-copy p{margin:8px 0;color:var(--parch);}
+  .tactics-enemy{border-left:2px solid var(--enemy-glow);padding:8px 12px;margin:8px 0;background:#171d1b;}
+  .tactics-enemy strong{color:var(--gold);}
+  .tactics-enemy small{display:block;color:var(--dim);font-size:16px;margin-top:5px;}
+  #btnConfirmAim{background:#55375b;color:#fff0e9;border-color:#e69bdf;max-width:none;white-space:nowrap;}
+  #btnConfirmAim:hover:not(:disabled){background:#80528a;color:#fff0e9;}
+  #hint.aim-warning{color:#f4be8b;}
 </style>
 </head>
 <body>
@@ -401,7 +417,7 @@
     <div class="board-wrap">
       <div class="board-stage"><div id="board"></div></div>
       <div class="satchel" id="satchel"></div>
-      <div class="hint" id="hint"></div>
+      <div class="hint" id="hint" aria-live="polite"></div>
       <div class="spellmenu" id="spellMenu"></div>
       <div class="controls">
         <div class="cgrp" id="combatControls">
@@ -456,6 +472,7 @@
       <button id="btnContinue" class="big" style="display:none">Continue Saved Run</button>
       <button id="btnDefault" class="big">Play the Default Party</button>
       <button id="btnCreate" class="big">Create Your Party</button>
+      <button id="btnHowToPlay" class="big">How to Play</button>
     </div>
     <div class="loadwrap">
       <button id="btnLoadToggle" class="linkbtn">Have a save code?</button>
@@ -553,7 +570,8 @@
   </div>
 </div>
 
-<div class="screen" id="journalScreen"><div class="sbox wide"><div class="eyebrow">The story so far</div><h2 class="ctitle">The Company’s Chronicle</h2><p class="tag" id="journalOath"></p><div class="journal-grid" id="journalStats"></div><div id="journalRoute"></div><h3>Carried embers</h3><p id="journalBoons" class="tag"></p><div class="crow"><button id="btnJournalClose" class="big">Return to the journey</button></div></div></div>
+<div class="screen" id="journalScreen"><div class="sbox wide"><div class="eyebrow">The story so far</div><h2 class="ctitle">The Company’s Chronicle</h2><p class="tag" id="journalOath"></p><div class="journal-grid" id="journalStats"></div><div id="journalRoute"></div><h3>Promises to the kingdom</h3><div id="journalContracts"></div><h3>Carried embers</h3><p id="journalBoons" class="tag"></p><div class="crow"><button id="btnJournalClose" class="big">Return to the journey</button></div></div></div>
+<div class="screen" id="tacticsScreen" role="dialog" aria-modal="true" aria-labelledby="tacticsTitle"><div class="sbox wide"><h2 class="ctitle" id="tacticsTitle">The Delver’s Field Guide</h2><p class="tag" id="tacticsSubtitle"></p><div id="tacticsContent" class="tactics-copy"></div><div class="crow"><button id="btnTacticsClose" class="big">Return</button></div></div></div>
 <script>
 /* ===== CROWN CAMPAIGN : data, with controller helpers below ===== */
 const OATHS={wanderer:{name:'Wanderer',budget:0.65,recovery:0.25,desc:'Gentler battles; all heroes earn victory XP and recover 25% HP after a win.'},delver:{name:'Delver',budget:1,desc:'Fortune favours the prepared. Only standing heroes earn victory XP.'},ironbound:{name:'Ironbound',budget:1.25,desc:'Stronger enemy forces. Only standing heroes earn victory XP.'}};
@@ -572,11 +590,29 @@ const SIGNATURES={
   Mage:{name:'Arcane Wellspring',desc:'Restore one use to each spell and gain +2 AC for 2 turns. Once per battle.',kind:'recharge'}
 };
 let campaign={oath:'delver',boons:[],shrines:[],battles:0,foes:0,steps:0,secrets:0,events:0,bossSlain:false};
-function freshCampaign(oath){return {oath:OATHS[oath]?oath:'delver',boons:[],shrines:[],battles:0,foes:0,steps:0,secrets:0,events:0,bossSlain:false};}
-function restoreCampaign(s){const c=freshCampaign(s&&s.oath);if(!s)return c;for(const k of ['battles','foes','steps','secrets','events'])c[k]=Math.max(0,Number(s[k])||0);c.boons=[...new Set((Array.isArray(s.boons)?s.boons:[]).filter(id=>BOONS[id]))];c.shrines=[...new Set((Array.isArray(s.shrines)?s.shrines:[]).filter(id=>WORLD[id]))];c.bossSlain=!!s.bossSlain;return c;}
-function applyBoons(){const bonus={atk:0,ac:0,dmg:0};campaign.boons.forEach(id=>{const b=BOONS[id];for(const k of ['atk','ac','dmg'])bonus[k]+=b[k]||0;});party.forEach(h=>h.campaignBonus={...bonus});}
+function freshCampaign(oath){return {oath:OATHS[oath]?oath:'delver',boons:[],shrines:[],battles:0,foes:0,steps:0,secrets:0,events:0,successes:0,contracts:[],completedFloors:[],bossSlain:false};}
+function restoreCampaign(s){const c=freshCampaign(s&&s.oath);if(!s)return c;
+  for(const k of ['battles','foes','steps','secrets','events','successes'])c[k]=Math.max(0,Math.min(10000000,Math.floor(Number(s[k])||0)));
+  for(const [field,registry] of [['boons',BOONS],['shrines',WORLD],['contracts',CONTRACTS],['completedFloors',WORLD]])c[field]=[...new Set((Array.isArray(s[field])?s[field]:[]).filter(id=>Object.prototype.hasOwnProperty.call(registry,id)))];
+  c.bossSlain=!!s.bossSlain;return c;}
+function applyBoons(heroes=party,state=campaign){const bonus={atk:0,ac:0,dmg:0};state.boons.forEach(id=>{const b=BOONS[id];for(const k of ['atk','ac','dmg'])bonus[k]+=b[k]||0;});heroes.forEach(h=>h.campaignBonus={...bonus});}
 function escapeHTML(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
+const TERRAIN={
+  cover:{name:'Cover',glyph:'▰',desc:'+2 AC against ranged weapons. Melee and spells ignore it.'},
+  sanctum:{name:'Sanctum',glyph:'✚',desc:'Recover up to 3 HP at the end of your turn.'},
+  ember:{name:'Embers',glyph:'♨',desc:'Take 2 damage at the end of your turn. Can knock you out.'}
+};
+const BATTLEFIELDS={
+  crypt:{name:'Broken Cloister',cover:[[4,2],[4,7],[5,4]],sanctum:[[3,5]],ember:[]},
+  catacomb:{name:'The Drowned Hall',cover:[[4,1],[4,8]],sanctum:[[3,4]],ember:[[5,3],[5,6]]},
+  tomb:{name:'The Ember Court',cover:[[3,2],[3,7]],sanctum:[[4,5]],ember:[[5,3],[5,6],[6,5]]}
+};
+const CONTRACTS={
+  vanquisher:{name:'Break the Watch',stat:'battles',goal:4,desc:'Win four battles.',reward:{item:'sunshard'},rewardText:'Sunshard staff'},
+  lamplighter:{name:'Light in the Walls',stat:'secrets',goal:2,desc:'Open two hidden caches.',reward:{item:'lantern_mantle'},rewardText:'Lantern Mantle'},
+  restorer:{name:'Voices Remembered',stat:'successes',goal:3,desc:'Succeed at three event checks.',reward:{gold:120,rations:2},rewardText:'120 gold and two supplies'}
+};
 /* ===== DICE : the only source of randomness ===== */
 const Dice = {
   roll(n,s){ let t=0; for(let i=0;i<n;i++) t+=1+Math.floor(Math.random()*s); return t; },
@@ -587,9 +623,9 @@ const Dice = {
 const Rules = {
   mod(s){ return Math.floor((s-10)/2); },
   initiative(c){ return Dice.d20()+this.mod(c.abilities.dex); },
-  attack(att,def,penalty=0){
+  attack(att,def,penalty=0,cover=0){
     const nat=Dice.d20(), total=nat+effAttack(att)-(penalty||0), crit=nat===20;
-    return { natural:nat, total, hit:(crit||(nat!==1&&total>=effAc(def))), crit };
+    return { natural:nat, total, hit:(crit||(nat!==1&&total>=effAc(def)+cover)), crit };
   },
   damage(att,crit){ const d=effDamage(att); let dmg=Dice.roll(d.n,d.sides)+d.bonus; if(crit) dmg+=Dice.roll(d.n,d.sides); return Math.max(1,dmg); },
   spellAmount(e){ return Dice.roll(e.dice.n,e.dice.sides)+e.dice.bonus; },
@@ -652,6 +688,8 @@ const SPELLS = {
    An optional classes list restricts who may equip it. New gear is an entry
    here, not engine code. ===== */
 const ITEMS = {
+  sunshard:{id:'sunshard',name:'Sunshard',slot:'weapon',atk:2,dmg:2,cost:140,classes:['Mage','Cleric'],legendary:true},
+  lantern_mantle:{id:'lantern_mantle',name:'Lantern Mantle',slot:'armor',ac:2,cost:120,legendary:true},
   dawnblade:{id:'dawnblade',name:'Dawnblade',slot:'weapon',atk:2,dmg:4,cost:280,classes:['Fighter','Cleric'],legendary:true},
   nightglass:{id:'nightglass',name:'Nightglass',slot:'weapon',atk:2,dmg:3,cost:260,classes:['Thief','Mage'],legendary:true,onHit:{status:'poison',duration:3,dmg:2,chance:0.6}},
   starweave:{id:'starweave',name:'Starweave Mantle',slot:'armor',ac:3,cost:240,legendary:true},
@@ -1009,6 +1047,8 @@ const DEFAULT_BLOCKS = [
 ];
 function makeParty(){ return DEFAULT_BLOCKS.map((b,i)=> buildHero(CLASSES[b.cls], b.name, b.ab, 'p'+(i+1), 1, b.bg)); }
 const BESTIARY = {
+  bell_warden:{name:'The Bell Warden',cls:'BellWarden',bossTitle:'BELL WARDEN',role:'Sentinel — holds the line and rallies its allies. At half health it calls one skeleton and gains +1 attack.',glyph:'W',sprite:'ogre',side:'enemy',xp:100,threat:31,abilities:{str:16,dex:10,con:15,int:10,wis:12,cha:12},maxHp:22,ac:14,attackBonus:4,damage:{n:1,sides:8,bonus:2},speed:4,range:1,spells:[{id:'war_chant',uses:1,max:1}],bloodied:{id:'bell_wrath',atk:1,count:1,summon:'skeleton',text:'The cracked bell tolls. Its Warden calls one last watchman and gains +1 attack!'}},
+  ash_cantor:{name:'The Ash Cantor',cls:'AshCantor',bossTitle:'ASH CANTOR',role:'Hex singer — weakens heroes and burns clusters. At half health it calls one skeleton and gains +1 attack and damage.',glyph:'A',sprite:'necromancer',side:'enemy',xp:130,threat:35,abilities:{str:10,dex:12,con:13,int:16,wis:14,cha:15},maxHp:24,ac:14,attackBonus:4,damage:{n:1,sides:6,bonus:1},speed:4,range:1,spells:[{id:'hex',uses:2,max:2},{id:'cinder',uses:1,max:1},{id:'spirit_bolt',uses:3,max:3}],bloodied:{id:'ash_wrath',atk:1,dmg:1,count:1,summon:'skeleton',text:'The Cantor burns its final hymn. One skeleton rises; the singer gains +1 attack and damage!'}},
   goblin:{ name:'Goblin', cls:'Goblin', glyph:'g', sprite:'goblin', side:'enemy', xp:25, abilities:{str:11,dex:13,con:12,int:8,wis:9,cha:7}, maxHp:8, ac:13, attackBonus:2, damage:{n:1,sides:6,bonus:0}, speed:4, range:1, spells:[] },
   orc:{ name:'Orc', cls:'Orc', glyph:'o', sprite:'orc', side:'enemy', xp:60, abilities:{str:16,dex:12,con:14,int:9,wis:10,cha:9}, maxHp:15, ac:14, attackBonus:4, damage:{n:1,sides:8,bonus:1}, speed:4, range:1, spells:[] },
   shaman:{ name:'Goblin Shaman', cls:'Shaman', glyph:'s', sprite:'shaman', side:'enemy', xp:70, threat:24, abilities:{str:10,dex:13,con:12,int:11,wis:13,cha:11}, maxHp:10, ac:13, attackBonus:2, damage:{n:1,sides:4,bonus:0}, speed:4, range:1, spells:[{id:'spirit_bolt',uses:3,max:3},{id:'war_chant',uses:2,max:2}] },
@@ -1024,7 +1064,7 @@ const BESTIARY = {
   // spirit-bolts, locks down a hero with Hold, and raises the fallen when his
   // line thins. Always fielded as the boss `lead` (elite-scaled) at the sealed
   // exit, so the run climaxes in a fight to escape rather than a quiet stairwell.
-  crypt_lord:{ name:'The Crypt Lord', cls:'CryptLord', glyph:'L', sprite:'crypt_lord', side:'enemy', xp:200, threat:42, abilities:{str:12,dex:12,con:15,int:16,wis:15,cha:16}, maxHp:32, ac:15, attackBonus:5, damage:{n:1,sides:8,bonus:2}, speed:4, range:1, spells:[{id:'spirit_bolt',uses:3,max:3},{id:'hold',uses:2,max:2},{id:'raise_dead',uses:1,max:1}] }
+  crypt_lord:{ bossTitle:'THE SUNLESS KING',bloodied:{id:'sunless_wrath',atk:2,dmg:2,count:2,summon:'skeleton',text:'THE CROWN SHATTERS. The Sunless King rises in wrath (+2 attack and damage), calling his last honour guard!'},name:'The Crypt Lord', cls:'CryptLord', glyph:'L', sprite:'crypt_lord', side:'enemy', xp:200, threat:42, abilities:{str:12,dex:12,con:15,int:16,wis:15,cha:16}, maxHp:32, ac:15, attackBonus:5, damage:{n:1,sides:8,bonus:2}, speed:4, range:1, spells:[{id:'spirit_bolt',uses:3,max:3},{id:'hold',uses:2,max:2},{id:'raise_dead',uses:1,max:1}] }
 };
 function makeGroup(list){
   const out=[]; let i=0;
@@ -1042,7 +1082,7 @@ function makeGroup(list){
    - composeEncounter fills the budget from an encounter's monster pool at
      fight time, using the party's CURRENT level.
    - ELITE scales any monster into a boss via one flag, no bespoke entry. ===== */
-const DIFFICULTY = { base:49, perFloor:26, perLevel:11, perGear:0.5, bossMul:2.0, maxEnemies:8, slack:6, eliteTier:0.15, eliteBoss:0.22 };
+const DIFFICULTY = { base:49, perFloor:26, perLevel:11, perGear:0.12, bossMul:2.0, maxEnemies:8, slack:6, eliteTier:0.15, eliteBoss:0.22 };
 const ELITE = { hp:1.8, atk:2, dmg:2, ac:1, xp:2, threat:1.6 };
 // A ranged attacker harried in melee shoots wild: this to-hit penalty applies to
 // a ranged weapon attack (range > 1) made while an enemy stands in melee reach.
@@ -1299,7 +1339,7 @@ function _tryGen(spec,W,H){
   if(spec.key && door) place({type:'key'});
   if(spec.relic) place({type:'relic'});
   if(spec.gold) place({type:'gold', amount:spec.gold});
-  if(spec.rations) place({type:'ration'});
+  if(spec.rations) place({type:'ration',amount:spec.rations});
   (spec.items||[]).forEach(id=> place({type:'item', item:id}));
   // Secret caches: treasure tucked into a wall, off the critical path. A cache sits
   // on a WALL tile that borders a reachable floor tile (so the party can stand beside
@@ -1315,7 +1355,8 @@ function _tryGen(spec,W,H){
       if(carved.has(key(xx,yy))) continue;                       // must be a wall
       const adjacentFloor=[[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>{ const fk=key(xx+a,yy+b);
         return reachSet.has(fk) && !(door&&xx+a===door[0]&&yy+b===door[1]); });
-      if(adjacentFloor) wallCand.push(key(xx,yy));
+      const bridgesSeal=door&&[[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>{const k=key(xx+a,yy+b);return carved.has(k)&&!reachSet.has(k)&&k!==key(door[0],door[1]);});
+      if(adjacentFloor&&!bridgesSeal) wallCand.push(key(xx,yy));
     }
     _shuffle(wallCand);
     const bonus=(spec.secretItems||[]).slice();
@@ -1341,7 +1382,7 @@ function _fallbackLevel(spec,W,H){
   _shuffle(cand); const loot={}; let li=0; const place=v=>{ const c=cand[li++]; if(c) loot[key(c[0],c[1])]=v; };
   if(spec.relic) place({type:'relic'});
   if(spec.gold) place({type:'gold', amount:spec.gold});
-  if(spec.rations) place({type:'ration'});
+  if(spec.rations) place({type:'ration',amount:spec.rations});
   (spec.items||[]).forEach(id=> place({type:'item', item:id}));
   const encounters=(spec.encounters||[]).map(e=>{ if(!e.guard) return e; const {guard,...rest}=e; return {...rest, at:[W-3,H-2]}; });
   return { name:spec.name, theme:spec.theme, w:W, h:H, start:[1,1], exit:[W-2,H-2], walls:[], doors:[], loot, encounters, events:_pickEvents(spec) };
@@ -1378,7 +1419,7 @@ const WORLD = {
   catacombs:{ id:'catacombs', name:'The Catacombs', theme:'catacomb', gen:{cols:4,rows:3}, tier:2, lockedExit:true, key:true, gold:90, rations:1, items:['oak_staff','potion_heal'], events:3, secrets:1,
     intro:'Walls of niched dead stretch away in every direction. Something deeper has felt you coming.',
     encounters:[ { pool:['goblin','spider','shaman','hexer','archer'] },
-                 { pool:['orc','skeleton','necromancer','acolyte','spider'] } ], next:['ossuary','shrine_road'] },
+                 { guard:true,boss:true,lead:'bell_warden',budgetMul:0.55,pool:['skeleton','acolyte'] } ], next:['ossuary','shrine_road'] },
 
   ossuary:{ id:'ossuary', name:'The Ossuary', theme:'catacomb', gen:{cols:4,rows:4}, tier:2, lockedExit:true, key:true, gold:130, rations:0, items:['dawnblade','potion_heal'], events:1, secrets:2, secretItems:['venom_dagger'],
     teaser:'Vaults packed with grave-goods and the things set to guard them. Richest floor of the descent, and the deadliest short of the tomb.',
@@ -1391,7 +1432,7 @@ const WORLD = {
 
   deep_stair:{ id:'deep_stair', name:'The Descent', theme:'tomb', gen:{cols:4,rows:3}, tier:3, lockedExit:true, key:true, gold:100, rations:1, items:['potion_heal'], events:2, secrets:1,
     intro:'The last stair down. The air is wrong, and something below knows you are coming.',
-    encounters:[ { pool:['skeleton','ogre','bonecaller'] }, { pool:['necromancer','acolyte','hexer'] } ], next:['sunless_tomb'] },
+    encounters:[ { pool:['skeleton','ogre','bonecaller'] }, { guard:true,boss:true,lead:'ash_cantor',budgetMul:0.55,pool:['skeleton','hexer'] } ], next:['sunless_tomb'] },
 
   sunless_tomb:{ id:'sunless_tomb', name:'The Sunless Tomb', theme:'tomb', gen:{cols:4,rows:4}, tier:3, lockedExit:true, key:true, relic:true, gold:150, rations:1, items:['nightglass','potion_heal'], events:2,
     intro:'The heart of the tomb. The relic rests on its bier ahead \u2014 and so does whatever was bound here to keep it forever.',
@@ -1410,13 +1451,15 @@ function floorTier(){ return (WORLD[nodeId]&&WORLD[nodeId].tier)||0; }
 /* ===== COMBAT ENGINE : pure logic, no DOM ===== */
 const DIRS8=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
 class CombatEngine{
-  constructor(party, enemies, w, h){
+  constructor(party, enemies, w, h, battlefield=null){
     this.w=w; this.h=h; this.blocked=new Set(); this.combatants=[];
     party.forEach((c,i)=>{ c.pos={x:0,y:1+i*2}; this.combatants.push(c); });
     const spots=[]; for(let x=w-2;x>=w-4;x--) for(let y=2;y<=6;y++) spots.push({x,y});
     enemies.forEach((e,i)=>{ e.pos={...(spots[i]||{x:w-1,y:1})}; this.combatants.push(e); });
     this.combatants.forEach(c=>{ if(c.hp===undefined) c.hp=c.maxHp; c.alive=c.hp>0; if(!c.statuses) c.statuses=[]; c.acted={move:false,action:false}; c.guarding=false; c.guardUsed=false; c.aooUsed=false; c.signatureUsed=false; });
     this.order=this.combatants.map(c=>({id:c.id,init:Rules.initiative(c)})).sort((a,b)=>b.init-a.init).map(o=>o.id);
+    this.terrain=new Map();this.battlefield=BATTLEFIELDS[battlefield]?battlefield:null;
+    if(this.battlefield)for(const type of Object.keys(TERRAIN))for(const [x,y] of BATTLEFIELDS[this.battlefield][type])if(this.inBounds(x,y)&&!this.at(x,y))this.terrain.set(key(x,y),type);
     this.turnIndex=0; this.round=1; this.phase='playing'; this.log=[]; this.xpEarned=0; this._summonSeq=0; this._begin();
   }
   byId(id){ return this.combatants.find(c=>c.id===id); }
@@ -1431,6 +1474,27 @@ class CombatEngine{
     while(f.length){ const n=[]; for(const p of f){ const d=seen.get(key(p.x,p.y)); if(d>=c.speed)continue;
       for(const [dx,dy] of DIRS8){ const nx=p.x+dx,ny=p.y+dy,k=key(nx,ny); if(!this.passable(nx,ny,c))continue; if(!seen.has(k)){ seen.set(k,d+1); n.push({x:nx,y:ny}); } } } f=n; }
     seen.delete(key(c.pos.x,c.pos.y)); return seen;
+  }
+  terrainAt(pos){return this.terrain.get(key(pos.x,pos.y))||null;}
+  coverBonus(att,def){return att.range>1&&this.terrainAt(def.pos)==='cover'?2:0;}
+  tileScore(c,pos){const type=this.terrainAt(pos);return type==='ember'?-6:type==='sanctum'&&c.hp<c.maxHp?4:type==='cover'&&(c.range>1||(c.spells||[]).length)?2:0;}
+  attackPreview(att,def){const cover=this.coverBonus(att,def),penalty=att.range>1&&this.meleeThreatened(att)?RANGED_MELEE_PENALTY:0;
+    const needed=effAc(def)+cover-effAttack(att)+penalty;
+    return {chance:this.isIncapacitated(def)?100:Math.max(5,Math.min(95,(21-needed)*5)),cover,penalty};
+  }
+  describeRole(c){
+    if(c.role)return c.role;
+    const spells=(c.spells||[]).filter(sp=>sp.uses>0).map(sp=>SPELLS[sp.id]);
+    if(spells.some(sp=>sp.effect.kind==='summon'))return 'Summoner — raises reinforcements when its side is thin and it is not pinned in melee.';
+    if(spells.some(sp=>sp.effect.kind==='heal'))return 'Healer — mends badly wounded allies before attacking.';
+    if(spells.some(sp=>['status','debuff'].includes(sp.effect.kind)))return 'Controller — disables or weakens threats, then attacks.';
+    if(spells.some(sp=>sp.effect.kind==='damage'))return 'Spellcaster — seeks spell range and avoids hostile area blasts that would hit allies.';
+    if(c.range>1)return 'Archer — retreats from melee and shoots vulnerable targets. Retreat can provoke reactions.';
+    return 'Vanguard — closes into melee and focuses vulnerable or wounded foes.';
+  }
+  _terrainTick(c){if(!c||!c.alive)return;const type=this.terrainAt(c.pos);
+    if(type==='sanctum'&&c.hp<c.maxHp){const n=Math.min(3,c.maxHp-c.hp);c.hp+=n;this.log.push({t:c.name+' recovers '+n+' HP in the sanctum.',k:'magic'});}
+    if(type==='ember'){c.hp-=2;this.log.push({t:c.name+' takes 2 damage from the embers.',k:'kill'});if(c.hp<=0)this._drop(c);}
   }
   canAttack(a,d){ if(!a.alive||this.isIncapacitated(a))return false; return d&&d.alive&&d.side!==a.side&&this.cheb(a.pos,d.pos)<=a.range; }
   // True if a living enemy stands in melee reach (one square) of c. A ranged
@@ -1448,7 +1512,7 @@ class CombatEngine{
     const helpless=this.isIncapacitated(def);
     const harried = att.range>1 && this.meleeThreatened(att);   // ranged shot while threatened in melee
     const pen = harried ? RANGED_MELEE_PENALTY : 0;
-    const r = helpless ? {hit:true,crit:false} : Rules.attack(att,def,pen);
+    const r = helpless ? {hit:true,crit:false} : Rules.attack(att,def,pen,this.coverBonus(att,def));
     if(!r.hit){ this.log.push({t:att.name+' attacks '+def.name+' and misses'+(harried?', harried in close quarters.':'.'),k:'miss'}); }
     else{ const dmg=Rules.damage(att,r.crit) + perkStrikeBonus(att,def); def.hp-=dmg;
       const how = helpless ? ' strikes the helpless '+def.name+' for ' : ' hits '+def.name+(r.crit?' (critical) for ':' for ');
@@ -1563,10 +1627,9 @@ class CombatEngine{
     this.log.push({t:c.name+' invokes '+skill.name+'!',k:'magic'});return true;
   }
   _bossPhase(){
-    for(const boss of this.living('enemy'))if(boss.cls==='CryptLord'&&!boss.awakened&&boss.hp<=boss.maxHp/2){
-      boss.awakened=true;boss.statuses.push({type:'sunless_wrath',duration:99,buff:true,atk:2,dmg:2});
-      this.log.push({t:'THE CROWN SHATTERS. The Sunless King rises in wrath (+2 attack and damage), calling his last honour guard!',k:'kill'});
-      this._summon(boss,'skeleton',2);
+    for(const boss of this.living('enemy'))if(boss.bloodied&&!boss.awakened&&boss.hp<=boss.maxHp/2){
+      const phase=boss.bloodied;boss.awakened=true;boss.statuses.push({type:phase.id,duration:99,buff:true,atk:phase.atk||0,dmg:phase.dmg||0});
+      this.log.push({t:phase.text,k:'kill'});if(phase.summon)this._summon(boss,phase.summon,Math.min(2,phase.count||0));
     }
   }
   _checkEnd(){ this._bossPhase(); if(!this.living('enemy').length) this.phase='won'; else if(!this.living('party').length) this.phase='lost'; }
@@ -1583,7 +1646,7 @@ class CombatEngine{
     if(c.statuses.some(s=>s.duration<=0&&(s.type==='sleep'||s.type==='hold'))) this.log.push({t:c.name+' shakes off the magic.',k:'sys'});
     c.statuses=c.statuses.filter(s=>s.duration>0);
   }
-  endTurn(){ if(this.phase!=='playing')return; this._tick(this.current()); this._checkEnd(); if(this.phase!=='playing')return; let s=0; do{ this.turnIndex++; if(this.turnIndex>=this.order.length){ this.turnIndex=0; this.round++; } s++; } while(!this.current().alive&&s<100); this._begin(); }
+  endTurn(){ if(this.phase!=='playing')return; this._tick(this.current()); this._terrainTick(this.current()); this._checkEnd(); if(this.phase!=='playing')return; let s=0; do{ this.turnIndex++; if(this.turnIndex>=this.order.length){ this.turnIndex=0; this.round++; } s++; } while(!this.current().alive&&s<100); this._begin(); }
   // Wait: send the current actor to the back of the initiative order. If no
   // living unit is queued after it this cycle, there is nobody to wait behind,
   // so it ends the turn normally instead. Does not tick statuses (no turn taken).
@@ -1681,7 +1744,7 @@ class CombatEngine{
         const nearest=Math.min(...heroes.map(h=>this.cheb({x,y},h.pos)));
         const inRange=heroes.some(h=>this.cheb({x,y},h.pos)<=c.range);
         if(!inRange || nearest<=1) continue;
-        if(nearest>bestScore){ bestScore=nearest; best={x,y}; } }
+        const score=nearest+this.tileScore(c,{x,y});if(score>bestScore){ bestScore=score; best={x,y}; } }
       if(best){ const ox=c.pos.x,oy=c.pos.y; c.pos=best; c.acted.move=true; this.log.push({t:c.name+' backs away and draws.',k:'sys'}); this._provoke(c,ox,oy); if(!c.alive)return; this._checkGuards(c); if(!c.alive) return; }
     }
     const inRange=heroes.filter(h=>this.canAttack(c,h));
@@ -1718,7 +1781,7 @@ class CombatEngine{
         const nearest=Math.min(...heroes.map(h=>this.cheb({x,y},h.pos)));
         const inRange=heroes.some(h=>this.cheb({x,y},h.pos)<=spellRange);
         if(!inRange) continue;
-        const sc=nearest;                            // maximise distance from the nearest hero
+        const sc=nearest+this.tileScore(c,{x,y});                            // maximise distance from the nearest hero
         if(nearest>1 && sc>bestScore){ bestScore=sc; best={x,y}; } }
       if(best){ const ox=c.pos.x, oy=c.pos.y; c.pos=best; c.acted.move=true; this.log.push({t:c.name+' slips back out of reach.',k:'sys'}); this._provoke(c, ox, oy); if(!c.alive) return; this._checkGuards(c); if(!c.alive) return; }
     }
@@ -1757,7 +1820,7 @@ class CombatEngine{
     const reach=this.reachable(c);let best=null,bestScore=-Infinity;
     for(const [k,steps] of reach){const [x,y]=k.split(',').map(Number),pos={x,y};
       const distance=Math.min(...heroes.map(h=>this.cheb(pos,h.pos)));
-      const score=-Math.abs(distance-spellRange)*10-steps+(distance<=1?-100:0);
+      const score=-Math.abs(distance-spellRange)*10-steps+(distance<=1?-100:0)+this.tileScore(c,pos);
       if(score>bestScore){bestScore=score;best=pos;}
     }
     if(best){this.moveTo(c,best.x,best.y);if(!c.alive)return;this._checkGuards(c);if(c.alive)this._casterTurn(c,heroes.filter(h=>h.alive));}
@@ -1768,7 +1831,7 @@ class CombatEngine{
     let best=null, bestScore=0;
     for(let y=0;y<this.h;y++) for(let x=0;x<this.w;x++){
       if(this.cheb(c.pos,{x,y})>sp.range) continue;
-      const caught=this._foes(c).filter(h=>!this.isIncapacitated(h) && this.cheb({x,y},h.pos)<=sp.aoe);
+      const caught=this._foes(c).filter(h=>(sp.effect.kind!=='status'||!this.isIncapacitated(h)) && this.cheb({x,y},h.pos)<=sp.aoe);
       if(!caught.length) continue;
       // Damage blasts hit friend and foe. Reject collateral rather than sacrifice allies.
       if(sp.effect.kind==='damage'&&this._allies(c).some(a=>this.cheb({x,y},a.pos)<=sp.aoe))continue;
@@ -1780,9 +1843,9 @@ class CombatEngine{
   }
   _stepToward(c, dest){
     if(c.acted.move)return;
-    const r=this.reachable(c); let best=null,bD=Infinity,bS=Infinity;
-    for(const [k,steps] of r){ const [x,y]=k.split(',').map(Number); const d=this.cheb({x,y},dest); if(d<bD||(d===bD&&steps<bS)){ best={x,y}; bD=d; bS=steps; } }
-    if(best && bD<this.cheb(c.pos,dest)){ const ox=c.pos.x, oy=c.pos.y; c.pos=best; c.acted.move=true; this.log.push({t:c.name+' advances.',k:'sys'}); this._provoke(c, ox, oy); if(!c.alive) return; this._checkGuards(c); }
+    const r=this.reachable(c);let best=null,bestScore=-Infinity;
+    for(const [k,steps] of r){const [x,y]=k.split(',').map(Number),pos={x,y},d=this.cheb(pos,dest);const score=-d*10-steps*.1+this.tileScore(c,pos);if(score>bestScore){bestScore=score;best=pos;}}
+    if(best&&this.cheb(best,dest)<this.cheb(c.pos,dest)){const ox=c.pos.x,oy=c.pos.y;c.pos=best;c.acted.move=true;this.log.push({t:c.name+' advances.',k:'sys'});this._provoke(c,ox,oy);if(c.alive)this._checkGuards(c);}
   }
   // Attack of opportunity: when a unit leaves a tile adjacent to a living enemy
   // for one that is not, each such enemy that still has its reaction this round
@@ -2024,6 +2087,7 @@ function queueTurn(fn,delay){
   cancelTurn();const epoch=turnEpoch,combat=game,actor=game.current();
   turnTimer=setTimeout(()=>{turnTimer=null;if(epoch!==turnEpoch||mode!=='combat'||game!==combat||game.current()!==actor||game.phase!=='playing')return;fn();},delay);
 }
+let spellAim=null,tacticsOpener=null;
 let autoFight=false;   // when on, heroes take their own turns until the fight ends
 let nodeId=WORLD_START, worldPath=[], bag=null;
 // The party's effective level (for the difficulty budget and display) is the
@@ -2043,7 +2107,7 @@ function persistClear(){ if(!storageOK)return; try{ localStorage.removeItem(SAVE
 function b64enc(str){ return btoa(String.fromCharCode.apply(null, new TextEncoder().encode(str))); }
 function b64dec(b64){ return new TextDecoder().decode(Uint8Array.from(atob(b64), c=>c.charCodeAt(0))); }
 function encodeSave(obj){ return SAVE_MAGIC + b64enc(JSON.stringify(obj)); }
-function decodeSave(code){ if(typeof code!=='string' || !code.startsWith(SAVE_MAGIC)) return null;
+function decodeSave(code){ if(typeof code!=='string' || code.length>500000 || !code.startsWith(SAVE_MAGIC)) return null;
   try{ const o=JSON.parse(b64dec(code.slice(SAVE_MAGIC.length))); return (o&&o.v===2)?o:null; }catch(e){ return null; } }
 function serializeExplore(e){ return { name:e.name, w:e.w, h:e.h, tiles:e.tiles, exit:e.exit, pos:e.pos, facing:e.facing||'E',
   doors:[...e.doors], loot:e.loot, encounters:e.encounters, cleared:[...e.cleared], seen:[...e.seen], found:[...(e.found||[])], spotted:[...(e.spotted||[])], theme:e.theme,
@@ -2071,26 +2135,63 @@ function saveState(){ return { v:2, nodeId, worldPath:[...worldPath], inTown:$('
   party: party.map(h=>({ id:h.id, name:h.name, cls:h.cls, ab:{...h.abilities}, lvl:h.level, xp:h.xp||0, pending:h.pendingLevels||0, bg:h.bg||null, hp:h.hp,
     eq:{...h.equip}, learned:[...(h.learned||[])], perks:[...(h.perks||[])], su:Object.fromEntries((h.spells||[]).map(sp=>[sp.id,sp.uses])) })),
   campaign:{...campaign,boons:[...campaign.boons],shrines:[...campaign.shrines]}, explore: serializeExplore(explore), feed:(exploreFeed||[]).slice(-25) }; }
-function validSave(s){ return s && s.v===2 && typeof s.nodeId==='string' && WORLD[s.nodeId] && s.explore && Array.isArray(s.party)
-  && s.party.length>0 && s.party.every(h=>CLASSES[h.cls]); }
-function applySave(s){ if(!validSave(s)) return false;
+function validSave(s){
   try{
-    closeFieldNotes(false);
-    cancelTurn();autoFight=false;levelUp=null;eventLevelUp=null;curEvent=null;
-    for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','saveScreen'])$('#'+id).classList.remove('show');
-    party=s.party.map(reviveHero);campaign=restoreCampaign(s.campaign);applyBoons();
-    nodeId=s.nodeId; worldPath=Array.isArray(s.worldPath)&&s.worldPath.length?s.worldPath.slice():[nodeId];
-    bag={ gold:s.bag.gold|0, keys:s.bag.keys|0, rations:s.bag.rations|0, relic:!!s.bag.relic,
-      items:Array.isArray(s.bag.items)?s.bag.items.filter(id=>ITEMS[id]):[] };
-    explore=reviveExplore(s.explore); applyScout();
-    if(!s.campaign&&nodeId==='sunless_tomb')campaign.bossSlain=Object.entries(explore.encounters).some(([k,enc])=>enc.lead==='crypt_lord'&&explore.cleared.has(k));
-    game=null; mode='explore'; mover=null; reachCache=null; pendingKey=null; selectedSpell=null;
-    exploreFeed=(Array.isArray(s.feed)&&s.feed.length)?s.feed.slice():[{t:'You press on through '+explore.name+'.',k:'sys'}];
-    $('#townScreen').classList.remove('show');
-    if(s.inTown && WORLD[nodeId].next && WORLD[nodeId].next.length){ openTown(); }
-    const pending=party.filter(h=>h.pendingLevels>0).map(hero=>({hero,by:hero.pendingLevels}));if(pending.length)openLevelUp(pending);
+    const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k), obj=o=>o&&typeof o==='object'&&!Array.isArray(o);
+    const num=(v,min=0,max=10000000)=>Number.isFinite(v)&&Number.isInteger(v)&&v>=min&&v<=max;
+    const list=(v,max,check)=>Array.isArray(v)&&v.length<=max&&v.every(check);
+    if(!obj(s)||s.v!==2||!own(WORLD,s.nodeId)||!obj(s.bag)||!obj(s.explore))return false;
+    if(!['gold','keys','rations'].every(k=>num(s.bag[k]))||!list(s.bag.items,1000,id=>own(ITEMS,id)))return false;
+    const ids=new Set();
+    if(!list(s.party,4,h=>{
+      if(!obj(h)||!own(CLASSES,h.cls)||typeof h.id!=='string'||!h.id||h.id.length>40||ids.has(h.id)||typeof h.name!=='string'||h.name.length>80)return false;
+      ids.add(h.id);
+      if(!obj(h.ab)||!['str','dex','con','int','wis','cha'].every(k=>num(h.ab[k],1,30))||!num(h.hp)||!num(h.lvl||1,1,MAX_LEVEL))return false;
+      if(h.xp!==undefined&&!num(h.xp)||h.pending!==undefined&&!num(h.pending,0,MAX_LEVEL-1))return false;
+      if(h.eq!==undefined&&!obj(h.eq))return false;
+      for(const slot of ['weapon','armor']){const id=h.eq&&h.eq[slot];if(id&&(!own(ITEMS,id)||ITEMS[id].slot!==slot||!canUse(ITEMS[id],{cls:h.cls})))return false;}
+      if(h.learned!==undefined&&!list(h.learned,30,id=>own(SPELLS,id))||h.perks!==undefined&&!list(h.perks,30,id=>own(PERKS,id)))return false;
+      if(h.su!==undefined&&(!obj(h.su)||Object.entries(h.su).some(([id,n])=>!own(SPELLS,id)||!num(n,0,999))))return false;
+      return true;
+    })||!s.party.length)return false;
+    const e=s.explore;if(!num(e.w,3,40)||!num(e.h,3,40)||typeof e.name!=='string'||e.name.length>100)return false;
+    if(!list(e.tiles,e.h,row=>list(row,e.w,t=>t==='#'||t==='.'))||e.tiles.length!==e.h||e.tiles.some(row=>row.length!==e.w))return false;
+    const pos=p=>obj(p)&&num(p.x,0,e.w-1)&&num(p.y,0,e.h-1);
+    const coord=k=>{if(typeof k!=='string'||!/^\d+,\d+$/.test(k))return false;const [x,y]=k.split(',').map(Number);return pos({x,y});};
+    if(!pos(e.pos)||!pos(e.exit)||e.tiles[e.exit.y][e.exit.x]!=='.')return false;
+    for(const k of ['doors','cleared','seen','found','spotted','eventsDone','foundSecrets'])if(e[k]!==undefined&&!list(e[k],e.w*e.h,coord))return false;
+    if(e.facing!==undefined&&!own(FACING,e.facing)||e.theme!==undefined&&!['crypt','catacomb','tomb'].includes(e.theme))return false;
+    const entries=(value,check)=>value===undefined||obj(value)&&Object.keys(value).length<=e.w*e.h&&Object.entries(value).every(([k,v])=>coord(k)&&check(v));
+    if(!entries(e.encounters,enc=>obj(enc)&&(enc.pool===undefined||list(enc.pool,30,id=>own(BESTIARY,id)))&&(!enc.lead||own(BESTIARY,enc.lead))&&(!enc.budgetMul||typeof enc.budgetMul==='number'&&enc.budgetMul>0&&enc.budgetMul<=5)))return false;
+    if(!entries(e.loot,v=>obj(v)&&['gold','key','ration','relic','item'].includes(v.type)&&(v.amount===undefined||num(v.amount,1))&&(v.type!=='item'||own(ITEMS,v.item))))return false;
+    if(!entries(e.events,id=>own(EVENTS,id))||!entries(e.secrets,v=>obj(v)&&(v.gold===undefined||num(v.gold))&&(!v.item||own(ITEMS,v.item))))return false;
+    if(e.tiles[e.pos.y][e.pos.x]==='#'&&!(e.foundSecrets||[]).includes(key(e.pos.x,e.pos.y)))return false;
+    if(e.wanderPool!==undefined&&!list(e.wanderPool,30,id=>own(BESTIARY,id)))return false;
+    if(s.worldPath!==undefined&&(!list(s.worldPath,16,id=>own(WORLD,id))||!s.worldPath.length))return false;
+    if(s.campaign!==undefined){if(!obj(s.campaign))return false;for(const k of ['boons','shrines','completedFloors','contracts'])if(s.campaign[k]!==undefined&&!list(s.campaign[k],40,id=>typeof id==='string'))return false;}
+    if(s.feed!==undefined&&!list(s.feed,100,entry=>obj(entry)&&typeof entry.t==='string'&&entry.t.length<=2000&&(entry.k===undefined||typeof entry.k==='string'&&entry.k.length<=30)))return false;
     return true;
-  }catch(e){ return false; } }
+  }catch(_){return false;}
+}
+function applySave(s){
+  let next;
+  try{
+    if(!validSave(s))return false;
+    const heroes=s.party.map(reviveHero),state=restoreCampaign(s.campaign),dungeon=reviveExplore(s.explore);
+    if(!s.campaign||!Array.isArray(s.campaign.completedFloors))state.completedFloors=[...new Set([...(s.worldPath||[]).filter(id=>id!==s.nodeId),...(s.inTown?[s.nodeId]:[])])];
+    applyBoons(heroes,state);
+    dungeon.scoutRadius=partyScoutRadius(heroes);dungeon.searchBonus=partySearchBonus(heroes);dungeon.reveal();
+    if(!s.campaign&&s.nodeId==='sunless_tomb')state.bossSlain=Object.entries(dungeon.encounters).some(([k,enc])=>enc.lead==='crypt_lord'&&dungeon.cleared.has(k));
+    next={heroes,state,dungeon,path:Array.isArray(s.worldPath)&&s.worldPath.length?s.worldPath.slice():[s.nodeId],bag:{gold:s.bag.gold,keys:s.bag.keys,rations:s.bag.rations,relic:!!s.bag.relic,items:s.bag.items.slice()},feed:s.feed&&s.feed.length?s.feed.slice():[{t:'You press on through '+dungeon.name+'.',k:'sys'}]};
+  }catch(_){return false;}
+  closeFieldNotes(false);cancelTurn();autoFight=false;levelUp=null;eventLevelUp=null;curEvent=null;
+  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','saveScreen','tacticsScreen'])$('#'+id).classList.remove('show');
+  party=next.heroes;campaign=next.state;explore=next.dungeon;nodeId=s.nodeId;worldPath=next.path;bag=next.bag;exploreFeed=next.feed;
+  game=null;mode='explore';mover=null;reachCache=null;pendingKey=null;selectedSpell=null;
+  if(s.inTown&&(WORLD[nodeId].next||[]).length)openTown();
+  const pending=party.filter(h=>h.pendingLevels>0).map(hero=>({hero,by:hero.pendingLevels}));if(pending.length)openLevelUp(pending);
+  return true;
+}
 function autosave(){ if(mode!=='explore' || !party || !explore) return; if($('#banner').classList.contains('show')) return; persistWrite(encodeSave(saveState())); }
 function continueRun(){ const s=decodeSave(persistRead()); if(!applySave(s)) return;
   $('#startScreen').classList.remove('show'); $('#banner').classList.remove('show'); render(); }
@@ -2113,7 +2214,7 @@ function closeSave(){ $('#saveScreen').classList.remove('show'); }
 function newGame(chosenParty){
   closeFieldNotes(false);
   cancelTurn();autoFight=false;levelUp=null;eventLevelUp=null;curEvent=null;
-  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','saveScreen'])$('#'+id).classList.remove('show');
+  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','saveScreen','tacticsScreen'])$('#'+id).classList.remove('show');
   campaign=freshCampaign($('#oathChoice').value);
   party=chosenParty||makeParty(); nodeId=WORLD_START; worldPath=[WORLD_START]; explore=new ExploreEngine(buildDungeon(generateLevel(WORLD[WORLD_START]))); applyScout();
   bag={ gold:40, keys:0, rations:2, relic:false, items:[] };
@@ -2131,7 +2232,7 @@ function newGame(chosenParty){
   partyBark('floor');
   $('#banner').classList.remove('show'); render(); autosave();
 }
-function overlayOpen(){ return $('#fieldNotes').classList.contains('open') || $('#townScreen').classList.contains('show') || $('#partyScreen').classList.contains('show') || $('#levelScreen').classList.contains('show') || $('#saveScreen').classList.contains('show') || $('#eventScreen').classList.contains('show') || $('#journalScreen').classList.contains('show') || $('#startScreen').classList.contains('show') || $('#banner').classList.contains('show'); }
+function overlayOpen(){ return $('#tacticsScreen').classList.contains('show') || $('#fieldNotes').classList.contains('open') || $('#townScreen').classList.contains('show') || $('#partyScreen').classList.contains('show') || $('#levelScreen').classList.contains('show') || $('#saveScreen').classList.contains('show') || $('#eventScreen').classList.contains('show') || $('#journalScreen').classList.contains('show') || $('#startScreen').classList.contains('show') || $('#banner').classList.contains('show'); }
 function tryMove(dx,dy){
   if(mode!=='explore'||overlayOpen())return; const r=explore.move(dx,dy);
   if(r.type==='blocked') return;
@@ -2178,7 +2279,7 @@ function handleEnter(r){
 function collect(item){
   if(item.type==='gold'){ bag.gold+=item.amount; exploreFeed.push({t:'You find '+item.amount+' gold.',k:'magic'}); }
   else if(item.type==='key'){ bag.keys++; exploreFeed.push({t:'You find an iron key.',k:'magic'}); }
-  else if(item.type==='ration'){ bag.rations++; exploreFeed.push({t:'You find camp supplies.',k:'magic'}); }
+  else if(item.type==='ration'){ const amount=item.amount||1;bag.rations+=amount; exploreFeed.push({t:'You find '+amount+' camp '+(amount===1?'supply.':'supplies.'),k:'magic'}); }
   else if(item.type==='relic'){ bag.relic=true; if(explore&&explore.wake) explore.wake(); exploreFeed.push({t:'You lift the relic from its bier \u2014 and the tomb shudders awake. The way out is sealed now; something vast stirs to bar it, and the dead begin to walk.',k:'magic'}); partyBark('relic'); }
   else if(item.type==='item'){ const it=ITEMS[item.item]; if(it){ bag.items.push(it.id); exploreFeed.push({t:'You find a '+it.name+'. Open Party to equip it.',k:'magic'}); } }
 }
@@ -2188,7 +2289,7 @@ function collectSecret(cache){
   let msg='You break open the hidden cache';
   if(cache.gold){ bag.gold+=cache.gold; msg+=' \u2014 '+cache.gold+' gold'; }
   if(cache.item && ITEMS[cache.item]){ bag.items.push(cache.item); msg+=(cache.gold?' and ':' \u2014 ')+'a '+ITEMS[cache.item].name; }
-  exploreFeed.push({t:msg+'.',k:'magic'});
+  exploreFeed.push({t:msg+'.',k:'magic'});checkContracts();
 }
 
 /* ----- Exploration events: a stat check resolved by the best-suited hero ----- */
@@ -2221,19 +2322,20 @@ function renderEvent(){
   });
 }
 function resolveEventOption(i){
+  if(!curEvent||explore.eventsDone.has(curEvent.at))return;
   const ev=EVENTS[curEvent.id]; const opt=ev.options[i]; if(!opt) return;
   let resultText;
   if(opt.fallback){ resultText=opt.outcome.text; if(opt.outcome) applyEventOutcome(opt.outcome, null); }
   else {
     const lead=bestForStat(opt.stat); const hero=lead.hero;
-    const roll=Dice.d20(), total=roll+lead.mod, pass=total>=opt.dc;
+    const roll=Dice.d20(), total=roll+lead.mod, pass=total>=opt.dc;if(pass)campaign.successes++;
     const out=pass?opt.success:opt.failure;
     resultText=`${STAT_NAME[opt.stat]} check (${hero?hero.name:'\u2014'}): rolled ${roll}${lead.mod>=0?'+':''}${lead.mod} = ${total} vs ${opt.dc}. ${pass?'Success.':'Failure.'}`;
     if(pass && out && out.xp) resultText += ' +'+out.xp+' XP.';
     applyEventOutcome(out, hero);
   }
   // resolve once: mark done so the tile won't trigger again
-  explore.eventsDone.add(curEvent.at);campaign.events++;
+  explore.eventsDone.add(curEvent.at);campaign.events++;checkContracts();
   $('#eventOptions').innerHTML='';
   const rEl=$('#eventResult'); rEl.style.display=''; rEl.textContent=resultText;
   $('#btnEventDone').style.display='';
@@ -2303,10 +2405,23 @@ function hazardCheck(){
 }
 function closeEvent(){ curEvent=null; $('#eventScreen').classList.remove('show');
   const lv=eventLevelUp; eventLevelUp=null;
-  if(lv && lv.length) openLevelUp(lv); else render(); }
+  if(lv && lv.length) openLevelUp(lv); else resumeExplore(); }
+function resumeExplore(){
+  if(mode!=='explore'||overlayOpen())return;
+  const k=key(explore.pos.x,explore.pos.y);
+  if(explore.loot[k]){const item=explore.loot[k];delete explore.loot[k];collect(item);}
+  if(explore.secrets[k]&&explore.foundSecrets.has(k)){const cache=explore.secrets[k];delete explore.secrets[k];collectSecret(cache);}
+  const event=explore.eventAt(explore.pos.x,explore.pos.y);if(event){openEvent(event,k);render();return;}
+  if(explore.pos.x===explore.exit.x&&explore.pos.y===explore.exit.y){descendOrWin();return;}
+  render();
+}
 function descendOrWin(){
   const node=WORLD[nodeId];
-  if(node.next && node.next.length){ openTown(); }
+  if(node.next && node.next.length){
+    const leveled=[];
+    if(!campaign.completedFloors.includes(nodeId)){campaign.completedFloors.push(nodeId);const xp=100+50*floorTier();exploreFeed.push({t:'Chapter complete: every hero gains '+xp+' XP for the road ahead.',k:'magic'});grantXp(party,xp,leveled);}
+    openTown();if(leveled.length)openLevelUp(leveled);
+  }
   else if(bag.relic&&campaign.bossSlain){ render(); endRun('win'); }
   else if(bag.relic){exploreFeed.push({t:'The king still binds the crown. Defeat him before you leave.',k:'kill'});render();}
   else { exploreFeed.push({t:'The stairs out are sealed. Recover the relic first.',k:'sys'}); render(); }
@@ -2452,7 +2567,7 @@ function confirmLevelUp(){
     (e.perks||[]).forEach(id=>{ if(!h.perks.includes(id)){ h.perks.push(id);
       exploreFeed.push({t:h.name+' gains '+PERKS[id].name+'.',k:'magic'}); } });
     h.pendingLevels=0;levelUpHero(h, h.level); });                              // re-derive, then re-grant learned
-  levelUp=null; $('#levelScreen').classList.remove('show'); render();
+  levelUp=null; $('#levelScreen').classList.remove('show'); render();resumeExplore();
 }
 function renderLevelUp(){
   const root=$('#levelHeroes'); root.innerHTML='';
@@ -2610,14 +2725,14 @@ function renderParty(){
 function partyGearValue(){ let v=0; for(const h of party){ for(const slot of ['weapon','armor']){ const id=h.equip&&h.equip[slot]; const it=id&&ITEMS[id]; if(it) v+=it.cost||0; } } return v; }
 // The party scouts foes one tile further when it has a keen eye (a living hero
 // with a strong Dexterity), so a sharp scout sees danger sooner. Base range 2.
-function partyScoutRadius(){ const best=Math.max(0, ...(party||[]).filter(h=>h.alive!==false).map(h=>abilityMod(h.abilities.dex))); return best>=3 ? 3 : 2; }
+function partyScoutRadius(heroes=party){ const best=Math.max(0, ...(heroes||[]).filter(h=>h.alive!==false).map(h=>abilityMod(h.abilities.dex))); return best>=3 ? 3 : 2; }
 // Perception for finding secret caches: the party's best living Wisdom modifier.
-function partySearchBonus(){ return Math.max(-5, ...(party||[]).filter(h=>h.alive!==false).map(h=>abilityMod(h.abilities.wis))); }
+function partySearchBonus(heroes=party){ return Math.max(-5, ...(heroes||[]).filter(h=>h.alive!==false).map(h=>abilityMod(h.abilities.wis))); }
 function applyScout(){ if(explore){ explore.scoutRadius=partyScoutRadius(); explore.searchBonus=partySearchBonus(); explore.reveal(); } }
 function enterCombat(desc,atKey){ pendingKey=atKey;
   const enemies=composeEncounter(desc, {floor:floorTier(), partyLevel:partyLevelAvg(), gear:partyGearValue(),difficulty:OATHS[campaign.oath].budget});
   if(desc.boss && desc.lead==='crypt_lord'){ exploreFeed.push({t:'The Crypt Lord rises between you and the way out. There is no leaving but through him.',k:'kill'}); }
-  game=new CombatEngine(party, enemies, 10, 10); mode='combat'; mover=null; reachCache=null; selectedSpell=null; autoFight=false; updateAutoBtn(); render(); beginTurnFlow(); }
+  game=new CombatEngine(party, enemies, 10, 10, explore.theme); mode='combat'; mover=null; reachCache=null; selectedSpell=null; autoFight=false; updateAutoBtn(); render(); beginTurnFlow(); }
 function resolveCombat(){
   cancelTurn();autoFight=false; updateAutoBtn();
   if(game.phase==='won'){
@@ -2639,8 +2754,8 @@ function resolveCombat(){
       exploreFeed.push({t:'Each surviving hero gains '+gained+' experience.',k:'magic'});
       grantXp(survivors, gained, leveled);
     }
-    mode='explore'; game=null; mover=null; selectedSpell=null; render();
-    if(leveled.length) openLevelUp(leveled);
+    checkContracts();mode='explore'; game=null; mover=null; selectedSpell=null; render();
+    if(leveled.length) openLevelUp(leveled);else resumeExplore();
   } else if(game.phase==='lost'){ render(); endRun('lose'); }
 }
 // Award XP to a set of heroes, level them up against XP_TABLE, and push the
@@ -2653,23 +2768,25 @@ function grantXp(heroes, amount, into){
     if(by>0){ h.pendingLevels=(h.pendingLevels||0)+by;into.push({hero:h, by}); exploreFeed.push({t:h.name+' reaches level '+h.level+'.',k:'magic'}); const lv=bgLine(h,'levelup'); if(lv) exploreFeed.push({t:lv,k:'flavor'}); } });
   return into;
 }
-function endRun(kind){ closeFieldNotes(false);cancelTurn();persistClear(); const t=$('#bannerText');
+function endRun(kind){ $('#tacticsScreen').classList.remove('show');closeFieldNotes(false);cancelTurn();persistClear(); const t=$('#bannerText');
   if(kind==='win'){ t.textContent='You Escape! Gold: '+bag.gold; t.className='win'; } else { t.textContent='Party Defeated'; t.className='lose'; }
   $('#endingStory').textContent=kind==='win'?'The crown breaks the horizon. For the first time in a thousand years, sunlight touches the kingdom. Four names will be spoken wherever the morning reaches.':'The crypt keeps its silence. Yet above the stone, another ember waits for hands brave enough to carry it.';
-  $('#endingStats').textContent=OATHS[campaign.oath].name+' · '+campaign.battles+' battles won · '+campaign.foes+' foes vanquished · '+campaign.secrets+' secrets found · '+campaign.boons.length+' embers claimed';
+  $('#endingStats').textContent=OATHS[campaign.oath].name+' · '+campaign.battles+' battles won · '+campaign.foes+' foes vanquished · '+campaign.secrets+' secrets found · '+campaign.boons.length+' embers claimed · '+campaign.contracts.length+' contracts fulfilled · '+campaign.completedFloors.length+' chapters crossed';
   $('#banner').classList.add('show'); }
 
 function setMode(m){
+  spellAim=null;
   const c=game.current(); if(c.side!=='party'||game.phase!=='playing')return;
   mover=(mover===m)?null:m; reachCache=(mover==='move')?game.reachable(c):null;
   if(mover!=='cast') selectedSpell=null; render();
 }
 function selectSpell(id){
+  spellAim=null;
   const c=game.current(), def=SPELLS[id]; selectedSpell=def; mover='cast';
   if(def.target==='self'){ game.castSpell(c,def,c); selectedSpell=null; mover=null; render(); if(game.phase!=='playing')resolveCombat(); return; }
   render();
 }
-function doCast(target){ const c=game.current(); game.castSpell(c,selectedSpell,target); selectedSpell=null; mover=null; render(); if(game.phase!=='playing')resolveCombat(); }
+function doCast(target){ spellAim=null;const c=game.current(); game.castSpell(c,selectedSpell,target); selectedSpell=null; mover=null; render(); if(game.phase!=='playing')resolveCombat(); }
 // Potions in the shared satchel, as {idx, item}. Combat currently supports
 // healing potions; the menu reads the bag so any future potion appears here.
 function combatPotions(){ return bag.items.map((id,idx)=>({idx, item:ITEMS[id]})).filter(p=>p.item && p.item.slot==='potion'); }
@@ -2689,13 +2806,16 @@ function aoePreview(cx,cy,on){
   for(let y=0;y<game.h;y++) for(let x=0;x<game.w;x++) if(game.cheb({x,y},{x:cx,y:cy})<=selectedSpell.aoe){ const el=cellEls[y*game.w+x]; if(el) el.classList.toggle('aoe',on); }
 }
 function combatClick(x,y){
-  if(game.phase!=='playing')return; const c=game.current(); if(c.side!=='party')return;
+  if(game.phase!=='playing'||autoFight)return; const c=game.current(); if(c.side!=='party'||game.isIncapacitated(c))return;
   if(mover==='move'&&reachCache&&reachCache.has(key(x,y))){ game.moveTo(c,x,y); mover=null; reachCache=null; render(); if(game.phase!=='playing') resolveCombat(); return; }
   if(mover==='attack'){ const def=game.at(x,y); if(def&&game.canAttack(c,def)){ game.doAttack(c,def); mover=null; render(); if(game.phase!=='playing')resolveCombat(); return; } }
   if(mover==='cast'&&selectedSpell){
     if(selectedSpell.target==='enemy'){ const def=game.at(x,y); if(def&&game.spellEnemyTargets(c,selectedSpell).includes(def)){ doCast(def); return; } }
     else if(selectedSpell.target==='ally'){ const def=game.at(x,y); if(def&&game.spellAllyTargets(c,selectedSpell).includes(def)){ doCast(def); return; } }
-    else if(selectedSpell.target==='point'){ if(game.spellPointTiles(c,selectedSpell).some(p=>p.x===x&&p.y===y)){ doCast({x,y}); return; } }
+    else if(selectedSpell.target==='point'&&!c.acted.action){if(game.spellPointTiles(c,selectedSpell).some(p=>p.x===x&&p.y===y)){
+      if(validAim()&&spellAim.x===x&&spellAim.y===y){confirmAim();return;}
+      spellAim={x,y,spellId:selectedSpell.id,actorId:c.id,combat:game};render();$('#spellMenu').scrollLeft=0;return;
+    }}
   }
 }
 function endTurn(){ if(mode!=='combat'||game.current().side!=='party'||game.phase!=='playing')return; mover=null; reachCache=null; selectedSpell=null; game.endTurn(); render(); beginTurnFlow(); }
@@ -2709,7 +2829,8 @@ function waitTurn(){ if(mode!=='combat'||game.phase!=='playing')return; const c=
   game.log.push({t:c.name+' waits, moving to the back of the line.',k:'sys'});
   mover=null; reachCache=null; selectedSpell=null; game.delay(); render(); beginTurnFlow(); }
 function beginTurnFlow(){
-  if(mode!=='combat')return;
+  if(mode!=='combat'||$('#tacticsScreen').classList.contains('show'))return;
+  spellAim=null;
   if(game.phase!=='playing'){ resolveCombat(); return; }
   const c=game.current();
   cancelTurn();
@@ -2994,7 +3115,7 @@ function renderMinimap(){
   return '<svg viewBox="0 0 '+e.w+' '+e.h+'" class="minimap" preserveAspectRatio="xMidYMid meet">'+s+'</svg>';
 }
 function renderExplore(){
-  $('.controls').classList.remove('combat-active');
+  $('.controls').classList.remove('combat-active');board.removeAttribute('role');board.setAttribute('aria-label','Dungeon map');
   $('#titleLabel').textContent=explore.name; $('#roundLabel').textContent='Floor '+floorDepth()+' / '+WORLD_MAXDEPTH; $('#rosterTitle').textContent='The Party';
   $('#combatControls').style.display='none'; $('#exploreControls').style.display='flex'; $('#fpControls').style.display='grid'; $('#spellMenu').style.display='none';
   $('#satchel').style.display='block';
@@ -3016,10 +3137,12 @@ function renderExplore(){
 }
 
 function renderCombat(){
+  if(!validAim())spellAim=null;
   $('.controls').classList.add('combat-active');
   const c=game.current();
   $('#titleLabel').textContent='Battle'; $('#roundLabel').textContent='Round '+game.round; $('#rosterTitle').textContent='Order of Battle';
   $('#combatControls').style.display='flex'; $('#exploreControls').style.display='none'; $('#fpControls').style.display='none'; $('#satchel').style.display='none';
+  board.setAttribute('role','grid');board.setAttribute('aria-label',game.battlefield?BATTLEFIELDS[game.battlefield].name:'Battlefield');
   board.removeAttribute('data-theme'); board.classList.remove('fpboard'); board.classList.remove('mapboard');
   board.style.gridTemplateColumns=`repeat(${game.w},minmax(0,1fr))`; board.style.gridTemplateRows=`repeat(${game.h},minmax(0,1fr))`; board.style.aspectRatio='1/1'; board.innerHTML=''; cellEls=[];
   const playerTurn = c.side==='party'&&game.phase==='playing'&&!game.isIncapacitated(c);
@@ -3031,6 +3154,11 @@ function renderCombat(){
   }
   for(let y=0;y<game.h;y++){ for(let x=0;x<game.w;x++){
     const cell=document.createElement('div'); cell.className='cell'+(((x+y)%2)?' alt':''); const k=key(x,y); const here=game.at(x,y);
+    const terrain=game.terrainAt({x,y});if(terrain){cell.classList.add('field-'+terrain);const mark=document.createElement('span');mark.className='terrain-mark';mark.textContent=TERRAIN[terrain].glyph;cell.appendChild(mark);}
+    if(spellAim&&game.cheb({x,y},spellAim)<=selectedSpell.aoe)cell.classList.add('aimed');
+    const details=(here?here.name+' '+here.hp+'/'+here.maxHp+' HP. ':'')+(terrain?TERRAIN[terrain].name+': '+TERRAIN[terrain].desc:'Plain ground');
+    cell.setAttribute('role','gridcell');cell.setAttribute('aria-label',details);cell.title=details;
+    if(here&&here.side!==c.side&&game.canAttack(c,here))cell.title+=' Hit chance '+game.attackPreview(c,here).chance+'%.';
     if(mover==='move'&&reachCache&&reachCache.has(k)&&!here) cell.classList.add('reach');
     if(mover==='attack'&&here&&game.canAttack(c,here)) cell.classList.add('target');
     if(castEnemy.has(k)) cell.classList.add('cast-enemy');
@@ -3064,6 +3192,7 @@ function renderCombat(){
   // spell / item menu
   const sm=$('#spellMenu');
   if(mover==='cast'&&playerTurn){ sm.style.display='flex'; sm.innerHTML='';
+    if(validAim()){const caught=aimSummary(),confirm=document.createElement('button');confirm.id='btnConfirmAim';confirm.className='spellbtn';confirm.textContent=(selectedSpell.effect.kind==='damage'&&caught.allies?'⚠ ':'')+'Confirm · '+caught.foes+' foes / '+caught.allies+' allies';confirm.setAttribute('aria-label','Confirm cast '+selectedSpell.name+': '+caught.foes+' foes and '+caught.allies+' allies in area');confirm.onclick=confirmAim;sm.appendChild(confirm);}
     const list=game.usableSpells(c);
     if(!list.length) sm.innerHTML='<span style="color:var(--dim)">No spells remaining.</span>';
     list.forEach(({slot,def})=>{ const b=document.createElement('button'); b.className='spellbtn'+(selectedSpell&&selectedSpell.id===def.id?' on':''); b.textContent=def.name+' ('+slot.uses+')'; b.onclick=()=>selectSpell(def.id); sm.appendChild(b); });
@@ -3096,7 +3225,8 @@ function renderCombat(){
   else if(mover==='item') hint='Choose an item to use. It is consumed and spends this action.';
   else if(mover==='cast'&&selectedSpell){ hint = selectedSpell.target==='ally' ? 'Click an ally in range to heal.' : selectedSpell.target==='point' ? (selectedSpell.effect.kind==='buff' ? 'Click a tile. Allies near it are blessed.' : 'Click a tile. The blast hits everything near it, friend or foe.') : 'Click an enemy in range.'; }
   else hint=c.name+' (you) : Move, Attack'+(knows?', Cast':'')+', Guard, Wait.'+(sig&&!c.signatureUsed?' '+sig.desc:'');
-  $('#hint').textContent=hint;
+  if(validAim()){const caught=aimSummary();hint=(selectedSpell.effect.kind==='damage'&&caught.allies?'FRIENDLY FIRE · ':'Aim · ')+selectedSpell.name+': '+caught.foes+' foes / '+caught.allies+' allies in area. Tap again or Confirm cast.';}
+  $('#hint').classList.toggle('aim-warning',!!spellAim);$('#hint').textContent=hint;
 }
 
 function drawLog(feed){ logEl.innerHTML=''; feed.slice(-40).forEach(e=>{ const d=document.createElement('div'); d.className='l '+(e.k||''); d.textContent=e.t; logEl.appendChild(d); }); logEl.scrollTop=logEl.scrollHeight; }
@@ -3114,7 +3244,7 @@ $('#btnFpBack').onclick=()=>moveDir(0,1); $('#btnStrafeL').onclick=()=>moveDir(-
 $('#btnTownRest').onclick=townRest; $('#btnTownParty').onclick=openParty;
 $('#btnLevelDone').onclick=confirmLevelUp;
 $('#btnLevelAuto').onclick=autoAssignLevelUp;
-document.addEventListener('keydown', e=>{ if(e.key==='Escape'&&$('#fieldNotes').classList.contains('open')){closeFieldNotes();return;}if(mode!=='explore'||overlayOpen())return;
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'&&$('#tacticsScreen').classList.contains('show')){closeTactics();return;}if(e.key==='Escape'&&$('#fieldNotes').classList.contains('open')){closeFieldNotes();return;}if(mode!=='explore'||overlayOpen())return;
   const dirs={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],
     w:[0,-1],s:[0,1],a:[-1,0],d:[1,0],W:[0,-1],S:[0,1],A:[-1,0],D:[1,0]};
   const turns={q:'turnL',e:'turnR',Q:'turnL',E:'turnR'};
@@ -3128,7 +3258,7 @@ let build=null;   // creation working state
 function showStart(){
   closeFieldNotes(false);
   cancelTurn();autoFight=false;mode='start';
-  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen'])$('#'+id).classList.remove('show');
+  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','tacticsScreen'])$('#'+id).classList.remove('show');
   $('#banner').classList.remove('show');
   $('#createScreen').classList.remove('show');
   $('#saveScreen').classList.remove('show');
@@ -3257,25 +3387,56 @@ function claimBoon(id){
 }
 function renderCampaign(){
   if(!party||!explore)return;
-  $('#btnJournal').disabled=mode!=='explore';
+  $('#btnJournal').disabled=!['explore','combat'].includes(mode);$('#btnJournal').textContent=mode==='combat'?'Tactics':'Chronicle';
   $('#chapterLabel').textContent='CHAPTER '+floorDepth()+' / '+WORLD_MAXDEPTH+' · '+OATHS[campaign.oath].name.toUpperCase();
   $('#objective').textContent=bag.relic?(campaign.bossSlain?'Carry the crown to the final stairs.':'The crown is yours. Defeat the king and reach the stairs.'):(nodeId==='sunless_tomb'?'Find the crown. Confront the Sunless King.':'Find the key, gather strength, and descend.');
-  const boss=mode==='combat'&&game&&game.combatants.find(c=>c.cls==='CryptLord'&&c.alive);
+  const boss=mode==='combat'&&game&&game.combatants.find(c=>c.bossTitle&&c.alive);
   $('#bossPanel').hidden=!boss;
-  if(boss){$('#bossName').textContent=(boss.awakened?'II · WRATH OF THE SUNLESS KING':'I · THE CROWN’S KEEPER')+' · '+boss.hp+' / '+boss.maxHp+' HP';$('#bossHealth i').style.width=(boss.hp/boss.maxHp*100)+'%';}
+  if(boss){$('#bossName').textContent=(boss.awakened?'II · WRATH · ':'I · GUARDIAN · ')+boss.bossTitle+' · '+boss.hp+' / '+boss.maxHp+' HP';$('#bossHealth i').style.width=(boss.hp/boss.maxHp*100)+'%';}
 }
 function openJournal(){
   if(mode!=='explore'||overlayOpen())return;
   $('#journalScreen').classList.add('show');
   $('#journalOath').textContent=OATHS[campaign.oath].name+' — '+OATHS[campaign.oath].desc;
-  $('#journalStats').innerHTML=[['Battles won',campaign.battles],['Foes vanquished',campaign.foes],['Steps taken',campaign.steps],['Secrets found',campaign.secrets],['Events resolved',campaign.events],['Embers carried',campaign.boons.length]].map(([label,n])=>'<div class="journal-stat"><b>'+n+'</b>'+label+'</div>').join('');
+  $('#journalStats').innerHTML=[['Battles won',campaign.battles],['Foes vanquished',campaign.foes],['Steps taken',campaign.steps],['Secrets found',campaign.secrets],['Events resolved',campaign.events],['Embers carried',campaign.boons.length],['Chapters crossed',campaign.completedFloors.length+'/'+(WORLD_MAXDEPTH-1)],['Successful checks',campaign.successes]].map(([label,n])=>'<div class="journal-stat"><b>'+n+'</b>'+label+'</div>').join('');
   const root=$('#journalRoute');root.innerHTML='';
   worldPath.forEach((id,i)=>{const el=document.createElement('div');el.className='route-stop'+(id===nodeId?' current':'');el.innerHTML='<b>'+String(i+1).padStart(2,'0')+' · '+WORLD[id].name+'</b><small>'+escapeHTML(WORLD[id].intro||'')+'</small>';root.appendChild(el);});
+  const quests=$('#journalContracts');quests.innerHTML='';
+  for(const [id,q] of Object.entries(CONTRACTS)){const row=document.createElement('div');row.className='route-stop';const done=campaign.contracts.includes(id);row.innerHTML='<b>'+(done?'✓ ':'')+q.name+'</b><small>'+q.desc+' '+Math.min(q.goal,campaign[q.stat]||0)+' / '+q.goal+' · '+q.rewardText+(done?' · Claimed':'')+'</small>';quests.appendChild(row);}
   $('#journalBoons').textContent=campaign.boons.length?campaign.boons.map(id=>BOONS[id].name+': '+BOONS[id].desc).join(' · '):'No embers claimed yet. The old kingdom’s blessings wait at the waystations.';
 }
-$('#btnJournal').onclick=openJournal;
+$('#btnJournal').onclick=()=>mode==='combat'?openTactics():openJournal();
 $('#btnJournalClose').onclick=()=>{$('#journalScreen').classList.remove('show');render();};
 $('#btnSignature').onclick=()=>{if(mode!=='combat'||autoFight||game.current().side!=='party')return;game.signature(game.current());mover=null;selectedSpell=null;render();};
+function checkContracts(){
+  for(const [id,q] of Object.entries(CONTRACTS))if(!campaign.contracts.includes(id)&&(campaign[q.stat]||0)>=q.goal){
+    campaign.contracts.push(id);const r=q.reward;if(r.item)bag.items.push(r.item);bag.gold+=r.gold||0;bag.rations+=r.rations||0;
+    exploreFeed.push({t:'Promise fulfilled — '+q.name+'. Received '+q.rewardText+'.',k:'magic'});
+  }
+}
+function validAim(){return !!(spellAim&&mode==='combat'&&game&&game.phase==='playing'&&spellAim.combat===game&&game.current().id===spellAim.actorId&&!game.current().acted.action&&mover==='cast'&&selectedSpell&&selectedSpell.target==='point'&&selectedSpell.id===spellAim.spellId);}
+function aimSummary(){const summary={allies:0,foes:0};if(!validAim())return summary;const c=game.current();for(const u of game.combatants)if(u.alive&&game.cheb(u.pos,spellAim)<=selectedSpell.aoe)summary[u.side===c.side?'allies':'foes']++;return summary;}
+function confirmAim(){if(!validAim()||autoFight||game.isIncapacitated(game.current()))return false;const target={x:spellAim.x,y:spellAim.y};doCast(target);return true;}
+function openTactics(){
+  if(mode==='combat')cancelTurn();tacticsOpener=typeof document.activeElement!=='undefined'?document.activeElement:null;
+  const fighting=mode==='combat'&&game;
+  $('#tacticsTitle').textContent=fighting?'Read the Battlefield':'The Delver’s Field Guide';
+  $('#tacticsSubtitle').textContent=fighting?'Combat is paused while this sheet is open. Roles describe capabilities; the enemy adapts to your actions.':'Four heroes. One crown. Bring back the dawn.';
+  const root=$('#tacticsContent');root.innerHTML='';
+  const section=(title,copy)=>{const h=document.createElement('h3');h.textContent=title;root.appendChild(h);const p=document.createElement('p');p.textContent=copy;root.appendChild(p);};
+  section('Your turn','Each hero can move once and take one action, in either order. Attack, cast, drink a potion, or use a signature. End Turn advances the order. Guard spends the action and ends the turn, preparing one reaction. Wait delays an untouched turn. Moving away from an adjacent foe can provoke a free strike.');
+  section('Aim before you cast','Select an area spell, then tap a tile to preview it. The pink outline shows the blast; the hint counts allies and foes. Tap that tile again or Confirm cast to commit. Fireball and other damage blasts hit friends too; Sleep only affects enemies. Cover protects against ranged weapons, not magic.');
+  section('Ground that matters',Object.values(TERRAIN).map(t=>t.glyph+' '+t.name+': '+t.desc).join(' '));
+  section('The road below','Find keys and stairs. Camp supplies restore HP and spells; waystation rests are free. Each completed chapter grants XP once. Claim a free ember before descending. Chronicle tracks optional promises: win battles, find caches, and succeed at events. Each completed promise grants one reward.');
+  section('Your company','Fighter rallies the line; Cleric heals standing allies; Thief gains a shadow ward; Mage restores spell uses. Each signature is one action and usable once per battle. Wanderer recovers HP and shares victory XP; the harder oaths award battle XP only to standing heroes.');
+  if(fighting){section(game.battlefield?BATTLEFIELDS[game.battlefield].name:'Current opposition','These are the foes still standing. Their remaining resources and positions determine what they can do.');
+    for(const u of game.living('enemy')){const card=document.createElement('div');card.className='tactics-enemy';const spellText=(u.spells||[]).map(sp=>SPELLS[sp.id].name+' '+sp.uses+'/'+sp.max).join(' · ')||'No spells';const status=(u.statuses||[]).map(st=>st.type+' '+st.duration+'t').join(', ')||'No statuses';const c=game.current();const preview=c.side==='party'&&game.canAttack(c,u)?' · Your attack: '+game.attackPreview(c,u).chance+'% hit':'';card.innerHTML='<strong>'+escapeHTML(u.name)+'</strong><small>'+u.hp+'/'+u.maxHp+' HP · AC '+effAc(u)+' · Range '+u.range+preview+'</small><p>'+escapeHTML(game.describeRole(u))+'</p><small>'+escapeHTML(spellText)+'<br>'+escapeHTML(status)+'</small>';root.appendChild(card);}
+  }
+  $('#tacticsScreen').classList.add('show');$('#btnTacticsClose').focus();
+}
+function closeTactics(){if(!$('#tacticsScreen').classList.contains('show'))return;$('#tacticsScreen').classList.remove('show');if(tacticsOpener&&typeof tacticsOpener.focus==='function')tacticsOpener.focus();if(mode==='combat'){const c=game.current();if(c.side==='party'&&!autoFight&&!game.isIncapacitated(c))render();else beginTurnFlow();}}
+$('#btnHowToPlay').onclick=openTactics;
+$('#btnTacticsClose').onclick=closeTactics;
 showStart();
 </script>
 </body>

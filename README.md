@@ -1,6 +1,6 @@
 # Gold Box — Crown of the Sunless King
 
-A single-file, browser-based tactical RPG in the spirit of the classic SSI Gold Box games. Four heroes descend beneath a ruined kingdom to recover the Sunless King's crown and bring back the dawn. Explore a fogged dungeon, build a company around class signatures and permanent blessings, and overcome a two-phase final boss.
+A single-file, browser-based tactical RPG in the spirit of the classic SSI Gold Box games. Four heroes descend beneath a ruined kingdom to recover the Sunless King's crown and bring back the dawn. Explore a fogged dungeon, fight across themed terrain, fulfil optional promises, and overcome three named guardians with bloodied phases.
 
 The whole game is one HTML file. No build step, no install, no dependencies. Open it and play.
 
@@ -10,7 +10,7 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 **[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)**
 
-Or just open `index.html` in any modern browser. It works offline (the only network calls are two optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a board-plus-panel view on desktop, stacked panels with large touch targets on a phone.
+Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a board and sidebar on desktop, and a fitted board/control shell with a separate Party & Log panel on phones. **How to Play** on the title screen explains the rules.
 
 The live version is served from GitHub Pages: the repo’s **Settings → Pages** source is set to the main branch root. Changes on a pull request branch become live only after they reach `main`; download that branch's `index.html` to play its version locally.
 
@@ -24,13 +24,18 @@ The layout was checked at 440 × 956, 440 × 780, and 440 × 680 portrait viewpo
 
 ## The game
 
-You lead a party of four down through a six-floor dungeon, picking your route at each fork. The relic rests in the deepest tomb; lifting it wakes the place — the dead rise to bar your road out and the Crypt Lord seals the only exit, so the back half of a run is a fighting retreat. Win the fight at the sealed door to escape with the relic.
+You lead a party of four down through a six-floor dungeon, picking your route at each fork. Defeat the Bell Warden in the Catacombs and the Ash Cantor in the Descent. The crown rests in the deepest tomb; lifting it wakes roaming dead, turning the last stretch across that floor into a fighting retreat. Defeat the Crypt Lord and reach the final stairs to escape with it.
 
 Every floor is generated fresh each run, so the layout, loot, and encounters change every time, while the arc stays the same.
 
 ### Features
 
-- **Choose your oath.** Wanderer starts selected: smaller enemy forces, 25% party HP recovery after victory, and victory XP for downed heroes too. Delver keeps the original encounter budget and survivor-only XP; Ironbound increases that budget by 25%. Elite rolls and party strength still affect the result.
+- **Battlefields with rules.** Crypt, Catacomb, and Tomb fights have distinct terrain layouts. Cover gives +2 AC against ranged weapons; spells and melee ignore it. Sanctums restore up to 3 HP at turn end. Embers deal 2 damage at turn end and can knock a unit out. Both sides follow the same rules, and the AI considers terrain when moving.
+- **Readable tactics and safe aiming.** Open **Tactics** during combat to pause and read enemy roles, current stats, remaining spells, and statuses. Area spells require an aim tap followed by a second tap or confirmation. The blast is highlighted and the confirmation reports allies and foes in the area, including a friendly-fire warning for damaging spells.
+- **A reward for every chapter.** Each nonfinal chapter exit grants every hero `100 + 50 × floor tier` XP once. It remains separate from survivor-only battle XP on harder oaths. Exits resume after combat and pending level choices without requiring a step off the stairs.
+- **Promises to the kingdom.** Chronicle tracks three optional contracts. Win four battles for Sunshard (Mage/Cleric weapon, +2 attack/+2 damage); open two hidden caches for Lantern Mantle (+2 AC); succeed at three event checks for 120 gold and two supplies. Rewards are automatic, saved, and paid once. Skips and failed checks do not count as successes.
+- **Guardians before the finale.** The Bell Warden rallies its retinue; the Ash Cantor uses hexes and fire. Each gains a small buff and calls one skeleton at half health while alive. Their capped encounter budgets keep these milestones within the existing campaign. The Crypt Lord retains its stronger two-skeleton phase.
+- **Choose your oath.** Wanderer starts selected: smaller enemy forces, 25% party HP recovery after victory, and victory XP for downed heroes too. Delver uses the standard encounter multiplier and survivor-only battle XP; Ironbound increases that budget by 25%. Elite rolls and party strength still affect the result.
 - **Class signatures.** Each hero has a special action usable once per battle. Fighter: Rally the Line (+2 party attack and AC for two turns). Cleric: Dawn's Mercy (heal all standing allies for 6 + twice the Cleric's level). Thief: Cloak of Shadows (+4 AC and weapon damage for three turns). Mage: Arcane Wellspring (restore one use per spell and gain +2 AC for two turns). Buff durations tick at the affected actor's turn end. Signatures spend an action, and Auto uses them too.
 - **Embers of the old kingdom.** Each waystation offers three of the remaining blessings. Claim one free blessing there: permanent party attack, armour, or damage bonuses, or immediate supplies, gold, or potions. Each blessing is unique within a run. You may descend without claiming one.
 - **Legendary finds.** Find Dawnblade in the Ossuary, Starweave Mantle on the Pillared Road, and Nightglass in the Sunless Tomb. The first fork and second fork still determine your route and rewards.
@@ -39,20 +44,22 @@ Every floor is generated fresh each run, so the layout, loot, and encounters cha
 - **Branching world.** Six floors over one of four routes, forking twice and reconverging. Each fork is a real choice between a fight-heavy, loot-rich path and a quieter, supply-led one.
 - **Tactical grid combat.** Turn-based battles with movement, attacks of opportunity, ranged penalties in melee, spells (damage, healing, area blasts, control, buffs, debuffs, summons), and a full enemy AI. An auto-fight toggle plays out a battle for you.
 - **Four classes.** Fighter, Cleric, Thief, and Mage, each with its own stats, growth, and build path. Roll your own party or jump in with a pre-made one.
-- **Per-character progression.** Each hero earns its own XP and levels independently up to level 8. On Delver and Ironbound, heroes knocked out in a fight miss that victory's XP. Every level grants one ability bump plus a build choice (learn a spell or take a perk). Pending level allocations survive saving and reloading.
+- **Per-character progression.** Each hero earns its own XP and levels independently up to level 8. On Delver and Ironbound, heroes knocked out in a fight miss that battle's XP; chapter XP goes to everyone. Every level grants one ability bump plus a build choice (learn a spell or take a perk). Pending level allocations survive saving and reloading.
 - **Exploration that rewards your stats.** Line-of-sight fog, a Dexterity-driven scout radius, and twelve stat-check events spanning all six abilities. Hidden wall caches reward a perceptive (high-Wisdom) party — find them by walking past, or miss them entirely.
 - **Backgrounds.** Each hero has an origin with a small mechanical edge and in-character barks at story beats.
-- **Self-scaling difficulty.** Encounter strength is budgeted from floor tier, party level, equipped gear, and oath, with tougher “elite” foes appearing on deeper floors. Full Auto is convenient but does not guarantee victory; positioning, equipment, route choices, and supplies still matter.
+- **Self-scaling difficulty.** Encounter strength is budgeted from floor tier, party level, equipped gear, and oath, with tougher “elite” foes appearing on deeper floors. Gear contributes 0.12 budget per gold of equipped value, reduced from 0.5 so modest upgrades no longer add disproportionate forces. Full Auto is convenient but does not guarantee victory; positioning, equipment, route choices, and supplies still matter.
 - **Portable saves.** Save to a copyable code that works anywhere, plus an automatic browser save with a Continue button when storage is available.
 
 ### Controls
 
 - **Move** with the on-screen compass pad, or the arrow keys / WASD on desktop. The party faces the way it steps.
 - **Explore** to reveal the map, pick up loot, trigger events, and find the stairs down. Foes engage when you step adjacent.
-- **Fight** by selecting a hero, then moving and acting (attack, cast, guard). Or hit **Auto** to let the party fight on its own.
+- **Fight** with the current hero in initiative order, then move and act (attack, cast, guard). Or hit **Auto** to let the party fight on its own.
 - **Waystation** between floors: rest, shop, manage equipment, and choose your next path.
 - **Signature** uses the current hero's class ability. Its explanation appears below the board while available; the button disables after use.
 - **Chronicle** opens your route and run statistics during exploration.
+- **Tactics** replaces Chronicle during combat and pauses the turn loop while its guide is open. Close it to resume.
+- **Area spells:** the first tap aims; a second tap on the same tile or the confirmation button casts. A different tile changes the preview without spending a charge. Single-target spells retain one-tap casting.
 - **Party & Log** opens the roster and battle history on phones; **Back to Game** closes it. In portrait, use the four-arrow movement pad. Desktop turning controls and keyboard movement remain available.
 
 ## How it’s built
@@ -61,7 +68,7 @@ The codebase is deliberately structured so content is **data**, and game logic n
 
 - Two pure engines — `CombatEngine` (grid combat) and `ExploreEngine` (dungeon) — hold all the rules and return plain typed signals. They never read or write the DOM.
 - A single controller layer owns the screen and the state machine, reacting to those signals.
-- Content lives in **registries**: `SPELLS`, `ITEMS`, `PERKS`, `CLASSES`, `BESTIARY`, `EVENTS`, `OATHS`, `BOONS`, `SIGNATURES`, the `WORLD` graph, and the `DIFFICULTY` / `XP_TABLE` tuning tables. The controller keeps campaign statistics and applies blessing bonuses to hero data before combat.
+- Content lives in **registries**: `SPELLS`, `ITEMS`, `PERKS`, `CLASSES`, `BESTIARY`, `EVENTS`, `OATHS`, `BOONS`, `SIGNATURES`, `TERRAIN`, `BATTLEFIELDS`, `CONTRACTS`, the `WORLD` graph, and the `DIFFICULTY` / `XP_TABLE` tuning tables. The controller keeps campaign statistics and applies blessing bonuses to hero data before combat.
 
 This means most changes — a new spell, monster, item, perk, event, or whole floor — are a new entry in a registry, not new engine code. See [AGENTS.md](AGENTS.md) for contributor guidance, validation expectations, and the areas identified during review.
 
@@ -110,6 +117,10 @@ python3 -m http.server 8000
 
 Existing version 2 portable codes still load. Saves without campaign fields default to Delver with no claimed blessings or historical counters. An already-cleared Crypt Lord encounter is recognised when loading an older final-floor save. New saves retain the oath, blessings, statistics, and pending level allocations. A lost allocation from an older save cannot be reconstructed retroactively.
 
+The tactical-depth release adds chapter completion, contract IDs, and successful-event counts to the same version 2 payload. Older saves infer previously completed chapters from their route and town state without awarding retroactive chapter XP. Successful-event history starts at zero when absent. Contract rewards already recorded in a new save cannot be collected again.
+
+Malformed imports are validated and prepared before replacing the active run. Newly generated cache walls cannot bypass sealed vaults. Supply pickups preserve their configured amount: the quiet Gallery and Pillared Road each provide two, while legacy pickups without an amount still give one. Existing saved floor layouts are preserved rather than regenerated.
+
 The four defects reproduced in the October 20, 2026 review are addressed in this version:
 
 - Combat and event level-up allocations persist and reopen on load.
@@ -127,9 +138,11 @@ No tooling is needed to play. For contributors, run the dependency-free checks w
 node tests/regression.cjs
 ```
 
-The 19 checks execute the actual inline script with DOM stubs. They cover the original defects, legacy and storage-blocked saves, class signatures, blessings, oath strength, boss phases, final victory requirements, caster positioning, and 96 generated floors' exit/key reachability.
+The 40 checks execute the actual inline script with DOM stubs. They cover the original defects and the requirement IDs in [REQUIREMENTS.md](REQUIREMENTS.md), including atomic imports, legacy saves, rewards, terrain, aim confirmation, paused Tactics, guardians, exit resumption, and the 350 KiB runtime budget. Generator checks cover 96 exit/key layouts plus 160 layouts with every secret cache opened while vault doors stay blocked.
 
-The expansion was also checked in Chromium: default and custom parties, journal, portable code loading, unique waystation blessings, signature actions, pending level-up recovery, boss phases, and the Party screen at a 390-pixel mobile viewport. Six seeded campaign simulations exercised both fork choices across all three oaths; one Wanderer run reached the ending through the boss's second phase, while the other runs ended in defeat. No JavaScript page errors occurred. These checks demonstrate a completable route, not exhaustive balance or cross-browser coverage. Direct `file://` verification was blocked by the managed browser's administrator policy; local HTTP play and offline interaction after loading were checked separately.
+Chromium checks covered help, journal contracts, chapter rewards, terrain labels, paused Tactics, touch preview and friendly-fire confirmation, rejected imports during combat, saved rewards, and offline interaction after loading. The six phone viewport scenarios above also passed with the boss bar, spell menu, and aim confirmation open; desktop layout passed. No JavaScript page errors occurred.
+
+Twelve seeded, controller-driven campaigns exercised all four routes under all three oaths: six victories and six defeats, with no stalled runs. All four Wanderer routes and two Delver routes reached the ending; the four Ironbound Auto runs lost. This is limited balance evidence, not a promise that Auto wins or exhaustive testing. Physical iPhone/Safari remain unverified. Direct `file://` verification is blocked by this managed browser's administrator policy; local HTTP and offline interaction after loading were checked.
 
 For changes to game behavior, serve the file locally and exercise the affected flow in a browser. Useful regression checks are:
 
@@ -148,6 +161,9 @@ Check new scenarios when their related behavior changes; the DOM-stub checks do 
 - `AGENTS.md` — contributor instructions, architecture boundaries, and regression guidance.
 - `README.md` — play instructions, architecture overview, save compatibility, and validation checklist.
 - `tests/regression.cjs` — dependency-free behavioral regression checks.
+- `REVIEW.md` — baseline findings and reproduced defects.
+- `ROADMAP.md` — bounded delivery stages and explicitly deferred work.
+- `REQUIREMENTS.md` — detailed rules, acceptance criteria, and validation record.
 - `Gold-Box.JPG` — the gameplay screenshot above.
 
 ## Credits & licence

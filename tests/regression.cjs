@@ -1,4 +1,4 @@
-// Dependency-free checks against the real inline game script. Run: node --test tests/regression.cjs
+// Dependency-free checks against the real inline game script. Run: node tests/regression.cjs
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
@@ -8,7 +8,7 @@ const source=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8').matc
 
 function harness({storageBlocked=false,seed=42}={}){
   const elements=new Map(),timers=new Map(),saved=new Map();let seq=0;
-  function element(){const classes=new Set();return {value:'',style:{setProperty(){}},dataset:{},classList:{add:x=>classes.add(x),remove:x=>classes.delete(x),contains:x=>classes.has(x),toggle(){}},appendChild(){},addEventListener(){},querySelectorAll(){return []},setAttribute(){},removeAttribute(){}};}
+  function element(){const classes=new Set();return {value:'',style:{setProperty(){}},dataset:{},classList:{add:x=>classes.add(x),remove:x=>classes.delete(x),contains:x=>classes.has(x),toggle(){}},appendChild(){},focus(){},addEventListener(){},querySelectorAll(){return []},setAttribute(){},removeAttribute(){}};}
   const math=Object.create(Math);math.random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
   const context=vm.createContext({console,TextEncoder,TextDecoder,btoa,atob,Math:math,document:{querySelector(s){if(!elements.has(s))elements.set(s,element());return elements.get(s);},querySelectorAll(){return [];},createElement:element,addEventListener(){}},localStorage:{setItem(k,v){if(storageBlocked)throw Error('blocked');saved.set(k,v);},getItem:k=>saved.get(k),removeItem:k=>saved.delete(k)},setTimeout(f){timers.set(++seq,f);return seq;},clearTimeout:id=>timers.delete(id)});
   const run=code=>vm.runInContext(code,context,{timeout:15000});
@@ -19,7 +19,7 @@ function harness({storageBlocked=false,seed=42}={}){
 
 test('combat level allocations survive autosave, reload, and confirmation',()=>{
   const {run}=harness();
-  run("enterCombat({pool:['goblin']},'fixture');cancelTurn();game.phase='won';game.xpEarned=100;resolveCombat();const code=encodeSave(saveState());levelUp=null;applySave(decodeSave(code));");
+  run("enterCombat({pool:['goblin']},'2,2');cancelTurn();game.phase='won';game.xpEarned=100;resolveCombat();const code=encodeSave(saveState());levelUp=null;applySave(decodeSave(code));");
   assert.equal(run('party[0].level'),2);
   assert.equal(run('levelUp.entries.length'),4);
   assert.equal(run('party.every(h=>h.pendingLevels===1)'),true);
@@ -151,7 +151,7 @@ test('casters advance to casting range and cast instead of rushing into melee',(
 
 test('Wanderer restores health and gives downed heroes victory XP',()=>{
   const {run}=harness();
-  run("campaign.oath='wanderer';enterCombat({pool:['goblin']},'fixture');cancelTurn();party[3].hp=0;party[3].alive=false;game.phase='won';game.xpEarned=50;resolveCombat();");
+  run("campaign.oath='wanderer';enterCombat({pool:['goblin']},'2,2');cancelTurn();party[3].hp=0;party[3].alive=false;game.phase='won';game.xpEarned=50;resolveCombat();");
   assert.equal(run('party[3].xp'),50);
   assert.equal(run('party[3].hp>1'),true);
 });
@@ -169,4 +169,138 @@ test('legacy saves remember an already defeated Crypt Lord',()=>{
   const {run}=harness();
   run("nodeId='sunless_tomb';explore.encounters={'2,2':{boss:true,lead:'crypt_lord'}};explore.cleared.add('2,2');const old=saveState();delete old.campaign;applySave(old);");
   assert.equal(run('campaign.bossSlain'),true);
+});
+
+test('SAFE-01: rejected imports preserve active state and queued combat',()=>{
+  const h=harness(),{run}=h;
+  run("const snapshot=JSON.parse(JSON.stringify(saveState()));game=new CombatEngine(party,[spawnMonster('goblin',0,false)],10,10);game.order=['e0','p1','p2','p3','p4'];game.turnIndex=0;mode='combat';beginTurnFlow();const prior={party,bag,explore,game};const malformed=JSON.parse(JSON.stringify(snapshot));malformed.bag=null;const accepted=applySave(malformed);");
+  assert.equal(run('accepted'),false);assert.equal(run('party===prior.party&&bag===prior.bag&&explore===prior.explore&&game===prior.game'),true);assert.equal(h.timers.size,1);
+});
+
+test('SAFE-01: invalid geometry, IDs, abilities, and equipment are rejected atomically',()=>{
+  const {run}=harness();
+  const results=run(`(()=>{const edits=[s=>s.explore.w=10000,s=>s.explore.tiles.pop(),s=>s.explore.pos.x=-1,s=>s.party[1].id=s.party[0].id,s=>s.party[0].ab.dex=null,s=>s.party[3].eq.weapon='dawnblade',s=>s.explore.encounters['1,1']={pool:['unknown']},s=>s.bag.items.push('unknown')];return edits.map(edit=>{const before=party,s=JSON.parse(JSON.stringify(saveState()));edit(s);return !applySave(s)&&party===before;});})()`);
+  assert.equal(results.every(Boolean),true);
+});
+
+test('MAP-01: opening every hidden cache preserves locked vault gates',()=>{
+  const {run}=harness();
+  const failures=run(`(()=>{const errors=[];for(const spec of Object.values(WORLD))for(let n=0;n<20;n++){
+    const d=buildDungeon(generateLevel(spec)),open=new Set();for(let y=0;y<d.h;y++)for(let x=0;x<d.w;x++)if(d.tiles[y][x]!== '#')open.add(key(x,y));
+    for(const k of Object.keys(d.secrets))open.add(k);
+    if(d.doors.size&&_flood(open,d.start,d.doors).has(key(d.exit.x,d.exit.y)))errors.push(spec.id);
+  }return errors;})()`);
+  assert.equal(failures.length,0,JSON.stringify(failures));
+});
+
+test('SUP-01: generated and fallback quiet routes preserve two supplies',()=>{
+  const {run}=harness();
+  run("const cfg=generateLevel(WORLD.gallery),fallback=_fallbackLevel(WORLD.shrine_road,20,20);const ration=Object.values(cfg.loot).find(v=>v.type==='ration'),fallbackRation=Object.values(fallback.loot).find(v=>v.type==='ration');const before=bag.rations;collect(ration);collect({type:'ration'});");
+  assert.equal(run('ration.amount'),2);assert.equal(run('fallbackRation.amount'),2);assert.equal(run('bag.rations-before'),3);
+});
+
+test('PROG-01: chapter XP is awarded once and pending allocations survive reload',()=>{
+  const {run}=harness();
+  run("descendOrWin();const earned=party[0].xp;const code=encodeSave(saveState());applySave(decodeSave(code));descendOrWin();");
+  assert.equal(run('earned'),100);assert.equal(run('party[0].xp'),100);assert.equal(run('campaign.completedFloors.length'),1);assert.equal(run('party[0].pendingLevels'),1);assert.equal(run('levelUp.entries.length'),4);
+});
+
+test('PROG-02: older town saves infer completed chapters without granting retroactive XP',()=>{
+  const {run}=harness();
+  run("const old=JSON.parse(JSON.stringify(saveState()));old.inTown=true;delete old.campaign.completedFloors;applySave(old);descendOrWin();");
+  assert.equal(run('party[0].xp'),0);assert.equal(run("campaign.completedFloors.includes('entrance')"),true);
+});
+
+test('FIELD-01: every theme has valid terrain and leaves spawn cells plain',()=>{
+  const {run}=harness();
+  assert.equal(run("Object.keys(BATTLEFIELDS).every(theme=>{const g=new CombatEngine(makeParty(),makeGroup([['goblin',8]]),10,10,theme);return g.terrain.size>0&&g.combatants.every(c=>!g.terrainAt(c.pos))&&[...g.terrain.values()].every(t=>TERRAIN[t]);})"),true);
+});
+
+test('FIELD-02: cover changes ranged hit odds by ten points and does not protect against melee',()=>{
+  const {run}=harness();
+  run("const hero=party[0],ar=spawnMonster('archer',0,false),battle=new CombatEngine([hero],[ar],10,10);hero.pos={x:4,y:4};ar.pos={x:7,y:4};const plain=battle.attackPreview(ar,hero).chance;battle.terrain.set('4,4','cover');const covered=battle.attackPreview(ar,hero).chance;");
+  assert.equal(run('plain-covered'),10);assert.equal(run('battle.coverBonus(hero,ar)'),0);
+  run("Dice.d20=()=>10;hero.ac=14;hero.bg=null;ar.attackBonus=4;ar.statuses=[];const noCover=Rules.attack(ar,hero,0,0).hit,withCover=Rules.attack(ar,hero,0,battle.coverBonus(ar,hero)).hit;");
+  assert.equal(run('noCover'),true);assert.equal(run('withCover'),false);
+});
+
+test('FIELD-03: sanctum heals once at turn end and caps at maximum HP',()=>{
+  const {run}=harness();
+  run("const hero=party[0],battle=new CombatEngine(party,[spawnMonster('ogre',0,false)],10,10);battle.order=['p1','e0','p2','p3','p4'];battle.turnIndex=0;battle.terrain.set(key(hero.pos.x,hero.pos.y),'sanctum');hero.hp=hero.maxHp-2;battle.endTurn();");
+  assert.equal(run('hero.hp'),run('hero.maxHp'));assert.equal(run("battle.log.filter(e=>e.t.includes('in the sanctum')).length"),1);
+});
+
+test('FIELD-03: embers can end combat and never revive a fallen actor',()=>{
+  const {run}=harness();
+  run("const hero=party[0],battle=new CombatEngine([hero],[spawnMonster('ogre',0,false)],10,10);battle.order=['p1','e0'];battle.turnIndex=0;hero.hp=2;battle.terrain.set(key(hero.pos.x,hero.pos.y),'ember');battle.endTurn();battle.terrain.set(key(hero.pos.x,hero.pos.y),'sanctum');battle._terrainTick(hero);");
+  assert.equal(run('battle.phase'),'lost');assert.equal(run('hero.hp'),0);assert.equal(run('hero.alive'),false);
+});
+
+test('FIELD-04: melee AI avoids an ember tie and seeks an equally close sanctum when hurt',()=>{
+  const {run}=harness();
+  run("const hero=party[0],foe=spawnMonster('orc',0,false),battle=new CombatEngine([hero],[foe],10,10);hero.pos={x:0,y:5};foe.pos={x:7,y:5};foe.hp=5;battle.terrain.set('3,5','ember');battle._meleeTurn(foe,[hero]);const avoided=key(foe.pos.x,foe.pos.y)!=='3,5';foe.pos={x:7,y:5};foe.acted={move:false,action:false};battle.terrain.clear();battle.terrain.set('3,5','sanctum');battle._meleeTurn(foe,[hero]);");
+  assert.equal(run('avoided'),true);assert.equal(run('key(foe.pos.x,foe.pos.y)'),'3,5');
+});
+
+test('AIM-01/02: first touch previews collateral and confirmation spends exactly one charge',()=>{
+  const {run}=harness();
+  run("game=new CombatEngine(party,[spawnMonster('ogre',0,false)],10,10);mode='combat';game.order=['p4','p1','p2','p3','e0'];game.turnIndex=0;game._begin();party[3].pos={x:2,y:2};party[0].pos={x:4,y:4};game.byId('e0').pos={x:5,y:5};selectSpell('fireball');const before=party[3].spells.find(sp=>sp.id==='fireball').uses;combatClick(4,4);");
+  assert.equal(run('validAim()'),true);assert.equal(run('aimSummary().allies'),1);assert.equal(run('aimSummary().foes'),1);assert.equal(run('party[3].acted.action'),false);assert.equal(run("party[3].spells.find(sp=>sp.id==='fireball').uses"),run('before'));
+  run('combatClick(4,4);');
+  assert.equal(run("party[3].spells.find(sp=>sp.id==='fireball').uses"),run('before-1'));assert.equal(run('party[3].acted.action'),true);assert.equal(run('confirmAim()'),false);
+});
+
+test('AIM-02: changing mode or actor invalidates an old aim',()=>{
+  const {run}=harness();
+  run("game=new CombatEngine(party,[spawnMonster('ogre',0,false)],10,10);mode='combat';game.order=['p4','p1','p2','p3','e0'];game.turnIndex=0;game._begin();selectSpell('fireball');combatClick(4,4);setMode('move');");
+  assert.equal(run('validAim()'),false);assert.equal(run('confirmAim()'),false);
+  run("selectSpell('fireball');combatClick(4,4);game.turnIndex=1;");assert.equal(run('confirmAim()'),false);
+});
+
+test('UX-03: Tactics pauses a queued enemy and resumes one action',()=>{
+  const h=harness(),{run}=h;
+  run("game=new CombatEngine(party,[spawnMonster('goblin',0,false)],10,10);game.order=['e0','p1','p2','p3','p4'];game.turnIndex=0;mode='combat';const calls=[];game.actAuto=c=>calls.push(c.id);beginTurnFlow();openTactics();");
+  assert.equal(h.timers.size,0);assert.equal(h.tick(),false);assert.equal(run('game.current().id'),'e0');
+  run('closeTactics();');assert.equal(h.timers.size,1);h.tick();assert.equal(run('JSON.stringify(calls)'),JSON.stringify(['e0']));
+});
+
+test('QUEST-01/02: rewards are unique across rechecks and portable saves',()=>{
+  const {run}=harness();
+  run("campaign.battles=4;campaign.secrets=2;campaign.successes=3;const gold=bag.gold,rations=bag.rations;checkContracts();checkContracts();const code=encodeSave(saveState());applySave(decodeSave(code));checkContracts();");
+  assert.equal(run('campaign.contracts.length'),3);assert.equal(run('bag.gold-gold'),120);assert.equal(run('bag.rations-rations'),2);assert.equal(run("bag.items.filter(id=>id==='sunshard').length"),1);assert.equal(run("bag.items.filter(id=>id==='lantern_mantle').length"),1);
+});
+
+test('QUEST-01: failed, skipped, or repeated events do not count as successful checks',()=>{
+  const {run}=harness();
+  run("Dice.d20=()=>1;openEvent('shrine','2,2');resolveEventOption(0);openEvent('shrine','3,3');resolveEventOption(2);Dice.d20=()=>20;openEvent('shrine','4,4');resolveEventOption(0);resolveEventOption(0);");
+  assert.equal(run('campaign.successes'),1);assert.equal(run('campaign.events'),3);
+});
+
+test('BOSS-01/02: convergence guardians have unique, bounded one-time phases',()=>{
+  const {run}=harness();
+  assert.equal(run("WORLD.catacombs.encounters.some(e=>e.lead==='bell_warden'&&e.boss)"),true);assert.equal(run("WORLD.deep_stair.encounters.some(e=>e.lead==='ash_cantor'&&e.boss)"),true);
+  assert.equal(run("['bell_warden','ash_cantor'].every(type=>{const boss=spawnMonster(type,0,true),g=new CombatEngine(makeParty(),[boss],10,10);boss.hp=Math.floor(boss.maxHp/2);g._checkEnd();g._checkEnd();return boss.awakened&&g.living('enemy').length===2&&g.describeRole(boss).length>30;})"),true);
+});
+
+test('LIMIT-01: standalone payload stays below the 350 KiB budget',()=>{
+  const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');assert(Buffer.byteLength(html)<=358400);assert.equal(/<script[^>]+src=/i.test(html),false);
+});
+
+test('BAL-01: a modest equipment upgrade adds a bounded encounter surcharge',()=>{
+  const {run}=harness();
+  assert.equal(run('encounterBudget({floor:0,partyLevel:1,gear:80})-encounterBudget({floor:0,partyLevel:1,gear:0})<10'),true);
+  assert.equal(run('encounterBudget({floor:3,partyLevel:5,gear:0})>encounterBudget({floor:0,partyLevel:1,gear:0})'),true);
+});
+
+test('FLOW-01: combat on stairs resumes the chapter exit without another step',()=>{
+  const {run}=harness();
+  run("$('#startScreen').classList.remove('show');explore.pos={...explore.exit};enterCombat({pool:['goblin']},key(explore.exit.x,explore.exit.y));cancelTurn();game.phase='won';game.xpEarned=0;resolveCombat();");
+  assert.equal(run("$('#townScreen').classList.contains('show')"),true);assert.equal(run("campaign.completedFloors.includes('entrance')"),true);
+});
+
+test('FLOW-01: a battle level-up is confirmed before the deferred exit advances',()=>{
+  const {run}=harness();
+  run("$('#startScreen').classList.remove('show');party.forEach(h=>h.xp=90);explore.pos={...explore.exit};enterCombat({pool:['goblin']},key(explore.exit.x,explore.exit.y));cancelTurn();game.phase='won';game.xpEarned=20;resolveCombat();");
+  assert.equal(run("$('#townScreen').classList.contains('show')"),false);assert.equal(run('levelUp.entries.length'),4);
+  run('autoAssignLevelUp();');assert.equal(run("$('#townScreen').classList.contains('show')"),true);assert.equal(run('party[0].xp'),210);
 });
