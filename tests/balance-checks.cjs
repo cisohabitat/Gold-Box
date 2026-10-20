@@ -1,0 +1,7 @@
+// Check that the release gate rejects meaningful balance regressions, independent of a browser.
+const {test}=require('node:test');const assert=require('node:assert/strict');const {summarize,checkBalance}=require('./balance.cjs');
+function fixture(){const rows=[];for(const [oath,wins] of [['wanderer',3],['delver',2],['ironbound',1]])for(let branch=0;branch<4;branch++)for(let sample=0;sample<4;sample++)rows.push({oath,branch,sample,stop:sample<wins?'victory':'defeat',floor:sample<wins?'sunless_tomb':'deep_stair',depth:sample<wins?6:5,fights:[]});return rows;}
+test('balance canary accepts ordered difficulty and summarizes every route',()=>{const rows=fixture(),summary=summarize(rows);assert.deepEqual(checkBalance(summary,rows),[]);assert.equal(summary.oaths.wanderer.winRate,.75);assert.equal(Object.keys(summary.routes).length,4);assert.equal(summary.oaths.delver.defeatsByFloor.deep_stair,8);});
+test('balance canary rejects inverted difficulty',()=>{const rows=fixture();rows.forEach(r=>{if(r.oath==='delver')r.stop='defeat';});assert(checkBalance(summarize(rows),rows).some(f=>f.includes('ordering inverted')));});
+test('balance canary rejects a route with no accessible-oath victories',()=>{const rows=fixture();rows.forEach(r=>{if(r.oath==='wanderer'&&r.branch===2)r.stop='defeat';});assert(checkBalance(summarize(rows),rows).some(f=>f.includes('route 2')));});
+test('balance canary rejects stalled campaigns',()=>{const rows=fixture();rows[0].stop='limit';assert(checkBalance(summarize(rows),rows).some(f=>f.includes('stalled')));});

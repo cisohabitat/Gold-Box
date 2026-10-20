@@ -2,8 +2,14 @@
 const browserName=process.env.GOLD_BOX_BROWSER||'chromium';const chromium=require('playwright')[browserName];const assert=require('node:assert/strict');let browser;
 (async()=>{
  browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||(browserName==='chromium'?'/usr/bin/chromium':undefined),headless:true,args:browserName==='chromium'?['--no-sandbox']:[]});
- const page=await browser.newPage({viewport:{width:440,height:780}}),errors=[];page.on('pageerror',e=>errors.push(String(e)));await page.route('https://fonts.**/*',r=>r.abort());await page.goto(process.env.GOLD_BOX_URL||'http://127.0.0.1:8000');
- await page.click('#btnDefault');assert.equal(await page.locator('#recentLog .l').count(),2);
+ const page=await browser.newPage({viewport:{width:440,height:780},hasTouch:true}),errors=[];page.on('pageerror',e=>errors.push(String(e)));await page.route('https://fonts.**/*',r=>r.abort());await page.goto(process.env.GOLD_BOX_URL||'http://127.0.0.1:8000');
+ const buildId=await page.evaluate(()=>GAME_BUILD);assert.equal(await page.locator('#startScreen [data-build]').textContent(),'Build '+buildId);
+ await page.click('#btnDefault');assert.equal(await page.locator('.header-meta [data-build]').textContent(),'Build '+buildId);assert.equal(await page.locator('#recentLog .l').count(),2);
+ // A double click never exits the run; default focus and Escape both keep playing.
+ const runBeforeRestart=await page.evaluate(()=>JSON.stringify(saveState()));await page.locator('#btnRestart').dblclick();assert.equal(await page.locator('#restartScreen').isVisible(),true);assert.equal(await page.evaluate(()=>mode),'explore');assert.equal(await page.evaluate(()=>document.activeElement.id),'btnKeepPlaying');
+ await page.keyboard.press('Enter');assert.equal(await page.locator('#restartScreen').isVisible(),false);assert.equal(await page.evaluate(()=>JSON.stringify(saveState())),runBeforeRestart);
+ await page.locator('#btnRestart').tap();await page.keyboard.press('Escape');assert.equal(await page.locator('#restartScreen').isVisible(),false);
+ await page.click('#btnRestart');await page.click('#btnConfirmRestart');assert.equal(await page.locator('#startScreen').isVisible(),true);assert.equal(await page.locator('#btnContinue').isVisible(),true);await page.click('#btnContinue');assert.equal(await page.evaluate(()=>JSON.stringify(saveState())),runBeforeRestart);
  // Creation and inventory custom controls also work from a keyboard.
  await page.evaluate(()=>showStart());await page.click('#btnCreate');
  for(let hi=0;hi<4;hi++)for(let pi=0;pi<6;pi++){
@@ -42,7 +48,10 @@ const browserName=process.env.GOLD_BOX_BROWSER||'chromium';const chromium=requir
  await page.waitForTimeout(600);assert.equal(await page.evaluate(()=>game.current().id),actor);await page.keyboard.press('Escape');
  await page.click('#btnAttack');await page.locator('#board .cell').nth(12).focus();assert.match(await page.locator('#board .cell').nth(12).getAttribute('aria-label'),/% hit/);await page.keyboard.press('Enter');
  assert.equal(await page.evaluate(()=>mode),'explore');assert.match(await page.locator('#recentLog').innerText(),/victory|experience|Gold|wins|gains|find|battle/i);
+ // Restart also suspends an enemy callback and returns to the same battle on cancel.
+ await page.evaluate(()=>{enterCombat({pool:['skeleton']},'2,2');cancelTurn();game.order=['e0',...game.order.filter(id=>id!=='e0')];game.turnIndex=0;game._begin();beginTurnFlow();requestRestart();});
+ const pausedActor=await page.evaluate(()=>game.current().id);await page.waitForTimeout(650);assert.equal(await page.evaluate(()=>game.current().id),pausedActor);await page.click('#btnKeepPlaying');await page.evaluate(()=>cancelTurn());assert.equal(await page.evaluate(()=>mode),'combat');
  // Mobile log is visible immediately and on desktop, with no need to open notes.
  assert(await page.locator('#recentLog').isVisible());await page.setViewportSize({width:1440,height:1000});assert(await page.locator('#recentLog').isVisible());
- assert.deepEqual(errors,[]);console.log('PASS: modal focus and guarded actions, clipboard success/fallback/failure, blocked-storage portable recovery, manual keyboard victory, hit odds, visible live log; no page errors.');await browser.close();
+ assert.deepEqual(errors,[]);console.log('PASS: protected restart/double tap/cancel/Continue, visible build, modal focus and guarded actions, clipboard success/fallback/failure, blocked-storage portable recovery, manual keyboard victory, hit odds, visible live log; no page errors.');await browser.close();
 })().catch(async e=>{console.error(e);if(browser)await browser.close();process.exitCode=1;});
