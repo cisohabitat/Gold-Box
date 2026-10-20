@@ -40,4 +40,5 @@ jobs:
           node tests/devices.cjs
           node tests/quality.cjs
           node tests/flow.cjs
+          node tests/epic.cjs
           if [ "$GOLD_BOX_BROWSER" = chromium ]; then node tests/campaign.cjs; fi

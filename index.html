@@ -436,6 +436,13 @@
   #btnConfirmAim{background:#55375b;color:#fff0e9;border-color:#e69bdf;max-width:none;white-space:nowrap;}
   #btnConfirmAim:hover:not(:disabled){background:#80528a;color:#fff0e9;}
   #hint.aim-warning{color:#f4be8b;}
+  #chapterLabel{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .story-copy{font-size:19px;line-height:1.4;color:#e4d7b5;text-align:left;overflow-wrap:anywhere;}
+  .council-plans{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0;}
+  .council-choice{min-height:44px;white-space:normal;text-align:left;padding:14px;font-size:18px;line-height:1.3;letter-spacing:0;}
+  .council-choice strong,.council-choice small{display:block;}.council-choice small{margin-top:8px;color:var(--parch);font-size:16px;font-weight:normal;}
+  #fateChoices{grid-template-columns:1fr;}#councilResult:empty{display:none;}
+  @media(max-width:680px){.council-plans{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -500,7 +507,7 @@
     <h1 class="game-title">Gold Box</h1>
     <p class="subtitle">Crown of the Sunless King</p>
     <svg class="cover-art" viewBox="0 0 600 150" role="img" aria-label="A golden crown above a moonlit crypt"><defs><radialGradient id="moon"><stop stop-color="#bbd1b1"/><stop offset="1" stop-color="#718e7c"/></radialGradient></defs><circle cx="300" cy="68" r="57" fill="url(#moon)" opacity=".45"/><path d="M0 140L0 106 38 106 38 85 57 85 57 107 98 107 98 64 118 44 138 64 138 111 194 111 194 75 214 75 214 130 250 130 250 90Q300 20 350 90L350 130 387 130 387 75 407 75 407 111 462 111 462 64 482 44 502 64 502 107 543 107 543 85 562 85 562 106 600 106 600 150 0 150Z" fill="#0b1518"/><path d="M270 60L263 36 284 48 300 25 316 48 337 36 330 60Z" fill="#e8b84b"/><path d="M277 150V104Q300 68 323 104V150" fill="#03090c"/><path d="M294 148L300 114 306 148" fill="#d8ad5f" opacity=".7"/></svg>
-    <p class="intro-copy">Four souls. Six depths. One stolen dawn. Descend beneath the ruined kingdom, claim the dead king’s crown, and bring the light home.</p>
+    <p class="intro-copy">The Last Dawn. Six chapters. A kingdom waiting for sunrise. Rally the living, confront the dead, and decide what should replace the Sunless King.</p>
     <label class="oath-select" for="oathChoice">Choose your oath<select id="oathChoice"><option value="wanderer" selected>Wanderer · recovery and shared victory XP</option><option value="delver">Delver · the original challenge</option><option value="ironbound">Ironbound · stronger enemy forces</option></select></label>
     <p class="tag" id="startTag">Descend into the dark. Recover the relic. Escape.</p>
     <div class="schoices">
@@ -547,6 +554,7 @@
     <h2 class="ctitle">Waystation</h2>
     <p class="tag" id="townSub">A safe hollow between the dark. Trade, rest, and ready the party before you go deeper.</p>
     <div class="townbar" id="townStatus"></div>
+    <div class="pane council-pane" style="margin-top:14px"><h2 id="councilTitle">War Council</h2><p id="councilStory" class="story-copy"></p><div id="councilPlans" class="council-plans"></div><p id="councilResult" class="story-copy" role="status"></p></div>
     <div class="towncols">
       <div class="pane">
         <h2>Trader</h2>
@@ -605,8 +613,9 @@
   </div>
 </div>
 
-<div class="screen" id="journalScreen"><div class="sbox wide"><div class="eyebrow">The story so far</div><h2 class="ctitle">The Company’s Chronicle</h2><p class="tag" id="journalOath"></p><div class="journal-grid" id="journalStats"></div><div id="journalRoute"></div><h3>Promises to the kingdom</h3><div id="journalContracts"></div><h3>Carried embers</h3><p id="journalBoons" class="tag"></p><div class="crow"><button id="btnJournalClose" class="big">Return to the journey</button></div></div></div>
+<div class="screen" id="journalScreen"><div class="sbox wide"><div class="eyebrow">The story so far</div><h2 class="ctitle">The Company’s Chronicle</h2><p class="tag" id="journalOath"></p><div class="journal-grid" id="journalStats"></div><div id="journalRoute"></div><h3>The Last Dawn</h3><div id="journalStory"></div><h3>Promises to the kingdom</h3><div id="journalContracts"></div><h3>Carried embers</h3><p id="journalBoons" class="tag"></p><div class="crow"><button id="btnJournalClose" class="big">Return to the journey</button></div></div></div>
 <div class="screen" id="tacticsScreen" role="dialog" aria-modal="true" aria-labelledby="tacticsTitle"><div class="sbox wide"><h2 class="ctitle" id="tacticsTitle">The Delver’s Field Guide</h2><p class="tag" id="tacticsSubtitle"></p><div id="tacticsContent" class="tactics-copy"></div><div class="crow"><button id="btnTacticsClose" class="big">Return</button></div></div></div>
+<div class="screen" id="fateScreen" role="dialog" aria-modal="true" aria-labelledby="fateTitle"><div class="sbox wide"><div class="eyebrow">The Last Dawn · Final Choice</div><h2 id="fateTitle" class="ctitle">What will you do with the crown?</h2><p id="fateStory" class="story-copy"></p><label class="story-copy" for="crownBearer">If the crown needs a bearer, whose oath will hold it?</label><select id="crownBearer" style="display:block;width:100%;min-height:44px;font-size:18px;margin:12px 0;padding:8px"></select><div id="fateChoices" class="council-plans"></div><p class="tag">The king is defeated. The choice is yours; each path ends this campaign.</p></div></div>
 <script>
 /* ===== CROWN CAMPAIGN : data, with controller helpers below ===== */
 const OATHS={wanderer:{name:'Wanderer',budget:0.65,recovery:0.25,desc:'Gentler battles; all heroes earn victory XP and recover 25% HP after a win.'},delver:{name:'Delver',budget:1,desc:'Fortune favours the prepared. Only standing heroes earn victory XP.'},ironbound:{name:'Ironbound',budget:1.25,desc:'Stronger enemy forces. Only standing heroes earn victory XP.'}};
@@ -625,12 +634,14 @@ const SIGNATURES={
   Mage:{name:'Arcane Wellspring',desc:'Restore one use to each spell and gain +2 AC for 2 turns. Once per battle.',kind:'recharge'}
 };
 let campaign={oath:'delver',boons:[],shrines:[],battles:0,foes:0,steps:0,secrets:0,events:0,bossSlain:false};
-function freshCampaign(oath){return {oath:OATHS[oath]?oath:'delver',boons:[],shrines:[],battles:0,foes:0,steps:0,secrets:0,events:0,successes:0,contracts:[],completedFloors:[],bossSlain:false};}
+function freshCampaign(oath){return {oath:OATHS[oath]?oath:'delver',boons:[],shrines:[],battles:0,foes:0,steps:0,secrets:0,events:0,successes:0,contracts:[],completedFloors:[],decisions:{},fate:null,crownBearer:null,bossSlain:false};}
 function restoreCampaign(s){const c=freshCampaign(s&&s.oath);if(!s)return c;
   for(const k of ['battles','foes','steps','secrets','events','successes'])c[k]=Math.max(0,Math.min(10000000,Math.floor(Number(s[k])||0)));
   for(const [field,registry] of [['boons',BOONS],['shrines',WORLD],['contracts',CONTRACTS],['completedFloors',WORLD]])c[field]=[...new Set((Array.isArray(s[field])?s[field]:[]).filter(id=>Object.prototype.hasOwnProperty.call(registry,id)))];
+  if(s.decisions&&typeof s.decisions==='object'&&!Array.isArray(s.decisions))for(const [id,pick] of Object.entries(s.decisions))if(Object.prototype.hasOwnProperty.call(STORY,id)&&(pick==='legacy'||STORY[id].plans.some(p=>p.id===pick)))c.decisions[id]=pick;
+  c.fate=Object.prototype.hasOwnProperty.call(CROWN_FATES,s.fate)?s.fate:null;c.crownBearer=typeof s.crownBearer==='string'?s.crownBearer:null;
   c.bossSlain=!!s.bossSlain;return c;}
-function applyBoons(heroes=party,state=campaign){const bonus={atk:0,ac:0,dmg:0};state.boons.forEach(id=>{const b=BOONS[id];for(const k of ['atk','ac','dmg'])bonus[k]+=b[k]||0;});heroes.forEach(h=>h.campaignBonus={...bonus});}
+function applyBoons(heroes=party,state=campaign){const bonus={atk:0,ac:0,dmg:0};state.boons.forEach(id=>{const b=BOONS[id];for(const k of ['atk','ac','dmg'])bonus[k]+=b[k]||0;});const story=storyEffects(state);for(const k of ['atk','ac','dmg'])bonus[k]+=story[k];heroes.forEach(h=>h.campaignBonus={...bonus});}
 function escapeHTML(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
 const TERRAIN={
@@ -1099,7 +1110,7 @@ const BESTIARY = {
   // spirit-bolts, locks down a hero with Hold, and raises the fallen when his
   // line thins. Always fielded as the boss `lead` (elite-scaled) at the sealed
   // exit, so the run climaxes in a fight to escape rather than a quiet stairwell.
-  crypt_lord:{ bossTitle:'THE SUNLESS KING',bloodied:{id:'sunless_wrath',atk:2,dmg:2,count:2,summon:'skeleton',text:'THE CROWN SHATTERS. The Sunless King rises in wrath (+2 attack and damage), calling his last honour guard!'},name:'The Crypt Lord', cls:'CryptLord', glyph:'L', sprite:'crypt_lord', side:'enemy', xp:200, threat:42, abilities:{str:12,dex:12,con:15,int:16,wis:15,cha:16}, maxHp:32, ac:15, attackBonus:5, damage:{n:1,sides:8,bonus:2}, speed:4, range:1, spells:[{id:'spirit_bolt',uses:3,max:3},{id:'hold',uses:2,max:2},{id:'raise_dead',uses:1,max:1}] }
+  crypt_lord:{ bossTitle:'THE SUNLESS KING',bloodied:{id:'sunless_wrath',atk:2,dmg:2,count:2,summon:'skeleton',text:'THE THRONE CRACKS. The Sunless King rises in wrath (+2 attack and damage), calling his last honour guard!'},name:'The Crypt Lord', cls:'CryptLord', glyph:'L', sprite:'crypt_lord', side:'enemy', xp:200, threat:42, abilities:{str:12,dex:12,con:15,int:16,wis:15,cha:16}, maxHp:32, ac:15, attackBonus:5, damage:{n:1,sides:8,bonus:2}, speed:4, range:1, spells:[{id:'spirit_bolt',uses:3,max:3},{id:'hold',uses:2,max:2},{id:'raise_dead',uses:1,max:1}] }
 };
 function makeGroup(list){
   const out=[]; let i=0;
@@ -1474,6 +1485,74 @@ const WORLD = {
     encounters:[ { guard:true, boss:true, lead:'crypt_lord', pool:['skeleton','necromancer','acolyte','bonecaller'] },
                  { pool:['skeleton','spider','ogre','hexer','archer'] } ], next:[] }
 };
+/* The Last Dawn: authored decisions around the procedural road. */
+const STORY={
+  entrance:{title:'I · A Kingdom Without Morning',objective:'Find the gate key. Reach the refugees.',
+    arrival:'Above the crypt, the last sunrise is already a memory. Captain Ilyra holds the ruined gate while Archivist Eren translates a warning: the stolen dawn is bound inside the dead king’s crown.',
+    council:'At the first waystation, Ilyra brings a column of refugees. Eren unrolls the king’s burial map. There is time to help one before the road closes.',
+    plans:[{id:'lanterns',name:'Keep the lantern road open',preview:'Gain 2 camp supplies. The refugees survive to witness your return.',rations:2,
+      result:'You escort the refugees past the broken gate. Ilyra lights a chain of lanterns: a road home, should any of you return.'},
+      {id:'arsenal',name:'Recover the royal arsenal',preview:'Every hero gains +1 weapon attack for the campaign.',atk:1,
+      result:'You carry the fallen watch’s weapons below. Ilyra stays at the gate with too few soldiers, but promises to hold until dawn.'}]},
+  warren:{title:'II · The Drowned Standard',objective:'Cross the flood. Find Ilyra’s scouts.',
+    arrival:'A royal standard floats in black water. Ilyra’s missing scouts are still alive beyond the sluice, but something under the flood is answering the king’s voice.',
+    council:'The rescued scouts reach your fire. Boatwright Nessa knows a channel beneath the throne. Eren has found a sealed pay chest; its ward can only be opened before the tide turns.',
+    plans:[{id:'flood',name:'Send Nessa beneath the throne',preview:'The final king starts with 15% less maximum HP. Nessa breaks the throne’s water-bound anchor.',weakKing:true,
+      result:'Nessa takes one lantern and rows into the dark. Three knocks against the stone will mean the throne’s anchor has broken.'},
+      {id:'paychest',name:'Open the drowned pay chest',preview:'Gain 100 gold and 1 healing potion for the company.',gold:100,potions:1,
+      result:'Eren dissolves the salt-black seal. You divide the old soldiers’ pay among the living and send Nessa back to the refugees.'}]},
+  gallery:{title:'II · A Thousand Forgotten Names',objective:'Recover the names of the forgotten.',
+    arrival:'Someone has scraped the names from every grave. The king did not merely kill this kingdom; he erased the people who could remember what he was.',
+    council:'Eren finds the lost register beneath an empty sarcophagus. Ilyra asks for the ancestral armour guarding it. You cannot carry both through the narrow stair.',
+    plans:[{id:'names',name:'Carry the register of names',preview:'Every standing hero begins the king’s battle with +2 AC for 3 turns.',ward:2,
+      result:'Eren reads the names aloud as you descend. For the first time in centuries, the dead answer with something other than hunger.'},
+      {id:'vigil',name:'Take up the ancestral vigil',preview:'Every hero gains +1 armour class for the campaign.',ac:1,
+      result:'You leave the register sealed and shoulder the ancestral armour. Eren memorises the names he can before the last torch gutters.'}]},
+  catacombs:{title:'III · The Bell That Commands the Dead',objective:'Silence the Bell Warden. Free the road.',
+    arrival:'Every toll brings another regiment to its feet. The Bell Warden was once Ilyra’s ancestor. The king has kept him obedient by binding the names of his children inside the bell.',
+    council:'The Warden falls to one knee. Inside his shattered bell, a choir begs for release. Its iron could arm the company; its voices could refuse the king one final time.',
+    plans:[{id:'choir',name:'Release the bound choir',preview:'The king raises only 1 guard at half health instead of 2.',release:1,
+      result:'The Warden speaks his children’s names and becomes dust. The freed choir promises that one of the king’s last commands will go unanswered.'},
+      {id:'belliron',name:'Forge the bell into weapons',preview:'Every hero gains +1 weapon damage for the campaign.',dmg:1,
+      result:'You break the bell upon its own anvil. The voices fade into the iron; every weapon now rings with the force of their unfinished war.'}]},
+  ossuary:{title:'IV · The Legion Beneath the Mountain',objective:'Claim Dawnblade. Rally the lost legion.',
+    arrival:'A thousand shields face the throne below. These soldiers died refusing the king’s first command. Dawnblade still rests where their captain planted it.',
+    council:'The lost legion will rise for one last march, if you spend the fire that could restore their armour. Ilyra kneels before a shield bearing her family’s crest.',
+    plans:[{id:'legion',name:'Call the legion to its last battle',preview:'The king’s retinue budget is reduced by 10%. This combines with a second diversion, to a floor of 80%.',retinue:.9,
+      result:'The shields rise in silence. Ilyra salutes the captain who died before she was born, and the legion marches toward the sound of the throne.'},
+      {id:'shields',name:'Bear the legion’s shields',preview:'Every hero gains +1 armour class for the campaign.',ac:1,
+      result:'You lay the legion to rest and carry four shields from their wall. Ilyra carves the captain’s name into hers.'}]},
+  shrine_road:{title:'IV · The Procession of Small Gods',objective:'Restore the shrines. Carry their light.',
+    arrival:'The shrines were built for ordinary things: bread, rain, safe births, a door opening to a friend. Eren realises the king stole the dawn so that no one could pray to anything else.',
+    council:'One coal remains in the procession’s great brazier. You can divide it among the villages’ empty hearths, or carry its unbroken ward into the throne room.',
+    plans:[{id:'hearths',name:'Relight the village hearths',preview:'Gain 3 camp supplies and 2 healing potions. The villages have a fire to return to.',rations:3,potions:2,
+      result:'Tiny lights kindle above the stone, one after another. Eren smiles: the king has forgotten how difficult it is to extinguish a thousand small hopes.'},
+      {id:'procession',name:'Carry the procession’s ward',preview:'Every standing hero begins the king’s battle with +2 AC for 3 turns. Opening wards do not stack.',ward:2,
+      result:'The small gods walk beside you without names or faces. At the last door, their light will stand between the company and the crown.'}]},
+  deep_stair:{title:'V · The Last Fire',objective:'Break the Ash Cantor. Open the last seal.',
+    arrival:'The Ash Cantor sings with the voice the king had while alive. Eren’s final translation is terrible: the crown contains the dawn, but breaking its prison will leave someone to choose what replaces it.',
+    council:'The Cantor’s song is broken. Ilyra has gathered everyone your journey left standing. Eren holds the last living ember. Beyond the seal, the king is waiting.',
+    plans:[{id:'vanguard',name:'Send the survivors against the throne',preview:'The king’s retinue budget is reduced by 10%. Combined diversions never go below 80%.',retinue:.9,
+      result:'Ilyra leads the last watch into a side passage. “We will hold their army,” she says. “You reach the king.”'},
+      {id:'lastember',name:'Carry the last ember yourselves',preview:'Every hero gains +1 weapon attack for the campaign. Ilyra protects the way home.',atk:1,
+      result:'Eren divides the ember into four sparks. Ilyra turns back toward the refugees, promising that the gate will remain open until your light returns.'}]},
+  sunless_tomb:{title:'VI · The Throne at the End of Night',objective:'Claim the crown. End the king’s reign.',
+    arrival:'The king sits beneath a sky of stolen stars. “I kept the world from ending,” he says. Behind him, the crown burns with every sunrise the kingdom has lost. Eren answers: “You kept it from living.”',
+    council:'',plans:[]}
+};
+const CROWN_FATES={
+  break:{name:'Break the Crown',stakes:'Release the dawn to everyone. Destroy the throne’s power, even the miracles it might have offered.',title:'The Dawn Belongs to Everyone',
+    story:'You break the crown upon the threshold. A thousand stolen mornings pour into the sky. The dead are finally only the dead; the living inherit a kingdom they must rebuild with their own hands.'},
+  bind:{name:'Bind the Crown',stakes:'One hero remains as the new Warden, holding the darkness while the others carry daylight home.',title:'The Warden of the Last Night',
+    story:'The company refuses both a new tyrant and an unguarded abyss. One of you takes the empty throne, binding the crown to a promise instead of a king. Outside, the first sunrise is gentler than anyone remembers.'},
+  wear:{name:'Wear the Crown',stakes:'Claim the throne and protect the kingdom with its power. The dawn returns under a new ruler’s command.',title:'The Sunborn Throne',
+    story:'You set the crown upon a living brow. The stolen stars bend toward a new sovereign. Daylight returns, magnificent and obedient; the kingdom kneels, uncertain whether this is deliverance or the beginning of another long night.'}
+};
+function storyPlan(id,state=campaign){const chapter=STORY[id];return chapter&&(chapter.plans||[]).find(p=>p.id===(state.decisions||{})[id]);}
+function storyEffects(state=campaign){const out={atk:0,ac:0,dmg:0,kingHp:1,retinue:1,release:0,ward:0};
+  for(const id of Object.keys(state.decisions||{})){const p=storyPlan(id,state);if(!p)continue;for(const k of ['atk','ac','dmg'])out[k]=Math.min(2,out[k]+(p[k]||0));if(p.weakKing)out.kingHp=.85;if(p.retinue)out.retinue=Math.max(.8,out.retinue*p.retinue);out.release=Math.min(1,out.release+(p.release||0));out.ward=Math.max(out.ward,p.ward||0);}
+  return out;
+}
 const WORLD_START='entrance';
 // Graph-depth of each node (shortest hops from the start, 1-based), for the floor counter.
 const WORLD_DEPTHS=(function(){ const d={}; d[WORLD_START]=1; const q=[WORLD_START];
@@ -2169,7 +2248,7 @@ function saveState(){ return { v:2, nodeId, worldPath:[...worldPath], inTown:$('
   bag:{ gold:bag.gold, keys:bag.keys, rations:bag.rations, relic:!!bag.relic, items:[...bag.items] },
   party: party.map(h=>({ id:h.id, name:h.name, cls:h.cls, ab:{...h.abilities}, lvl:h.level, xp:h.xp||0, pending:h.pendingLevels||0, bg:h.bg||null, hp:h.hp,
     eq:{...h.equip}, learned:[...(h.learned||[])], perks:[...(h.perks||[])], su:Object.fromEntries((h.spells||[]).map(sp=>[sp.id,sp.uses])) })),
-  campaign:{...campaign,boons:[...campaign.boons],shrines:[...campaign.shrines]}, explore: serializeExplore(explore), feed:(exploreFeed||[]).slice(-25) }; }
+  campaign:{...campaign,boons:[...campaign.boons],shrines:[...campaign.shrines],decisions:{...campaign.decisions}}, explore: serializeExplore(explore), feed:(exploreFeed||[]).slice(-25) }; }
 function validSave(s){
   try{
     const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k), obj=o=>o&&typeof o==='object'&&!Array.isArray(o);
@@ -2203,7 +2282,7 @@ function validSave(s){
     if(e.tiles[e.pos.y][e.pos.x]==='#'&&!(e.foundSecrets||[]).includes(key(e.pos.x,e.pos.y)))return false;
     if(e.wanderPool!==undefined&&!list(e.wanderPool,30,id=>own(BESTIARY,id)))return false;
     if(s.worldPath!==undefined&&(!list(s.worldPath,16,id=>own(WORLD,id))||!s.worldPath.length))return false;
-    if(s.campaign!==undefined){if(!obj(s.campaign))return false;for(const k of ['boons','shrines','completedFloors','contracts'])if(s.campaign[k]!==undefined&&!list(s.campaign[k],40,id=>typeof id==='string'))return false;}
+    if(s.campaign!==undefined){if(!obj(s.campaign))return false;if(s.campaign.decisions!==undefined&&(!obj(s.campaign.decisions)||Object.entries(s.campaign.decisions).some(([id,pick])=>!own(STORY,id)||(pick!=='legacy'&&!STORY[id].plans.some(p=>p.id===pick)))))return false;if(s.campaign.fate!=null&&!own(CROWN_FATES,s.campaign.fate))return false;if(s.campaign.crownBearer!=null&&(typeof s.campaign.crownBearer!=='string'||!ids.has(s.campaign.crownBearer)))return false;for(const k of ['boons','shrines','completedFloors','contracts'])if(s.campaign[k]!==undefined&&!list(s.campaign[k],40,id=>typeof id==='string'))return false;}
     if(s.feed!==undefined&&!list(s.feed,100,entry=>obj(entry)&&typeof entry.t==='string'&&entry.t.length<=2000&&(entry.k===undefined||typeof entry.k==='string'&&entry.k.length<=30)))return false;
     return true;
   }catch(_){return false;}
@@ -2214,13 +2293,14 @@ function applySave(s){
     if(!validSave(s))return false;
     const heroes=s.party.map(reviveHero),state=restoreCampaign(s.campaign),dungeon=reviveExplore(s.explore);
     if(!s.campaign||!Array.isArray(s.campaign.completedFloors))state.completedFloors=[...new Set([...(s.worldPath||[]).filter(id=>id!==s.nodeId),...(s.inTown?[s.nodeId]:[])])];
+    if(!s.campaign||s.campaign.decisions===undefined)for(const id of (s.worldPath||[]).filter(id=>id!==s.nodeId))if(STORY[id])state.decisions[id]='legacy';
     applyBoons(heroes,state);
     dungeon.scoutRadius=partyScoutRadius(heroes);dungeon.searchBonus=partySearchBonus(heroes);dungeon.reveal();
     if(!s.campaign&&s.nodeId==='sunless_tomb')state.bossSlain=Object.entries(dungeon.encounters).some(([k,enc])=>enc.lead==='crypt_lord'&&dungeon.cleared.has(k));
     next={heroes,state,dungeon,path:Array.isArray(s.worldPath)&&s.worldPath.length?s.worldPath.slice():[s.nodeId],bag:{gold:s.bag.gold,keys:s.bag.keys,rations:s.bag.rations,relic:!!s.bag.relic,items:s.bag.items.slice()},feed:s.feed&&s.feed.length?s.feed.slice():[{t:'You press on through '+dungeon.name+'.',k:'sys'}]};
   }catch(_){return false;}
   closeFieldNotes(false);cancelTurn();autoFight=false;levelUp=null;eventLevelUp=null;curEvent=null;
-  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','saveScreen','tacticsScreen'])$('#'+id).classList.remove('show');
+  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','saveScreen','tacticsScreen','fateScreen'])$('#'+id).classList.remove('show');
   party=next.heroes;campaign=next.state;explore=next.dungeon;nodeId=s.nodeId;worldPath=next.path;bag=next.bag;exploreFeed=next.feed;
   game=null;mode='explore';mover=null;reachCache=null;pendingKey=null;selectedSpell=null;
   if(s.inTown&&(WORLD[nodeId].next||[]).length)openTown();
@@ -2229,11 +2309,11 @@ function applySave(s){
 }
 function autosave(){ if(mode!=='explore' || !party || !explore) return; if($('#banner').classList.contains('show')) return; persistWrite(encodeSave(saveState())); }
 function continueRun(){ const s=decodeSave(persistRead()); if(!applySave(s)) return;
-  $('#startScreen').classList.remove('show'); $('#banner').classList.remove('show'); render(); }
+  $('#startScreen').classList.remove('show'); $('#banner').classList.remove('show'); render();resumeFinale(); }
 function loadFromCode(){ const s=decodeSave(($('#loadCode').value||'').trim());
   if(!applySave(s)){ $('#loadMsg').textContent='That save code is not valid.'; return; }
   persistWrite(encodeSave(saveState()));
-  $('#startScreen').classList.remove('show'); $('#banner').classList.remove('show'); render(); }
+  $('#startScreen').classList.remove('show'); $('#banner').classList.remove('show'); render();resumeFinale(); }
 function openSave(){ if(mode!=='explore'){ return; } const code=encodeSave(saveState()); const ok=persistWrite(code);
   $('#saveCode').value=code;
   $('#saveMsg').textContent = ok
@@ -2256,7 +2336,7 @@ function closeSave(){copyEpoch++;$('#btnCopySave').disabled=false;$('#btnCopySav
 function newGame(chosenParty){
   closeFieldNotes(false);
   cancelTurn();autoFight=false;levelUp=null;eventLevelUp=null;curEvent=null;
-  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','saveScreen','tacticsScreen'])$('#'+id).classList.remove('show');
+  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','saveScreen','tacticsScreen','fateScreen'])$('#'+id).classList.remove('show');
   campaign=freshCampaign($('#oathChoice').value);
   party=chosenParty||makeParty(); nodeId=WORLD_START; worldPath=[WORLD_START]; explore=new ExploreEngine(buildDungeon(generateLevel(WORLD[WORLD_START]))); applyScout();
   bag={ gold:40, keys:0, rations:2, relic:false, items:[] };
@@ -2272,9 +2352,10 @@ function newGame(chosenParty){
   game=null; mode='explore'; exploreFeed=[]; mover=null; reachCache=null; pendingKey=null; selectedSpell=null;
   exploreFeed.push({t: WORLD[WORLD_START].intro || ('You enter '+explore.name+'.'), k:'sys'});
   partyBark('floor');
+  exploreFeed.push({t:STORY.entrance.arrival,k:'flavor'});
   $('#banner').classList.remove('show'); render(); autosave();
 }
-function overlayOpen(){ return $('#tacticsScreen').classList.contains('show') || $('#fieldNotes').classList.contains('open') || $('#townScreen').classList.contains('show') || $('#partyScreen').classList.contains('show') || $('#levelScreen').classList.contains('show') || $('#saveScreen').classList.contains('show') || $('#eventScreen').classList.contains('show') || $('#journalScreen').classList.contains('show') || $('#startScreen').classList.contains('show') || $('#banner').classList.contains('show'); }
+function overlayOpen(){ return $('#fateScreen').classList.contains('show') || $('#tacticsScreen').classList.contains('show') || $('#fieldNotes').classList.contains('open') || $('#townScreen').classList.contains('show') || $('#partyScreen').classList.contains('show') || $('#levelScreen').classList.contains('show') || $('#saveScreen').classList.contains('show') || $('#eventScreen').classList.contains('show') || $('#journalScreen').classList.contains('show') || $('#startScreen').classList.contains('show') || $('#banner').classList.contains('show'); }
 function tryMove(dx,dy){
   if(mode!=='explore'||overlayOpen())return; const r=explore.move(dx,dy);
   if(r.type==='blocked') return;
@@ -2464,19 +2545,19 @@ function descendOrWin(){
     if(!campaign.completedFloors.includes(nodeId)){campaign.completedFloors.push(nodeId);const xp=100+50*floorTier();exploreFeed.push({t:'Chapter complete: every hero gains '+xp+' XP for the road ahead.',k:'magic'});grantXp(party,xp,leveled);}
     openTown();if(leveled.length)openLevelUp(leveled);
   }
-  else if(bag.relic&&campaign.bossSlain){ render(); endRun('win'); }
+  else if(bag.relic&&campaign.bossSlain){render();openCrownFate();}
   else if(bag.relic){exploreFeed.push({t:'The king still binds the crown. Defeat him before you leave.',k:'kill'});render();}
   else { exploreFeed.push({t:'The stairs out are sealed. Recover the relic first.',k:'sys'}); render(); }
 }
 function openTown(){ $('#townScreen').classList.add('show'); renderTown(); autosave(); }
 // Descend into a chosen successor node (the fork pick, or the only way on).
 function enterDungeon(nextId){
-  if(!WORLD[nextId]||!(WORLD[nodeId].next||[]).includes(nextId)) return;
+  if(mode!=='explore'||!$('#townScreen').classList.contains('show')||['levelScreen','partyScreen','saveScreen','eventScreen','fateScreen','journalScreen','tacticsScreen'].some(id=>$('#'+id).classList.contains('show'))||!campaign.decisions[nodeId]||!WORLD[nextId]||!(WORLD[nodeId].next||[]).includes(nextId))return;
   nodeId=nextId; worldPath.push(nextId);
   explore=new ExploreEngine(buildDungeon(generateLevel(WORLD[nodeId]))); applyScout();
   $('#townScreen').classList.remove('show');
   exploreFeed.push({t:'You descend to '+explore.name+'.',k:'sys'});
-  if(WORLD[nodeId].intro) exploreFeed.push({t:WORLD[nodeId].intro,k:'sys'});
+  if(STORY[nodeId])exploreFeed.push({t:STORY[nodeId].arrival,k:'flavor'});
   partyBark('floor');
   mode='explore'; render(); autosave();
 }
@@ -2510,17 +2591,18 @@ function renderTown(){
     row.innerHTML=`<span class="nm">${it.name}</span><span class="pr">${Math.floor((it.cost||0)/2)}g</span>`;
     const b=document.createElement('button'); b.textContent='Sell'; b.onclick=()=>sellItem(i);
     row.appendChild(b); sell.appendChild(row); });
-  renderBoons();renderFork();autosave();
+  renderBoons();renderCouncil();renderFork();autosave();
 }
 // The way on: a single "Enter the Depths" when the path is straight, or a labelled
 // choice per branch when it forks. Each fork button names the floor and its pitch.
 function renderFork(){
+  const ready=!!campaign.decisions[nodeId];
   const fb=$('#forkBox'); if(!fb) return; fb.innerHTML='';
   const nexts=(WORLD[nodeId] && WORLD[nodeId].next) || [];
   if(nexts.length<=1){
     const to=nexts[0];
     const b=document.createElement('button'); b.className='big'; b.textContent='Enter the Depths';
-    if(to) b.onclick=()=>enterDungeon(to); else b.disabled=true;
+    if(to)b.onclick=()=>enterDungeon(to);b.disabled=!to||!ready;
     fb.appendChild(b);
     return;
   }
@@ -2528,7 +2610,7 @@ function renderFork(){
   nexts.forEach(id=>{ const nd=WORLD[id]; if(!nd) return;
     const b=document.createElement('button'); b.className='big forkbtn';
     b.innerHTML=`<span class="fk-name">${nd.name}</span><span class="fk-teaser">${nd.teaser||''}</span>`;
-    b.onclick=()=>enterDungeon(id); fb.appendChild(b); });
+    b.onclick=()=>enterDungeon(id);b.disabled=!ready;fb.appendChild(b); });
 }
 function makeCamp(){
   if(mode!=='explore')return;
@@ -2773,9 +2855,12 @@ function partyScoutRadius(heroes=party){ const best=Math.max(0, ...(heroes||[]).
 function partySearchBonus(heroes=party){ return Math.max(-5, ...(heroes||[]).filter(h=>h.alive!==false).map(h=>abilityMod(h.abilities.wis))); }
 function applyScout(){ if(explore){ explore.scoutRadius=partyScoutRadius(); explore.searchBonus=partySearchBonus(); explore.reveal(); } }
 function enterCombat(desc,atKey){ pendingKey=atKey;
-  const enemies=composeEncounter(desc, {floor:floorTier(), partyLevel:partyLevelAvg(), gear:partyGearValue(),difficulty:OATHS[campaign.oath].budget});
+  const finale=desc.boss&&desc.lead==='crypt_lord',effects=storyEffects();
+  const tuned=finale?{...desc,budgetMul:(desc.budgetMul||1)*effects.retinue}:desc;
+  const enemies=composeEncounter(tuned,{floor:floorTier(),partyLevel:partyLevelAvg(),gear:partyGearValue(),difficulty:OATHS[campaign.oath].budget});
+  const storyNotes=prepareStoryBattle(enemies,desc);
   if(desc.boss && desc.lead==='crypt_lord'){ exploreFeed.push({t:'The Crypt Lord rises between you and the way out. There is no leaving but through him.',k:'kill'}); }
-  game=new CombatEngine(party, enemies, 10, 10, explore.theme);game.log.push({t:'Battle begins: '+enemies.map(e=>e.name).join(', ')+'.',k:'sys'}); mode='combat'; mover=null; reachCache=null; selectedSpell=null; autoFight=false; updateAutoBtn(); render(); beginTurnFlow(); }
+  game=new CombatEngine(party,enemies,10,10,explore.theme);if(finale&&effects.ward){for(const h of party)if(h.alive)h.statuses.push({type:'dawnward',duration:3,buff:true,ac:effects.ward});storyNotes.push('The remembered names and small gods stand beside you: +2 AC for three turns.');}for(const text of storyNotes)game.log.push({t:text,k:'magic'});game.log.push({t:'Battle begins: '+enemies.map(e=>e.name).join(', ')+'.',k:'sys'}); mode='combat'; mover=null; reachCache=null; selectedSpell=null; autoFight=false; updateAutoBtn(); render(); beginTurnFlow(); }
 function resolveCombat(){
   cancelTurn();autoFight=false; updateAutoBtn();
   if(game.phase==='won'){
@@ -2813,7 +2898,8 @@ function grantXp(heroes, amount, into){
 }
 function endRun(kind){ $('#tacticsScreen').classList.remove('show');closeFieldNotes(false);cancelTurn();persistClear(); const t=$('#bannerText');
   if(kind==='win'){ t.textContent='You Escape! Gold: '+bag.gold; t.className='win'; } else { t.textContent='Party Defeated'; t.className='lose'; }
-  $('#endingStory').textContent=kind==='win'?'The crown breaks the horizon. For the first time in a thousand years, sunlight touches the kingdom. Four names will be spoken wherever the morning reaches.':'The crypt keeps its silence. Yet above the stone, another ember waits for hands brave enough to carry it.';
+  if(kind==='win'&&campaign.fate){t.textContent=CROWN_FATES[campaign.fate].title;t.className='win';}
+  $('#endingStory').textContent=kind==='win'&&campaign.fate?campaignEpilogue(campaign.fate):kind==='win'?'The crown breaks the horizon. For the first time in a thousand years, sunlight touches the kingdom. Four names will be spoken wherever the morning reaches.':'The crypt keeps its silence. Yet above the stone, another ember waits for hands brave enough to carry it.';
   $('#endingStats').textContent=OATHS[campaign.oath].name+' · '+campaign.battles+' battles won · '+campaign.foes+' foes vanquished · '+campaign.secrets+' secrets found · '+campaign.boons.length+' embers claimed · '+campaign.contracts.length+' contracts fulfilled · '+campaign.completedFloors.length+' chapters crossed';
   $('#banner').classList.add('show'); }
 
@@ -3317,7 +3403,7 @@ let build=null;   // creation working state
 function showStart(){
   closeFieldNotes(false);
   cancelTurn();autoFight=false;mode='start';
-  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','tacticsScreen'])$('#'+id).classList.remove('show');
+  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','tacticsScreen','fateScreen'])$('#'+id).classList.remove('show');
   $('#banner').classList.remove('show');
   $('#createScreen').classList.remove('show');
   $('#saveScreen').classList.remove('show');
@@ -3453,12 +3539,56 @@ function claimBoon(id){
 function renderCampaign(){
   if(!party||!explore)return;
   $('#btnJournal').disabled=!['explore','combat'].includes(mode);$('#btnJournal').textContent=mode==='combat'?'Tactics':'Chronicle';
-  $('#chapterLabel').textContent='CHAPTER '+floorDepth()+' / '+WORLD_MAXDEPTH+' · '+OATHS[campaign.oath].name.toUpperCase();
-  $('#objective').textContent=bag.relic?(campaign.bossSlain?'Carry the crown to the final stairs.':'The crown is yours. Defeat the king and reach the stairs.'):(nodeId==='sunless_tomb'?'Find the crown. Confront the Sunless King.':'Find the key, gather strength, and descend.');
+  $('#chapterLabel').textContent=(STORY[nodeId]?STORY[nodeId].title:'CHAPTER '+floorDepth())+' · '+OATHS[campaign.oath].name.toUpperCase();$('#chapterLabel').title=$('#chapterLabel').textContent;
+  $('#objective').textContent=bag.relic?(campaign.bossSlain?'Carry the crown to the final stairs.':'The crown is yours. Defeat the king and reach the stairs.'):(STORY[nodeId]?STORY[nodeId].objective:'Find the key and descend.');
   const boss=mode==='combat'&&game&&game.combatants.find(c=>c.bossTitle&&c.alive);
   $('#bossPanel').hidden=!boss;
   if(boss){$('#bossName').textContent=(boss.awakened?'II · WRATH · ':'I · GUARDIAN · ')+boss.bossTitle+' · '+boss.hp+' / '+boss.maxHp+' HP';$('#bossHealth i').style.width=(boss.hp/boss.maxHp*100)+'%';}
 }
+function renderCouncil(){
+  const chapter=STORY[nodeId],root=$('#councilPlans'),plan=storyPlan(nodeId);root.innerHTML='';if(!chapter)return;
+  $('#councilTitle').textContent=chapter.title+' · War Council';$('#councilStory').textContent=chapter.council;
+  $('#councilResult').textContent=plan?plan.result:campaign.decisions[nodeId]==='legacy'?'This council belongs to an earlier chronicle. The way remains open.':'Choose a plan before descending. Its consequences will follow the company.';
+  if(campaign.decisions[nodeId])return;
+  chapter.plans.forEach(p=>{const b=document.createElement('button');b.className='council-choice';b.innerHTML='<strong>'+escapeHTML(p.name)+'</strong><small>'+escapeHTML(p.preview)+'</small>';b.onclick=()=>chooseCouncil(p.id);root.appendChild(b);});
+}
+function chooseCouncil(pick){
+  if(mode!=='explore'||!$('#townScreen').classList.contains('show')||['levelScreen','partyScreen','saveScreen','eventScreen','fateScreen','journalScreen','tacticsScreen'].some(id=>$('#'+id).classList.contains('show'))||campaign.decisions[nodeId])return false;
+  const chapter=STORY[nodeId],plan=chapter&&chapter.plans.find(p=>p.id===pick);if(!plan)return false;
+  campaign.decisions[nodeId]=plan.id;bag.gold+=plan.gold||0;bag.rations+=plan.rations||0;for(let i=0;i<(plan.potions||0);i++)bag.items.push('potion_heal');
+  applyBoons();exploreFeed.push({t:plan.result,k:'flavor'});renderTown();render();autosave();const next=$('#forkBox button');if(next&&typeof next.focus==='function')next.focus({preventScroll:true});return true;
+}
+function prepareStoryBattle(enemies,desc){
+  if(!desc.boss||desc.lead!=='crypt_lord')return [];
+  const effects=storyEffects(),notes=[];
+  const king=enemies.find(e=>e.cls==='CryptLord');
+  if(king&&effects.kingHp<1){king.maxHp=Math.max(1,Math.round(king.maxHp*effects.kingHp));king.hp=king.maxHp;notes.push('Three knocks sound below the throne. Nessa has broken its anchor: the king has 15% less maximum HP.');}
+  if(king&&effects.release){king.bloodied={...(king.bloodied||{}),count:Math.max(1,((king.bloodied&&king.bloodied.count)||2)-effects.release)};notes.push('The freed choir refuses the king: his bloodied phase can raise only one guard.');}
+  if(effects.retinue<1)notes.push('Your allies draw away the throne’s retinue. Its encounter budget is reduced by '+Math.round((1-effects.retinue)*100)+'%.');
+  return notes;
+}
+function resumeFinale(){if(mode==='explore'&&nodeId==='sunless_tomb'&&bag.relic&&campaign.bossSlain&&explore.pos.x===explore.exit.x&&explore.pos.y===explore.exit.y)openCrownFate();}
+function openCrownFate(){
+  if(mode!=='explore'||nodeId!=='sunless_tomb'||!bag.relic||!campaign.bossSlain||explore.pos.x!==explore.exit.x||explore.pos.y!==explore.exit.y)return false;
+  if(campaign.fate){endRun('win');return true;}
+  if($('#fateScreen').classList.contains('show'))return true;
+  autosave();$('#fateStory').textContent='The king is dust. '+party.map(h=>h.name).join(', ')+' stand at the final stair. Ilyra waits above; Eren’s last warning hangs in the air: the dawn must belong to someone, or to everyone. What kind of kingdom have you fought to save?';
+  const bearer=$('#crownBearer');bearer.innerHTML='';for(const hero of party){if(!hero.alive)continue;const option=document.createElement('option');option.value=hero.id;option.textContent=hero.name+' · '+hero.cls;bearer.appendChild(option);}if(!party.some(h=>h.alive)){const option=document.createElement('option');option.value=party[0].id;option.textContent=party[0].name+' · final oath';bearer.appendChild(option);}
+  const root=$('#fateChoices');root.innerHTML='';for(const [id,fate] of Object.entries(CROWN_FATES)){const b=document.createElement('button');b.className='council-choice';b.innerHTML='<strong>'+escapeHTML(fate.name)+'</strong><small>'+escapeHTML(fate.stakes)+'</small>';b.onclick=()=>chooseCrownFate(id);root.appendChild(b);}
+  $('#fateScreen').classList.add('show');return true;
+}
+function chooseCrownFate(id){
+  if(!Object.prototype.hasOwnProperty.call(CROWN_FATES,id)||!$('#fateScreen').classList.contains('show')||campaign.fate||mode!=='explore'||nodeId!=='sunless_tomb'||!bag.relic||!campaign.bossSlain||explore.pos.x!==explore.exit.x||explore.pos.y!==explore.exit.y)return false;
+  campaign.fate=id;campaign.crownBearer=id==='break'?null:(party.find(h=>h.id===$('#crownBearer').value)||party.find(h=>h.alive)||party[0]).id;$('#fateScreen').classList.remove('show');endRun('win');return true;
+}
+function campaignEpilogue(id){
+  const fate=CROWN_FATES[id]||CROWN_FATES.break,names=party.map(h=>h.name).join(', '),keeper=(party.find(h=>h.id===campaign.crownBearer)||party.find(h=>h.alive)||party[0]).name;
+  const home=storyPlan('entrance')&&storyPlan('entrance').id==='lanterns'?'Ilyra and the refugees line the lantern road, alive because you stopped for them.':'Ilyra opens the ruined gate. The last watch has kept its promise.';
+  const route=worldPath.includes('warren')?(storyPlan('warren')&&storyPlan('warren').id==='flood'?'Nessa returns at sunrise with an empty boat and a smile.':'The flooded standard flies above the gate once more.'):'Eren begins a new register, leaving room for every name the king tried to erase.';
+  const last=id==='bind'?keeper+' remains as Warden. The others carry that name into the daylight.':id==='wear'?keeper+' takes the throne. The company must now teach a ruler how to let the kingdom live.':names+' walk into a morning no crown can ever command.';
+  return fate.story+' '+home+' '+route+' '+last;
+}
+
 function openJournal(){
   if(mode!=='explore'||overlayOpen())return;
   $('#journalScreen').classList.add('show');
@@ -3466,6 +3596,7 @@ function openJournal(){
   $('#journalStats').innerHTML=[['Battles won',campaign.battles],['Foes vanquished',campaign.foes],['Steps taken',campaign.steps],['Secrets found',campaign.secrets],['Events resolved',campaign.events],['Embers carried',campaign.boons.length],['Chapters crossed',campaign.completedFloors.length+'/'+(WORLD_MAXDEPTH-1)],['Successful checks',campaign.successes]].map(([label,n])=>'<div class="journal-stat"><b>'+n+'</b>'+label+'</div>').join('');
   const root=$('#journalRoute');root.innerHTML='';
   worldPath.forEach((id,i)=>{const el=document.createElement('div');el.className='route-stop'+(id===nodeId?' current':'');el.innerHTML='<b>'+String(i+1).padStart(2,'0')+' · '+WORLD[id].name+'</b><small>'+escapeHTML(WORLD[id].intro||'')+'</small>';root.appendChild(el);});
+  const story=$('#journalStory');story.innerHTML='';for(const id of worldPath){const chapter=STORY[id],plan=storyPlan(id);if(!chapter)continue;const row=document.createElement('div');row.className='route-stop';row.innerHTML='<b>'+escapeHTML(chapter.title)+'</b><p>'+escapeHTML(chapter.arrival)+'</p><small>'+escapeHTML(plan?plan.name+': '+plan.result:campaign.decisions[id]==='legacy'?'A chapter from before this chronicle began.':id===nodeId?'Your next decision waits at the waystation.':'The company marched on.')+'</small>';story.appendChild(row);}
   const quests=$('#journalContracts');quests.innerHTML='';
   for(const [id,q] of Object.entries(CONTRACTS)){const row=document.createElement('div');row.className='route-stop';const done=campaign.contracts.includes(id);row.innerHTML='<b>'+(done?'✓ ':'')+q.name+'</b><small>'+q.desc+' '+Math.min(q.goal,campaign[q.stat]||0)+' / '+q.goal+' · '+q.rewardText+(done?' · Claimed':'')+'</small>';quests.appendChild(row);}
   $('#journalBoons').textContent=campaign.boons.length?campaign.boons.map(id=>BOONS[id].name+': '+BOONS[id].desc).join(' · '):'No embers claimed yet. The old kingdom’s blessings wait at the waystations.';
@@ -3493,6 +3624,7 @@ function openTactics(){
   section('Mouse, touch, and keyboard','Choose actions with a click or tap. Explore with arrows or WASD. In combat, Tab to the grid, use arrows to move focus, and press Enter or Space to use the selected action. Area spells still need confirmation. Party & Log opens the roster in smaller windows.');
   section('Aim before you cast','Select an area spell, then tap a tile to preview it. The pink outline shows the blast; the hint counts allies and foes. Tap that tile again or Confirm cast to commit. Fireball and other damage blasts hit friends too; Sleep only affects enemies. Cover protects against ranged weapons, not magic.');
   section('Ground that matters',Object.values(TERRAIN).map(t=>t.glyph+' '+t.name+': '+t.desc).join(' '));
+  section('The Last Dawn','At each waystation, choose one war-council plan before descending. Ilyra and Eren remember your decisions. Supplies and permanent party bonuses help on the road; other plans change the king’s final battle. The Chronicle records your choices. After the king falls and the crown reaches the final stairs, decide whether to break, bind, or wear it.');
   section('The road below','Find keys and stairs. Camp supplies restore HP and spells; waystation rests are free. Each completed chapter grants XP once. Claim a free ember before descending. Chronicle tracks optional promises: win battles, find caches, and succeed at events. Each completed promise grants one reward.');
   section('Your company','Fighter rallies the line; Cleric heals standing allies; Thief gains a shadow ward; Mage restores spell uses. Each signature is one action and usable once per battle. Wanderer recovers HP and shares victory XP; the harder oaths award battle XP only to standing heroes.');
   if(fighting){section(game.battlefield?BATTLEFIELDS[game.battlefield].name:'Current opposition','These are the foes still standing. Their remaining resources and positions determine what they can do.');

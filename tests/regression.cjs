@@ -158,9 +158,12 @@ test('Wanderer restores health and gives downed heroes victory XP',()=>{
 
 test('final stairs require both the crown and a defeated king',()=>{
   const {run}=harness();
-  run("nodeId='sunless_tomb';bag.relic=true;descendOrWin();");
+  run("nodeId='sunless_tomb';explore.pos={...explore.exit};bag.relic=true;descendOrWin();");
   assert.equal(run("$('#banner').classList.contains('show')"),false);
   run('campaign.bossSlain=true;descendOrWin();');
+  assert.equal(run("$('#fateScreen').classList.contains('show')"),true);
+  assert.equal(run("$('#banner').classList.contains('show')"),false);
+  run("chooseCrownFate('break');");
   assert.equal(run("$('#banner').classList.contains('show')"),true);
   assert.equal(run('persistRead()'),undefined);
 });
@@ -310,4 +313,51 @@ test('MODAL-01: direct manual combat actions cannot change a paused battle',()=>
   const {run}=harness();
   run("enterCombat({pool:['skeleton']},'2,2');cancelTurn();game.order=['p1',...game.order.filter(id=>id!=='p1')];game.turnIndex=0;game._begin();const actor=game.current(),order=JSON.stringify(game.order),round=game.round;$('#tacticsScreen').classList.add('show');endTurn();guard();waitTurn();toggleAuto();setMode('move');selectSpell('fireball');combatClick(0,0);");
   assert.equal(run('game.current()===actor'),true);assert.equal(run('JSON.stringify(game.order)'),run('order'));assert.equal(run('game.round'),run('round'));assert.equal(run('autoFight'),false);assert.equal(run('actor.acted.action'),false);assert.equal(run('mover'),null);
+});
+
+
+test('EPIC-01/02: all seven councils have two distinct once-only, saved plans',()=>{
+  const {run}=harness();
+  run("const councils=Object.entries(STORY).filter(([id])=>WORLD[id].next.length);let checked=0;for(const [id,chapter] of councils){if(chapter.plans.length!==2||new Set(chapter.plans.map(p=>p.id)).size!==2)throw Error(id);for(const plan of chapter.plans){newGame();$('#startScreen').classList.remove('show');nodeId=id;worldPath=[id];openTown();const gold=bag.gold,rations=bag.rations,items=bag.items.length;if(!chooseCouncil(plan.id))throw Error('rejected '+id);const after=JSON.stringify(saveState());if(chooseCouncil(chapter.plans[1].id)||JSON.stringify(saveState())!==after)throw Error('duplicate '+id);if(bag.gold!==gold+(plan.gold||0)||bag.rations!==rations+(plan.rations||0)||bag.items.length!==items+(plan.potions||0))throw Error('reward '+id);if(decodeSave(persistRead()).campaign.decisions[id]!==plan.id)throw Error('save '+id);checked++;}}");
+  assert.equal(run('checked'),14);
+});
+
+test('EPIC-02: council decisions require a town, reject pending levels, and gate descent',()=>{
+  const {run}=harness();
+  assert.equal(run("chooseCouncil('arsenal')"),false);
+  run("openTown();enterDungeon('warren');");assert.equal(run('nodeId'),'entrance');
+  run("$('#levelScreen').classList.add('show');");assert.equal(run("chooseCouncil('arsenal')"),false);
+  run("$('#levelScreen').classList.remove('show');chooseCouncil('arsenal');enterDungeon('warren');");assert.equal(run('nodeId'),'warren');assert.equal(run("chooseCouncil('flood')"),false);
+});
+
+test('EPIC-03: old visited chapters migrate without rewards and current town remains choosable',()=>{
+  const {run}=harness();
+  run("const old=JSON.parse(JSON.stringify(saveState()));old.nodeId='catacombs';old.worldPath=['entrance','warren','catacombs'];old.inTown=true;delete old.campaign.decisions;delete old.campaign.fate;const beforeGold=bag.gold;applySave(old);");
+  assert.equal(run('campaign.decisions.entrance'),'legacy');assert.equal(run('campaign.decisions.warren'),'legacy');assert.equal(run('campaign.decisions.catacombs'),undefined);assert.equal(run('bag.gold'),run('beforeGold'));assert.equal(run('party[0].campaignBonus.atk'),0);
+  assert.equal(run("chooseCouncil('choir')"),true);
+});
+
+test('EPIC-03: story bonuses are bounded, derived, and cannot stack on repeated loads',()=>{
+  const {run}=harness();
+  run("campaign.decisions={entrance:'arsenal',gallery:'vigil',catacombs:'belliron',ossuary:'shields',deep_stair:'lastember'};applyBoons();const code=encodeSave(saveState());applySave(decodeSave(code));applySave(decodeSave(code));");
+  assert.equal(run('party[0].campaignBonus.atk'),2);assert.equal(run('party[0].campaignBonus.ac'),2);assert.equal(run('party[0].campaignBonus.dmg'),1);
+});
+
+test('EPIC-03: malformed story decisions are rejected without touching the run',()=>{
+  const {run}=harness();
+  run("const epicOriginalParty=party,bad=JSON.parse(JSON.stringify(saveState()));bad.campaign.decisions={entrance:'not-a-plan'};const accepted=applySave(bad);");assert.equal(run('accepted'),false);assert.equal(run('party===epicOriginalParty'),true);
+});
+
+test('EPIC-04: final aid changes the king and opening ward without mutating bestiary',()=>{
+  const {run}=harness();
+  run("campaign.decisions={warren:'flood',gallery:'names',catacombs:'choir',ossuary:'legion',deep_stair:'vanguard'};const base=spawnMonster('crypt_lord',0,true);const hp=base.maxHp;enterCombat({boss:true,lead:'crypt_lord',pool:['skeleton']},'2,2');cancelTurn();const king=game.combatants.find(e=>e.cls==='CryptLord');const retinue=storyEffects().retinue;");
+  assert.equal(run('king.maxHp'),run('Math.round(hp*.85)'));assert.equal(run('king.bloodied.count'),1);assert.equal(run('BESTIARY.crypt_lord.bloodied.count'),2);assert.equal(run('base.bloodied.count'),2);assert.equal(run('retinue'),.81);
+  assert.equal(run("party.every(h=>h.statuses.filter(s=>s.type==='dawnward').length===1)"),true);assert.equal(run("party[0].statuses.find(s=>s.type==='dawnward').duration"),3);
+  run("king.hp=Math.floor(king.maxHp/2);const count=game.living('enemy').length;game._bossPhase();game._bossPhase();");assert.equal(run("game.living('enemy').length"),run('count+1'));
+});
+
+test('EPIC-05: all crown fates enforce the final gates and yield distinct company epilogues',()=>{
+  const {run}=harness();
+  run("const endings=[];for(const id of Object.keys(CROWN_FATES)){newGame();$('#startScreen').classList.remove('show');if(chooseCrownFate(id))throw Error('early');nodeId='sunless_tomb';bag.relic=true;explore.pos={...explore.exit};if(openCrownFate())throw Error('king alive');campaign.bossSlain=true;openCrownFate();if(!chooseCrownFate(id)||chooseCrownFate(id))throw Error('fate count');endings.push($('#endingStory').textContent);if(!endings.at(-1).includes(party[0].name))throw Error('missing company');if(persistRead()!==undefined)throw Error('completed save');}");
+  assert.equal(run('new Set(endings).size'),3);
 });

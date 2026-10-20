@@ -20,11 +20,13 @@ const results=await page.evaluate(()=>{
         if(game.phase==='playing'){stop='combat stalled';break;}
         resolveCombat();continue;
       }
+      if(document.querySelector('#fateScreen').classList.contains('show')){chooseCrownFate(['break','bind','wear'][sample]);continue;}
       if(document.querySelector('#banner').classList.contains('show')){stop='victory';break;}
       if(levelUp){autoAssignLevelUp();continue;}
       if(curEvent){const options=EVENTS[curEvent.id].options;let pick=options.findIndex(o=>o.fallback),best=-Infinity;options.forEach((o,i)=>{if(!o.fallback){const score=bestForStat(o.stat).mod-o.dc;if(score>best){best=score;pick=i;}}});resolveEventOption(pick);closeEvent();continue;}
       if(document.querySelector('#townScreen').classList.contains('show')){
         const offers=[...document.querySelectorAll('.boon-card')];if(offers.length)offers[0].click();townRest();autoAssignGear();document.querySelector('#partyScreen').classList.remove('show');
+        if(!campaign.decisions[nodeId])chooseCouncil(STORY[nodeId].plans[(sample+branch)%2].id);
         const next=WORLD[nodeId].next;enterDungeon(next.length===1?next[0]:next[(floorDepth()===1?branch>>1:branch&1)]);continue;
       }
       autoAssignGear();document.querySelector('#partyScreen').classList.remove('show');
@@ -43,9 +45,9 @@ const results=await page.evaluate(()=>{
       if(!path){stop='no route '+JSON.stringify({pos:explore.pos,exit:explore.exit,keys:bag.keys,loot:explore.loot,doors:[...explore.doors],town:document.querySelector('#townScreen').className});break;}
       tryMove(...path);
     }
-    cancelTurn();results.push({sample,oath,branch,stop,floor:nodeId,moves,turns,phases,level:party.map(h=>h.level),battles:campaign.battles,relic:bag.relic,contracts:campaign.contracts.length,chapters:campaign.completedFloors.length});
+    cancelTurn();results.push({sample,oath,branch,stop,floor:nodeId,moves,turns,phases,level:party.map(h=>h.level),battles:campaign.battles,relic:bag.relic,contracts:campaign.contracts.length,chapters:campaign.completedFloors.length,decisions:Object.keys(campaign.decisions).length,fate:campaign.fate});
   }
   return results;
 });
-console.log(JSON.stringify(results,null,2));console.log('ERRORS',errors);await browser.close();assert.equal(results.length,36);assert(results.every(r=>['victory','defeat'].includes(r.stop)),'campaign stalled');assert.deepEqual(errors,[]);console.log('PASS: 36 campaigns, '+results.filter(r=>r.stop==='victory').length+' victories, '+results.filter(r=>r.stop==='defeat').length+' defeats, no stalls.');
+console.log(JSON.stringify(results,null,2));console.log('ERRORS',errors);await browser.close();assert.equal(results.length,36);assert(results.every(r=>['victory','defeat'].includes(r.stop)),'campaign stalled');assert(results.filter(r=>r.stop==='victory').every(r=>r.floor==='sunless_tomb'&&r.relic&&r.decisions===5&&['break','bind','wear'].includes(r.fate)),'incomplete victory');assert.equal(new Set(results.filter(r=>r.stop==='victory').map(r=>r.fate)).size,3,'missing ending coverage');assert.deepEqual(errors,[]);console.log('PASS: 36 campaigns, '+results.filter(r=>r.stop==='victory').length+' victories, '+results.filter(r=>r.stop==='defeat').length+' defeats, no stalls.');
 })().catch(e=>{console.error(e);process.exitCode=1});
