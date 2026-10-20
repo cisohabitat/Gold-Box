@@ -46,7 +46,7 @@ The codebase is deliberately structured so content is **data**, and game logic n
 - A single controller layer owns the screen and the state machine, reacting to those signals.
 - Everything else is **registries**: `SPELLS`, `ITEMS`, `PERKS`, `CLASSES`, `BESTIARY`, `EVENTS`, the `WORLD` graph of floors, the procedural level generator, and the `DIFFICULTY` / `XP_TABLE` tuning tables.
 
-This means most changes — a new spell, monster, item, perk, event, or whole floor — are a new entry in a registry, not new engine code. The accompanying design document (`goldbox-rpg.md`) walks through the architecture in depth and includes an “extending the game” guide.
+This means most changes — a new spell, monster, item, perk, event, or whole floor — are a new entry in a registry, not new engine code. See [AGENTS.md](AGENTS.md) for contributor guidance, validation expectations, and the areas identified during review.
 
 ### Add a floor (example)
 
@@ -89,10 +89,36 @@ python3 -m http.server 8000
 # then visit http://localhost:8000
 ```
 
+## Known issues
+
+The following issues were reproduced against `main` at `a80cb6be43c7ab86feb4d88b7f786b07092518c4` during the October 20, 2026 review. They remain unresolved; this documentation update does not change gameplay.
+
+- **Level-up saves:** refreshing or closing the game before confirming level-up choices can permanently lose the unspent ability point and spell/perk choice. Complete the allocation before leaving the page.
+- **Auto timing:** rapidly switching Auto on, off, and on can duplicate actions and skip turns. Avoid rapid toggles while a turn is pending.
+- **Auto friendly fire:** automated area-damage targeting ignores allies in the blast. A Mage can injure or kill nearby party members with Fireball.
+- **Archer reactions:** an archer retreating out of melee does not trigger opportunity attacks.
+
+## Validation
+
+There is currently no checked-in automated test suite or package manifest. The review used the actual inline JavaScript in a Node harness with DOM stubs to reproduce the four issues above, and JavaScript syntax checking passed. That harness is not included in the repository; full browser behavior was not verified by those checks.
+
+For changes to game behavior, serve the file locally and exercise the affected flow in a browser. Useful regression checks are:
+
+- Start both a default and a custom party, move, reveal terrain, collect loot, and enter combat.
+- Complete combat manually and with Auto; test rapid toggles and restarting while a turn is pending.
+- Test melee, ranged retreat, guard reactions, and area spells with allies nearby.
+- Earn a level through combat and an event; confirm ability and build choices, then save and reload. Reload with choices pending when testing a fix for the known save issue.
+- Round-trip a portable save code and browser Continue; check town, equipment, HP, spell uses, and progression. Confirm portable codes still work when browser storage is unavailable.
+- Check the board and Party screen on desktop and a narrow mobile viewport.
+
+These are verification scenarios, not a claim that the known issues currently pass.
+
 ## Repository
 
 - `index.html` — the complete game (one file).
-- `goldbox-rpg.md` — the design and developer documentation: architecture, systems, tuning, and how to extend.
+- `AGENTS.md` — contributor instructions, architecture boundaries, and regression guidance.
+- `README.md` — play instructions, architecture overview, known issues, and validation checklist.
+- `Gold-Box.JPG` — the gameplay screenshot above.
 
 ## Credits & licence
 
