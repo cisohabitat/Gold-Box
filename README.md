@@ -1,6 +1,6 @@
-# Gold Box Slice
+# Gold Box — Crown of the Sunless King
 
-A single-file, browser-based tactical RPG in the spirit of the classic SSI Gold Box games. Explore a fogged dungeon from a top-down map that fills in as you go, fight turn-based battles on a grid, and descend through a branching underworld to claim a relic — then cut your way back out past the tomb’s guardian.
+A single-file, browser-based tactical RPG in the spirit of the classic SSI Gold Box games. Four heroes descend beneath a ruined kingdom to recover the Sunless King's crown and bring back the dawn. Explore a fogged dungeon, build a company around class signatures and permanent blessings, and overcome a two-phase final boss.
 
 The whole game is one HTML file. No build step, no install, no dependencies. Open it and play.
 
@@ -12,7 +12,7 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 Or just open `index.html` in any modern browser. It works offline (the only network calls are two optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a board-plus-panel view on desktop, stacked panels with large touch targets on a phone.
 
-The live version is served from GitHub Pages: the repo’s **Settings → Pages** source is set to the main branch root, so `index.html` is published automatically at the link above.
+The live version is served from GitHub Pages: the repo’s **Settings → Pages** source is set to the main branch root. Changes on a pull request branch become live only after they reach `main`; download that branch's `index.html` to play its version locally.
 
 ## The game
 
@@ -22,13 +22,19 @@ Every floor is generated fresh each run, so the layout, loot, and encounters cha
 
 ### Features
 
+- **Choose your oath.** Wanderer starts selected: smaller enemy forces, 25% party HP recovery after victory, and victory XP for downed heroes too. Delver keeps the original encounter budget and survivor-only XP; Ironbound increases that budget by 25%. Elite rolls and party strength still affect the result.
+- **Class signatures.** Each hero has a special action usable once per battle. Fighter: Rally the Line (+2 party attack and AC for two turns). Cleric: Dawn's Mercy (heal all standing allies for 6 + twice the Cleric's level). Thief: Cloak of Shadows (+4 AC and weapon damage for three turns). Mage: Arcane Wellspring (restore one use per spell and gain +2 AC for two turns). Buff durations tick at the affected actor's turn end. Signatures spend an action, and Auto uses them too.
+- **Embers of the old kingdom.** Each waystation offers three of the remaining blessings. Claim one free blessing there: permanent party attack, armour, or damage bonuses, or immediate supplies, gold, or potions. Each blessing is unique within a run. You may descend without claiming one.
+- **Legendary finds.** Find Dawnblade in the Ossuary, Starweave Mantle on the Pillared Road, and Nightglass in the Sunless Tomb. The first fork and second fork still determine your route and rewards.
+- **A king who fights back.** The Crypt Lord gains attack and damage and calls two skeleton guards when reduced to half health while still alive. A boss HP display marks the phase change. Escape requires both the crown and the king's defeat.
+- **A chronicle of your company.** Track your route, oath, blessings, battles, defeated foes, steps, secrets, and resolved events. The ending remembers your run.
 - **Branching world.** Six floors over one of four routes, forking twice and reconverging. Each fork is a real choice between a fight-heavy, loot-rich path and a quieter, supply-led one.
 - **Tactical grid combat.** Turn-based battles with movement, attacks of opportunity, ranged penalties in melee, spells (damage, healing, area blasts, control, buffs, debuffs, summons), and a full enemy AI. An auto-fight toggle plays out a battle for you.
 - **Four classes.** Fighter, Cleric, Thief, and Mage, each with its own stats, growth, and build path. Roll your own party or jump in with a pre-made one.
-- **Per-character progression.** Each hero earns its own XP and levels independently up to level 8 — heroes knocked out in a fight fall behind. Every level is one ability bump plus a build choice (learn a spell or take a perk), with pools deep enough to keep the choice meaningful all the way to the cap.
+- **Per-character progression.** Each hero earns its own XP and levels independently up to level 8. On Delver and Ironbound, heroes knocked out in a fight miss that victory's XP. Every level grants one ability bump plus a build choice (learn a spell or take a perk). Pending level allocations survive saving and reloading.
 - **Exploration that rewards your stats.** Line-of-sight fog, a Dexterity-driven scout radius, and twelve stat-check events spanning all six abilities. Hidden wall caches reward a perceptive (high-Wisdom) party — find them by walking past, or miss them entirely.
 - **Backgrounds.** Each hero has an origin with a small mechanical edge and in-character barks at story beats.
-- **Self-scaling difficulty.** Encounter strength is budgeted from floor tier, party level, and equipped gear, with tougher “elite” foes appearing on deeper floors. The curve was tuned with a headless combat simulator rather than by guesswork.
+- **Self-scaling difficulty.** Encounter strength is budgeted from floor tier, party level, equipped gear, and oath, with tougher “elite” foes appearing on deeper floors. Full Auto is convenient but does not guarantee victory; positioning, equipment, route choices, and supplies still matter.
 - **Portable saves.** Save to a copyable code that works anywhere, plus an automatic browser save with a Continue button when storage is available.
 
 ### Controls
@@ -37,6 +43,8 @@ Every floor is generated fresh each run, so the layout, loot, and encounters cha
 - **Explore** to reveal the map, pick up loot, trigger events, and find the stairs down. Foes engage when you step adjacent.
 - **Fight** by selecting a hero, then moving and acting (attack, cast, guard). Or hit **Auto** to let the party fight on its own.
 - **Waystation** between floors: rest, shop, manage equipment, and choose your next path.
+- **Signature** uses the current hero's class ability. Its explanation appears below the board while available; the button disables after use.
+- **Chronicle** opens your route and run statistics during exploration.
 
 ## How it’s built
 
@@ -44,7 +52,7 @@ The codebase is deliberately structured so content is **data**, and game logic n
 
 - Two pure engines — `CombatEngine` (grid combat) and `ExploreEngine` (dungeon) — hold all the rules and return plain typed signals. They never read or write the DOM.
 - A single controller layer owns the screen and the state machine, reacting to those signals.
-- Everything else is **registries**: `SPELLS`, `ITEMS`, `PERKS`, `CLASSES`, `BESTIARY`, `EVENTS`, the `WORLD` graph of floors, the procedural level generator, and the `DIFFICULTY` / `XP_TABLE` tuning tables.
+- Content lives in **registries**: `SPELLS`, `ITEMS`, `PERKS`, `CLASSES`, `BESTIARY`, `EVENTS`, `OATHS`, `BOONS`, `SIGNATURES`, the `WORLD` graph, and the `DIFFICULTY` / `XP_TABLE` tuning tables. The controller keeps campaign statistics and applies blessing bonuses to hero data before combat.
 
 This means most changes — a new spell, monster, item, perk, event, or whole floor — are a new entry in a registry, not new engine code. See [AGENTS.md](AGENTS.md) for contributor guidance, validation expectations, and the areas identified during review.
 
@@ -89,35 +97,48 @@ python3 -m http.server 8000
 # then visit http://localhost:8000
 ```
 
-## Known issues
+## Save compatibility and fixes
 
-The following issues were reproduced against `main` at `a80cb6be43c7ab86feb4d88b7f786b07092518c4` during the October 20, 2026 review. They remain unresolved; this documentation update does not change gameplay.
+Existing version 2 portable codes still load. Saves without campaign fields default to Delver with no claimed blessings or historical counters. An already-cleared Crypt Lord encounter is recognised when loading an older final-floor save. New saves retain the oath, blessings, statistics, and pending level allocations. A lost allocation from an older save cannot be reconstructed retroactively.
 
-- **Level-up saves:** refreshing or closing the game before confirming level-up choices can permanently lose the unspent ability point and spell/perk choice. Complete the allocation before leaving the page.
-- **Auto timing:** rapidly switching Auto on, off, and on can duplicate actions and skip turns. Avoid rapid toggles while a turn is pending.
-- **Auto friendly fire:** automated area-damage targeting ignores allies in the blast. A Mage can injure or kill nearby party members with Fireball.
-- **Archer reactions:** an archer retreating out of melee does not trigger opportunity attacks.
+The four defects reproduced in the October 20, 2026 review are addressed in this version:
+
+- Combat and event level-up allocations persist and reopen on load.
+- Auto uses one active turn timer and invalidates callbacks when combat or the menu state changes.
+- Auto area-damage spells reject targets that would hit allies; manual casts still permit friendly fire.
+- Archer retreat triggers opportunity attacks before the archer can shoot.
+
+Casters also advance to spell range instead of charging into melee, and incapacitated actors cannot perform attacks, movement, spells, or signatures.
 
 ## Validation
 
-There is currently no checked-in automated test suite or package manifest. The review used the actual inline JavaScript in a Node harness with DOM stubs to reproduce the four issues above, and JavaScript syntax checking passed. That harness is not included in the repository; full browser behavior was not verified by those checks.
+No tooling is needed to play. For contributors, run the dependency-free checks with Node.js 18 or newer:
+
+```bash
+node tests/regression.cjs
+```
+
+The 19 checks execute the actual inline script with DOM stubs. They cover the original defects, legacy and storage-blocked saves, class signatures, blessings, oath strength, boss phases, final victory requirements, caster positioning, and 96 generated floors' exit/key reachability.
+
+The expansion was also checked in Chromium: default and custom parties, journal, portable code loading, unique waystation blessings, signature actions, pending level-up recovery, boss phases, and the Party screen at a 390-pixel mobile viewport. Six seeded campaign simulations exercised both fork choices across all three oaths; one Wanderer run reached the ending through the boss's second phase, while the other runs ended in defeat. No JavaScript page errors occurred. These checks demonstrate a completable route, not exhaustive balance or cross-browser coverage. Direct `file://` verification was blocked by the managed browser's administrator policy; local HTTP play and offline interaction after loading were checked separately.
 
 For changes to game behavior, serve the file locally and exercise the affected flow in a browser. Useful regression checks are:
 
 - Start both a default and a custom party, move, reveal terrain, collect loot, and enter combat.
 - Complete combat manually and with Auto; test rapid toggles and restarting while a turn is pending.
 - Test melee, ranged retreat, guard reactions, and area spells with allies nearby.
-- Earn a level through combat and an event; confirm ability and build choices, then save and reload. Reload with choices pending when testing a fix for the known save issue.
+- Earn a level through combat and an event; confirm ability and build choices, then save and reload. Reload with choices pending and confirm the allocation screen returns.
 - Round-trip a portable save code and browser Continue; check town, equipment, HP, spell uses, and progression. Confirm portable codes still work when browser storage is unavailable.
 - Check the board and Party screen on desktop and a narrow mobile viewport.
 
-These are verification scenarios, not a claim that the known issues currently pass.
+Check new scenarios when their related behavior changes; the DOM-stub checks do not replace browser verification.
 
 ## Repository
 
 - `index.html` — the complete game (one file).
 - `AGENTS.md` — contributor instructions, architecture boundaries, and regression guidance.
-- `README.md` — play instructions, architecture overview, known issues, and validation checklist.
+- `README.md` — play instructions, architecture overview, save compatibility, and validation checklist.
+- `tests/regression.cjs` — dependency-free behavioral regression checks.
 - `Gold-Box.JPG` — the gameplay screenshot above.
 
 ## Credits & licence

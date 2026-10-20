@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Gold Box Slice — Explore, Fight, Cast</title>
+<title>Gold Box — Crown of the Sunless King</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=VT323&family=IM+Fell+English+SC&display=swap" rel="stylesheet">
@@ -264,6 +264,45 @@
   .shrow .nm .tag{color:var(--dim);font-size:14px;}
   .shrow .pr{color:var(--gold);font-variant-numeric:tabular-nums;min-width:54px;text-align:right;}
   .shrow button{font-size:16px;padding:3px 10px;text-transform:none;letter-spacing:0;}
+
+  :root{--dim:#b3a17d;}
+  .cabinet{max-width:1120px;background:linear-gradient(145deg,#251e16,#171713);}
+  .cgrp{flex-wrap:wrap;}
+  button:focus-visible,select:focus-visible{outline:3px solid var(--party-glow);outline-offset:3px;}
+  .eyebrow{color:var(--gold);letter-spacing:4px;font-size:15px;text-transform:uppercase;}
+  #startScreen{background:radial-gradient(ellipse at 50% 25%,#394137 0%,#111b1b 40%,#090d10 80%);}
+  #startScreen .sbox{max-width:700px;background:linear-gradient(160deg,#202c29ee,#12191aee);border:1px solid #b0935c;padding:36px;position:relative;overflow:hidden;}
+  #startScreen .game-title{font-size:clamp(38px,8vw,68px);letter-spacing:3px;margin:4px 0;}
+  .subtitle{font-family:'IM Fell English SC',serif;color:#e0d6bb;font-size:clamp(22px,4vw,32px);margin:0 0 16px;}
+  .cover-art{width:100%;height:150px;display:block;margin-bottom:20px;}
+  .intro-copy{color:#c6c7b7;max-width:470px;margin:0 auto 22px;line-height:1.4;}
+  .oath-select{display:block;margin:14px auto 22px;color:var(--gold);}
+  .oath-select select{display:block;margin:8px auto;padding:10px;background:#172326;color:var(--parch);font:inherit;border:1px solid var(--frame);max-width:100%;}
+  .campaign-strip{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:9px 12px;border:1px solid #6f623c;background:#141d1c;margin-bottom:12px;}
+  #objective{margin:2px 0;color:#ede1bf;font-size:18px;}
+  #chapterLabel{color:#a7bfae;font-size:15px;letter-spacing:2px;}
+  #bossPanel{border:1px solid #cb6650;padding:10px;background:#30191d;margin-bottom:12px;}
+  #bossPanel[hidden]{display:none;}
+  #bossHealth{height:8px;background:#190d14;margin-top:7px;}
+  #bossHealth i{display:block;height:100%;background:linear-gradient(90deg,#b84142,#e3a166);transition:width .25s;}
+  #journalScreen,#levelScreen{z-index:90;}
+  .journal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:20px 0;}
+  .journal-stat{background:#151d1b;border:1px solid #514c37;padding:12px;}
+  .journal-stat b{display:block;color:var(--gold);font-size:30px;}
+  .route-stop{padding:10px 12px;border-left:2px solid var(--frame);text-align:left;margin-left:6px;}
+  .route-stop.current{background:#314037;color:#f2ddb0;border-color:var(--gold);}
+  .route-stop small{display:block;color:var(--dim);font-size:16px;margin-top:4px;}
+  #boonChoices{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0;}
+  .boon-card{text-align:left;text-transform:none;letter-spacing:0;padding:12px;background:#172320;}
+  .boon-card strong{display:block;color:var(--gold);margin-bottom:6px;}
+  .boon-card span{font-size:17px;line-height:1.2;}
+  #boonStatus{color:var(--party-glow);}
+  #btnSignature{border-color:var(--party-glow);color:var(--party-glow);}
+  .legendary,.gslot .it.legendary{color:#f6ca77;border-color:#f6ca77;}
+  .banner .box{max-width:620px;width:calc(100% - 28px);padding:28px;max-height:90vh;overflow:auto;}
+  #endingStory{font-size:20px;line-height:1.4;color:#d3c6a3;}
+  #endingStats{color:var(--party-glow);line-height:1.5;margin-bottom:18px;}
+  @media(max-width:680px){#boonChoices{grid-template-columns:1fr;}#startScreen .sbox{padding:22px 16px;}.screen{padding:12px;}.cover-art{height:120px;}.journal-grid{grid-template-columns:repeat(2,1fr);}header.title h1{font-size:25px;}header.title .round{font-size:18px;}.campaign-strip button{min-height:44px;}.sbox{padding:20px 14px;}.row .nm{min-width:0;overflow-wrap:anywhere;}}
 </style>
 </head>
 <body>
@@ -272,6 +311,8 @@
     <h1 id="titleLabel">The Crypt</h1>
     <span class="round" id="roundLabel"></span>
   </header>
+  <div class="campaign-strip"><div><div id="chapterLabel">A descent in six chapters</div><p id="objective">The crown waits below.</p></div><button id="btnJournal">Chronicle</button></div>
+  <div id="bossPanel" hidden><span id="bossName"></span><div id="bossHealth"><i></i></div></div>
   <div class="layout">
     <div class="board-wrap">
       <div id="board"></div>
@@ -284,6 +325,7 @@
           <button id="btnAttack">Attack</button>
           <button id="btnCast">Cast</button>
           <button id="btnItem">Use Item</button>
+          <button id="btnSignature">Signature</button>
           <button id="btnGuard">Guard</button>
           <button id="btnWait">Wait</button>
           <button id="btnEnd">End Turn</button>
@@ -312,12 +354,17 @@
   </div>
 </div>
 <div class="banner" id="banner">
-  <div class="box"><h2 id="bannerText"></h2><button id="bannerBtn">Play Again</button></div>
+  <div class="box"><h2 id="bannerText"></h2><p id="endingStory"></p><div id="endingStats"></div><button id="bannerBtn">Play Again</button></div>
 </div>
 
 <div class="screen" id="startScreen">
   <div class="sbox">
-    <h1 class="game-title">Gold Box Slice</h1>
+    <div class="eyebrow">A tactical dungeon saga</div>
+    <h1 class="game-title">Gold Box</h1>
+    <p class="subtitle">Crown of the Sunless King</p>
+    <svg class="cover-art" viewBox="0 0 600 150" role="img" aria-label="A golden crown above a moonlit crypt"><defs><radialGradient id="moon"><stop stop-color="#bbd1b1"/><stop offset="1" stop-color="#718e7c"/></radialGradient></defs><circle cx="300" cy="68" r="57" fill="url(#moon)" opacity=".45"/><path d="M0 140L0 106 38 106 38 85 57 85 57 107 98 107 98 64 118 44 138 64 138 111 194 111 194 75 214 75 214 130 250 130 250 90Q300 20 350 90L350 130 387 130 387 75 407 75 407 111 462 111 462 64 482 44 502 64 502 107 543 107 543 85 562 85 562 106 600 106 600 150 0 150Z" fill="#0b1518"/><path d="M270 60L263 36 284 48 300 25 316 48 337 36 330 60Z" fill="#e8b84b"/><path d="M277 150V104Q300 68 323 104V150" fill="#03090c"/><path d="M294 148L300 114 306 148" fill="#d8ad5f" opacity=".7"/></svg>
+    <p class="intro-copy">Four souls. Six depths. One stolen dawn. Descend beneath the ruined kingdom, claim the dead king’s crown, and bring the light home.</p>
+    <label class="oath-select" for="oathChoice">Choose your oath<select id="oathChoice"><option value="wanderer" selected>Wanderer · recovery and shared victory XP</option><option value="delver">Delver · the original challenge</option><option value="ironbound">Ironbound · stronger enemy forces</option></select></label>
     <p class="tag" id="startTag">Descend into the dark. Recover the relic. Escape.</p>
     <div class="schoices">
       <button id="btnContinue" class="big" style="display:none">Continue Saved Run</button>
@@ -372,6 +419,7 @@
         <div id="sellList"></div>
       </div>
     </div>
+    <div class="pane" style="margin-top:14px"><h2>Embers of the old kingdom</h2><p class="tag" style="margin-bottom:8px">Choose one permanent party blessing at each waystation. Each blessing can be claimed once.</p><div id="boonChoices"></div><p id="boonStatus"></p></div>
     <div id="forkBox" class="forkbox"></div>
     <div class="crow">
       <button id="btnTownRest">Rest (free)</button>
@@ -419,7 +467,30 @@
   </div>
 </div>
 
+<div class="screen" id="journalScreen"><div class="sbox wide"><div class="eyebrow">The story so far</div><h2 class="ctitle">The Company’s Chronicle</h2><p class="tag" id="journalOath"></p><div class="journal-grid" id="journalStats"></div><div id="journalRoute"></div><h3>Carried embers</h3><p id="journalBoons" class="tag"></p><div class="crow"><button id="btnJournalClose" class="big">Return to the journey</button></div></div></div>
 <script>
+/* ===== CROWN CAMPAIGN : data, with controller helpers below ===== */
+const OATHS={wanderer:{name:'Wanderer',budget:0.65,recovery:0.25,desc:'Gentler battles; all heroes earn victory XP and recover 25% HP after a win.'},delver:{name:'Delver',budget:1,desc:'Fortune favours the prepared. Only standing heroes earn victory XP.'},ironbound:{name:'Ironbound',budget:1.25,desc:'Stronger enemy forces. Only standing heroes earn victory XP.'}};
+const BOONS={
+  steel:{name:'Ember of Steel',desc:'Every hero gains +1 attack.',atk:1},
+  shelter:{name:'Ember of Shelter',desc:'Every hero gains +1 armour class.',ac:1},
+  wrath:{name:'Ember of Wrath',desc:'Every hero deals +2 weapon damage.',dmg:2},
+  provision:{name:'Ember of Plenty',desc:'Receive three camp supplies.',rations:3},
+  treasure:{name:'Ember of Fortune',desc:'Receive 150 gold to arm the company.',gold:150},
+  mercy:{name:'Ember of Mercy',desc:'Every hero gains +1 AC and a healing potion.',ac:1,potions:4}
+};
+const SIGNATURES={
+  Fighter:{name:'Rally the Line',desc:'Party gains +2 attack and +2 AC for 2 turns. Once per battle.',kind:'rally'},
+  Cleric:{name:'Dawn’s Mercy',desc:'Heal every standing ally for 6 + twice your level. Once per battle.',kind:'heal'},
+  Thief:{name:'Cloak of Shadows',desc:'Gain +4 AC and +4 weapon damage for 3 turns. Once per battle.',kind:'shadow'},
+  Mage:{name:'Arcane Wellspring',desc:'Restore one use to each spell and gain +2 AC for 2 turns. Once per battle.',kind:'recharge'}
+};
+let campaign={oath:'delver',boons:[],shrines:[],battles:0,foes:0,steps:0,secrets:0,events:0,bossSlain:false};
+function freshCampaign(oath){return {oath:OATHS[oath]?oath:'delver',boons:[],shrines:[],battles:0,foes:0,steps:0,secrets:0,events:0,bossSlain:false};}
+function restoreCampaign(s){const c=freshCampaign(s&&s.oath);if(!s)return c;for(const k of ['battles','foes','steps','secrets','events'])c[k]=Math.max(0,Number(s[k])||0);c.boons=[...new Set((Array.isArray(s.boons)?s.boons:[]).filter(id=>BOONS[id]))];c.shrines=[...new Set((Array.isArray(s.shrines)?s.shrines:[]).filter(id=>WORLD[id]))];c.bossSlain=!!s.bossSlain;return c;}
+function applyBoons(){const bonus={atk:0,ac:0,dmg:0};campaign.boons.forEach(id=>{const b=BOONS[id];for(const k of ['atk','ac','dmg'])bonus[k]+=b[k]||0;});party.forEach(h=>h.campaignBonus={...bonus});}
+function escapeHTML(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
 /* ===== DICE : the only source of randomness ===== */
 const Dice = {
   roll(n,s){ let t=0; for(let i=0;i<n;i++) t+=1+Math.floor(Math.random()*s); return t; },
@@ -495,6 +566,9 @@ const SPELLS = {
    An optional classes list restricts who may equip it. New gear is an entry
    here, not engine code. ===== */
 const ITEMS = {
+  dawnblade:{id:'dawnblade',name:'Dawnblade',slot:'weapon',atk:2,dmg:4,cost:280,classes:['Fighter','Cleric'],legendary:true},
+  nightglass:{id:'nightglass',name:'Nightglass',slot:'weapon',atk:2,dmg:3,cost:260,classes:['Thief','Mage'],legendary:true,onHit:{status:'poison',duration:3,dmg:2,chance:0.6}},
+  starweave:{id:'starweave',name:'Starweave Mantle',slot:'armor',ac:3,cost:240,legendary:true},
   fine_sword:{ id:'fine_sword', name:'Fine Sword', slot:'weapon', atk:1, dmg:1, cost:80, classes:['Fighter','Cleric','Thief'] },
   war_axe:{ id:'war_axe', name:'War Axe', slot:'weapon', atk:0, dmg:3, cost:160, classes:['Fighter'] },
   venom_dagger:{ id:'venom_dagger', name:'Venom Dagger', slot:'weapon', atk:1, dmg:1, cost:200, classes:['Thief','Mage'], onHit:{status:'poison',duration:3,dmg:2,chance:0.5} },
@@ -512,6 +586,7 @@ function equipBonuses(c){
   let atk=0, ac=0, dmg=0;
   if(c.equip){ const w=ITEMS[c.equip.weapon], a=ITEMS[c.equip.armor];
     if(w){ atk+=w.atk||0; dmg+=w.dmg||0; } if(a){ ac+=a.ac||0; } }
+  if(c.campaignBonus){atk+=c.campaignBonus.atk||0;ac+=c.campaignBonus.ac||0;dmg+=c.campaignBonus.dmg||0;}
   return {atk,ac,dmg};
 }
 // Temporary buffs live in the statuses array (so _tick expires them) and are
@@ -917,7 +992,7 @@ function encounterBudget(ctx){
 // naturally trades against fielding more bodies.
 function composeEncounter(desc, ctx){
   const pool=(desc.pool&&desc.pool.length)?desc.pool:['goblin'];
-  let budget=encounterBudget(ctx); if(desc.boss) budget=Math.round(budget*DIFFICULTY.bossMul);
+  let budget=Math.round(encounterBudget(ctx)*(ctx.difficulty||1)); if(desc.boss) budget=Math.round(budget*DIFFICULTY.bossMul);
   if(desc.budgetMul) budget=Math.max(threatOf(pool[0]), Math.round(budget*desc.budgetMul));
   const tier=ctx.floor||0;
   const eliteChance=Math.max(0, Math.min(0.55, tier*(DIFFICULTY.eliteTier||0))) + (desc.boss?(DIFFICULTY.eliteBoss||0):0);
@@ -1219,11 +1294,11 @@ const WORLD = {
     encounters:[ { pool:['goblin','spider','shaman','hexer','archer'] },
                  { pool:['orc','skeleton','necromancer','acolyte','spider'] } ], next:['ossuary','shrine_road'] },
 
-  ossuary:{ id:'ossuary', name:'The Ossuary', theme:'catacomb', gen:{cols:4,rows:4}, tier:2, lockedExit:true, key:true, gold:130, rations:0, items:['war_axe','potion_heal'], events:1, secrets:2, secretItems:['venom_dagger'],
+  ossuary:{ id:'ossuary', name:'The Ossuary', theme:'catacomb', gen:{cols:4,rows:4}, tier:2, lockedExit:true, key:true, gold:130, rations:0, items:['dawnblade','potion_heal'], events:1, secrets:2, secretItems:['venom_dagger'],
     teaser:'Vaults packed with grave-goods and the things set to guard them. Richest floor of the descent, and the deadliest short of the tomb.',
     intro:'Bones stacked to the ceiling in their thousands, and gold glinting between them.',
     encounters:[ { pool:['orc','skeleton','bonecaller'] }, { pool:['skeleton','ogre','necromancer'] } ], next:['deep_stair'] },
-  shrine_road:{ id:'shrine_road', name:'The Pillared Road', theme:'tomb', gen:{cols:4,rows:3}, tier:2, lockedExit:true, key:true, gold:80, rations:2, items:['warded_cloak','potion_heal'], events:4, secrets:2, secretItems:['potion_heal'],
+  shrine_road:{ id:'shrine_road', name:'The Pillared Road', theme:'tomb', gen:{cols:4,rows:3}, tier:2, lockedExit:true, key:true, gold:80, rations:2, items:['starweave','potion_heal'], events:4, secrets:2, secretItems:['potion_heal'],
     teaser:'A processional of dead shrines. Safer going, more events and supplies to steady the party for the tomb.',
     intro:'A colonnade of broken pillars marches into the dark, lined with forgotten altars.',
     encounters:[ { pool:['skeleton','acolyte','archer'] }, { pool:['hexer','necromancer','spider'] } ], next:['deep_stair'] },
@@ -1232,7 +1307,7 @@ const WORLD = {
     intro:'The last stair down. The air is wrong, and something below knows you are coming.',
     encounters:[ { pool:['skeleton','ogre','bonecaller'] }, { pool:['necromancer','acolyte','hexer'] } ], next:['sunless_tomb'] },
 
-  sunless_tomb:{ id:'sunless_tomb', name:'The Sunless Tomb', theme:'tomb', gen:{cols:4,rows:4}, tier:3, lockedExit:true, key:true, relic:true, gold:150, rations:1, items:['venom_dagger','potion_heal'], events:2,
+  sunless_tomb:{ id:'sunless_tomb', name:'The Sunless Tomb', theme:'tomb', gen:{cols:4,rows:4}, tier:3, lockedExit:true, key:true, relic:true, gold:150, rations:1, items:['nightglass','potion_heal'], events:2,
     intro:'The heart of the tomb. The relic rests on its bier ahead \u2014 and so does whatever was bound here to keep it forever.',
     encounters:[ { guard:true, boss:true, lead:'crypt_lord', pool:['skeleton','necromancer','acolyte','bonecaller'] },
                  { pool:['skeleton','spider','ogre','hexer','archer'] } ], next:[] }
@@ -1254,7 +1329,7 @@ class CombatEngine{
     party.forEach((c,i)=>{ c.pos={x:0,y:1+i*2}; this.combatants.push(c); });
     const spots=[]; for(let x=w-2;x>=w-4;x--) for(let y=2;y<=6;y++) spots.push({x,y});
     enemies.forEach((e,i)=>{ e.pos={...(spots[i]||{x:w-1,y:1})}; this.combatants.push(e); });
-    this.combatants.forEach(c=>{ if(c.hp===undefined) c.hp=c.maxHp; c.alive=c.hp>0; if(!c.statuses) c.statuses=[]; c.acted={move:false,action:false}; c.guarding=false; c.guardUsed=false; c.aooUsed=false; });
+    this.combatants.forEach(c=>{ if(c.hp===undefined) c.hp=c.maxHp; c.alive=c.hp>0; if(!c.statuses) c.statuses=[]; c.acted={move:false,action:false}; c.guarding=false; c.guardUsed=false; c.aooUsed=false; c.signatureUsed=false; });
     this.order=this.combatants.map(c=>({id:c.id,init:Rules.initiative(c)})).sort((a,b)=>b.init-a.init).map(o=>o.id);
     this.turnIndex=0; this.round=1; this.phase='playing'; this.log=[]; this.xpEarned=0; this._summonSeq=0; this._begin();
   }
@@ -1271,7 +1346,7 @@ class CombatEngine{
       for(const [dx,dy] of DIRS8){ const nx=p.x+dx,ny=p.y+dy,k=key(nx,ny); if(!this.passable(nx,ny,c))continue; if(!seen.has(k)){ seen.set(k,d+1); n.push({x:nx,y:ny}); } } } f=n; }
     seen.delete(key(c.pos.x,c.pos.y)); return seen;
   }
-  canAttack(a,d){ return d&&d.alive&&d.side!==a.side&&this.cheb(a.pos,d.pos)<=a.range; }
+  canAttack(a,d){ if(!a.alive||this.isIncapacitated(a))return false; return d&&d.alive&&d.side!==a.side&&this.cheb(a.pos,d.pos)<=a.range; }
   // True if a living enemy stands in melee reach (one square) of c. A ranged
   // attacker that is melee-threatened shoots at a penalty.
   meleeThreatened(c){ return this.combatants.some(o=>o.alive&&o.side!==c.side&&this.cheb(o.pos,c.pos)<=1); }
@@ -1280,7 +1355,7 @@ class CombatEngine{
   spellEnemyTargets(c,sp){ return this.combatants.filter(o=>o.alive&&o.side!==c.side&&this.cheb(c.pos,o.pos)<=sp.range); }
   spellAllyTargets(c,sp){ return this.combatants.filter(o=>o.alive&&o.side===c.side&&this.cheb(c.pos,o.pos)<=sp.range); }
   spellPointTiles(c,sp){ const out=[]; for(let y=0;y<this.h;y++) for(let x=0;x<this.w;x++) if(this.cheb(c.pos,{x,y})<=sp.range) out.push({x,y}); return out; }
-  moveTo(c,x,y){ if(c.acted.move)return false; if(!this.reachable(c).has(key(x,y)))return false; const ox=c.pos.x, oy=c.pos.y; c.pos={x,y}; c.acted.move=true; this.log.push({t:c.name+' moves.',k:'sys'}); this._provoke(c, ox, oy); return true; }
+  moveTo(c,x,y){ if(!c.alive||this.isIncapacitated(c)||c.acted.move)return false; if(!this.reachable(c).has(key(x,y)))return false; const ox=c.pos.x, oy=c.pos.y; c.pos={x,y}; c.acted.move=true; this.log.push({t:c.name+' moves.',k:'sys'}); this._provoke(c, ox, oy); return true; }
   doAttack(att,def){
     if(att.acted.action||!this.canAttack(att,def))return false;
     att.acted.action=true;
@@ -1302,7 +1377,7 @@ class CombatEngine{
   }
   castSpell(c, sp, target){
     const slot=(c.spells||[]).find(s=>s.id===sp.id);
-    if(!slot||slot.uses<=0||c.acted.action) return false;
+    if(!c.alive||this.isIncapacitated(c)||!slot||slot.uses<=0||c.acted.action) return false;
     slot.uses--; c.acted.action=true; const e=sp.effect;
     if(e.kind==='heal'){
       const amt=Rules.spellAmount(e), before=target.hp; target.hp=Math.min(target.maxHp, target.hp+amt);
@@ -1390,7 +1465,25 @@ class CombatEngine{
     }
     return null;
   }
-  _checkEnd(){ if(!this.living('enemy').length) this.phase='won'; else if(!this.living('party').length) this.phase='lost'; }
+  signature(c){
+    const skill=SIGNATURES[c.cls];
+    if(!skill||c.side!=='party'||!c.alive||this.isIncapacitated(c)||c.acted.action||c.signatureUsed)return false;
+    c.signatureUsed=true;c.acted.action=true;
+    const add=(h,type,duration,atk,ac,dmg)=>h.statuses.push({type,duration,buff:true,atk,ac,dmg});
+    if(skill.kind==='rally')this._allies(c).forEach(h=>add(h,'rally',2,2,2,0));
+    if(skill.kind==='heal')this._allies(c).forEach(h=>h.hp=Math.min(h.maxHp,h.hp+6+2*(c.level||1)));
+    if(skill.kind==='shadow')add(c,'shadow',3,0,4,4);
+    if(skill.kind==='recharge'){(c.spells||[]).forEach(sp=>sp.uses=Math.min(sp.max,sp.uses+1));add(c,'wellspring',2,0,2,0);}
+    this.log.push({t:c.name+' invokes '+skill.name+'!',k:'magic'});return true;
+  }
+  _bossPhase(){
+    for(const boss of this.living('enemy'))if(boss.cls==='CryptLord'&&!boss.awakened&&boss.hp<=boss.maxHp/2){
+      boss.awakened=true;boss.statuses.push({type:'sunless_wrath',duration:99,buff:true,atk:2,dmg:2});
+      this.log.push({t:'THE CROWN SHATTERS. The Sunless King rises in wrath (+2 attack and damage), calling his last honour guard!',k:'kill'});
+      this._summon(boss,'skeleton',2);
+    }
+  }
+  _checkEnd(){ this._bossPhase(); if(!this.living('enemy').length) this.phase='won'; else if(!this.living('party').length) this.phase='lost'; }
   _drop(o){ o.hp=0; o.alive=false; this.log.push({t:o.name+' falls.',k:'kill'}); if(o.side==='enemy') this.xpEarned += (o.xp||0);
     else { const line=bgLine(o,'fall'); if(line) this.log.push({t:line,k:'flavor'}); } }
   _begin(){ const c=this.current(); if(c){ c.acted={move:false,action:false}; c.guarding=false; c.guardUsed=false; c.aooUsed=false; } }
@@ -1442,6 +1535,12 @@ class CombatEngine{
   _allies(c){ return this.living(c.side); }
 
   actAuto(c){
+    if(!c.alive||this.isIncapacitated(c))return;
+    if(c.side==='party'&&!c.signatureUsed&&!c.acted.action){
+      const kind=SIGNATURES[c.cls]&&SIGNATURES[c.cls].kind;
+      const needed=kind==='rally'||kind==='shadow'||(kind==='heal'&&this._allies(c).some(h=>h.hp<h.maxHp*.6))||(kind==='recharge'&&(c.spells||[]).some(sp=>sp.uses===0));
+      if(needed&&this.signature(c))return;
+    }
     const foes=this._foes(c); if(!foes.length) return;
     // A healer mends a badly hurt ally before anything else, if one is in range.
     if(this._healSpells(c).length && this._supportTurn(c)) return;
@@ -1497,7 +1596,7 @@ class CombatEngine{
         const inRange=heroes.some(h=>this.cheb({x,y},h.pos)<=c.range);
         if(!inRange || nearest<=1) continue;
         if(nearest>bestScore){ bestScore=nearest; best={x,y}; } }
-      if(best){ c.pos=best; c.acted.move=true; this.log.push({t:c.name+' backs away and draws.',k:'sys'}); this._checkGuards(c); if(!c.alive) return; }
+      if(best){ const ox=c.pos.x,oy=c.pos.y; c.pos=best; c.acted.move=true; this.log.push({t:c.name+' backs away and draws.',k:'sys'}); this._provoke(c,ox,oy); if(!c.alive)return; this._checkGuards(c); if(!c.alive) return; }
     }
     const inRange=heroes.filter(h=>this.canAttack(c,h));
     if(inRange.length){ const tgt=inRange.reduce((a,b)=> this._priority(a)>=this._priority(b)?a:b); this.doAttack(c,tgt); return; }
@@ -1565,11 +1664,17 @@ class CombatEngine{
     // 7) Lone area damage (Fireball on a single foe) when nothing else is castable.
     for(const s of pointDamage){ const tile=this._bestPointTile(c, s.def);
       if(tile){ this.castSpell(c, s.def, {x:tile.x,y:tile.y}); return; } }
-    // 8) Nothing castable in range: close, and defend in melee if a foe is adjacent.
+    // 8) Approach spell range without charging a fragile caster into melee.
     const goal=heroes.reduce((a,b)=> this.cheb(c.pos,a.pos)<=this.cheb(c.pos,b.pos)?a:b);
     if(this.canAttack(c,goal)){ this.doAttack(c,goal); return; }
-    this._stepToward(c, goal.pos);
-    if(c.alive && this.canAttack(c,goal)) this.doAttack(c,goal);
+    if(c.acted.move)return;
+    const reach=this.reachable(c);let best=null,bestScore=-Infinity;
+    for(const [k,steps] of reach){const [x,y]=k.split(',').map(Number),pos={x,y};
+      const distance=Math.min(...heroes.map(h=>this.cheb(pos,h.pos)));
+      const score=-Math.abs(distance-spellRange)*10-steps+(distance<=1?-100:0);
+      if(score>bestScore){bestScore=score;best=pos;}
+    }
+    if(best){this.moveTo(c,best.x,best.y);if(!c.alive)return;this._checkGuards(c);if(c.alive)this._casterTurn(c,heroes.filter(h=>h.alive));}
   }
   // Best tile for a point spell: the in-range tile whose blast catches the most
   // still-awake heroes, breaking ties toward casters and higher-priority targets.
@@ -1579,6 +1684,8 @@ class CombatEngine{
       if(this.cheb(c.pos,{x,y})>sp.range) continue;
       const caught=this._foes(c).filter(h=>!this.isIncapacitated(h) && this.cheb({x,y},h.pos)<=sp.aoe);
       if(!caught.length) continue;
+      // Damage blasts hit friend and foe. Reject collateral rather than sacrifice allies.
+      if(sp.effect.kind==='damage'&&this._allies(c).some(a=>this.cheb({x,y},a.pos)<=sp.aoe))continue;
       const casters=caught.filter(h=>h.spells&&h.spells.length).length;
       const score=caught.length*100 + casters*10 + caught.reduce((a,h)=>a+this._priority(h),0)*0.01;
       if(score>bestScore){ bestScore=score; best={x,y,count:caught.length}; }
@@ -1586,6 +1693,7 @@ class CombatEngine{
     return best;
   }
   _stepToward(c, dest){
+    if(c.acted.move)return;
     const r=this.reachable(c); let best=null,bD=Infinity,bS=Infinity;
     for(const [k,steps] of r){ const [x,y]=k.split(',').map(Number); const d=this.cheb({x,y},dest); if(d<bD||(d===bD&&steps<bS)){ best={x,y}; bD=d; bS=steps; } }
     if(best && bD<this.cheb(c.pos,dest)){ const ox=c.pos.x, oy=c.pos.y; c.pos=best; c.acted.move=true; this.log.push({t:c.name+' advances.',k:'sys'}); this._provoke(c, ox, oy); if(!c.alive) return; this._checkGuards(c); }
@@ -1824,6 +1932,12 @@ const $=s=>document.querySelector(s);
 const board=$('#board'), roster=$('#roster'), logEl=$('#log');
 const btnMove=$('#btnMove'), btnAttack=$('#btnAttack'), btnCast=$('#btnCast'), btnItem=$('#btnItem'), btnGuard=$('#btnGuard'), btnWait=$('#btnWait'), btnEnd=$('#btnEnd');
 let mode, party, explore, game, exploreFeed, mover=null, reachCache=null, pendingKey=null, selectedSpell=null, cellEls=[];
+let turnTimer=null,turnEpoch=0;
+function cancelTurn(){if(turnTimer!==null)clearTimeout(turnTimer);turnTimer=null;turnEpoch++;}
+function queueTurn(fn,delay){
+  cancelTurn();const epoch=turnEpoch,combat=game,actor=game.current();
+  turnTimer=setTimeout(()=>{turnTimer=null;if(epoch!==turnEpoch||mode!=='combat'||game!==combat||game.current()!==actor||game.phase!=='playing')return;fn();},delay);
+}
 let autoFight=false;   // when on, heroes take their own turns until the fight ends
 let nodeId=WORLD_START, worldPath=[], bag=null;
 // The party's effective level (for the difficulty budget and display) is the
@@ -1858,6 +1972,7 @@ function reviveExplore(s){ const e=Object.create(ExploreEngine.prototype);
   e.woken=!!s.woken; e.wokenSteps=s.wokenSteps|0; e.wanderers=s.wanderers|0; e.wanderPool=s.wanderPool||['skeleton']; e.wanderCap=3; e.wanderCadence=2;
   return e; }
 function reviveHero(s){ const tpl=CLASSES[s.cls]; const h=buildHero(tpl, s.name, s.ab, s.id, s.lvl||1, s.bg||null);
+  h.pendingLevels=Math.max(0,Math.min(MAX_LEVEL-1,Number(s.pending)||0));
   h.xp = (typeof s.xp==='number') ? s.xp : (XP_TABLE[s.lvl||1]||0);
   h.learned=Array.isArray(s.learned)?s.learned.filter(id=>SPELLS[id]):[]; applyLearned(h);
   h.perks=Array.isArray(s.perks)?s.perks.filter(id=>PERKS[id]):[];
@@ -1867,22 +1982,26 @@ function reviveHero(s){ const tpl=CLASSES[s.cls]; const h=buildHero(tpl, s.name,
   return h; }
 function saveState(){ return { v:2, nodeId, worldPath:[...worldPath], inTown:$('#townScreen').classList.contains('show'),
   bag:{ gold:bag.gold, keys:bag.keys, rations:bag.rations, relic:!!bag.relic, items:[...bag.items] },
-  party: party.map(h=>({ id:h.id, name:h.name, cls:h.cls, ab:{...h.abilities}, lvl:h.level, xp:h.xp||0, bg:h.bg||null, hp:h.hp,
+  party: party.map(h=>({ id:h.id, name:h.name, cls:h.cls, ab:{...h.abilities}, lvl:h.level, xp:h.xp||0, pending:h.pendingLevels||0, bg:h.bg||null, hp:h.hp,
     eq:{...h.equip}, learned:[...(h.learned||[])], perks:[...(h.perks||[])], su:Object.fromEntries((h.spells||[]).map(sp=>[sp.id,sp.uses])) })),
-  explore: serializeExplore(explore), feed:(exploreFeed||[]).slice(-25) }; }
+  campaign:{...campaign,boons:[...campaign.boons],shrines:[...campaign.shrines]}, explore: serializeExplore(explore), feed:(exploreFeed||[]).slice(-25) }; }
 function validSave(s){ return s && s.v===2 && typeof s.nodeId==='string' && WORLD[s.nodeId] && s.explore && Array.isArray(s.party)
   && s.party.length>0 && s.party.every(h=>CLASSES[h.cls]); }
 function applySave(s){ if(!validSave(s)) return false;
   try{
-    party=s.party.map(reviveHero);
+    cancelTurn();autoFight=false;levelUp=null;eventLevelUp=null;curEvent=null;
+    for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','saveScreen'])$('#'+id).classList.remove('show');
+    party=s.party.map(reviveHero);campaign=restoreCampaign(s.campaign);applyBoons();
     nodeId=s.nodeId; worldPath=Array.isArray(s.worldPath)&&s.worldPath.length?s.worldPath.slice():[nodeId];
     bag={ gold:s.bag.gold|0, keys:s.bag.keys|0, rations:s.bag.rations|0, relic:!!s.bag.relic,
       items:Array.isArray(s.bag.items)?s.bag.items.filter(id=>ITEMS[id]):[] };
     explore=reviveExplore(s.explore); applyScout();
+    if(!s.campaign&&nodeId==='sunless_tomb')campaign.bossSlain=Object.entries(explore.encounters).some(([k,enc])=>enc.lead==='crypt_lord'&&explore.cleared.has(k));
     game=null; mode='explore'; mover=null; reachCache=null; pendingKey=null; selectedSpell=null;
     exploreFeed=(Array.isArray(s.feed)&&s.feed.length)?s.feed.slice():[{t:'You press on through '+explore.name+'.',k:'sys'}];
     $('#townScreen').classList.remove('show');
     if(s.inTown && WORLD[nodeId].next && WORLD[nodeId].next.length){ openTown(); }
+    const pending=party.filter(h=>h.pendingLevels>0).map(hero=>({hero,by:hero.pendingLevels}));if(pending.length)openLevelUp(pending);
     return true;
   }catch(e){ return false; } }
 function autosave(){ if(mode!=='explore' || !party || !explore) return; if($('#banner').classList.contains('show')) return; persistWrite(encodeSave(saveState())); }
@@ -1905,6 +2024,9 @@ function copySave(){ const t=$('#saveCode'); t.select();
 function closeSave(){ $('#saveScreen').classList.remove('show'); }
 
 function newGame(chosenParty){
+  cancelTurn();autoFight=false;levelUp=null;eventLevelUp=null;curEvent=null;
+  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','saveScreen'])$('#'+id).classList.remove('show');
+  campaign=freshCampaign($('#oathChoice').value);
   party=chosenParty||makeParty(); nodeId=WORLD_START; worldPath=[WORLD_START]; explore=new ExploreEngine(buildDungeon(generateLevel(WORLD[WORLD_START]))); applyScout();
   bag={ gold:40, keys:0, rations:2, relic:false, items:[] };
   // Grant each hero's one-time background boon (gold or a starting item). Stat
@@ -1915,21 +2037,22 @@ function newGame(chosenParty){
     if(b.item && ITEMS[b.item]){ const it=ITEMS[b.item];
       if((it.slot==='weapon'||it.slot==='armor') && !h.equip[it.slot] && (!it.classes||it.classes.includes(h.cls))) h.equip[it.slot]=it.id;
       else bag.items.push(it.id); } });
+  applyBoons();
   game=null; mode='explore'; exploreFeed=[]; mover=null; reachCache=null; pendingKey=null; selectedSpell=null;
   exploreFeed.push({t: WORLD[WORLD_START].intro || ('You enter '+explore.name+'.'), k:'sys'});
   partyBark('floor');
   $('#banner').classList.remove('show'); render(); autosave();
 }
-function overlayOpen(){ return $('#townScreen').classList.contains('show') || $('#partyScreen').classList.contains('show') || $('#levelScreen').classList.contains('show') || $('#saveScreen').classList.contains('show') || $('#eventScreen').classList.contains('show'); }
+function overlayOpen(){ return $('#townScreen').classList.contains('show') || $('#partyScreen').classList.contains('show') || $('#levelScreen').classList.contains('show') || $('#saveScreen').classList.contains('show') || $('#eventScreen').classList.contains('show') || $('#journalScreen').classList.contains('show') || $('#startScreen').classList.contains('show') || $('#banner').classList.contains('show'); }
 function tryMove(dx,dy){
   if(mode!=='explore'||overlayOpen())return; const r=explore.move(dx,dy);
   if(r.type==='blocked') return;
   if(r.type==='locked'){
-    if(bag.keys>0){ bag.keys--; exploreFeed.push({t:'You spend a key and open the door.',k:'sys'}); handleEnter(explore.unlock(r.x,r.y)); }
+    if(bag.keys>0){ bag.keys--;campaign.steps++; exploreFeed.push({t:'You spend a key and open the door.',k:'sys'}); handleEnter(explore.unlock(r.x,r.y)); }
     else { exploreFeed.push({t:'The door is locked. You need a key.',k:'sys'}); render(); }
     return;
   }
-  handleEnter(r);
+  campaign.steps++;handleEnter(r);
 }
 // First-person controls: turning rotates facing in place; forward/back/strafe
 // translate the heading into an absolute step and reuse tryMove.
@@ -1973,7 +2096,7 @@ function collect(item){
 }
 // A discovered cache pays out gold and, sometimes, a bonus item.
 function collectSecret(cache){
-  if(!cache) return;
+  if(!cache) return;campaign.secrets++;
   let msg='You break open the hidden cache';
   if(cache.gold){ bag.gold+=cache.gold; msg+=' \u2014 '+cache.gold+' gold'; }
   if(cache.item && ITEMS[cache.item]){ bag.items.push(cache.item); msg+=(cache.gold?' and ':' \u2014 ')+'a '+ITEMS[cache.item].name; }
@@ -2004,7 +2127,7 @@ function renderEvent(){
     const btn=document.createElement('button'); btn.className='big eventopt';
     if(opt.fallback){ btn.innerHTML=`${opt.label}`; }
     else { const lead=bestForStat(opt.stat); const sign=lead.mod>=0?'+':'';
-      btn.innerHTML=`${opt.label} <span class="evmeta">${STAT_NAME[opt.stat]} &middot; ${lead.hero?lead.hero.name:'\u2014'} ${sign}${lead.mod}</span>`; }
+      btn.innerHTML=`${opt.label} <span class="evmeta">${STAT_NAME[opt.stat]} &middot; ${lead.hero?escapeHTML(lead.hero.name):'\u2014'} ${sign}${lead.mod}</span>`; }
     btn.onclick=()=>resolveEventOption(i);
     root.appendChild(btn);
   });
@@ -2022,7 +2145,7 @@ function resolveEventOption(i){
     applyEventOutcome(out, hero);
   }
   // resolve once: mark done so the tile won't trigger again
-  explore.eventsDone.add(curEvent.at);
+  explore.eventsDone.add(curEvent.at);campaign.events++;
   $('#eventOptions').innerHTML='';
   const rEl=$('#eventResult'); rEl.style.display=''; rEl.textContent=resultText;
   $('#btnEventDone').style.display='';
@@ -2096,13 +2219,14 @@ function closeEvent(){ curEvent=null; $('#eventScreen').classList.remove('show')
 function descendOrWin(){
   const node=WORLD[nodeId];
   if(node.next && node.next.length){ openTown(); }
-  else if(bag.relic){ render(); endRun('win'); }
+  else if(bag.relic&&campaign.bossSlain){ render(); endRun('win'); }
+  else if(bag.relic){exploreFeed.push({t:'The king still binds the crown. Defeat him before you leave.',k:'kill'});render();}
   else { exploreFeed.push({t:'The stairs out are sealed. Recover the relic first.',k:'sys'}); render(); }
 }
 function openTown(){ $('#townScreen').classList.add('show'); renderTown(); autosave(); }
 // Descend into a chosen successor node (the fork pick, or the only way on).
 function enterDungeon(nextId){
-  if(!WORLD[nextId]) return;
+  if(!WORLD[nextId]||!(WORLD[nodeId].next||[]).includes(nextId)) return;
   nodeId=nextId; worldPath.push(nextId);
   explore=new ExploreEngine(buildDungeon(generateLevel(WORLD[nodeId]))); applyScout();
   $('#townScreen').classList.remove('show');
@@ -2131,7 +2255,7 @@ function renderTown(){
   $('#townStatus').innerHTML=`Gold <b>${bag.gold}</b> &nbsp; Party HP <b>${totHp}/${maxHp}</b> &nbsp; Avg level <b>${partyLevelAvg()}</b> &nbsp; Carried items <b>${bag.items.length}</b>`;
   const shop=$('#shopList'); shop.innerHTML='';
   SHOP_STOCK.forEach(id=>{ const it=ITEMS[id]; const row=document.createElement('div'); row.className='shrow';
-    const tag = it.slot==='weapon' ? `+${it.atk||0} atk, +${it.dmg||0} dmg` : it.slot==='armor' ? `+${it.ac} AC` : 'heals 2d8+2';
+    const tag = it.slot==='weapon' ? `+${it.atk||0} atk, +${it.dmg||0} dmg` : it.slot==='armor' ? `+${it.ac} AC` : it.heal ? 'heals 2d8+2' : '+2 attack and damage for 3 turns';
     row.innerHTML=`<span class="nm">${it.name} <span class="tag">${tag}</span></span><span class="pr">${it.cost}g</span>`;
     const b=document.createElement('button'); b.textContent='Buy'; b.disabled=bag.gold<it.cost; b.onclick=()=>buyItem(id);
     row.appendChild(b); shop.appendChild(row); });
@@ -2141,7 +2265,7 @@ function renderTown(){
     row.innerHTML=`<span class="nm">${it.name}</span><span class="pr">${Math.floor((it.cost||0)/2)}g</span>`;
     const b=document.createElement('button'); b.textContent='Sell'; b.onclick=()=>sellItem(i);
     row.appendChild(b); sell.appendChild(row); });
-  renderFork();
+  renderBoons();renderFork();autosave();
 }
 // The way on: a single "Enter the Depths" when the path is straight, or a labelled
 // choice per branch when it forks. Each fork button names the floor and its pitch.
@@ -2239,7 +2363,7 @@ function confirmLevelUp(){
     if(!h.perks) h.perks=[];
     (e.perks||[]).forEach(id=>{ if(!h.perks.includes(id)){ h.perks.push(id);
       exploreFeed.push({t:h.name+' gains '+PERKS[id].name+'.',k:'magic'}); } });
-    levelUpHero(h, h.level); });                              // re-derive, then re-grant learned
+    h.pendingLevels=0;levelUpHero(h, h.level); });                              // re-derive, then re-grant learned
   levelUp=null; $('#levelScreen').classList.remove('show'); render();
 }
 function renderLevelUp(){
@@ -2250,7 +2374,7 @@ function renderLevelUp(){
     const prime=CLASSES[h.cls].primary;
     const merged={}; ABILITIES.forEach(k=> merged[k]=h.abilities[k]+e.picks[k]);
     const d=deriveStats(CLASSES[h.cls], merged, h.level);
-    let html=`<h3>${h.glyph} ${h.name} <span class="cls">${h.cls} L${h.level}${e.points>1?(' (+'+e.points+')'):''}</span></h3>`;
+    let html=`<h3>${h.glyph} ${escapeHTML(h.name)} <span class="cls">${h.cls} L${h.level}${e.points>1?(' (+'+e.points+')'):''}</span></h3>`;
     html+=`<p class="pts ${left>0?'':'done'}">${left>0?('Points to spend: '+left):'All points spent'}</p>`;
     html+='<div class="lvgrid">';
     ABILITIES.forEach(k=>{ const add=e.picks[k]; const val=h.abilities[k]+add;
@@ -2365,13 +2489,13 @@ function renderParty(){
     const card=document.createElement('div'); card.className='pcard'+(pickItem!==null&&canUse(ITEMS[bag.items[pickItem]],h)?' sel':'');
     const wId=h.equip.weapon, aId=h.equip.armor;
     const eb=equipBonuses(h), dmg=effDamage(h);
-    let html=`<h3>${h.glyph} ${h.name} <span class="cls">${h.cls} L${h.level||1}</span></h3>`;
+    let html=`<h3>${h.glyph} ${escapeHTML(h.name)} <span class="cls">${h.cls} L${h.level||1}</span></h3>`;
     const bg=h.bg&&BACKGROUNDS[h.bg];
-    if(bg){ html+=`<p class="bgline"><b>${bg.name}</b> &mdash; <i>${bgFill(bg.drive,h.name)}</i></p>`;
-      html+=`<p class="bgbio">${bgFill(bg.bio,h.name)}</p>`;
+    if(bg){ html+=`<p class="bgline"><b>${bg.name}</b> &mdash; <i>${escapeHTML(bgFill(bg.drive,h.name))}</i></p>`;
+      html+=`<p class="bgbio">${escapeHTML(bgFill(bg.bio,h.name))}</p>`;
       const bl=boonLabel(h.bg); if(bl) html+=`<p class="bgtrait">Trait: <b>${bl}</b></p>`; }
-    html+=`<div class="gslot" data-hi="${hi}" data-slot="weapon"><span class="lab">Weapon</span><span class="it${wId?'':' none'}">${wId?ITEMS[wId].name:'\u2014'}</span></div>`;
-    html+=`<div class="gslot" data-hi="${hi}" data-slot="armor"><span class="lab">Armour</span><span class="it${aId?'':' none'}">${aId?ITEMS[aId].name:'\u2014'}</span></div>`;
+    html+=`<div class="gslot" data-hi="${hi}" data-slot="weapon"><span class="lab">Weapon</span><span class="it${wId?(ITEMS[wId].legendary?' legendary':''):' none'}">${wId?ITEMS[wId].name:'\u2014'}</span></div>`;
+    html+=`<div class="gslot" data-hi="${hi}" data-slot="armor"><span class="lab">Armour</span><span class="it${aId?(ITEMS[aId].legendary?' legendary':''):' none'}">${aId?ITEMS[aId].name:'\u2014'}</span></div>`;
     html+=`<div class="eff">HP <b>${h.hp}/${h.maxHp}</b> &nbsp; AC <b>${effAc(h)}</b> &nbsp; Atk <b>+${effAttack(h)}</b> &nbsp; Dmg <b>${dmg.n}d${dmg.sides}+${dmg.bonus}</b></div>`;
     if(h.perks&&h.perks.length){ html+=`<div class="eff">Perks: <b>${h.perks.map(id=>PERKS[id]?PERKS[id].name:id).join(', ')}</b></div>`; }
     if(h.learned&&h.learned.length){ html+=`<div class="eff">Learned: <b>${h.learned.map(id=>SPELLS[id]?SPELLS[id].name:id).join(', ')}</b></div>`; }
@@ -2387,7 +2511,7 @@ function renderParty(){
   const bagEl=$('#partyBag'); bagEl.innerHTML='';
   if(!bag.items.length){ bagEl.innerHTML='<span class="ibag-empty">No carried items. Explore to find gear.</span>'; }
   else bag.items.forEach((id,i)=>{ const it=ITEMS[id]; const chip=document.createElement('span');
-    chip.className='ichip'+(pickItem===i?' sel':'');
+    chip.className='ichip'+(it.legendary?' legendary':'')+(pickItem===i?' sel':'');
     const tag = it.slot==='weapon' ? `+${it.atk||0} atk, +${it.dmg||0} dmg` : it.slot==='armor' ? `+${it.ac} AC` : 'potion';
     chip.innerHTML=`${it.name} <span class="tag">${tag}</span>`;
     chip.onclick=()=>selectItem(i); bagEl.appendChild(chip); });
@@ -2403,18 +2527,20 @@ function partyScoutRadius(){ const best=Math.max(0, ...(party||[]).filter(h=>h.a
 function partySearchBonus(){ return Math.max(-5, ...(party||[]).filter(h=>h.alive!==false).map(h=>abilityMod(h.abilities.wis))); }
 function applyScout(){ if(explore){ explore.scoutRadius=partyScoutRadius(); explore.searchBonus=partySearchBonus(); explore.reveal(); } }
 function enterCombat(desc,atKey){ pendingKey=atKey;
-  const enemies=composeEncounter(desc, {floor:floorTier(), partyLevel:partyLevelAvg(), gear:partyGearValue()});
+  const enemies=composeEncounter(desc, {floor:floorTier(), partyLevel:partyLevelAvg(), gear:partyGearValue(),difficulty:OATHS[campaign.oath].budget});
   if(desc.boss && desc.lead==='crypt_lord'){ exploreFeed.push({t:'The Crypt Lord rises between you and the way out. There is no leaving but through him.',k:'kill'}); }
   game=new CombatEngine(party, enemies, 10, 10); mode='combat'; mover=null; reachCache=null; selectedSpell=null; autoFight=false; updateAutoBtn(); render(); beginTurnFlow(); }
 function resolveCombat(){
-  autoFight=false; updateAutoBtn();
+  cancelTurn();autoFight=false; updateAutoBtn();
   if(game.phase==='won'){
-    explore.cleared.add(pendingKey);
+    explore.cleared.add(pendingKey);campaign.battles++;campaign.foes+=game.combatants.filter(c=>c.side==='enemy'&&!c.alive).length;if(game.combatants.some(c=>c.cls==='CryptLord'))campaign.bossSlain=true;
     const gained=game.xpEarned||0;
     // Award XP to the heroes who were still standing at the kill; a downed hero
     // misses it and falls behind, which is the point of individual progression.
-    const survivors = gained>0 ? party.filter(h=>h.alive) : [];
+    const survivors = gained>0 ? party.filter(h=>h.alive||OATHS[campaign.oath].recovery) : [];
     party.forEach(p=>{ if(!p.alive){ p.hp=1; p.alive=true; } p.statuses=[]; });
+    const recovery=OATHS[campaign.oath].recovery||0;
+    if(recovery){party.forEach(h=>h.hp=Math.min(h.maxHp,h.hp+Math.ceil(h.maxHp*recovery)));exploreFeed.push({t:'Your Wanderer oath rekindles the company: all heroes recover 25% HP and share the victory XP.',k:'magic'});}
     exploreFeed.push({t:'The foes are slain. Survivors regroup.',k:'sys'});
     // The party may have engaged while standing on loot (foes engage at one square,
     // before loot underfoot is taken); collect it now so nothing is stranded.
@@ -2436,11 +2562,13 @@ function resolveCombat(){
 function grantXp(heroes, amount, into){
   heroes.forEach(h=>{ h.xp=(h.xp||0)+amount; const target=levelForXp(h.xp); let by=0;
     while(h.level<target){ h.level++; by++; levelUpHero(h, h.level); }
-    if(by>0){ into.push({hero:h, by}); exploreFeed.push({t:h.name+' reaches level '+h.level+'.',k:'magic'}); const lv=bgLine(h,'levelup'); if(lv) exploreFeed.push({t:lv,k:'flavor'}); } });
+    if(by>0){ h.pendingLevels=(h.pendingLevels||0)+by;into.push({hero:h, by}); exploreFeed.push({t:h.name+' reaches level '+h.level+'.',k:'magic'}); const lv=bgLine(h,'levelup'); if(lv) exploreFeed.push({t:lv,k:'flavor'}); } });
   return into;
 }
-function endRun(kind){ persistClear(); const t=$('#bannerText');
+function endRun(kind){ cancelTurn();persistClear(); const t=$('#bannerText');
   if(kind==='win'){ t.textContent='You Escape! Gold: '+bag.gold; t.className='win'; } else { t.textContent='Party Defeated'; t.className='lose'; }
+  $('#endingStory').textContent=kind==='win'?'The crown breaks the horizon. For the first time in a thousand years, sunlight touches the kingdom. Four names will be spoken wherever the morning reaches.':'The crypt keeps its silence. Yet above the stone, another ember waits for hands brave enough to carry it.';
+  $('#endingStats').textContent=OATHS[campaign.oath].name+' · '+campaign.battles+' battles won · '+campaign.foes+' foes vanquished · '+campaign.secrets+' secrets found · '+campaign.boons.length+' embers claimed';
   $('#banner').classList.add('show'); }
 
 function setMode(m){
@@ -2458,7 +2586,7 @@ function doCast(target){ const c=game.current(); game.castSpell(c,selectedSpell,
 // healing potions; the menu reads the bag so any future potion appears here.
 function combatPotions(){ return bag.items.map((id,idx)=>({idx, item:ITEMS[id]})).filter(p=>p.item && p.item.slot==='potion'); }
 function useItem(idx){ if(mode!=='combat'||game.phase!=='playing')return; const c=game.current();
-  if(c.side!=='party'||c.acted.action)return;
+  if(c.side!=='party'||!c.alive||game.isIncapacitated(c)||c.acted.action)return;
   const id=bag.items[idx], it=ITEMS[id]; if(!it||it.slot!=='potion')return;
   if(it.heal){ const before=c.hp; c.hp=Math.min(c.maxHp, c.hp+Dice.roll(it.heal.n,it.heal.sides)+it.heal.bonus);
     game.log.push({t:c.name+' drinks a '+it.name+' (+'+(c.hp-before)+' HP).',k:'magic'}); }
@@ -2484,30 +2612,31 @@ function combatClick(x,y){
 }
 function endTurn(){ if(mode!=='combat'||game.current().side!=='party'||game.phase!=='playing')return; mover=null; reachCache=null; selectedSpell=null; game.endTurn(); render(); beginTurnFlow(); }
 function guard(){ if(mode!=='combat'||game.phase!=='playing')return; const c=game.current();
-  if(c.side!=='party'||c.acted.action)return;
+  if(c.side!=='party'||game.isIncapacitated(c)||c.acted.action)return;
   c.guarding=true; c.guardUsed=false; c.acted.action=true;
   game.log.push({t:c.name+' takes a guarded stance, ready to strike.',k:'sys'});
   mover=null; reachCache=null; selectedSpell=null; game.endTurn(); render(); beginTurnFlow(); }
 function waitTurn(){ if(mode!=='combat'||game.phase!=='playing')return; const c=game.current();
-  if(c.side!=='party'||c.acted.move||c.acted.action)return;
+  if(c.side!=='party'||game.isIncapacitated(c)||c.acted.move||c.acted.action)return;
   game.log.push({t:c.name+' waits, moving to the back of the line.',k:'sys'});
   mover=null; reachCache=null; selectedSpell=null; game.delay(); render(); beginTurnFlow(); }
 function beginTurnFlow(){
   if(mode!=='combat')return;
   if(game.phase!=='playing'){ resolveCombat(); return; }
   const c=game.current();
+  cancelTurn();
   if(game.isIncapacitated(c)){
     game.log.push({t:c.name+' sleeps through the turn.',k:'sys'}); render();
-    setTimeout(()=>{ game.endTurn(); render(); beginTurnFlow(); }, 460); return;
+    queueTurn(()=>{ game.endTurn(); render(); beginTurnFlow(); }, 460); return;
   }
   if(c.side==='enemy'){
-    setTimeout(()=>{ game.actAuto(c); render(); if(game.phase!=='playing'){ resolveCombat(); return; } game.endTurn(); render(); beginTurnFlow(); }, 520); return;
+    queueTurn(()=>{ game.actAuto(c); render(); if(game.phase!=='playing'){ resolveCombat(); return; } game.endTurn(); render(); beginTurnFlow(); }, 520); return;
   }
   // Hero's turn. Normally we render and wait for the player. With auto-fight on, the
   // hero takes its own turn on the same beat the enemies do, and we keep looping.
   if(autoFight){
     render();
-    setTimeout(()=>{
+    queueTurn(()=>{
       if(mode!=='combat'){ return; }
       if(!autoFight){ render(); return; }                 // player switched it off: hand control back
       if(game.phase!=='playing'){ resolveCombat(); return; }
@@ -2530,15 +2659,16 @@ function heroAuto(c){ game.actAuto(c); }
 function updateAutoBtn(){ const b=$('#btnAuto'); if(!b)return; b.textContent=autoFight?'Auto: On':'Auto'; b.classList.toggle('on', autoFight); }
 function toggleAuto(){
   if(mode!=='combat'||!game||game.phase!=='playing')return;
-  autoFight=!autoFight; updateAutoBtn();
+  cancelTurn();autoFight=!autoFight; updateAutoBtn();
   if(autoFight){ mover=null; reachCache=null; selectedSpell=null;
     const c=game.current();
     if(c.side==='party' && !game.isIncapacitated(c)) beginTurnFlow();   // idle on a hero turn: kick it off (enemy/skip turns are already self-driving)
     else render();
   } else render();
+  if(game.current().side==='enemy'||game.isIncapacitated(game.current()))beginTurnFlow();
 }
 
-function render(){ if(mode==='combat') renderCombat(); else { renderExplore(); autosave(); } }
+function render(){ if(mode==='combat') renderCombat(); else { renderExplore(); autosave(); } renderCampaign(); }
 
 // ---- First-person view: a stylized grid projection (Dungeon Master style) ----
 // Theme palettes for the projected surfaces, picked off the floor's `theme`. `glow`
@@ -2788,7 +2918,7 @@ function renderExplore(){
   party.forEach(u=>{ const row=document.createElement('div'); row.className='row party'+(u.hp<=0?' dead':'');
     const sp=(u.spells&&u.spells.length)?`<span class="sp">${u.spells.reduce((a,s)=>a+s.uses,0)}sp</span>`:'';
     const nx=xpToNext(u.level||1); const need = nx===null ? 'max' : Math.max(0, nx-(u.xp||0))+' to L'+((u.level||1)+1);
-    row.innerHTML=`<span class="glyph">${u.glyph}</span><span class="nm">${u.name} <span style="color:var(--dim)">${u.cls} L${u.level||1} <span style="opacity:0.7">${need}</span></span></span>${sp}<span class="hp">${u.hp}/${u.maxHp}</span>`;
+    row.innerHTML=`<span class="glyph">${u.glyph}</span><span class="nm">${escapeHTML(u.name)} <span style="color:var(--dim)">${u.cls} L${u.level||1} <span style="opacity:0.7">${need}</span></span></span>${sp}<span class="hp">${u.hp}/${u.maxHp}</span>`;
     roster.appendChild(row); });
   drawLog(exploreFeed);
   $('#btnRest').textContent='Make Camp ('+bag.rations+')'; $('#btnRest').disabled=bag.rations<1;
@@ -2802,7 +2932,7 @@ function renderCombat(){
   $('#combatControls').style.display='flex'; $('#exploreControls').style.display='none'; $('#fpControls').style.display='none'; $('#satchel').style.display='none';
   board.removeAttribute('data-theme'); board.classList.remove('fpboard'); board.classList.remove('mapboard');
   board.style.gridTemplateColumns=`repeat(${game.w},minmax(0,1fr))`; board.style.gridTemplateRows=`repeat(${game.h},minmax(0,1fr))`; board.style.aspectRatio='1/1'; board.innerHTML=''; cellEls=[];
-  const playerTurn = c.side==='party'&&game.phase==='playing';
+  const playerTurn = c.side==='party'&&game.phase==='playing'&&!game.isIncapacitated(c);
   const castEnemy=new Set(), castAlly=new Set(), castPoint=new Set();
   if(mover==='cast'&&selectedSpell&&playerTurn){
     if(selectedSpell.target==='enemy') game.spellEnemyTargets(c,selectedSpell).forEach(o=>castEnemy.add(key(o.pos.x,o.pos.y)));
@@ -2837,7 +2967,7 @@ function renderCombat(){
     const inc=game.isIncapacitated(u), psn=u.alive&&u.statuses&&u.statuses.some(s=>s.type==='poison'), bls=u.alive&&u.statuses&&u.statuses.some(s=>s.type==='bless'||s.type==='fury'), dbf=u.alive&&u.statuses&&u.statuses.some(s=>s.debuff);
     const st=(inc?' <span class="sp">held</span>':'')+(psn?' <span class="sp" style="color:var(--heal)">pois</span>':'')+(bls?' <span class="sp" style="color:var(--gold)">buff</span>':'')+(dbf?' <span class="sp" style="color:#c46bff">weak</span>':'')+((u.alive&&u.guarding)?' <span class="sp" style="color:var(--gold)">guard</span>':'');
     const lv=u.side==='party'?(' L'+(u.level||1)):'';
-    row.innerHTML=`<span class="glyph">${u.glyph}</span><span class="nm">${u.name} <span style="color:var(--dim)">${u.cls}${lv}</span>${st}</span>${sp}<span class="hp">${u.hp}/${u.maxHp}</span>`;
+    row.innerHTML=`<span class="glyph">${u.glyph}</span><span class="nm">${escapeHTML(u.name)} <span style="color:var(--dim)">${u.cls}${lv}</span>${st}</span>${sp}<span class="hp">${u.hp}/${u.maxHp}</span>`;
     roster.appendChild(row); });
   drawLog(game.log);
 
@@ -2854,6 +2984,7 @@ function renderCombat(){
     groups.forEach(g=>{ const b=document.createElement('button'); b.className='spellbtn'; b.textContent=g.name+' ('+g.n+')'; b.onclick=()=>useItem(g.idx); sm.appendChild(b); });
   } else sm.style.display='none';
 
+  const sig=SIGNATURES[c.cls];$('#btnSignature').textContent=sig?sig.name:'Signature';$('#btnSignature').title=sig?sig.desc:'';$('#btnSignature').disabled=!playerTurn||autoFight||c.acted.action||c.signatureUsed||!sig;
   btnMove.disabled=!playerTurn||autoFight||c.acted.move;
   btnAttack.disabled=!playerTurn||autoFight||c.acted.action||game.targetsFor(c).length===0;
   const knows=c.spells&&c.spells.length>0;
@@ -2874,7 +3005,7 @@ function renderCombat(){
   else if(mover==='cast'&&!selectedSpell) hint='Choose a spell.';
   else if(mover==='item') hint='Choose an item to use. It is consumed and spends this action.';
   else if(mover==='cast'&&selectedSpell){ hint = selectedSpell.target==='ally' ? 'Click an ally in range to heal.' : selectedSpell.target==='point' ? (selectedSpell.effect.kind==='buff' ? 'Click a tile. Allies near it are blessed.' : 'Click a tile. The blast hits everything near it, friend or foe.') : 'Click an enemy in range.'; }
-  else hint=c.name+' (you) : Move, Attack'+(knows?', Cast':'')+', Guard, Wait.';
+  else hint=c.name+' (you) : Move, Attack'+(knows?', Cast':'')+', Guard, Wait.'+(sig&&!c.signatureUsed?' '+sig.desc:'');
   $('#hint').textContent=hint;
 }
 
@@ -2901,13 +3032,15 @@ const ABIL_KEYS=['str','dex','con','int','wis','cha'];
 let build=null;   // creation working state
 
 function showStart(){
+  cancelTurn();autoFight=false;mode='start';
+  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen'])$('#'+id).classList.remove('show');
   $('#banner').classList.remove('show');
   $('#createScreen').classList.remove('show');
   $('#saveScreen').classList.remove('show');
   const hasSave = !!decodeSave(persistRead());
   $('#btnContinue').style.display = hasSave ? '' : 'none';
   // Tagline scales with the world graph so it never goes stale as floors are added or removed.
-  const tag=$('#startTag'); if(tag) tag.textContent='Descend '+WORLD_MAXDEPTH+' levels. Recover the relic. Escape.';
+  const tag=$('#startTag'); if(tag) tag.textContent='Descend '+WORLD_MAXDEPTH+' chapters. Defeat the king. Bring back the dawn.';
   $('#startScreen').classList.add('show');
 }
 function startDefault(){
@@ -2962,9 +3095,9 @@ function renderBuild(){
     const card=document.createElement('div'); card.className='hero';
     let html=`<h3>${tpl.glyph} <span class="cls">${h.cls}</span></h3>`;
     html+=`<p class="blurb">${tpl.blurb}</p>`;
-    html+=`<input class="nm" data-hi="${hi}" maxlength="14" value="${(h.name||'').replace(/"/g,'')}" placeholder="name">`;
+    html+=`<input class="nm" data-hi="${hi}" maxlength="14" value="${escapeHTML(h.name||'')}" placeholder="name">`;
     const bg=h.bg&&BACKGROUNDS[h.bg]; const npool=(BG_BY_CLASS[h.cls]||[]).length;
-    if(bg){ html+=`<div class="bgpick" data-hi="${hi}"><span class="bgname">${bg.name}${npool>1?' \u21bb':''}</span><span class="bgbio">${bgFill(bg.bio, h.name.trim()||h.cls)}</span><span class="bgtrait">Trait: ${boonLabel(h.bg)}</span></div>`; }
+    if(bg){ html+=`<div class="bgpick" data-hi="${hi}"><span class="bgname">${bg.name}${npool>1?' \u21bb':''}</span><span class="bgbio">${escapeHTML(bgFill(bg.bio, h.name.trim()||h.cls))}</span><span class="bgtrait">Trait: ${boonLabel(h.bg)}</span></div>`; }
     html+=`<div class="pool">`;
     h.pool.forEach((v,pi)=>{ const used=poolIndexUsed(h,pi); const picked=h.pick===pi;
       html+=`<span class="chip${used?' used':''}" data-hi="${hi}" data-pi="${pi}" style="${picked?'outline:2px solid var(--gold);':''}">${v}</span>`; });
@@ -3009,7 +3142,47 @@ $('#btnCopySave').onclick=copySave;
 $('#btnSaveClose').onclick=closeSave;
 $('#btnEventDone').onclick=closeEvent;
 
+
+function renderBoons(){
+  const root=$('#boonChoices');root.innerHTML='';
+  const claimed=campaign.shrines.includes(nodeId);
+  $('#boonStatus').textContent=claimed?'This waystation’s ember is already yours.':'A gift freely given. Choose before descending, or pass it by.';
+  if(claimed)return;
+  // Rotate through the remaining pool: all offers are reproducible from the saved route.
+  const available=Object.keys(BOONS).filter(id=>!campaign.boons.includes(id));
+  const offset=(floorDepth()-1)%Math.max(1,available.length);
+  const offers=available.slice(offset).concat(available.slice(0,offset)).slice(0,3);
+  for(const id of offers){const b=BOONS[id],button=document.createElement('button');button.className='boon-card';button.innerHTML='<strong>'+b.name+'</strong><span>'+b.desc+'</span>';button.onclick=()=>claimBoon(id);root.appendChild(button);}
+}
+function claimBoon(id){
+  if(mode!=='explore'||!$('#townScreen').classList.contains('show')||!BOONS[id]||campaign.shrines.includes(nodeId)||campaign.boons.includes(id))return;
+  campaign.shrines.push(nodeId);campaign.boons.push(id);const b=BOONS[id];
+  bag.gold+=b.gold||0;bag.rations+=b.rations||0;for(let i=0;i<(b.potions||0);i++)bag.items.push('potion_heal');
+  applyBoons();exploreFeed.push({t:'The company carries the '+b.name+'. '+b.desc,k:'magic'});renderTown();renderCampaign();autosave();
+}
+function renderCampaign(){
+  if(!party||!explore)return;
+  $('#btnJournal').disabled=mode!=='explore';
+  $('#chapterLabel').textContent='CHAPTER '+floorDepth()+' / '+WORLD_MAXDEPTH+' · '+OATHS[campaign.oath].name.toUpperCase();
+  $('#objective').textContent=bag.relic?(campaign.bossSlain?'Carry the crown to the final stairs.':'The crown is yours. Defeat the king and reach the stairs.'):(nodeId==='sunless_tomb'?'Find the crown. Confront the Sunless King.':'Find the key, gather strength, and descend.');
+  const boss=mode==='combat'&&game&&game.combatants.find(c=>c.cls==='CryptLord'&&c.alive);
+  $('#bossPanel').hidden=!boss;
+  if(boss){$('#bossName').textContent=(boss.awakened?'II · WRATH OF THE SUNLESS KING':'I · THE CROWN’S KEEPER')+' · '+boss.hp+' / '+boss.maxHp+' HP';$('#bossHealth i').style.width=(boss.hp/boss.maxHp*100)+'%';}
+}
+function openJournal(){
+  if(mode!=='explore'||overlayOpen())return;
+  $('#journalScreen').classList.add('show');
+  $('#journalOath').textContent=OATHS[campaign.oath].name+' — '+OATHS[campaign.oath].desc;
+  $('#journalStats').innerHTML=[['Battles won',campaign.battles],['Foes vanquished',campaign.foes],['Steps taken',campaign.steps],['Secrets found',campaign.secrets],['Events resolved',campaign.events],['Embers carried',campaign.boons.length]].map(([label,n])=>'<div class="journal-stat"><b>'+n+'</b>'+label+'</div>').join('');
+  const root=$('#journalRoute');root.innerHTML='';
+  worldPath.forEach((id,i)=>{const el=document.createElement('div');el.className='route-stop'+(id===nodeId?' current':'');el.innerHTML='<b>'+String(i+1).padStart(2,'0')+' · '+WORLD[id].name+'</b><small>'+escapeHTML(WORLD[id].intro||'')+'</small>';root.appendChild(el);});
+  $('#journalBoons').textContent=campaign.boons.length?campaign.boons.map(id=>BOONS[id].name+': '+BOONS[id].desc).join(' · '):'No embers claimed yet. The old kingdom’s blessings wait at the waystations.';
+}
+$('#btnJournal').onclick=openJournal;
+$('#btnJournalClose').onclick=()=>{$('#journalScreen').classList.remove('show');render();};
+$('#btnSignature').onclick=()=>{if(mode!=='combat'||autoFight||game.current().side!=='party')return;game.signature(game.current());mover=null;selectedSpell=null;render();};
 showStart();
 </script>
 </body>
 </html>
+
