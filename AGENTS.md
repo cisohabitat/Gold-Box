@@ -6,6 +6,10 @@ These instructions apply to the entire repository. Gold Box — Crown of the Sun
 
 Read `README.md` before changing behavior. It describes the controls, architecture, known issues, and manual verification scenarios. Keep that documentation accurate when behavior or repository contents change.
 
+## Publication preference
+
+The user has authorized automatic publication for future requested changes to this game. Complete the relevant verification, keep README.md and AGENTS.md current, merge the finished changes into `main`, and verify the GitHub Pages deployment without requesting publication approval again. Apply any later user instruction that changes this preference.
+
 ## Architecture
 
 - Keep `CombatEngine` and `ExploreEngine` independent of the DOM. The controller owns UI updates and transitions between exploration, combat, town, events, and level-up screens.
