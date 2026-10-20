@@ -446,7 +446,7 @@
   .header-meta{flex:none;text-align:right;}.header-meta .round{display:block;line-height:18px;}
   .build-stamp{display:block;font-family:monospace;font-size:11px;line-height:12px;color:#baaa87;letter-spacing:0;}
   .title-build{font-size:14px;line-height:18px;margin:0 0 10px;}
-  .release-info{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;margin-bottom:8px;}.release-info .title-build{margin:0;}.balance-link{display:inline-flex;align-items:center;min-height:44px;font-size:15px;color:var(--gold);}
+  .release-info{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;margin-bottom:8px;}.release-info .title-build{margin:0;}
   .restart-actions{display:flex;flex-direction:column;gap:24px;margin-top:20px;}.restart-actions button{min-height:48px;}
   #btnRestart{border-color:#514735;color:#b9aa8c;}#btnConfirmRestart{border-color:#be795f;color:#f0c3ad;}
   @media(max-width:599px) and (max-height:740px){.cabinet,.board-wrap{gap:3px;}}
@@ -502,7 +502,7 @@
 <div class="cabinet">
   <header class="title">
     <h1 id="titleLabel">The Crypt</h1>
-    <div class="header-meta"><span class="round" id="roundLabel"></span><small class="build-stamp" data-build>Build 0.9.0</small></div>
+    <div class="header-meta"><span class="round" id="roundLabel"></span><small class="build-stamp" data-build>Build 0.9.1</small></div>
   </header>
   <div class="campaign-strip"><div><div id="chapterLabel">A descent in six chapters</div><p id="objective">The crown waits below.</p></div><button id="btnJournal">Chronicle</button></div>
   <div id="bossPanel" hidden><span id="bossName"></span><div id="bossHealth"><i></i></div></div>
@@ -558,7 +558,7 @@
   <div class="sbox">
     <div class="eyebrow">A tactical dungeon saga</div>
     <h1 class="game-title">Gold Box</h1>
-    <div class="release-info"><p class="build-stamp title-build" data-build>Build 0.9.0</p><a class="balance-link" href="https://github.com/cisohabitat/Gold-Box/blob/main/BALANCE.md" target="_blank" rel="noopener">Balance report ↗</a></div>
+    <div class="release-info"><p class="build-stamp title-build" data-build>Build 0.9.1</p></div>
     <p class="subtitle">Crown of the Sunless King</p>
     <svg class="cover-art" viewBox="0 0 600 150" role="img" aria-label="A golden crown above a moonlit crypt"><defs><radialGradient id="moon"><stop stop-color="#bbd1b1"/><stop offset="1" stop-color="#718e7c"/></radialGradient></defs><circle cx="300" cy="68" r="57" fill="url(#moon)" opacity=".45"/><path d="M0 140L0 106 38 106 38 85 57 85 57 107 98 107 98 64 118 44 138 64 138 111 194 111 194 75 214 75 214 130 250 130 250 90Q300 20 350 90L350 130 387 130 387 75 407 75 407 111 462 111 462 64 482 44 502 64 502 107 543 107 543 85 562 85 562 106 600 106 600 150 0 150Z" fill="#0b1518"/><path d="M270 60L263 36 284 48 300 25 316 48 337 36 330 60Z" fill="#e8b84b"/><path d="M277 150V104Q300 68 323 104V150" fill="#03090c"/><path d="M294 148L300 114 306 148" fill="#d8ad5f" opacity=".7"/></svg>
     <p class="intro-copy">The Last Dawn. Six chapters. A kingdom waiting for sunrise. Rally the living, confront the dead, and decide what should replace the Sunless King.</p>
@@ -673,7 +673,7 @@
 <div class="screen" id="restartScreen" role="dialog" aria-modal="true" aria-labelledby="restartTitle" aria-describedby="restartMessage"><div class="sbox"><h2 id="restartTitle" class="ctitle">Return to the title screen?</h2><p id="restartMessage" class="story-copy"></p><div class="restart-actions"><button id="btnKeepPlaying" class="big">Keep Playing</button><button id="btnConfirmRestart">Return to Title</button></div></div></div>
 <div class="screen" id="settingsScreen" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="sbox"><h2 id="settingsTitle" class="ctitle">Sound &amp; Display</h2><p class="tag">Make the journey your own. Combat pauses while this sheet is open.</p><div class="settings-list"><label><input id="prefSound" type="checkbox"> Synthesized sound effects</label><label><input id="prefMusic" type="checkbox"> Quiet ambient tones (requires sound)</label><label for="prefVolume">Volume <output id="volumeValue">35%</output><input id="prefVolume" type="range" min="0" max="100" step="5" value="35"></label><label><input id="prefEffects" type="checkbox" checked> Visual effects (respects reduced motion)</label><label><input id="prefContrast" type="checkbox"> High contrast / clean display</label><label for="prefPace">Auto pace<select id="prefPace"><option value="normal">Deliberate · normal speed</option><option value="quick">Quick · shorter Auto turns</option></select></label></div><p id="audioStatus" class="tag" role="status">Sound is off by default. No downloads are needed.</p><p id="preferenceStatus" class="tag" role="status"></p><button id="btnSettingsClose" class="big">Back to Game</button></div></div>
 <script>
-const GAME_BUILD='0.9.0';
+const GAME_BUILD='0.9.1';
 document.querySelectorAll('[data-build]').forEach(el=>el.textContent='Build '+GAME_BUILD);
 /* ===== CROWN CAMPAIGN : data, with controller helpers below ===== */
 const OATHS={wanderer:{name:'Wanderer',budget:0.65,recovery:0.25,desc:'Gentler battles; all heroes earn victory XP and recover 25% HP after a win.'},delver:{name:'Delver',budget:1,desc:'Fortune favours the prepared. Only standing heroes earn victory XP.'},ironbound:{name:'Ironbound',budget:1.25,desc:'Stronger enemy forces. Only standing heroes earn victory XP.'}};
