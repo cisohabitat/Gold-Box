@@ -370,8 +370,8 @@ test('RESTART-01: accidental restart and cancellation preserve the exploration r
 
 test('RESTART-02: pending enemy pauses, cancellation resumes one turn, confirmation preserves Continue',()=>{
  const h=harness(),{run}=h;run("enterCombat({pool:['goblin']},'2,2');cancelTurn();game.order=['e0',...game.order.filter(id=>id!=='e0')];game.turnIndex=0;game._begin();const restartActor=game.current(),savedBeforeRestart=persistRead();beginTurnFlow();requestRestart();");
- assert.equal(h.timers.size,0);assert.equal(h.tick(),false);assert.equal(run('game.current()===restartActor'),true);
- run('cancelRestart();');assert.equal(h.timers.size,1);run('requestRestart();confirmRestart();');assert.equal(h.timers.size,0);assert.equal(run('mode'),'start');assert.equal(run("$('#restartScreen').classList.contains('show')"),false);assert.equal(run('persistRead()'),run('savedBeforeRestart'));
+ assert.equal(run('turnTimer'),null);assert.equal(run('confirmRestart()'),false);assert.equal(h.tick(),true);assert.equal(run('game.current()===restartActor'),true);
+ run('cancelRestart();');assert.equal(h.timers.size,1);run('requestRestart();');h.tick();run('confirmRestart();');assert.equal(h.timers.size,0);assert.equal(run('mode'),'start');assert.equal(run("$('#restartScreen').classList.contains('show')"),false);assert.equal(run('persistRead()'),run('savedBeforeRestart'));
 });
 
 test('RESTART-03: cancelling retains a manual spell aim and unspent action',()=>{

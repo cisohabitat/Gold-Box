@@ -18,7 +18,7 @@ The live version is served from GitHub Pages: the repo’s **Settings → Pages*
 
 The play area adapts to the current browser height, including Safari's expanding or collapsing bars, and leaves safe-area space around the display cutout and home indicator. In portrait, the board sits above the action buttons and movement pad. In short landscape windows at least 600px wide, the board and controls sit side by side. In very small portrait windows the play panel can scroll, keeping the board at least 160px tall and every action reachable. The boss bar and horizontally scrollable spell menu fit inside that same play area.
 
-**Restart** now asks before returning to the title screen. **Keep Playing** is selected first; Escape cancels, and combat pauses while the question is open. Confirming preserves your latest exploration save for Continue, but an in-progress battle is not saved. The build number appears on the title screen and gameplay header.
+**Restart** now asks before returning to the title screen. **Keep Playing** is selected first and remains available immediately. The return-to-title button waits 600 ms before enabling to reject a rapid second tap; Escape cancels, and combat pauses while the question is open. Confirming preserves your latest exploration save for Continue, but an in-progress battle is not saved. The build number appears on the title screen and gameplay header.
 
 The two latest events stay visible beneath the board, during exploration and combat. The full history remains available in **Party & Log** (labelled **Log** in very narrow landscape windows). Combat also shows the active hero and whether movement and the action are ready or spent.
 

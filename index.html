@@ -2206,7 +2206,7 @@ const $=s=>document.querySelector(s);
 const board=$('#board'), roster=$('#roster'), logEl=$('#log');
 const btnMove=$('#btnMove'), btnAttack=$('#btnAttack'), btnCast=$('#btnCast'), btnItem=$('#btnItem'), btnGuard=$('#btnGuard'), btnWait=$('#btnWait'), btnEnd=$('#btnEnd');
 let mode, party, explore, game, exploreFeed, mover=null, reachCache=null, pendingKey=null, selectedSpell=null, cellEls=[];
-let turnTimer=null,turnEpoch=0;
+let turnTimer=null,turnEpoch=0,restartArmTimer=null,restartToken=0;
 function cancelTurn(){if(turnTimer!==null)clearTimeout(turnTimer);turnTimer=null;turnEpoch++;}
 function queueTurn(fn,delay){
   cancelTurn();const epoch=turnEpoch,combat=game,actor=game.current();
@@ -2310,7 +2310,7 @@ function applySave(s){
     if(!s.campaign&&s.nodeId==='sunless_tomb')state.bossSlain=Object.entries(dungeon.encounters).some(([k,enc])=>enc.lead==='crypt_lord'&&dungeon.cleared.has(k));
     next={heroes,state,dungeon,path:Array.isArray(s.worldPath)&&s.worldPath.length?s.worldPath.slice():[s.nodeId],bag:{gold:s.bag.gold,keys:s.bag.keys,rations:s.bag.rations,relic:!!s.bag.relic,items:s.bag.items.slice()},feed:s.feed&&s.feed.length?s.feed.slice():[{t:'You press on through '+dungeon.name+'.',k:'sys'}]};
   }catch(_){return false;}
-  closeFieldNotes(false);cancelTurn();autoFight=false;levelUp=null;eventLevelUp=null;curEvent=null;
+  clearRestartArm();closeFieldNotes(false);cancelTurn();autoFight=false;levelUp=null;eventLevelUp=null;curEvent=null;
   for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','saveScreen','tacticsScreen','fateScreen','restartScreen'])$('#'+id).classList.remove('show');
   party=next.heroes;campaign=next.state;explore=next.dungeon;nodeId=s.nodeId;worldPath=next.path;bag=next.bag;exploreFeed=next.feed;
   game=null;mode='explore';mover=null;reachCache=null;pendingKey=null;selectedSpell=null;
@@ -2345,6 +2345,7 @@ async function copySave(){
 function closeSave(){copyEpoch++;$('#btnCopySave').disabled=false;$('#btnCopySave').textContent='Copy Code';$('#saveScreen').classList.remove('show');}
 
 function newGame(chosenParty){
+  clearRestartArm();
   closeFieldNotes(false);
   cancelTurn();autoFight=false;levelUp=null;eventLevelUp=null;curEvent=null;
   for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','saveScreen','tacticsScreen','fateScreen','restartScreen'])$('#'+id).classList.remove('show');
@@ -3411,21 +3412,23 @@ document.addEventListener('keydown', e=>{ if(e.key==='Escape'&&$('#tacticsScreen
 const ABIL_KEYS=['str','dex','con','int','wis','cha'];
 let build=null;   // creation working state
 
+function clearRestartArm(){if(restartArmTimer!==null)clearTimeout(restartArmTimer);restartArmTimer=null;restartToken++;}
 function requestRestart(){
   if(!['explore','combat'].includes(mode)||overlayOpen())return false;
-  cancelTurn();
+  cancelTurn();clearRestartArm();$('#btnConfirmRestart').disabled=true;const token=restartToken;restartArmTimer=setTimeout(()=>{restartArmTimer=null;if(token===restartToken&&$('#restartScreen').classList.contains('show'))$('#btnConfirmRestart').disabled=false;},600);
   $('#restartMessage').textContent=(mode==='combat'?'Combat is paused. Returning to title ends this battle session. ':'Your run will stay open if you choose Keep Playing. ')+(decodeSave(persistRead())?'Continue will restore your latest exploration save; battles are not saved in progress.':'No browser save is available. Keep playing and export a save code before leaving if you want to retain this run.');
   $('#restartScreen').classList.add('show');$('#btnKeepPlaying').focus();return true;
 }
 function cancelRestart(){
   if(!$('#restartScreen').classList.contains('show'))return;
-  $('#restartScreen').classList.remove('show');$('#btnRestart').focus();
+  clearRestartArm();$('#restartScreen').classList.remove('show');$('#btnRestart').focus();
   if(mode==='combat'&&game&&game.phase==='playing'){const c=game.current();if(c.side==='party'&&!autoFight&&!game.isIncapacitated(c))render();else beginTurnFlow();}
 }
-function confirmRestart(){if(!$('#restartScreen').classList.contains('show'))return false;showStart();return true;}
+function confirmRestart(){if(!$('#restartScreen').classList.contains('show')||$('#btnConfirmRestart').disabled)return false;showStart();return true;}
 $('#btnKeepPlaying').onclick=cancelRestart;$('#btnConfirmRestart').onclick=confirmRestart;
 
 function showStart(){
+  clearRestartArm();
   closeFieldNotes(false);
   cancelTurn();autoFight=false;mode='start';
   for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','tacticsScreen','fateScreen','restartScreen'])$('#'+id).classList.remove('show');
@@ -3684,7 +3687,7 @@ if(typeof MutationObserver!=='undefined'){
   document.addEventListener('keydown',e=>{const next=active();if(!next)return;if(e.key==='Tab'){const list=focusables(next),i=list.indexOf(document.activeElement);e.preventDefault();if(list.length)list[(i+(e.shiftKey?-1:1)+list.length)%list.length].focus();}
     if(e.key==='Escape'){const close={restartScreen:cancelRestart,saveScreen:closeSave,partyScreen:closeParty,journalScreen:()=>$('#btnJournalClose').click(),createScreen:()=>$('#btnBack').click()};if(close[next.id]){e.preventDefault();close[next.id]();}}
   },true);
-  document.addEventListener('pointerdown',e=>{const next=active();if(next&&e.target===next){e.preventDefault();const first=focusables(next)[0];if(first)first.focus({preventScroll:true});}},true);
+  document.addEventListener('pointerdown',e=>{const next=active();if(next&&(e.target===next||e.target.closest('button:disabled'))){e.preventDefault();const first=focusables(next)[0];if(first)first.focus({preventScroll:true});}},true);
   document.addEventListener('click',e=>{const next=active();if(next&&!next.contains(e.target)){e.preventDefault();e.stopImmediatePropagation();}},true);
 }
 
