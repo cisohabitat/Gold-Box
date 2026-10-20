@@ -47,3 +47,12 @@ Reviewed the tactical release at `11a31dd7b457339dda799cf220e441003565b8ea` for 
 - **Resize overlay risk:** drawer state could outlive the sidebar layout. The layout and media-query listener now share a breakpoint and clear transient drawer state when crossing it.
 
 Validation: 40 engine regressions pass. The committed optional browser harness passes 19 device sizes, including iPad split view and desktop windows, with fitted board/controls, boss/spell menus, 44px main targets, keyboard movement/casting, resize state, reduced motion, and no page errors. The existing touch-preview, save/reload, rejected-import, contract, and offline feature flow also passes. Native Safari and physical-device testing remain unavailable.
+
+
+## Follow-up fixes and visible log
+
+The review of `0e8e39b027dc30478dfd5b6f866885d4e9ae2b4c` reproduced three P2 defects: keyboard activation behind paused Tactics, an unusably small board in short windows under 761px wide, and false Copied feedback after asynchronous clipboard rejection.
+
+The polish release fixes all three. Layered menus isolate focus and background input, while manual combat handlers reject overlays. Compact landscape starts at 600px; minimum board height and a scrolling fallback protect very small portrait windows. Clipboard copying awaits success, checks fallback results, and offers manual-copy guidance on failure. A new 40px log strip shows the latest two events without opening field notes. Movement/action status, hit-odds feedback, and keyboard creation/inventory/level controls improve readability and access.
+
+Reproducible local evidence: 41 engine regressions; 25-size device matrix; actual keyboard party creation, equipment assignment, controlled manual victory, and modal focus tests; clipboard success/fallback/failure; portable saves with storage blocked; existing touch/save/offline flow; 36 seeded campaigns with 17 victories, 19 defeats, and no stalls. The three-oath difficulty ordering holds in this small Auto sample. No new engine balance defect was established, so this release preserves tuning. CI now exercises Chromium, Firefox, and WebKit before publication; exact workflow results are recorded in the release PR. Physical Safari/iPad/iPhone validation remains unavailable.

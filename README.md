@@ -16,11 +16,13 @@ The live version is served from GitHub Pages: the repo’s **Settings → Pages*
 
 ### Playing on desktop, iPad, and iPhone
 
-The play area adapts to the current browser height, including Safari's expanding or collapsing bars, and leaves safe-area space around the display cutout and home indicator. In portrait, the board sits above the action buttons and movement pad. In short landscape windows, the board and controls sit side by side. The boss bar and horizontally scrollable spell menu fit inside that same play area.
+The play area adapts to the current browser height, including Safari's expanding or collapsing bars, and leaves safe-area space around the display cutout and home indicator. In portrait, the board sits above the action buttons and movement pad. In short landscape windows at least 600px wide, the board and controls sit side by side. In very small portrait windows the play panel can scroll, keeping the board at least 160px tall and every action reachable. The boss bar and horizontally scrollable spell menu fit inside that same play area.
+
+The two latest events stay visible beneath the board, during exploration and combat. The full history remains available in **Party & Log** (labelled **Log** in very narrow landscape windows). Combat also shows the active hero and whether movement and the action are ready or spent.
 
 Tap **Party & Log** to inspect the roster and battle history, then **Back to Game** to return. This panel replaces the sidebar on phones, most iPad windows, and smaller desktop windows. Windows at least 1200×650 pixels keep the live sidebar. iPad split view and rotation adapt without restarting the run. Equipment, creation, save, and other menus scroll independently when their contents are taller than the screen. Main action and movement buttons have touch targets at least 44 pixels across and tall; pinch zoom remains available.
 
-Use a mouse or touch to choose actions. With a keyboard, explore using arrows or WASD; in combat, Tab to the grid, move focus with arrows, and press Enter or Space to use the selected action. Area spells still require confirmation. Reduced-motion preferences disable animations and transitions.
+Use a mouse or touch to choose actions. With a keyboard, explore using arrows or WASD; in combat, Tab to the grid, move focus with arrows, and press Enter or Space to use the selected action. Area spells still require confirmation. Focus a flagged enemy during Attack to see its hit chance. Score assignment, equipment slots, and level choices accept Enter/Space too; open menus keep focus inside and return it when closed. Reduced-motion preferences disable animations and transitions.
 
 The layout was checked at 440 × 956, 440 × 780, and 440 × 680 portrait viewports, 956 × 440 and 956 × 350 landscape viewports, and 390 × 844, with simulated safe-area insets. These are Chromium viewport checks for iPhone-sized screens, not physical iPhone or Safari certification. Reload the live page after an update to get the latest layout.
 
@@ -140,7 +142,7 @@ No tooling is needed to play. For contributors, run the dependency-free checks w
 node tests/regression.cjs
 ```
 
-The 40 checks execute the actual inline script with DOM stubs. They cover the original defects and the requirement IDs in [REQUIREMENTS.md](REQUIREMENTS.md), including atomic imports, legacy saves, rewards, terrain, aim confirmation, paused Tactics, guardians, exit resumption, and the 350 KiB runtime budget. Generator checks cover 96 exit/key layouts plus 160 layouts with every secret cache opened while vault doors stay blocked.
+The 41 checks execute the actual inline script with DOM stubs. They cover the original defects and the requirement IDs in [REQUIREMENTS.md](REQUIREMENTS.md), including atomic imports, legacy saves, rewards, terrain, aim confirmation, paused Tactics, guardians, exit resumption, and the 350 KiB runtime budget. Generator checks cover 96 exit/key layouts plus 160 layouts with every secret cache opened while vault doors stay blocked.
 
 Chromium checks covered help, journal contracts, chapter rewards, terrain labels, paused Tactics, touch preview and friendly-fire confirmation, rejected imports during combat, saved rewards, and offline interaction after loading. The six phone viewport scenarios above also passed with the boss bar, spell menu, and aim confirmation open; desktop layout passed. No JavaScript page errors occurred.
 
@@ -177,4 +179,23 @@ Add a licence of your choice (e.g. [MIT](https://choosealicense.com/licenses/mit
 
 ### Optional device checks
 
-With Playwright available to Node and Chromium at `/usr/bin/chromium`, serve this directory with `python3 -m http.server 8000`, then run `node tests/devices.cjs`. Set `GOLD_BOX_URL` to check another served URL. The game itself needs neither tool. The matrix covers 19 phone/tablet/desktop window sizes, including iPad split view and short desktop windows; it checks fitted exploration/boss/spell layouts, 44px controls, keyboard grid focus, independently scrolling menus, resize state, reduced motion, and page errors. These are Chromium checks; actual Safari and physical-device testing remain unverified.
+With Playwright available to Node and Chromium at `/usr/bin/chromium`, serve this directory with `python3 -m http.server 8000`, then run `node tests/devices.cjs`. Set `GOLD_BOX_URL` to check another served URL. The game itself needs neither tool. The matrix covers 25 phone/tablet/desktop window sizes, including iPad split view and short desktop windows; it checks fitted exploration/boss/spell layouts, 44px controls, keyboard grid focus, independently scrolling menus, resize state, reduced motion, and page errors. These are Chromium checks; actual Safari and physical-device testing remain unverified.
+
+
+### Release quality checks
+
+With the local server running and development browser tools installed:
+
+```bash
+node tests/regression.cjs
+node tests/devices.cjs
+node tests/quality.cjs
+node tests/flow.cjs
+node tests/campaign.cjs
+```
+
+The quality checks reproduce the paused-menu and clipboard bugs, create a party and assign equipment with keyboard controls, win a controlled manual battle, and recover portable saves with storage blocked. The flow check exercises rewards, touch aiming, save/reload, and offline play. The campaign check runs three seeds over every oath/route combination: 36 runs, currently 17 victories and 19 defeats without stalls. Wanderer wins 10/12, Delver 5/12, and Ironbound 2/12 in this Auto diagnostic. Wanderer defeats occurred in the final tomb; harder-oath defeats occurred across several floors. This sample supports the intended difficulty ordering, but does not establish human win rates or justify broad retuning.
+
+The **Game quality** GitHub Actions workflow runs engine, device, quality, and flow checks on Chromium, Firefox, and WebKit; Chromium also runs the campaign sample. Before automatic merge/publication, wait for every PR quality job to pass and verify the final Pages deployment. This is the release procedure; branch protection has not been configured by this change. Use `GOLD_BOX_BROWSER=firefox` or `webkit` for development checks with those Playwright browsers installed. `CHROMIUM_PATH` overrides the browser executable for CI/local installations. WebKit automation is useful compatibility evidence; physical Safari on an iPhone/iPad and real hardware performance still require manual testing.
+
+For hardware validation, try portrait/landscape, browser-bar resizing, iPad split view, pinch zoom, opening/closing each menu, aimed spells with allies nearby, browser Continue, and a save-code transfer between devices. These cannot be certified from this environment.

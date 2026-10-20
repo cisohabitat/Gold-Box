@@ -327,8 +327,8 @@
     #bossPanel{flex:none;font-size:15px;padding:6px 8px;margin:0;}
     #bossHealth{margin-top:4px;height:5px;}
     .layout{flex:1;min-height:0;display:flex;gap:0;}
-    .board-wrap{flex:1;min-height:0;min-width:0;gap:6px;}
-    .board-stage{flex:1;min-height:0;display:grid;place-items:center;container-type:size;overflow:hidden;}
+    .board-wrap{flex:1;min-height:0;min-width:0;gap:6px;overflow-y:auto;overscroll-behavior:contain;}
+    .board-stage{flex:1 0 160px;min-height:160px;display:grid;place-items:center;container-type:size;overflow:hidden;}
     #board{height:100%;max-height:100%;width:100%;aspect-ratio:auto!important;}
     @supports(width:1cqw){#board:not(.mapboard){width:min(100cqw,100cqh);height:min(100cqw,100cqh);}}
     #board.mapboard{height:100%;width:100%;max-height:none;padding:2px;aspect-ratio:auto;}
@@ -368,7 +368,7 @@
     .banner{padding:var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);}
     .banner .box{max-height:100%;}
   }
-  @media(max-height:600px) and (min-width:761px){
+  @media(max-height:600px) and (min-width:600px){
     .cabinet{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr);padding:6px;gap:4px;}
     header.title{grid-column:1;grid-row:1;border:0;}
     .campaign-strip{grid-column:2;grid-row:1;}
@@ -377,12 +377,16 @@
     header.title h1{font-size:20px;}
     .campaign-strip{padding:2px 8px;}
     #chapterLabel{display:none;}
-    .board-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(250px,.8fr);grid-template-rows:auto auto auto minmax(0,1fr);gap:4px 10px;}
+    .board-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(250px,.8fr);grid-template-rows:auto auto auto minmax(0,1fr) auto;gap:4px 10px;}
     .board-stage{grid-column:1;grid-row:1/5;align-self:stretch;}
+    .recent-log{grid-column:1;grid-row:5;}
+    .turn-status{grid-column:2;grid-row:2;}
     .satchel{grid-column:2;grid-row:1;}
     .hint{display:none;}
     .spellmenu{grid-column:2;grid-row:3;}
-    .controls{grid-column:2;grid-row:4;align-self:start;}
+    .controls{grid-column:2;grid-row:4/6;align-self:start;gap:4px;}
+    .controls .cgrp{gap:4px;}
+    .controls>button{font-size:16px;line-height:1;padding:4px;}
     .controls #combatControls button{font-size:16px;line-height:1;padding:4px;}
     .controls.combat-active{grid-template-columns:repeat(4,minmax(0,1fr));}
     .controls.combat-active #combatControls{display:contents!important;}
@@ -397,8 +401,25 @@
     #btnDetails,#btnDetailsClose{display:none;}
     #btnRestart{grid-column:1/-1;}
   }
-  button:focus-visible,.cell:focus-visible{outline:3px solid #fff3b0;outline-offset:-3px;}
+  button:focus-visible,[role=button]:focus-visible,.cell:focus-visible{outline:3px solid #fff3b0;outline-offset:-3px;}
   @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important;}}
+
+  .recent-log{flex:none;height:40px;min-width:0;padding:2px 8px;border:1px solid #5c451f;background:#101813;font-size:16px;line-height:17px;overflow:hidden;}
+  .recent-log .l{white-space:nowrap;text-overflow:ellipsis;overflow:hidden;}
+  .recent-log .l:last-child{color:#f1dba4;}
+  .turn-status{flex:none;font-size:16px;line-height:18px;min-height:20px;color:var(--party-glow);}
+  .turn-status[hidden]{display:none;}
+  .cell.target:focus-visible::after{content:attr(data-chance);position:absolute;inset:auto 0 0;background:#08110eee;color:#fff3b0;font-size:clamp(10px,2vw,16px);text-align:center;pointer-events:none;}
+  @media(max-width:599px) and (max-height:740px){.hint{max-height:20px;}.cabinet{gap:4px;}.board-wrap{gap:4px;}.controls,.controls .cgrp{gap:4px;}.controls .cgrp button{padding:4px 2px;font-size:16px;}}
+
+  .signature-short,.notes-short{display:none;}
+  @media(min-width:600px) and (max-width:760px) and (max-height:600px){
+    .board-wrap{grid-template-columns:minmax(160px,1fr) minmax(300px,.8fr);}
+    .controls.combat-active{gap:4px;}
+    .controls #combatControls button,.controls>button{font-size:14px;line-height:1;padding:4px;}
+    .turn-status{font-size:14px;line-height:18px;}
+    .signature-name,.notes-name{display:none;}.signature-short,.notes-short{display:inline;}
+  }
 
   .cell.field-cover{background-image:linear-gradient(135deg,#43637177,#20333944);}
   .cell.field-sanctum{background-image:radial-gradient(#7fc14f55,#193c2444);}
@@ -428,6 +449,8 @@
   <div class="layout">
     <div class="board-wrap">
       <div class="board-stage"><div id="board"></div></div>
+      <div id="recentLog" class="recent-log" role="log" aria-label="Recent events. Full history in Party and Log." aria-live="polite" aria-relevant="additions"></div>
+      <div id="turnStatus" class="turn-status" role="status" aria-live="polite" hidden></div>
       <div class="satchel" id="satchel"></div>
       <div class="hint" id="hint" aria-live="polite"></div>
       <div class="spellmenu" id="spellMenu"></div>
@@ -456,7 +479,7 @@
           <button id="btnFpBack" title="South">&#9660;</button>
           <button id="btnStrafeR" title="East">&#9654;</button>
         </div>
-        <button id="btnDetails" aria-controls="fieldNotes" aria-expanded="false">Party &amp; Log</button>
+        <button id="btnDetails" aria-controls="fieldNotes" aria-expanded="false"><span class="notes-name">Party &amp; Log</span><span class="notes-short">Log</span></button>
         <button id="btnRestart">Restart</button>
       </div>
     </div>
@@ -2218,10 +2241,17 @@ function openSave(){ if(mode!=='explore'){ return; } const code=encodeSave(saveS
     : 'Storage is blocked here, so copy this code to keep your progress, then paste it on the start screen to resume.';
   $('#saveScreen').classList.add('show');
   setTimeout(()=>{ const t=$('#saveCode'); if(t){ t.focus(); t.select(); } }, 40); }
-function copySave(){ const t=$('#saveCode'); t.select();
-  try{ navigator.clipboard.writeText(t.value); }catch(e){ try{ document.execCommand('copy'); }catch(_){} }
-  $('#btnCopySave').textContent='Copied'; setTimeout(()=>$('#btnCopySave').textContent='Copy Code',1200); }
-function closeSave(){ $('#saveScreen').classList.remove('show'); }
+let copyEpoch=0;
+async function copySave(){
+  const token=++copyEpoch,t=$('#saveCode'),b=$('#btnCopySave');t.select();b.disabled=true;let copied=false;
+  try{if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(t.value);copied=true;}}catch(_){}
+  if(!copied){try{t.focus();t.select();copied=document.execCommand('copy')===true;}catch(_){}}
+  if(token!==copyEpoch)return;
+  b.disabled=false;b.textContent=copied?'Copied':'Copy Code';
+  $('#saveMsg').textContent=copied?'Code copied. Paste it on the start screen of another device to continue.':'Copy was blocked. Select the code below and use your device’s Copy command to keep a backup.';
+  if(copied)setTimeout(()=>{if(token===copyEpoch)b.textContent='Copy Code';},1200);
+}
+function closeSave(){copyEpoch++;$('#btnCopySave').disabled=false;$('#btnCopySave').textContent='Copy Code';$('#saveScreen').classList.remove('show');}
 
 function newGame(chosenParty){
   closeFieldNotes(false);
@@ -2613,9 +2643,9 @@ function renderLevelUp(){
       html+=`</div></div>`;
     }
     card.innerHTML=html;
-    card.querySelectorAll('.lvab').forEach(el=> el.onclick=()=>lvAdd(+el.dataset.i, el.dataset.k));
-    card.querySelectorAll('.lvspellbtn[data-sp]').forEach(el=> el.onclick=()=>lvToggleLearn(+el.dataset.i, el.dataset.sp));
-    card.querySelectorAll('.lvspellbtn[data-pk]').forEach(el=> el.onclick=()=>lvTogglePerk(+el.dataset.i, el.dataset.pk));
+    card.querySelectorAll('.lvab').forEach(el=>keyboardControl(el,()=>lvAdd(+el.dataset.i,el.dataset.k),'.lvab[data-i="'+el.dataset.i+'"][data-k="'+el.dataset.k+'"]','Increase '+el.dataset.k.toUpperCase()+': '+el.textContent));
+    card.querySelectorAll('.lvspellbtn[data-sp]').forEach(el=>keyboardControl(el,()=>lvToggleLearn(+el.dataset.i,el.dataset.sp),'.lvspellbtn[data-i="'+el.dataset.i+'"][data-sp="'+el.dataset.sp+'"]',el.textContent));
+    card.querySelectorAll('.lvspellbtn[data-pk]').forEach(el=>keyboardControl(el,()=>lvTogglePerk(+el.dataset.i,el.dataset.pk),'.lvspellbtn[data-i="'+el.dataset.i+'"][data-pk="'+el.dataset.pk+'"]',el.textContent));
     root.appendChild(card);
   });
   const allSpent=levelUp.entries.every((_,i)=>lvSpent(i)>=levelUp.entries[i].points);
@@ -2715,11 +2745,12 @@ function renderParty(){
     if(h.perks&&h.perks.length){ html+=`<div class="eff">Perks: <b>${h.perks.map(id=>PERKS[id]?PERKS[id].name:id).join(', ')}</b></div>`; }
     if(h.learned&&h.learned.length){ html+=`<div class="eff">Learned: <b>${h.learned.map(id=>SPELLS[id]?SPELLS[id].name:id).join(', ')}</b></div>`; }
     card.innerHTML=html;
-    card.querySelectorAll('.gslot').forEach(sl=> sl.onclick=()=>{
+    card.querySelectorAll('.gslot').forEach(sl=> keyboardControl(sl,()=>{
       const slot=sl.dataset.slot;
       if(pickItem!==null) applyItem(h);          // equipping
       else unequip(h, slot);                      // tap an equipped slot to remove
-    });
+    },'.gslot[data-hi="'+hi+'"][data-slot="'+sl.dataset.slot+'"]',h.name+' '+sl.textContent));
+    if(pickItem!==null){const give=document.createElement('button');give.textContent='Give selected item to '+h.name;give.onclick=()=>{applyItem(h);$('#btnAutoGear').focus();};card.appendChild(give);}
     card.onclick=(e)=>{ if(e.target.closest('.gslot'))return; if(pickItem!==null) applyItem(h); };
     root.appendChild(card);
   });
@@ -2729,7 +2760,7 @@ function renderParty(){
     chip.className='ichip'+(it.legendary?' legendary':'')+(pickItem===i?' sel':'');
     const tag = it.slot==='weapon' ? `+${it.atk||0} atk, +${it.dmg||0} dmg` : it.slot==='armor' ? `+${it.ac} AC` : 'potion';
     chip.innerHTML=`${it.name} <span class="tag">${tag}</span>`;
-    chip.onclick=()=>selectItem(i); bagEl.appendChild(chip); });
+    keyboardControl(chip,()=>selectItem(i),'#partyBag .ichip:nth-child('+(i+1)+')','Select '+it.name);bagEl.appendChild(chip); });
   $('#partySub').textContent = pickItem!==null
     ? 'Tap a hero to give them the '+ITEMS[bag.items[pickItem]].name+'. Class-locked gear only fits some heroes.'
     : 'Tap an item, then tap a hero to equip or use it. Tap an equipped item to remove it.';
@@ -2744,7 +2775,7 @@ function applyScout(){ if(explore){ explore.scoutRadius=partyScoutRadius(); expl
 function enterCombat(desc,atKey){ pendingKey=atKey;
   const enemies=composeEncounter(desc, {floor:floorTier(), partyLevel:partyLevelAvg(), gear:partyGearValue(),difficulty:OATHS[campaign.oath].budget});
   if(desc.boss && desc.lead==='crypt_lord'){ exploreFeed.push({t:'The Crypt Lord rises between you and the way out. There is no leaving but through him.',k:'kill'}); }
-  game=new CombatEngine(party, enemies, 10, 10, explore.theme); mode='combat'; mover=null; reachCache=null; selectedSpell=null; autoFight=false; updateAutoBtn(); render(); beginTurnFlow(); }
+  game=new CombatEngine(party, enemies, 10, 10, explore.theme);game.log.push({t:'Battle begins: '+enemies.map(e=>e.name).join(', ')+'.',k:'sys'}); mode='combat'; mover=null; reachCache=null; selectedSpell=null; autoFight=false; updateAutoBtn(); render(); beginTurnFlow(); }
 function resolveCombat(){
   cancelTurn();autoFight=false; updateAutoBtn();
   if(game.phase==='won'){
@@ -2786,23 +2817,23 @@ function endRun(kind){ $('#tacticsScreen').classList.remove('show');closeFieldNo
   $('#endingStats').textContent=OATHS[campaign.oath].name+' · '+campaign.battles+' battles won · '+campaign.foes+' foes vanquished · '+campaign.secrets+' secrets found · '+campaign.boons.length+' embers claimed · '+campaign.contracts.length+' contracts fulfilled · '+campaign.completedFloors.length+' chapters crossed';
   $('#banner').classList.add('show'); }
 
-function setMode(m){
+function setMode(m){if(overlayOpen())return;
   spellAim=null;
   const c=game.current(); if(c.side!=='party'||game.phase!=='playing')return;
   mover=(mover===m)?null:m; reachCache=(mover==='move')?game.reachable(c):null;
   if(mover!=='cast') selectedSpell=null; render();
 }
-function selectSpell(id){
+function selectSpell(id){if(overlayOpen())return;
   spellAim=null;
   const c=game.current(), def=SPELLS[id]; selectedSpell=def; mover='cast';
   if(def.target==='self'){ game.castSpell(c,def,c); selectedSpell=null; mover=null; render(); if(game.phase!=='playing')resolveCombat(); return; }
   render();
 }
-function doCast(target){ spellAim=null;const c=game.current(); game.castSpell(c,selectedSpell,target); selectedSpell=null; mover=null; render(); if(game.phase!=='playing')resolveCombat(); }
+function doCast(target){if(overlayOpen())return; spellAim=null;const c=game.current(); game.castSpell(c,selectedSpell,target); selectedSpell=null; mover=null; render(); if(game.phase!=='playing')resolveCombat(); }
 // Potions in the shared satchel, as {idx, item}. Combat currently supports
 // healing potions; the menu reads the bag so any future potion appears here.
 function combatPotions(){ return bag.items.map((id,idx)=>({idx, item:ITEMS[id]})).filter(p=>p.item && p.item.slot==='potion'); }
-function useItem(idx){ if(mode!=='combat'||game.phase!=='playing')return; const c=game.current();
+function useItem(idx){if(overlayOpen())return; if(mode!=='combat'||game.phase!=='playing')return; const c=game.current();
   if(c.side!=='party'||!c.alive||game.isIncapacitated(c)||c.acted.action)return;
   const id=bag.items[idx], it=ITEMS[id]; if(!it||it.slot!=='potion')return;
   if(it.heal){ const before=c.hp; c.hp=Math.min(c.maxHp, c.hp+Dice.roll(it.heal.n,it.heal.sides)+it.heal.bonus);
@@ -2817,7 +2848,7 @@ function aoePreview(cx,cy,on){
   if(!selectedSpell||selectedSpell.target!=='point')return;
   for(let y=0;y<game.h;y++) for(let x=0;x<game.w;x++) if(game.cheb({x,y},{x:cx,y:cy})<=selectedSpell.aoe){ const el=cellEls[y*game.w+x]; if(el) el.classList.toggle('aoe',on); }
 }
-function combatClick(x,y){
+function combatClick(x,y){if(overlayOpen())return;
   if(game.phase!=='playing'||autoFight)return; const c=game.current(); if(c.side!=='party'||game.isIncapacitated(c))return;
   if(mover==='move'&&reachCache&&reachCache.has(key(x,y))){ game.moveTo(c,x,y); mover=null; reachCache=null; render(); if(game.phase!=='playing') resolveCombat(); return; }
   if(mover==='attack'){ const def=game.at(x,y); if(def&&game.canAttack(c,def)){ game.doAttack(c,def); mover=null; render(); if(game.phase!=='playing')resolveCombat(); return; } }
@@ -2830,13 +2861,13 @@ function combatClick(x,y){
     }}
   }
 }
-function endTurn(){ if(mode!=='combat'||game.current().side!=='party'||game.phase!=='playing')return; mover=null; reachCache=null; selectedSpell=null; game.endTurn(); render(); beginTurnFlow(); }
-function guard(){ if(mode!=='combat'||game.phase!=='playing')return; const c=game.current();
+function endTurn(){if(overlayOpen())return; if(mode!=='combat'||game.current().side!=='party'||game.phase!=='playing')return; mover=null; reachCache=null; selectedSpell=null; game.endTurn(); render(); beginTurnFlow(); }
+function guard(){if(overlayOpen())return; if(mode!=='combat'||game.phase!=='playing')return; const c=game.current();
   if(c.side!=='party'||game.isIncapacitated(c)||c.acted.action)return;
   c.guarding=true; c.guardUsed=false; c.acted.action=true;
   game.log.push({t:c.name+' takes a guarded stance, ready to strike.',k:'sys'});
   mover=null; reachCache=null; selectedSpell=null; game.endTurn(); render(); beginTurnFlow(); }
-function waitTurn(){ if(mode!=='combat'||game.phase!=='playing')return; const c=game.current();
+function waitTurn(){if(overlayOpen())return; if(mode!=='combat'||game.phase!=='playing')return; const c=game.current();
   if(c.side!=='party'||game.isIncapacitated(c)||c.acted.move||c.acted.action)return;
   game.log.push({t:c.name+' waits, moving to the back of the line.',k:'sys'});
   mover=null; reachCache=null; selectedSpell=null; game.delay(); render(); beginTurnFlow(); }
@@ -2878,7 +2909,7 @@ function beginTurnFlow(){
 // Master, Executioner, Ambush, Deadeye) already folded into the shared damage math.
 function heroAuto(c){ game.actAuto(c); }
 function updateAutoBtn(){ const b=$('#btnAuto'); if(!b)return; b.textContent=autoFight?'Auto: On':'Auto'; b.classList.toggle('on', autoFight); }
-function toggleAuto(){
+function toggleAuto(){if(overlayOpen())return;
   if(mode!=='combat'||!game||game.phase!=='playing')return;
   cancelTurn();autoFight=!autoFight; updateAutoBtn();
   if(autoFight){ mover=null; reachCache=null; selectedSpell=null;
@@ -3127,6 +3158,7 @@ function renderMinimap(){
   return '<svg viewBox="0 0 '+e.w+' '+e.h+'" class="minimap" preserveAspectRatio="xMidYMid meet">'+s+'</svg>';
 }
 function renderExplore(){
+  $('#turnStatus').hidden=true;
   $('.controls').classList.remove('combat-active');board.removeAttribute('role');board.setAttribute('aria-label','Dungeon map');
   $('#titleLabel').textContent=explore.name; $('#roundLabel').textContent='Floor '+floorDepth()+' / '+WORLD_MAXDEPTH; $('#rosterTitle').textContent='The Party';
   $('#combatControls').style.display='none'; $('#exploreControls').style.display='flex'; $('#fpControls').style.display='grid'; $('#spellMenu').style.display='none';
@@ -3143,7 +3175,7 @@ function renderExplore(){
     row.innerHTML=`<span class="glyph">${u.glyph}</span><span class="nm">${escapeHTML(u.name)} <span style="color:var(--dim)">${u.cls} L${u.level||1} <span style="opacity:0.7">${need}</span></span></span>${sp}<span class="hp">${u.hp}/${u.maxHp}</span>`;
     roster.appendChild(row); });
   drawLog(exploreFeed);
-  $('#btnRest').textContent='Make Camp ('+bag.rations+')'; $('#btnRest').disabled=bag.rations<1;
+  $('#btnRest').textContent='Camp ('+bag.rations+')'; $('#btnRest').disabled=bag.rations<1;
   const goal = bag.relic ? 'Relic in hand, and the dead are walking. Cut your way to the stairs '+'\u25BC'+' before the tomb fills.' : 'Find the relic '+'\u2605'+' in the depths.';
   $('#hint').textContent='Move with the arrows \u25B2\u25BC\u25C0\u25B6 (N/S/W/E). '+goal;
 }
@@ -3159,6 +3191,7 @@ function renderCombat(){
   board.setAttribute('role','grid');board.setAttribute('aria-label',game.battlefield?BATTLEFIELDS[game.battlefield].name:'Battlefield');
   board.removeAttribute('data-theme'); board.classList.remove('fpboard'); board.classList.remove('mapboard');
   board.style.gridTemplateColumns=`repeat(${game.w},minmax(0,1fr))`; board.style.gridTemplateRows=`repeat(${game.h},minmax(0,1fr))`; board.style.aspectRatio='1/1'; board.innerHTML=''; cellEls=[];
+  const status=$('#turnStatus');status.hidden=false;const turnText=c.name+' · '+(c.side!=='party'?'Enemy turn':autoFight?'Auto playing':(c.acted.move?'Move spent':'Move ready')+' · '+(c.acted.action?'Action spent':'Action ready'));if(status.textContent!==turnText)status.textContent=turnText;
   const playerTurn = c.side==='party'&&game.phase==='playing'&&!game.isIncapacitated(c);
   const castEnemy=new Set(), castAlly=new Set(), castPoint=new Set();
   if(mover==='cast'&&selectedSpell&&playerTurn){
@@ -3180,7 +3213,7 @@ function renderCombat(){
       if(steps[e.key]){e.preventDefault();const d=steps[e.key];const nx=Math.max(0,Math.min(game.w-1,x+d[0])),ny=Math.max(0,Math.min(game.h-1,y+d[1]));cellEls[ny*game.w+nx].focus();}
       else if(e.key==='Enter'||e.key===' '){e.preventDefault();if(playerTurn&&!e.repeat)combatClick(x,y);}
     };
-    if(here&&here.side!==c.side&&game.canAttack(c,here))cell.title+=' Hit chance '+game.attackPreview(c,here).chance+'%.';
+    if(here&&here.side!==c.side&&game.canAttack(c,here)){const chance=game.attackPreview(c,here).chance+'% hit';cell.title+=' '+chance+'.';cell.setAttribute('data-chance',chance);cell.setAttribute('aria-label',cell.getAttribute('aria-label')+'. '+chance);}
     if(mover==='move'&&reachCache&&reachCache.has(k)&&!here) cell.classList.add('reach');
     if(mover==='attack'&&here&&game.canAttack(c,here)) cell.classList.add('target');
     if(castEnemy.has(k)) cell.classList.add('cast-enemy');
@@ -3226,7 +3259,7 @@ function renderCombat(){
     groups.forEach(g=>{ const b=document.createElement('button'); b.className='spellbtn'; b.textContent=g.name+' ('+g.n+')'; b.onclick=()=>useItem(g.idx); sm.appendChild(b); });
   } else sm.style.display='none';
 
-  const sig=SIGNATURES[c.cls];$('#btnSignature').textContent=sig?sig.name:'Signature';$('#btnSignature').title=sig?sig.desc:'';$('#btnSignature').disabled=!playerTurn||autoFight||c.acted.action||c.signatureUsed||!sig;
+  const sig=SIGNATURES[c.cls];$('#btnSignature').innerHTML='<span class="signature-name">'+(sig?sig.name:'Signature')+'</span><span class="signature-short">Signature</span>';$('#btnSignature').setAttribute('aria-label',sig?sig.name:'Signature');$('#btnSignature').title=sig?sig.desc:'';$('#btnSignature').disabled=!playerTurn||autoFight||c.acted.action||c.signatureUsed||!sig;
   btnMove.disabled=!playerTurn||autoFight||c.acted.move;
   btnAttack.disabled=!playerTurn||autoFight||c.acted.action||game.targetsFor(c).length===0;
   const knows=c.spells&&c.spells.length>0;
@@ -3252,7 +3285,10 @@ function renderCombat(){
   $('#hint').classList.toggle('aim-warning',!!spellAim);$('#hint').textContent=hint;
 }
 
-function drawLog(feed){ logEl.innerHTML=''; feed.slice(-40).forEach(e=>{ const d=document.createElement('div'); d.className='l '+(e.k||''); d.textContent=e.t; logEl.appendChild(d); }); logEl.scrollTop=logEl.scrollHeight; }
+function drawLog(feed){
+  const recent=$('#recentLog'),entries=feed.slice(-2),stamp=JSON.stringify(entries);
+  if(recent.dataset.stamp!==stamp){recent.dataset.stamp=stamp;recent.innerHTML='';entries.forEach(e=>{const d=document.createElement('div');d.className='l '+(e.k||'');d.textContent=e.t;d.title=e.t;recent.appendChild(d);});}
+  logEl.innerHTML=''; feed.slice(-40).forEach(e=>{ const d=document.createElement('div'); d.className='l '+(e.k||''); d.textContent=e.t; logEl.appendChild(d); }); logEl.scrollTop=logEl.scrollHeight; }
 
 btnMove.onclick=()=>setMode('move'); btnAttack.onclick=()=>setMode('attack'); btnCast.onclick=()=>setMode('cast'); btnItem.onclick=()=>setMode('item'); btnGuard.onclick=guard; btnWait.onclick=waitTurn; btnEnd.onclick=endTurn;
 $('#btnAuto').onclick=toggleAuto;
@@ -3336,6 +3372,12 @@ function assignSlot(hi, slot){
 }
 function previewHero(h){ return allAssigned(h) ? buildHero(CLASSES[h.cls], h.name.trim()||h.cls, abilitiesFrom(h), 'tmp', 1, h.bg) : null; }
 
+function keyboardControl(el,action,selector,label){
+  el.tabIndex=0;el.setAttribute('role','button');if(label)el.setAttribute('aria-label',label);
+  const activate=()=>{action();const replacement=selector&&document.querySelector(selector);if(replacement)replacement.focus({preventScroll:true});};
+  el.onclick=activate;el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();if(!e.repeat)activate();}};
+}
+
 function renderBuild(){
   const root=$('#builder'); root.innerHTML='';
   build.heroes.forEach((h,hi)=>{
@@ -3361,9 +3403,9 @@ function renderBuild(){
     card.innerHTML=html; root.appendChild(card);
   });
   root.querySelectorAll('input.nm').forEach(inp=>{ inp.oninput=()=>{ build.heroes[+inp.dataset.hi].name=inp.value; }; });
-  root.querySelectorAll('.bgpick').forEach(el=>{ el.onclick=()=>cycleBg(+el.dataset.hi); });
-  root.querySelectorAll('.chip').forEach(ch=>{ ch.onclick=()=>pickChip(+ch.dataset.hi,+ch.dataset.pi); });
-  root.querySelectorAll('.slot').forEach(sl=>{ sl.onclick=()=>assignSlot(+sl.dataset.hi, sl.dataset.slot); });
+  root.querySelectorAll('.bgpick').forEach(el=>keyboardControl(el,()=>cycleBg(+el.dataset.hi),'.bgpick[data-hi="'+el.dataset.hi+'"]','Change background: '+el.textContent));
+  root.querySelectorAll('.chip').forEach(ch=>keyboardControl(ch,()=>pickChip(+ch.dataset.hi,+ch.dataset.pi),'.chip[data-hi="'+ch.dataset.hi+'"][data-pi="'+ch.dataset.pi+'"]','Select score '+ch.textContent));
+  root.querySelectorAll('.slot').forEach(sl=>keyboardControl(sl,()=>assignSlot(+sl.dataset.hi,sl.dataset.slot),'.slot[data-hi="'+sl.dataset.hi+'"][data-slot="'+sl.dataset.slot+'"]','Assign or clear '+sl.dataset.slot.toUpperCase()+': '+sl.textContent));
   $('#btnBegin').disabled=!readyToBegin();
   $('#createSub').textContent = readyToBegin()
     ? 'All set. Begin the descent, or reroll to try different heroes.'
@@ -3430,7 +3472,7 @@ function openJournal(){
 }
 $('#btnJournal').onclick=()=>mode==='combat'?openTactics():openJournal();
 $('#btnJournalClose').onclick=()=>{$('#journalScreen').classList.remove('show');render();};
-$('#btnSignature').onclick=()=>{if(mode!=='combat'||autoFight||game.current().side!=='party')return;game.signature(game.current());mover=null;selectedSpell=null;render();};
+$('#btnSignature').onclick=()=>{if(overlayOpen())return;if(mode!=='combat'||autoFight||game.current().side!=='party')return;game.signature(game.current());mover=null;selectedSpell=null;render();};
 function checkContracts(){
   for(const [id,q] of Object.entries(CONTRACTS))if(!campaign.contracts.includes(id)&&(campaign[q.stat]||0)>=q.goal){
     campaign.contracts.push(id);const r=q.reward;if(r.item)bag.items.push(r.item);bag.gold+=r.gold||0;bag.rations+=r.rations||0;
@@ -3439,7 +3481,7 @@ function checkContracts(){
 }
 function validAim(){return !!(spellAim&&mode==='combat'&&game&&game.phase==='playing'&&spellAim.combat===game&&game.current().id===spellAim.actorId&&!game.current().acted.action&&mover==='cast'&&selectedSpell&&selectedSpell.target==='point'&&selectedSpell.id===spellAim.spellId);}
 function aimSummary(){const summary={allies:0,foes:0};if(!validAim())return summary;const c=game.current();for(const u of game.combatants)if(u.alive&&game.cheb(u.pos,spellAim)<=selectedSpell.aoe)summary[u.side===c.side?'allies':'foes']++;return summary;}
-function confirmAim(){if(!validAim()||autoFight||game.isIncapacitated(game.current()))return false;const target={x:spellAim.x,y:spellAim.y};doCast(target);return true;}
+function confirmAim(){if(overlayOpen())return false;if(!validAim()||autoFight||game.isIncapacitated(game.current()))return false;const target={x:spellAim.x,y:spellAim.y};doCast(target);return true;}
 function openTactics(){
   if(mode==='combat')cancelTurn();tacticsOpener=typeof document.activeElement!=='undefined'?document.activeElement:null;
   const fighting=mode==='combat'&&game;
@@ -3461,6 +3503,33 @@ function openTactics(){
 function closeTactics(){if(!$('#tacticsScreen').classList.contains('show'))return;$('#tacticsScreen').classList.remove('show');if(tacticsOpener&&typeof tacticsOpener.focus==='function')tacticsOpener.focus();if(mode==='combat'){const c=game.current();if(c.side==='party'&&!autoFight&&!game.isIncapacitated(c))render();else beginTurnFlow();}}
 $('#btnHowToPlay').onclick=openTactics;
 $('#btnTacticsClose').onclick=closeTactics;
+/* Layered menus isolate focus and pointer input; pending choices stay mandatory. */
+if(typeof MutationObserver!=='undefined'){
+  const panels=[...document.querySelectorAll('.screen,.banner,#fieldNotes')],managed=new Set(),openers=new Map();let top=null,lastFocus=document.activeElement;
+  const visible=p=>p.id==='fieldNotes'?p.classList.contains('open'):p.classList.contains('show');
+  function active(){return panels.filter(visible).sort((a,b)=>(Number(getComputedStyle(a).zIndex)||0)-(Number(getComputedStyle(b).zIndex)||0)).at(-1)||null;}
+  const focusables=p=>[...p.querySelectorAll('button,input,textarea,select,a[href],[tabindex]')].filter(el=>!el.disabled&&el.tabIndex>=0&&!el.closest('[inert]')&&el.getClientRects().length);
+  function sync(){
+    const next=active();
+    for(const el of managed)el.inert=false;managed.clear();
+    for(const p of panels){if(visible(p)){if(!openers.has(p))openers.set(p,lastFocus);}else if(openers.has(p)){const opener=openers.get(p);openers.delete(p);if(p===top&&opener&&opener.isConnected)lastFocus=opener;}}
+    if(next){
+      const isolate=node=>{for(const el of node.children){if(el===next||['SCRIPT','STYLE'].includes(el.tagName))continue;if(el.contains(next))isolate(el);else{el.inert=true;managed.add(el);}}};isolate(document.body);
+      next.setAttribute('role','dialog');next.setAttribute('aria-modal','true');
+      if(!next.hasAttribute('aria-label')&&!next.hasAttribute('aria-labelledby')){const title=next.querySelector('h1,h2');next.setAttribute('aria-label',title?title.textContent:'Game menu');}
+      if(!next.contains(document.activeElement)){const first=focusables(next)[0]||next;if(first===next)next.tabIndex=-1;first.focus({preventScroll:true});}
+    }else if(top&&lastFocus&&lastFocus.isConnected&&!lastFocus.closest('[inert]'))lastFocus.focus({preventScroll:true});
+    for(const p of panels)if(p!==next)p.removeAttribute('aria-modal');
+    top=next;
+  }
+  const observer=new MutationObserver(sync);for(const p of panels)observer.observe(p,{attributes:true,attributeFilter:['class']});
+  document.addEventListener('focusin',e=>{const next=active();if(next&&!next.contains(e.target)){sync();return;}if(!next)lastFocus=e.target;});
+  document.addEventListener('keydown',e=>{const next=active();if(!next)return;if(e.key==='Tab'){const list=focusables(next),i=list.indexOf(document.activeElement);e.preventDefault();if(list.length)list[(i+(e.shiftKey?-1:1)+list.length)%list.length].focus();}
+    if(e.key==='Escape'){const close={saveScreen:closeSave,partyScreen:closeParty,journalScreen:()=>$('#btnJournalClose').click(),createScreen:()=>$('#btnBack').click()};if(close[next.id]){e.preventDefault();close[next.id]();}}
+  },true);
+  document.addEventListener('click',e=>{const next=active();if(next&&!next.contains(e.target)){e.preventDefault();e.stopImmediatePropagation();}},true);
+}
+
 showStart();
 </script>
 </body>

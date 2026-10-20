@@ -50,3 +50,13 @@ The tactical release above remains the gameplay foundation. This extension deliv
 Detailed acceptance criteria are DEV-01–06 in REQUIREMENTS.md. More content, networking, and audio remain in the deferred backlog; this release concentrates on making the existing game consistently playable across devices.
 
 Cross-device stages 1–4 are implemented and verified against DEV-01–06. The runtime remains 265,834 bytes; all 40 regressions, 19-size browser matrix, and existing touch/save/offline flow pass. Publication is automatic after these checks; merge/deployment evidence is recorded in the implementation pull request.
+
+
+## Reliability, readability, and visible history release
+
+1. Fix all three reproduced follow-up defects (modal isolation, short/narrow layout, clipboard outcomes).
+2. Keep two recent log events visible on the play surface; show movement/action resources and keyboard hit odds without another menu.
+3. Complete keyboard equivalents for custom creation/equipment/level controls, with nested-menu focus isolation and restoration.
+4. Expand the device matrix to 25 sizes and campaigns to 36 seeds/oath/routes; promote feature/save/offline checks into committed scripts and run cross-browser CI before auto-publication.
+
+These implementation stages are complete locally. PR quality jobs and Pages are the final release gate. Real-device Safari/performance and a human full-campaign playthrough remain external validation tasks; the automated diagnostic is not a substitute. No added classes, assets, audio, networking, or save migration is needed for this release.
