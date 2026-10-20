@@ -60,3 +60,15 @@ Cross-device stages 1–4 are implemented and verified against DEV-01–06. The 
 4. Expand the device matrix to 25 sizes and campaigns to 36 seeds/oath/routes; promote feature/save/offline checks into committed scripts and run cross-browser CI before auto-publication.
 
 These implementation stages are complete locally. PR quality jobs and Pages are the final release gate. Real-device Safari/performance and a human full-campaign playthrough remain external validation tasks; the automated diagnostic is not a substitute. No added classes, assets, audio, networking, or save migration is needed for this release.
+
+## Epic campaign: The Last Dawn
+
+Build a six-chapter story on the existing eight-node/four-route world. Keep the 350 KiB single-file runtime, offline play, v2 saves, tactical engines, and visible log.
+
+1. Give every world node an authored chapter, objective, antagonist presence, and route-specific consequences. Captain Ilyra and Archivist Eren recur across the descent.
+2. Add one two-option war council at each nonfinal waystation. Show costs/rewards before commitment; resolve once, save immediately, and require a plan before descending. Route-specific choices provide supplies, bounded permanent bonuses, or aid against the final king.
+3. Reflect plans in the final encounter without mutating bestiary registries: weaken the king, reduce retinue budget, release one bound reinforcement, or grant an opening ward. Explain those effects in the battle log and Chronicle.
+4. Replace the automatic victory with a three-way crown decision after both existing gates are met. Give each fate a distinct epilogue that recalls the route, allies, and company.
+5. Verify exactly-once choices/rewards, old-save defaults, final encounter effects, all endings, complete campaign routes, and the established cross-browser/device gate. Update player and maintenance docs, then publish automatically.
+
+The Last Dawn stages 1–4 are implemented. Stage 5 passes the local 48-check suite, 25-size matrix, story/save/ending UI checks, and 36 varied-plan campaign simulations (17 victories/19 defeats; no stalls). Runtime is 294,028 bytes. Cross-browser PR jobs and publication are the remaining release gate, recorded in the implementation PR.

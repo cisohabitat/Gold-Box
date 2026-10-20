@@ -116,3 +116,22 @@ DEV-01–06 are implemented. `node tests/devices.cjs` passes all 19 window sizes
 | RELEASE-01 | Commit engine/device/quality/flow/campaign scripts; run PR quality jobs on Chromium, Firefox, WebKit, and 36 seeded campaigns in Chromium. The auto-publisher must wait for all jobs on the tested head before merge, then verify Pages success. Keep runtime <350 KiB, no runtime packages, and v2 saves. Native Safari, physical devices, real hardware performance, and human full-campaign balance remain explicit manual limits. |
 
 Local acceptance: all seven polish requirements pass the relevant Node/Chromium checks. Engine count is now 41; device count is 25. Campaigns: Wanderer 10/12, Delver 5/12, Ironbound 2/12 victories, with 0 stalls and 0 page errors. The latest standalone runtime is **273,891 bytes**. Earlier acceptance records describe their historical releases. Cross-browser and publication evidence belongs to the implementation PR; do not equate desktop WebKit automation with physical Safari certification.
+
+## Epic campaign requirements
+
+| ID | Requirement and acceptance |
+| --- | --- |
+| EPIC-01 | All eight world nodes have authored chapter titles, concrete objectives, and story text. Ilyra/Eren and the Sunless King connect the six-floor arc. Keep eight nodes/four routes and existing key/guardian/crown gates. |
+| EPIC-02 | Each nonfinal waystation offers exactly two distinct, previewed plans. Choose once before descent; reject remote/out-of-town/repeated choices, disable departing until chosen, and persist choice plus reward together. Route councils have distinct writing and outcomes. |
+| EPIC-03 | Persist validated decision IDs in v2 saves, derive bounded party story bonuses from them, and default old visited chapters without retroactive rewards. Current old-save waystations can still choose. Repeated loads cannot stack bonuses or pay rewards again. |
+| EPIC-04 | Plans influence the final battle through explicit bounded engine inputs: king HP, retinue budget (never below 80% of baseline), a released reinforcement (never below one), and/or a three-turn opening ward. Never mutate BESTIARY templates; ordinary engine constructor behavior remains unchanged. Show contributions in the battle log/Chronicle. |
+| EPIC-05 | Victory requires crown, defeated king, and final stairs, followed by an accessible choice of Break, Bind, or Wear. Show stakes before choosing. Choose the hero who bears the crown for Bind/Wear. Each yields a distinct epilogue recalling decisions and the named company. Reload before choosing returns to the decision; rejected/duplicate/out-of-context choices cannot finish a run. |
+| EPIC-06 | Council, Chronicle and finale work with touch/mouse/keyboard, modal isolation, independently scrolling menus, 44px actions, and safe areas. Keep the recent log visible during normal play and the runtime under 350 KiB. |
+| EPIC-07 | Add regression/browser coverage for all council options, migration, no duplicate rewards, final-battle effects, and all three endings. Full campaigns vary council plans and final fates. All existing engine/device/quality/flow checks and Chromium/Firefox/WebKit PR jobs must pass before automatic publication. |
+
+
+### The Last Dawn acceptance record
+
+EPIC-01–07 are implemented. Local checks pass: **48 engine regressions**, including all fourteen council options and migration/idempotency/final aid/endings; **25 device sizes**; existing keyboard/clipboard and touch/save/offline checks; and the new campaign UI check across phone, tablet, and desktop, exercising touch/keyboard choices, reward reload, Chronicle, pending-finale recovery, crown-bearer selection, and all three epilogues. All successful full-route simulations made five council decisions, reached the final tomb with the crown, and chose a valid ending. Across 36 varied-plan/oath/route runs: **17 victories, 19 defeats, no stalls or page errors**; Wanderer 10/12, Delver 6/12, Ironbound 1/12. Successful runs cover Break (6), Bind (6), Wear (5).
+
+Runtime: **294028 bytes**, under 358,400. No new runtime dependency, world node, equipment slot, or save version. The release gate includes `tests/epic.cjs` in Chromium, Firefox, and WebKit. The final cross-browser/merge/Pages evidence is recorded in the implementation PR. Physical-device Safari and human full-campaign balance remain unverified.

@@ -1,6 +1,6 @@
 # Gold Box — Crown of the Sunless King
 
-A single-file, browser-based tactical RPG in the spirit of the classic SSI Gold Box games. Four heroes descend beneath a ruined kingdom to recover the Sunless King's crown and bring back the dawn. Explore a fogged dungeon, fight across themed terrain, fulfil optional promises, and overcome three named guardians with bloodied phases.
+A single-file, browser-based tactical RPG in the spirit of the classic SSI Gold Box games. Four heroes descend beneath a ruined kingdom to recover the Sunless King's crown and bring back the dawn. Play **The Last Dawn**, a six-chapter campaign: explore a fogged dungeon, rally a kingdom, make lasting war-council decisions, and decide the fate of the Sunless King’s crown.
 
 The whole game is one HTML file. No build step, no install, no dependencies. Open it and play.
 
@@ -28,9 +28,24 @@ The layout was checked at 440 × 956, 440 × 780, and 440 × 680 portrait viewpo
 
 ## The game
 
-You lead a party of four down through a six-floor dungeon, picking your route at each fork. Defeat the Bell Warden in the Catacombs and the Ash Cantor in the Descent. The crown rests in the deepest tomb; lifting it wakes roaming dead, turning the last stretch across that floor into a fighting retreat. Defeat the Crypt Lord and reach the final stairs to escape with it.
+You lead a party of four down through a six-floor dungeon, picking your route at each fork. Defeat the Bell Warden in the Catacombs and the Ash Cantor in the Descent. The crown rests in the deepest tomb; lifting it wakes roaming dead, turning the last stretch across that floor into a fighting retreat. Defeat the Crypt Lord, reach the final stairs, then choose whether to break, bind, or wear the crown. Choose which hero bears its oath if you bind or wear it.
 
 Every floor is generated fresh each run, so the layout, loot, and encounters change every time, while the arc stays the same.
+
+### The Last Dawn campaign
+
+Captain Ilyra holds the last gate. Archivist Eren has discovered where the king imprisoned every lost sunrise. Your four heroes descend through six chapters, with two route forks changing the places, people, and choices you encounter:
+
+1. **A Kingdom Without Morning** — open the refugee road or recover the royal arsenal.
+2. **The Drowned Standard / A Thousand Forgotten Names** — send Nessa beneath the throne, recover the drowned pay, carry the lost register, or take the ancestral vigil, depending on your route.
+3. **The Bell That Commands the Dead** — free the bound choir or forge the Bell Warden’s iron into weapons.
+4. **The Legion Beneath the Mountain / The Procession of Small Gods** — rally the lost legion, bear its shields, relight village hearths, or carry the procession’s ward.
+5. **The Last Fire** — send Ilyra’s survivors against the throne or carry the final ember yourselves.
+6. **The Throne at the End of Night** — defeat the king and decide what replaces his rule.
+
+At each of the five waystations, a **War Council** appears before the trader. Read both plans and their exact benefits, then commit to one before descending. There are seven authored councils across the branching world and fourteen possible plans; one run encounters five councils. Supplies and permanent bonuses help on the road. Other choices weaken the final king, draw away part of his retinue, deny one bloodied-phase reinforcement, or grant a three-turn opening ward. The battle log explains your allies’ help. Decisions and rewards save immediately and cannot be claimed twice; Chronicle recalls the road and its consequences.
+
+The finale offers three distinct endings: **Break** releases the dawn, **Bind** leaves your chosen hero as Warden, and **Wear** places your chosen hero on the throne. The epilogue remembers the named company, refugees, and route. The choice only opens with the crown, the king defeated, and the final stairs reached. Reloading before you choose returns to that decision. Older portable saves remain supported; earlier chapters receive no retroactive story rewards.
 
 ### Features
 
@@ -142,7 +157,7 @@ No tooling is needed to play. For contributors, run the dependency-free checks w
 node tests/regression.cjs
 ```
 
-The 41 checks execute the actual inline script with DOM stubs. They cover the original defects and the requirement IDs in [REQUIREMENTS.md](REQUIREMENTS.md), including atomic imports, legacy saves, rewards, terrain, aim confirmation, paused Tactics, guardians, exit resumption, and the 350 KiB runtime budget. Generator checks cover 96 exit/key layouts plus 160 layouts with every secret cache opened while vault doors stay blocked.
+The 48 checks execute the actual inline script with DOM stubs. They cover the original defects and the requirement IDs in [REQUIREMENTS.md](REQUIREMENTS.md), including atomic imports, legacy saves, rewards, terrain, aim confirmation, paused Tactics, guardians, exit resumption, and the 350 KiB runtime budget. Generator checks cover 96 exit/key layouts plus 160 layouts with every secret cache opened while vault doors stay blocked.
 
 Chromium checks covered help, journal contracts, chapter rewards, terrain labels, paused Tactics, touch preview and friendly-fire confirmation, rejected imports during combat, saved rewards, and offline interaction after loading. The six phone viewport scenarios above also passed with the boss bar, spell menu, and aim confirmation open; desktop layout passed. No JavaScript page errors occurred.
 
@@ -191,11 +206,12 @@ node tests/regression.cjs
 node tests/devices.cjs
 node tests/quality.cjs
 node tests/flow.cjs
+node tests/epic.cjs
 node tests/campaign.cjs
 ```
 
-The quality checks reproduce the paused-menu and clipboard bugs, create a party and assign equipment with keyboard controls, win a controlled manual battle, and recover portable saves with storage blocked. The flow check exercises rewards, touch aiming, save/reload, and offline play. The campaign check runs three seeds over every oath/route combination: 36 runs, currently 17 victories and 19 defeats without stalls. Wanderer wins 10/12, Delver 5/12, and Ironbound 2/12 in this Auto diagnostic. Wanderer defeats occurred in the final tomb; harder-oath defeats occurred across several floors. This sample supports the intended difficulty ordering, but does not establish human win rates or justify broad retuning.
+The quality checks reproduce the paused-menu and clipboard bugs, create a party and assign equipment with keyboard controls, win a controlled manual battle, and recover portable saves with storage blocked. The flow check exercises rewards, touch aiming, save/reload, and offline play. The epic-campaign check exercises touch/keyboard councils, saved rewards, Chronicle, finale reload, crown-bearer selection, and all three endings at phone/tablet/desktop sizes. The campaign check runs three seeds over every oath/route combination: 36 runs, currently 17 victories and 19 defeats without stalls. With varied council choices, Wanderer wins 10/12, Delver 6/12, and Ironbound 1/12 in this Auto diagnostic; victories cover all three crown fates. Wanderer defeats occurred in the final tomb; harder-oath defeats occurred across several floors. This sample supports the intended difficulty ordering, but does not establish human win rates or justify broad retuning.
 
-The **Game quality** GitHub Actions workflow runs engine, device, quality, and flow checks on Chromium, Firefox, and WebKit; Chromium also runs the campaign sample. Before automatic merge/publication, wait for every PR quality job to pass and verify the final Pages deployment. This is the release procedure; branch protection has not been configured by this change. Use `GOLD_BOX_BROWSER=firefox` or `webkit` for development checks with those Playwright browsers installed. `CHROMIUM_PATH` overrides the browser executable for CI/local installations. WebKit automation is useful compatibility evidence; physical Safari on an iPhone/iPad and real hardware performance still require manual testing.
+The **Game quality** GitHub Actions workflow runs engine, device, quality, flow, and epic-campaign checks on Chromium, Firefox, and WebKit; Chromium also runs the campaign sample. Before automatic merge/publication, wait for every PR quality job to pass and verify the final Pages deployment. This is the release procedure; branch protection has not been configured by this change. Use `GOLD_BOX_BROWSER=firefox` or `webkit` for development checks with those Playwright browsers installed. `CHROMIUM_PATH` overrides the browser executable for CI/local installations. WebKit automation is useful compatibility evidence; physical Safari on an iPhone/iPad and real hardware performance still require manual testing.
 
 For hardware validation, try portrait/landscape, browser-bar resizing, iPad split view, pinch zoom, opening/closing each menu, aimed spells with allies nearby, browser Continue, and a save-code transfer between devices. These cannot be certified from this environment.
