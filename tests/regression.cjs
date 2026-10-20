@@ -13,7 +13,7 @@ function harness({storageBlocked=false,seed=42}={}){
   const context=vm.createContext({console,TextEncoder,TextDecoder,btoa,atob,Math:math,document:{querySelector(s){if(!elements.has(s))elements.set(s,element());return elements.get(s);},querySelectorAll(){return [];},createElement:element,addEventListener(){}},localStorage:{setItem(k,v){if(storageBlocked)throw Error('blocked');saved.set(k,v);},getItem:k=>saved.get(k),removeItem:k=>saved.delete(k)},setTimeout(f){timers.set(++seq,f);return seq;},clearTimeout:id=>timers.delete(id)});
   const run=code=>vm.runInContext(code,context,{timeout:15000});
   run(source);
-  run("render=()=>autosave();renderTown=()=>autosave();renderLevelUp=()=>{};renderCampaign=()=>{};newGame();");
+  run("render=()=>autosave();renderTown=()=>autosave();renderLevelUp=()=>{};renderCampaign=()=>{};newGame();$('#startScreen').classList.remove('show');");
   return {run,timers,tick(){const entry=timers.entries().next().value;if(!entry)return false;timers.delete(entry[0]);entry[1]();return true;}};
 }
 
@@ -303,4 +303,11 @@ test('FLOW-01: a battle level-up is confirmed before the deferred exit advances'
   run("$('#startScreen').classList.remove('show');party.forEach(h=>h.xp=90);explore.pos={...explore.exit};enterCombat({pool:['goblin']},key(explore.exit.x,explore.exit.y));cancelTurn();game.phase='won';game.xpEarned=20;resolveCombat();");
   assert.equal(run("$('#townScreen').classList.contains('show')"),false);assert.equal(run('levelUp.entries.length'),4);
   run('autoAssignLevelUp();');assert.equal(run("$('#townScreen').classList.contains('show')"),true);assert.equal(run('party[0].xp'),210);
+});
+
+
+test('MODAL-01: direct manual combat actions cannot change a paused battle',()=>{
+  const {run}=harness();
+  run("enterCombat({pool:['skeleton']},'2,2');cancelTurn();game.order=['p1',...game.order.filter(id=>id!=='p1')];game.turnIndex=0;game._begin();const actor=game.current(),order=JSON.stringify(game.order),round=game.round;$('#tacticsScreen').classList.add('show');endTurn();guard();waitTurn();toggleAuto();setMode('move');selectSpell('fireball');combatClick(0,0);");
+  assert.equal(run('game.current()===actor'),true);assert.equal(run('JSON.stringify(game.order)'),run('order'));assert.equal(run('game.round'),run('round'));assert.equal(run('autoFight'),false);assert.equal(run('actor.acted.action'),false);assert.equal(run('mover'),null);
 });

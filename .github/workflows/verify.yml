@@ -1,0 +1,43 @@
+name: Game quality
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    name: Verify (${{ matrix.browser }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Engine regressions
+        run: node tests/regression.cjs
+      - name: Install development browser tools
+        run: |
+          npm install --prefix "$RUNNER_TEMP/gold-box-tools" --no-package-lock --ignore-scripts playwright@1.62.1
+          echo "NODE_PATH=$RUNNER_TEMP/gold-box-tools/node_modules" >> "$GITHUB_ENV"
+          "$RUNNER_TEMP/gold-box-tools/node_modules/.bin/playwright" install --with-deps "${{ matrix.browser }}"
+      - name: Browser and campaign release checks
+        env:
+          GOLD_BOX_BROWSER: ${{ matrix.browser }}
+        run: |
+          if [ "$GOLD_BOX_BROWSER" = chromium ]; then
+            export CHROMIUM_PATH="$(node -p 'require("playwright").chromium.executablePath()')"
+          fi
+          python3 -m http.server 8000 --bind 127.0.0.1 > "$RUNNER_TEMP/gold-box-http.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+          node tests/devices.cjs
+          node tests/quality.cjs
+          node tests/flow.cjs
+          if [ "$GOLD_BOX_BROWSER" = chromium ]; then node tests/campaign.cjs; fi

@@ -1,0 +1,25 @@
+const browserName=process.env.GOLD_BOX_BROWSER||'chromium';const chromium=require('playwright')[browserName];const assert=require('node:assert/strict');let browser;
+(async()=>{
+ browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||(browserName==='chromium'?'/usr/bin/chromium':undefined),headless:true,args:browserName==='chromium'?['--no-sandbox']:[]});
+ const context=await browser.newContext({viewport:{width:440,height:780},isMobile:browserName!=='firefox',hasTouch:true,deviceScaleFactor:3});
+ const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));await page.route('https://fonts.**/*',r=>r.abort());await page.goto(process.env.GOLD_BOX_URL||'http://127.0.0.1:8000');
+ await page.click('#btnHowToPlay');assert.equal(await page.locator('#tacticsScreen').isVisible(),true);await page.locator('#btnTacticsClose').scrollIntoViewIfNeeded();await page.click('#btnTacticsClose');assert.equal(await page.locator('#startScreen').isVisible(),true);
+ await page.click('#btnDefault');await page.click('#btnJournal');assert.equal(await page.locator('#journalContracts .route-stop').count(),3);await page.click('#btnJournalClose');
+ await page.evaluate(()=>descendOrWin());assert.equal(await page.locator('#levelScreen').isVisible(),true);await page.click('#btnLevelAuto');await page.locator('.boon-card').first().click();await page.locator('#forkBox button').first().click();
+ await page.evaluate(()=>descendOrWin());if(await page.locator('#levelScreen').isVisible())await page.click('#btnLevelAuto');await page.locator('#forkBox button').click();
+ assert.equal(await page.evaluate(()=>campaign.completedFloors.length),2);
+ await page.evaluate(()=>{enterCombat({boss:true,lead:'bell_warden',pool:['skeleton'],budgetMul:.55},'2,2');cancelTurn();game.order=['p4',...game.order.filter(id=>id!=='p4')];game.turnIndex=0;game._begin();render();});
+ assert((await page.locator('.terrain-mark').count())>0);const actor=await page.evaluate(()=>game.current().id);
+ await page.click('#btnJournal');assert.match(await page.locator('#tacticsContent').innerText(),/Bell Warden/);assert.match(await page.locator('#tacticsContent').innerText(),/Cover/);await page.waitForTimeout(650);assert.equal(await page.evaluate(()=>game.current().id),actor);await page.locator('#btnTacticsClose').scrollIntoViewIfNeeded();await page.click('#btnTacticsClose');
+ await page.evaluate(()=>{party[3].pos={x:2,y:2};party[0].pos={x:4,y:4};game.combatants.find(c=>c.side==='enemy').pos={x:5,y:5};render();});
+ await page.click('#btnCast');await page.getByRole('button',{name:/^Fireball \(/}).click();const charges=await page.evaluate(()=>party[3].spells.find(sp=>sp.id==='fireball').uses);
+ await page.locator('#board .cell').nth(44).tap();assert.equal(await page.evaluate(()=>party[3].spells.find(sp=>sp.id==='fireball').uses),charges);assert.match(await page.locator('#hint').innerText(),/FRIENDLY FIRE/);assert((await page.locator('.aimed').count())>0);assert.equal(await page.locator('#btnConfirmAim').isVisible(),true);
+ await page.click('#btnConfirmAim');assert.equal(await page.evaluate(()=>party[3].spells.find(sp=>sp.id==='fireball').uses),charges-1);
+ const atomic=await page.evaluate(()=>{const before={party,bag,explore,game},bad=JSON.parse(JSON.stringify(saveState()));bad.bag=null;return !applySave(bad)&&party===before.party&&bag===before.bag&&explore===before.explore&&game===before.game;});assert.equal(atomic,true);
+ await page.evaluate(()=>{cancelTurn();game.living('enemy').forEach(c=>game._drop(c));game._checkEnd();resolveCombat();if(levelUp)autoAssignLevelUp();campaign.secrets=2;checkContracts();render();});
+ await page.reload();await page.click('#btnContinue');assert.equal(await page.evaluate(()=>campaign.completedFloors.length),2);assert.equal(await page.evaluate(()=>bag.items.filter(id=>id==='lantern_mantle').length),1);
+ await page.click('#btnJournal');assert.match(await page.locator('#journalContracts').innerText(),/Claimed/);await page.locator('#btnJournalClose').scrollIntoViewIfNeeded();await page.click('#btnJournalClose');
+ await context.setOffline(true);await page.click('#btnSave');assert.match(await page.locator('#saveCode').inputValue(),/^GBS1:/);await page.click('#btnSaveClose');await page.click('#btnJournal');await page.locator('#btnJournalClose').scrollIntoViewIfNeeded();await page.click('#btnJournalClose');
+ assert.deepEqual(errors,[]);console.log('PASS: help, contracts, chapter rewards, terrain, paused Tactics, touch preview and friendly-fire confirmation, rejected import atomicity, saved rewards, and offline interaction.');
+ await browser.close();
+})().catch(async e=>{console.error(e);if(browser)await browser.close();process.exitCode=1;});

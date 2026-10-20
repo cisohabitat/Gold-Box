@@ -69,6 +69,17 @@ Keep this history accurate when behavior changes. Prefer function names to line 
 ## Cross-device maintenance
 
 - Fit desktop, iPad (including split view), and iPhone to the current dynamic viewport. The wide roster breakpoint is `(min-width:1200px) and (min-height:650px)`; narrower windows use field notes. Keep CSS and the drawer breakpoint listener aligned.
-- Short landscape layout applies at height ≤600px and width ≥761px for mouse and touch alike. Preserve the 44px main controls, independently scrolling menus, safe areas, and pinch zoom.
+- Short landscape layout applies at height ≤600px and width ≥600px for mouse and touch alike. Preserve the 44px main controls, independently scrolling menus, safe areas, and pinch zoom.
 - Combat has a roving grid tab stop: arrows navigate, Enter/Space activates, and rerenders retain focus. Keep keyboard actions behind overlay guards and preserve two-step spell aiming. Ignore form typing and browser modifiers in exploration bindings.
 - Run `node tests/regression.cjs` and the optional `node tests/devices.cjs` against a local HTTP server for layout/input changes. Browser tooling is not a runtime dependency. Report Chromium emulation separately from physical Safari/iPad/iPhone testing.
+
+
+## Release polish and quality gate
+
+- Keep the two-line `recentLog` visible in normal play; `drawLog` updates it only when recent entries change, alongside the full history. Do not spend all small-screen space on controls or hide the log again. Very small portrait windows may scroll the play panel; preserve a 160px board and reachable 44px actions.
+- Maintain `turnStatus` movement/action feedback and keyboard-visible attack odds. Short landscape may shorten Signature/Log labels; preserve accessible names and all actions.
+- All layered menus use focus isolation and inert background branches. Manual combat handlers also reject overlays. Preserve nesting (town → equipment/save, event → level), mandatory choices, focus restoration, and existing Tactics timer semantics.
+- Custom score/slot/inventory/level controls use `keyboardControl` for Enter/Space and focus retention. Keep pointer and keyboard behavior equivalent; do not add a second activation through bubbling.
+- Await Clipboard API results; try the fallback after rejection; report failure with manual-copy instructions. Never show Copied for an unconfirmed result.
+- Before automatic merging/publication, require all Game quality PR jobs to succeed. The workflow runs engine/device/quality/flow checks in Chromium, Firefox, and WebKit, plus 36 seeded campaigns in Chromium. The publisher must inspect the exact tested head and verify Pages success after merge. This procedure does not imply configured branch protection.
+- The local polish baseline passes 41 engine checks, 25 device sizes, keyboard creation/equipment/manual battle, clipboard success/fallback/failure, portable recovery with blocked storage, and touch/save/offline flow. The 36-campaign Auto sample yielded 17 wins/19 defeats with no stalls; physical Safari/hardware and human full-run balance remain unverified. Record final cross-browser workflow evidence in the release PR.
