@@ -450,19 +450,49 @@
   .restart-actions{display:flex;flex-direction:column;gap:24px;margin-top:20px;}.restart-actions button{min-height:48px;}
   #btnRestart{border-color:#514735;color:#b9aa8c;}#btnConfirmRestart{border-color:#be795f;color:#f0c3ad;}
   @media(max-width:599px) and (max-height:740px){.cabinet,.board-wrap{gap:3px;}}
+  /* Local materials and feedback stay decorative and never intercept input. */
+  html[data-scene=catacomb]{--panel:#142222;--panel-2:#1d3030;--frame:#668f88;--frame-hi:#9ec4b3;--grid:#253c39;}
+  html[data-scene=tomb]{--panel:#221829;--panel-2:#302239;--frame:#92749b;--frame-hi:#c2a0c9;--grid:#392b40;}
+  .cabinet{background-image:radial-gradient(ellipse at 50% 0,#ffffff09,transparent 65%);}
+  .board-stage{position:relative;}
+  #board{box-shadow:0 5px 20px #0008;}
+  .cell.wall{background-image:repeating-linear-gradient(0deg,transparent 0 45%,#0005 46% 50%,transparent 51%);}
+  .cell.floor{background-image:linear-gradient(135deg,#ffffff08,transparent 60%);}
+  .tile-inspect{position:absolute;bottom:5px;left:5px;right:5px;z-index:8;background:#071211ed;border:1px solid var(--frame-hi);color:#fff1ca;padding:5px 8px;font-size:clamp(11px,1.5vw,16px);line-height:1.15;pointer-events:none;text-align:center;}
+  .battle-cue{position:absolute;left:50%;top:12%;transform:translateX(-50%);z-index:9;max-width:95%;padding:10px 20px;border-block:1px solid var(--gold);background:#101417eb;color:#ffe3a0;font-family:'IM Fell English SC',serif;font-size:clamp(17px,3vw,30px);letter-spacing:2px;text-align:center;pointer-events:none;box-shadow:0 5px 20px #0009;}
+  .tile-inspect[hidden],.battle-cue[hidden]{display:none;}
+  .cue-play{animation:cue-in .3s ease-out;}
+  @keyframes cue-in{from{opacity:0;transform:translate(-50%,-8px)}to{opacity:1;transform:translate(-50%,0)}}
+  .combat-float{position:absolute;z-index:12;left:50%;top:0;transform:translateX(-50%);white-space:nowrap;pointer-events:none;font:bold clamp(11px,2vw,19px) monospace;text-shadow:1px 2px 2px #000,-1px -1px #000;animation:hp-float 1.1s ease-out forwards;}
+  .float-hit{color:#ffbdad;}.float-heal{color:#b8ffb7;}
+  @keyframes hp-float{0%{opacity:1}70%{opacity:1}100%{opacity:0;transform:translate(-50%,-20px)}}
+  .cell.struck{animation:hit-flash .4s ease-out;}.cell.healed{animation:heal-flash .5s ease-out;}
+  @keyframes hit-flash{from{filter:brightness(1.9) sepia(.4)}to{filter:none}}
+  @keyframes heal-flash{from{filter:brightness(1.7) hue-rotate(30deg)}to{filter:none}}
+  .party-beacon{animation:beacon 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center;}
+  @keyframes beacon{50%{filter:brightness(1.5)}}
+  .chapter-art,.ending-art{height:110px;overflow:hidden;border:1px solid var(--frame);margin-bottom:14px;border-radius:3px;}.chapter-art svg,.ending-art svg{display:block;width:100%;height:100%;}
+  #settingsScreen{z-index:110;}.settings-list{text-align:left;display:grid;gap:10px;}.settings-list label{display:flex;align-items:center;gap:12px;min-height:44px;padding:6px 10px;border:1px solid var(--frame);background:#0003;flex-wrap:wrap;}.settings-list input[type=checkbox]{width:24px;height:24px;flex:none;accent-color:var(--gold);}.settings-list input[type=range]{width:100%;min-height:44px;accent-color:var(--gold);}.settings-list select{font:inherit;color:var(--parch);background:var(--panel);min-height:44px;max-width:100%;width:100%;}.settings-list output{margin-left:auto;color:var(--gold);}#btnGameSettings{min-height:44px;}
+  html[data-contrast=high]{--dim:#d8caa8;--parch:#fff3d5;--frame:#d7bd7d;--party:#8de4ff;--enemy:#ff9e82;}
+  html[data-contrast=high] body::after{display:none;}html[data-contrast=high] .cell{background-image:none;}html[data-contrast=high] #board{box-shadow:none;}
+  html[data-effects=off] *,html[data-effects=off] *::before,html[data-effects=off] *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important;}
+  html[data-effects=off] .combat-float{display:none;}
+  @media(prefers-reduced-motion:reduce){.combat-float{display:none;}}
+  @media(max-height:500px){.chapter-art,.ending-art{height:65px;}}
+
 </style>
 </head>
 <body>
 <div class="cabinet">
   <header class="title">
     <h1 id="titleLabel">The Crypt</h1>
-    <div class="header-meta"><span class="round" id="roundLabel"></span><small class="build-stamp" data-build>Build 0.7.0</small></div>
+    <div class="header-meta"><span class="round" id="roundLabel"></span><small class="build-stamp" data-build>Build 0.8.0</small></div>
   </header>
   <div class="campaign-strip"><div><div id="chapterLabel">A descent in six chapters</div><p id="objective">The crown waits below.</p></div><button id="btnJournal">Chronicle</button></div>
   <div id="bossPanel" hidden><span id="bossName"></span><div id="bossHealth"><i></i></div></div>
   <div class="layout">
     <div class="board-wrap">
-      <div class="board-stage"><div id="board"></div></div>
+      <div class="board-stage"><div id="board"></div><div id="tileInspect" class="tile-inspect" hidden></div><div id="battleCue" class="battle-cue" aria-hidden="true" hidden></div></div>
       <div id="recentLog" class="recent-log" role="log" aria-label="Recent events. Full history in Party and Log." aria-live="polite" aria-relevant="additions"></div>
       <div id="turnStatus" class="turn-status" role="status" aria-live="polite" hidden></div>
       <div class="satchel" id="satchel"></div>
@@ -498,21 +528,21 @@
       </div>
     </div>
     <div class="side" id="fieldNotes" role="region" aria-label="Party and battle log">
-      <button id="btnDetailsClose">Back to Game</button>
+      <button id="btnDetailsClose">Back to Game</button><button id="btnGameSettings">Sound &amp; Display</button>
       <div class="pane"><h2 id="rosterTitle">The Party</h2><div class="roster" id="roster"></div></div>
       <div class="pane"><h2>Log</h2><div id="log"></div></div>
     </div>
   </div>
 </div>
 <div class="banner" id="banner">
-  <div class="box"><h2 id="bannerText"></h2><p id="endingStory"></p><div id="endingStats"></div><button id="bannerBtn">Play Again</button></div>
+  <div class="box"><div id="endingArtwork" class="ending-art" aria-hidden="true"></div><h2 id="bannerText"></h2><p id="endingStory"></p><div id="endingStats"></div><button id="bannerBtn">Play Again</button></div>
 </div>
 
 <div class="screen" id="startScreen">
   <div class="sbox">
     <div class="eyebrow">A tactical dungeon saga</div>
     <h1 class="game-title">Gold Box</h1>
-    <div class="release-info"><p class="build-stamp title-build" data-build>Build 0.7.0</p><a class="balance-link" href="https://github.com/cisohabitat/Gold-Box/blob/main/BALANCE.md" target="_blank" rel="noopener">Balance report ↗</a></div>
+    <div class="release-info"><p class="build-stamp title-build" data-build>Build 0.8.0</p><a class="balance-link" href="https://github.com/cisohabitat/Gold-Box/blob/main/BALANCE.md" target="_blank" rel="noopener">Balance report ↗</a></div>
     <p class="subtitle">Crown of the Sunless King</p>
     <svg class="cover-art" viewBox="0 0 600 150" role="img" aria-label="A golden crown above a moonlit crypt"><defs><radialGradient id="moon"><stop stop-color="#bbd1b1"/><stop offset="1" stop-color="#718e7c"/></radialGradient></defs><circle cx="300" cy="68" r="57" fill="url(#moon)" opacity=".45"/><path d="M0 140L0 106 38 106 38 85 57 85 57 107 98 107 98 64 118 44 138 64 138 111 194 111 194 75 214 75 214 130 250 130 250 90Q300 20 350 90L350 130 387 130 387 75 407 75 407 111 462 111 462 64 482 44 502 64 502 107 543 107 543 85 562 85 562 106 600 106 600 150 0 150Z" fill="#0b1518"/><path d="M270 60L263 36 284 48 300 25 316 48 337 36 330 60Z" fill="#e8b84b"/><path d="M277 150V104Q300 68 323 104V150" fill="#03090c"/><path d="M294 148L300 114 306 148" fill="#d8ad5f" opacity=".7"/></svg>
     <p class="intro-copy">The Last Dawn. Six chapters. A kingdom waiting for sunrise. Rally the living, confront the dead, and decide what should replace the Sunless King.</p>
@@ -522,7 +552,7 @@
       <button id="btnContinue" class="big" style="display:none">Continue Saved Run</button>
       <button id="btnDefault" class="big">Play the Default Party</button>
       <button id="btnCreate" class="big">Create Your Party</button>
-      <button id="btnHowToPlay" class="big">How to Play</button>
+      <button id="btnHowToPlay" class="big">How to Play</button><button id="btnTitleSettings" class="big">Sound &amp; Display</button>
     </div>
     <div class="loadwrap">
       <button id="btnLoadToggle" class="linkbtn">Have a save code?</button>
@@ -562,7 +592,7 @@
     <h2 class="ctitle">Waystation</h2>
     <p class="tag" id="townSub">A safe hollow between the dark. Trade, rest, and ready the party before you go deeper.</p>
     <div class="townbar" id="townStatus"></div>
-    <div class="pane council-pane" style="margin-top:14px"><h2 id="councilTitle">War Council</h2><p id="councilStory" class="story-copy"></p><div id="councilPlans" class="council-plans"></div><p id="councilResult" class="story-copy" role="status"></p></div>
+    <div class="pane council-pane" style="margin-top:14px"><div id="chapterArtwork" class="chapter-art" aria-hidden="true"></div><h2 id="councilTitle">War Council</h2><p id="councilStory" class="story-copy"></p><div id="councilPlans" class="council-plans"></div><p id="councilResult" class="story-copy" role="status"></p></div>
     <div class="towncols">
       <div class="pane">
         <h2>Trader</h2>
@@ -625,8 +655,9 @@
 <div class="screen" id="tacticsScreen" role="dialog" aria-modal="true" aria-labelledby="tacticsTitle"><div class="sbox wide"><h2 class="ctitle" id="tacticsTitle">The Delver’s Field Guide</h2><p class="tag" id="tacticsSubtitle"></p><div id="tacticsContent" class="tactics-copy"></div><div class="crow"><button id="btnTacticsClose" class="big">Return</button></div></div></div>
 <div class="screen" id="fateScreen" role="dialog" aria-modal="true" aria-labelledby="fateTitle"><div class="sbox wide"><div class="eyebrow">The Last Dawn · Final Choice</div><h2 id="fateTitle" class="ctitle">What will you do with the crown?</h2><p id="fateStory" class="story-copy"></p><label class="story-copy" for="crownBearer">If the crown needs a bearer, whose oath will hold it?</label><select id="crownBearer" style="display:block;width:100%;min-height:44px;font-size:18px;margin:12px 0;padding:8px"></select><div id="fateChoices" class="council-plans"></div><p class="tag">The king is defeated. The choice is yours; each path ends this campaign.</p></div></div>
 <div class="screen" id="restartScreen" role="dialog" aria-modal="true" aria-labelledby="restartTitle" aria-describedby="restartMessage"><div class="sbox"><h2 id="restartTitle" class="ctitle">Return to the title screen?</h2><p id="restartMessage" class="story-copy"></p><div class="restart-actions"><button id="btnKeepPlaying" class="big">Keep Playing</button><button id="btnConfirmRestart">Return to Title</button></div></div></div>
+<div class="screen" id="settingsScreen" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="sbox"><h2 id="settingsTitle" class="ctitle">Sound &amp; Display</h2><p class="tag">Make the journey your own. Combat pauses while this sheet is open.</p><div class="settings-list"><label><input id="prefSound" type="checkbox"> Synthesized sound effects</label><label><input id="prefMusic" type="checkbox"> Quiet ambient tones (requires sound)</label><label for="prefVolume">Volume <output id="volumeValue">35%</output><input id="prefVolume" type="range" min="0" max="100" step="5" value="35"></label><label><input id="prefEffects" type="checkbox" checked> Visual effects (respects reduced motion)</label><label><input id="prefContrast" type="checkbox"> High contrast / clean display</label><label for="prefPace">Auto pace<select id="prefPace"><option value="normal">Deliberate · normal speed</option><option value="quick">Quick · shorter Auto turns</option></select></label></div><p id="audioStatus" class="tag" role="status">Sound is off by default. No downloads are needed.</p><p id="preferenceStatus" class="tag" role="status"></p><button id="btnSettingsClose" class="big">Back to Game</button></div></div>
 <script>
-const GAME_BUILD='0.7.0';
+const GAME_BUILD='0.8.0';
 document.querySelectorAll('[data-build]').forEach(el=>el.textContent='Build '+GAME_BUILD);
 /* ===== CROWN CAMPAIGN : data, with controller helpers below ===== */
 const OATHS={wanderer:{name:'Wanderer',budget:0.65,recovery:0.25,desc:'Gentler battles; all heroes earn victory XP and recover 25% HP after a win.'},delver:{name:'Delver',budget:1,desc:'Fortune favours the prepared. Only standing heroes earn victory XP.'},ironbound:{name:'Ironbound',budget:1.25,desc:'Stronger enemy forces. Only standing heroes earn victory XP.'}};
@@ -2210,7 +2241,7 @@ let turnTimer=null,turnEpoch=0,restartArmTimer=null,restartToken=0;
 function cancelTurn(){if(turnTimer!==null)clearTimeout(turnTimer);turnTimer=null;turnEpoch++;}
 function queueTurn(fn,delay){
   cancelTurn();const epoch=turnEpoch,combat=game,actor=game.current();
-  turnTimer=setTimeout(()=>{turnTimer=null;if(epoch!==turnEpoch||mode!=='combat'||game!==combat||game.current()!==actor||game.phase!=='playing')return;fn();},delay);
+  turnTimer=setTimeout(()=>{turnTimer=null;if(epoch!==turnEpoch||mode!=='combat'||game!==combat||game.current()!==actor||game.phase!=='playing')return;fn();},Math.round(delay*(preferences.pace==='quick'?.6:1)));
 }
 let spellAim=null,tacticsOpener=null;
 let autoFight=false;   // when on, heroes take their own turns until the fight ends
@@ -2310,8 +2341,8 @@ function applySave(s){
     if(!s.campaign&&s.nodeId==='sunless_tomb')state.bossSlain=Object.entries(dungeon.encounters).some(([k,enc])=>enc.lead==='crypt_lord'&&dungeon.cleared.has(k));
     next={heroes,state,dungeon,path:Array.isArray(s.worldPath)&&s.worldPath.length?s.worldPath.slice():[s.nodeId],bag:{gold:s.bag.gold,keys:s.bag.keys,rations:s.bag.rations,relic:!!s.bag.relic,items:s.bag.items.slice()},feed:s.feed&&s.feed.length?s.feed.slice():[{t:'You press on through '+dungeon.name+'.',k:'sys'}]};
   }catch(_){return false;}
-  clearRestartArm();closeFieldNotes(false);cancelTurn();autoFight=false;levelUp=null;eventLevelUp=null;curEvent=null;
-  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','saveScreen','tacticsScreen','fateScreen','restartScreen'])$('#'+id).classList.remove('show');
+  clearPresentation();clearRestartArm();closeFieldNotes(false);cancelTurn();autoFight=false;levelUp=null;eventLevelUp=null;curEvent=null;
+  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','saveScreen','tacticsScreen','fateScreen','restartScreen','settingsScreen'])$('#'+id).classList.remove('show');
   party=next.heroes;campaign=next.state;explore=next.dungeon;nodeId=s.nodeId;worldPath=next.path;bag=next.bag;exploreFeed=next.feed;
   game=null;mode='explore';mover=null;reachCache=null;pendingKey=null;selectedSpell=null;
   if(s.inTown&&(WORLD[nodeId].next||[]).length)openTown();
@@ -2345,10 +2376,11 @@ async function copySave(){
 function closeSave(){copyEpoch++;$('#btnCopySave').disabled=false;$('#btnCopySave').textContent='Copy Code';$('#saveScreen').classList.remove('show');}
 
 function newGame(chosenParty){
+  clearPresentation();
   clearRestartArm();
   closeFieldNotes(false);
   cancelTurn();autoFight=false;levelUp=null;eventLevelUp=null;curEvent=null;
-  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','saveScreen','tacticsScreen','fateScreen','restartScreen'])$('#'+id).classList.remove('show');
+  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','saveScreen','tacticsScreen','fateScreen','restartScreen','settingsScreen'])$('#'+id).classList.remove('show');
   campaign=freshCampaign($('#oathChoice').value);
   party=chosenParty||makeParty(); nodeId=WORLD_START; worldPath=[WORLD_START]; explore=new ExploreEngine(buildDungeon(generateLevel(WORLD[WORLD_START]))); applyScout();
   bag={ gold:40, keys:0, rations:2, relic:false, items:[] };
@@ -2367,7 +2399,7 @@ function newGame(chosenParty){
   exploreFeed.push({t:STORY.entrance.arrival,k:'flavor'});
   $('#banner').classList.remove('show'); render(); autosave();
 }
-function overlayOpen(){ return $('#restartScreen').classList.contains('show') || $('#fateScreen').classList.contains('show') || $('#tacticsScreen').classList.contains('show') || $('#fieldNotes').classList.contains('open') || $('#townScreen').classList.contains('show') || $('#partyScreen').classList.contains('show') || $('#levelScreen').classList.contains('show') || $('#saveScreen').classList.contains('show') || $('#eventScreen').classList.contains('show') || $('#journalScreen').classList.contains('show') || $('#startScreen').classList.contains('show') || $('#banner').classList.contains('show'); }
+function overlayOpen(){ return $('#settingsScreen').classList.contains('show') || $('#restartScreen').classList.contains('show') || $('#fateScreen').classList.contains('show') || $('#tacticsScreen').classList.contains('show') || $('#fieldNotes').classList.contains('open') || $('#townScreen').classList.contains('show') || $('#partyScreen').classList.contains('show') || $('#levelScreen').classList.contains('show') || $('#saveScreen').classList.contains('show') || $('#eventScreen').classList.contains('show') || $('#journalScreen').classList.contains('show') || $('#startScreen').classList.contains('show') || $('#banner').classList.contains('show'); }
 function tryMove(dx,dy){
   if(mode!=='explore'||overlayOpen())return; const r=explore.move(dx,dy);
   if(r.type==='blocked') return;
@@ -2895,7 +2927,7 @@ function resolveCombat(){
       grantXp(survivors, gained, leveled);
     }
     checkContracts();mode='explore'; game=null; mover=null; selectedSpell=null; render();
-    if(leveled.length) openLevelUp(leveled);else resumeExplore();
+    if(leveled.length)openLevelUp(leveled);else resumeExplore();showBattleCue('VICTORY · +'+gained+' XP');audioCue('victory');
   } else if(game.phase==='lost'){ render(); endRun('lose'); }
 }
 // Award XP to a set of heroes, level them up against XP_TABLE, and push the
@@ -2908,7 +2940,7 @@ function grantXp(heroes, amount, into){
     if(by>0){ h.pendingLevels=(h.pendingLevels||0)+by;into.push({hero:h, by}); exploreFeed.push({t:h.name+' reaches level '+h.level+'.',k:'magic'}); const lv=bgLine(h,'levelup'); if(lv) exploreFeed.push({t:lv,k:'flavor'}); } });
   return into;
 }
-function endRun(kind){ $('#tacticsScreen').classList.remove('show');closeFieldNotes(false);cancelTurn();persistClear(); const t=$('#bannerText');
+function endRun(kind){ $('#endingArtwork').innerHTML=campaignArtwork(kind==='win'?'dawn':'tomb',WORLD_MAXDEPTH,kind==='win');audioCue(kind==='win'?'victory':'fall');audioScene(false);$('#tacticsScreen').classList.remove('show');closeFieldNotes(false);cancelTurn();persistClear(); const t=$('#bannerText');
   if(kind==='win'){ t.textContent='You Escape! Gold: '+bag.gold; t.className='win'; } else { t.textContent='Party Defeated'; t.className='lose'; }
   if(kind==='win'&&campaign.fate){t.textContent=CROWN_FATES[campaign.fate].title;t.className='win';}
   $('#endingStory').textContent=kind==='win'&&campaign.fate?campaignEpilogue(campaign.fate):kind==='win'?'The crown breaks the horizon. For the first time in a thousand years, sunlight touches the kingdom. Four names will be spoken wherever the morning reaches.':'The crypt keeps its silence. Yet above the stone, another ember waits for hands brave enough to carry it.';
@@ -2970,7 +3002,7 @@ function waitTurn(){if(overlayOpen())return; if(mode!=='combat'||game.phase!=='p
   game.log.push({t:c.name+' waits, moving to the back of the line.',k:'sys'});
   mover=null; reachCache=null; selectedSpell=null; game.delay(); render(); beginTurnFlow(); }
 function beginTurnFlow(){
-  if(mode!=='combat'||$('#restartScreen').classList.contains('show')||$('#tacticsScreen').classList.contains('show'))return;
+  if(mode!=='combat'||$('#settingsScreen').classList.contains('show')||$('#restartScreen').classList.contains('show')||$('#tacticsScreen').classList.contains('show'))return;
   spellAim=null;
   if(game.phase!=='playing'){ resolveCombat(); return; }
   const c=game.current();
@@ -3018,7 +3050,7 @@ function toggleAuto(){if(overlayOpen())return;
   if(game.current().side==='enemy'||game.isIncapacitated(game.current()))beginTurnFlow();
 }
 
-function render(){ if(mode==='combat') renderCombat(); else { renderExplore(); autosave(); } renderCampaign(); }
+function render(){if(mode==='combat')renderCombat();else{renderExplore();autosave();}renderCampaign();updatePresentation();}
 
 // ---- First-person view: a stylized grid projection (Dungeon Master style) ----
 // Theme palettes for the projected surfaces, picked off the floor's `theme`. `glow`
@@ -3232,7 +3264,7 @@ function fpObject(c){
 // Top-down minimap inset: explored ground as memory, with discovery-gated markers
 // and a heading arrow for the party.
 function renderMinimap(){
-  const e=explore, pal=FP_THEME[e.theme]||FP_THEME.crypt; let s='';
+  const e=explore, pal=FP_THEME[e.theme]||FP_THEME.crypt;let s='<defs><pattern id="map-stone" width="2" height="2" patternUnits="userSpaceOnUse"><path d="M0 0H2M0 1H2M1 0V1M.5 1V2" fill="none" stroke="#d2b675" stroke-opacity=".15" stroke-width=".06"/></pattern></defs>';
   s+='<rect x="0" y="0" width="'+e.w+'" height="'+e.h+'" fill="#07070b"/>';
   for(let y=0;y<e.h;y++) for(let x=0;x<e.w;x++){ const k=key(x,y); if(!e.seen.has(k)) continue;
     const isSecret=e.secrets&&e.secrets[k]&&e.foundSecrets&&e.foundSecrets.has(k);
@@ -3250,8 +3282,10 @@ function renderMinimap(){
     else if(x===e.exit.x&&y===e.exit.y) dot='#9fd8a0';
     if(dot) s+='<circle cx="'+(x+0.5)+'" cy="'+(y+0.5)+'" r="0.34" fill="'+dot+'"/>';
   }
+  s+='<rect width="'+e.w+'" height="'+e.h+'" fill="url(#map-stone)" pointer-events="none"/>';
   const v=FACING[e.facing], rt=FACING[TURN_R[e.facing]], px=e.pos.x+0.5, py=e.pos.y+0.5, r=0.5;
   const tip=[px+v.dx*r, py+v.dy*r], bl=[px-v.dx*r*0.6+rt.dx*r*0.55, py-v.dy*r*0.6+rt.dy*r*0.55], br=[px-v.dx*r*0.6-rt.dx*r*0.55, py-v.dy*r*0.6-rt.dy*r*0.55];
+  s+='<circle class="party-beacon" cx="'+px+'" cy="'+py+'" r=".7" fill="none" stroke="#ffd877" stroke-width=".08"/>';
   s+='<polygon points="'+tip[0]+','+tip[1]+' '+bl[0]+','+bl[1]+' '+br[0]+','+br[1]+'" fill="#ffd24a" stroke="#1a1a1a" stroke-width="0.12"/>';
   return '<svg viewBox="0 0 '+e.w+' '+e.h+'" class="minimap" preserveAspectRatio="xMidYMid meet">'+s+'</svg>';
 }
@@ -3311,6 +3345,8 @@ function renderCombat(){
       if(steps[e.key]){e.preventDefault();const d=steps[e.key];const nx=Math.max(0,Math.min(game.w-1,x+d[0])),ny=Math.max(0,Math.min(game.h-1,y+d[1]));cellEls[ny*game.w+nx].focus();}
       else if(e.key==='Enter'||e.key===' '){e.preventDefault();if(playerTurn&&!e.repeat)combatClick(x,y);}
     };
+    cell.onpointerenter=()=>inspectTile(x,y);
+    const rememberFocus=cell.onfocus;cell.onfocus=()=>{rememberFocus();inspectTile(x,y);};
     if(here&&here.side!==c.side&&game.canAttack(c,here)){const chance=game.attackPreview(c,here).chance+'% hit';cell.title+=' '+chance+'.';cell.setAttribute('data-chance',chance);cell.setAttribute('aria-label',cell.getAttribute('aria-label')+'. '+chance);}
     if(mover==='move'&&reachCache&&reachCache.has(k)&&!here) cell.classList.add('reach');
     if(mover==='attack'&&here&&game.canAttack(c,here)) cell.classList.add('target');
@@ -3428,10 +3464,11 @@ function confirmRestart(){if(!$('#restartScreen').classList.contains('show')||$(
 $('#btnKeepPlaying').onclick=cancelRestart;$('#btnConfirmRestart').onclick=confirmRestart;
 
 function showStart(){
+  clearPresentation();
   clearRestartArm();
   closeFieldNotes(false);
   cancelTurn();autoFight=false;mode='start';
-  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','tacticsScreen','fateScreen','restartScreen'])$('#'+id).classList.remove('show');
+  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','tacticsScreen','fateScreen','restartScreen','settingsScreen'])$('#'+id).classList.remove('show');
   $('#banner').classList.remove('show');
   $('#createScreen').classList.remove('show');
   $('#saveScreen').classList.remove('show');
@@ -3574,6 +3611,7 @@ function renderCampaign(){
   if(boss){$('#bossName').textContent=(boss.awakened?'II · WRATH · ':'I · GUARDIAN · ')+boss.bossTitle+' · '+boss.hp+' / '+boss.maxHp+' HP';$('#bossHealth i').style.width=(boss.hp/boss.maxHp*100)+'%';}
 }
 function renderCouncil(){
+  $('#chapterArtwork').innerHTML=campaignArtwork(explore.theme,floorDepth(),false);
   const chapter=STORY[nodeId],root=$('#councilPlans'),plan=storyPlan(nodeId);root.innerHTML='';if(!chapter)return;
   $('#councilTitle').textContent=chapter.title+' · War Council';$('#councilStory').textContent=chapter.council;
   $('#councilResult').textContent=plan?plan.result:campaign.decisions[nodeId]==='legacy'?'This council belongs to an earlier chronicle. The way remains open.':'Choose a plan before descending. Its consequences will follow the company.';
@@ -3663,6 +3701,90 @@ function openTactics(){
 function closeTactics(){if(!$('#tacticsScreen').classList.contains('show'))return;$('#tacticsScreen').classList.remove('show');if(tacticsOpener&&typeof tacticsOpener.focus==='function')tacticsOpener.focus();if(mode==='combat'){const c=game.current();if(c.side==='party'&&!autoFight&&!game.isIncapacitated(c))render();else beginTurnFlow();}}
 $('#btnHowToPlay').onclick=openTactics;
 $('#btnTacticsClose').onclick=closeTactics;
+/* Presentation owns preferences and feedback; engines remain deterministic and DOM-free. */
+const PREFERENCE_KEY='goldbox_preferences_v1';
+function readPreferences(){
+  const base={sound:false,music:false,volume:35,effects:true,contrast:false,pace:'normal'};
+  try{const raw=JSON.parse(localStorage.getItem(PREFERENCE_KEY)||'null');if(raw&&typeof raw==='object'){for(const k of ['sound','music','effects','contrast'])if(typeof raw[k]==='boolean')base[k]=raw[k];if(Number.isFinite(raw.volume))base.volume=Math.max(0,Math.min(100,raw.volume));if(raw.pace==='quick')base.pace='quick';}}catch(_){}
+  return base;
+}
+let preferences=readPreferences(),settingsOpener=null,presentationCombat=null,presentationUnits=new Map(),presentationLogCount=0,presentationTimer=null,presentationToken=0;
+const soundState={context:null,master:null,ambient:[],voices:0,lastCue:-Infinity,unavailable:false};
+function applyPreferences(){
+  if(document.documentElement){document.documentElement.dataset.effects=preferences.effects?'on':'off';document.documentElement.dataset.contrast=preferences.contrast?'high':'normal';}
+  if(soundState.master)soundState.master.gain.setTargetAtTime(preferences.sound?preferences.volume/100*.22:0,soundState.context.currentTime,.04);
+  audioScene();
+}
+function storePreferences(){let ok=true;try{localStorage.setItem(PREFERENCE_KEY,JSON.stringify(preferences));}catch(_){ok=false;}$('#preferenceStatus').textContent=ok?'Preferences saved to this browser.':'Storage is blocked. These preferences apply for this session.';applyPreferences();}
+function audioContext(){
+  if(soundState.unavailable||!preferences.sound)return null;
+  if(soundState.context)return soundState.context;
+  try{const Audio=typeof window!=='undefined'&&(window.AudioContext||window.webkitAudioContext);if(!Audio)throw Error('unavailable');const context=new Audio(),master=context.createGain();master.gain.value=preferences.volume/100*.22;master.connect(context.destination);soundState.context=context;soundState.master=master;return context;}catch(_){soundState.unavailable=true;$('#audioStatus').textContent='Audio is unavailable here. All game feedback remains visible in the log.';return null;}
+}
+async function unlockAudio(){const context=audioContext();if(!context)return;try{await context.resume();$('#audioStatus').textContent='Synthesized audio enabled. Mute or change volume at any time.';audioScene();}catch(_){$('#audioStatus').textContent='Audio could not start. Continue with the visible log, or try enabling sound again.';}}
+function audioCue(kind){
+  if(!preferences.sound||!soundState.context||soundState.context.state!=='running'||(typeof document.hidden==='boolean'&&document.hidden))return;
+  const context=soundState.context;if(context.currentTime-soundState.lastCue<.07||soundState.voices>=6)return;soundState.lastCue=context.currentTime;
+  const score={hit:[125,70,.12,'triangle'],heal:[440,660,.24,'sine'],magic:[260,780,.25,'sine'],battle:[110,165,.3,'triangle'],victory:[392,784,.38,'sine'],fall:[100,45,.3,'triangle'],move:[170,125,.07,'sine']}[kind]||[220,330,.12,'sine'];
+  try{const oscillator=context.createOscillator(),gain=context.createGain(),time=context.currentTime;oscillator.type=score[3];oscillator.frequency.setValueAtTime(score[0],time);oscillator.frequency.exponentialRampToValueAtTime(score[1],time+score[2]);gain.gain.setValueAtTime(.001,time);gain.gain.exponentialRampToValueAtTime(.35,time+.015);gain.gain.exponentialRampToValueAtTime(.001,time+score[2]);oscillator.connect(gain);gain.connect(soundState.master);soundState.voices++;oscillator.onended=()=>{oscillator.disconnect();gain.disconnect();soundState.voices=Math.max(0,soundState.voices-1);};oscillator.start(time);oscillator.stop(time+score[2]+.02);}catch(_){}
+}
+function audioScene(force){
+  const context=soundState.context;if(!context)return;
+  const allowed=force!==false&&preferences.sound&&preferences.music&&['explore','combat'].includes(mode)&&!overlayOpen()&&!(typeof document.hidden==='boolean'&&document.hidden);
+  if(!allowed){for(const voice of soundState.ambient){try{voice.oscillator.stop();voice.oscillator.disconnect();voice.gain.disconnect();}catch(_){}}soundState.ambient=[];return;}
+  try{if(!soundState.ambient.length)for(let i=0;i<2;i++){const oscillator=context.createOscillator(),gain=context.createGain();oscillator.type='sine';gain.gain.value=.06;oscillator.connect(gain);gain.connect(soundState.master);oscillator.start();soundState.ambient.push({oscillator,gain});}
+    const root=explore&&explore.theme==='catacomb'?130.81:explore&&explore.theme==='tomb'?146.83:110;soundState.ambient.forEach((voice,i)=>voice.oscillator.frequency.setTargetAtTime(root*(i?1.5:1)*(mode==='combat'?1.125:1),context.currentTime,.6));
+  }catch(_){}
+}
+function openSettings(){
+  settingsOpener=typeof document.activeElement!=='undefined'?document.activeElement:null;
+  closeFieldNotes(false);if(mode==='combat')cancelTurn();
+  for(const [id,key] of [['prefSound','sound'],['prefMusic','music'],['prefEffects','effects'],['prefContrast','contrast']])$('#'+id).checked=preferences[key];
+  $('#prefVolume').value=String(preferences.volume);$('#volumeValue').textContent=preferences.volume+'%';$('#prefPace').value=preferences.pace;
+  $('#settingsScreen').classList.add('show');$('#audioStatus').textContent=soundState.unavailable?'Audio is unavailable here. The game remains fully playable.':'Sound is opt-in and synthesized locally; no audio files are downloaded.';audioScene(false);$('#btnSettingsClose').textContent=mode==='start'?'Back to Title':'Back to Game';
+}
+function closeSettings(){
+  if(!$('#settingsScreen').classList.contains('show'))return;$('#settingsScreen').classList.remove('show');
+  if(settingsOpener&&typeof settingsOpener.focus==='function'){if(settingsOpener.id==='btnGameSettings'&&!$('#fieldNotes').classList.contains('open')&&$('#btnDetails').getClientRects().length)$('#btnDetails').focus();else settingsOpener.focus();}
+  if(mode==='combat'&&game&&game.phase==='playing'){const c=game.current();if(c.side==='party'&&!autoFight&&!game.isIncapacitated(c))render();else beginTurnFlow();}else audioScene();
+}
+function campaignArtwork(theme,chapter,ending){
+  const colour=theme==='dawn'?'#edc971':theme==='tomb'?'#c19cd7':theme==='catacomb'?'#7cc4be':'#d7b478';
+  const rays=Array.from({length:7},(_,i)=>'<path d="M300 118L'+(75+i*75)+' 8"/>').join('');
+  return '<svg viewBox="0 0 600 140" preserveAspectRatio="xMidYMid slice" focusable="false"><rect width="600" height="140" fill="#0b1417"/><g stroke="'+colour+'" stroke-opacity=".2" fill="none">'+rays+'</g><circle cx="300" cy="65" r="47" fill="'+colour+'" opacity=".17"/><g fill="#1f2e30" stroke="'+colour+'" stroke-opacity=".4"><path d="M35 140V57H67V140M533 140V57H565V140M103 140V34H125V140M475 140V34H497V140"/><path d="M218 140V72L300 24L382 72V140Z"/></g><path d="M266 140V90Q300 42 334 90V140" fill="#03090d"/>'+(ending?'<path d="M274 76L268 51L288 60L300 39L312 60L332 51L326 76Z" fill="'+colour+'"/>':'<path d="M286 119L300 80L314 119L300 108Z" fill="'+colour+'"/>')+'<path d="M0 137H600" stroke="'+colour+'"/><text x="300" y="133" fill="'+colour+'" font-family="serif" font-size="11" text-anchor="middle" letter-spacing="5">'+(ending?'THE LAST DAWN':'CHAPTER '+chapter)+'</text></svg>';
+}
+function inspectTile(x,y){
+  if(mode!=='combat'||!game||overlayOpen())return;
+  const unit=game.at(x,y),terrain=game.terrainAt({x,y}),actor=game.current();
+  let text=unit?unit.name+' · '+unit.hp+'/'+unit.maxHp+' HP · AC '+effAc(unit)+' · Range '+unit.range:'Tile '+(x+1)+', '+(y+1)+' · '+(terrain?TERRAIN[terrain].name:'Plain ground');
+  if(unit&&actor.side==='party'&&game.canAttack(actor,unit))text+=' · '+game.attackPreview(actor,unit).chance+'% hit';
+  const label=$('#tileInspect');label.textContent=text;label.hidden=false;
+}
+function clearPresentation(){
+  if(presentationTimer!==null)clearTimeout(presentationTimer);presentationTimer=null;presentationToken++;presentationCombat=null;presentationUnits.clear();presentationLogCount=0;$('#tileInspect').hidden=true;$('#battleCue').hidden=true;audioScene(false);
+}
+function showBattleCue(text){
+  const cue=$('#battleCue');cue.textContent=text;cue.hidden=false;cue.classList.remove('cue-play');void cue.offsetWidth;cue.classList.add('cue-play');
+  if(presentationTimer!==null)clearTimeout(presentationTimer);const token=++presentationToken;presentationTimer=setTimeout(()=>{if(token===presentationToken)cue.hidden=true;presentationTimer=null;},1400);
+}
+function updatePresentation(){
+  if(document.documentElement)document.documentElement.dataset.scene=explore&&explore.theme||'crypt';
+  if(mode!=='combat'||!game){presentationCombat=null;presentationUnits.clear();presentationLogCount=0;$('#tileInspect').hidden=true;audioScene();return;}
+  const first=presentationCombat!==game;if(first){presentationCombat=game;presentationUnits.clear();presentationLogCount=game.log.length;showBattleCue(game.combatants.some(c=>c.bossTitle)?'GUARDIAN BATTLE':'BATTLE');audioCue('battle');}
+  for(const unit of game.combatants){const old=presentationUnits.get(unit.id),cell=cellEls[unit.pos.y*game.w+unit.pos.x];if(old&&cell&&old.hp!==unit.hp){const delta=unit.hp-old.hp,label=document.createElement('span');label.className='combat-float '+(delta>0?'float-heal':'float-hit');label.textContent=(delta>0?'+':'')+delta+' HP';label.setAttribute('aria-hidden','true');cell.appendChild(label);cell.classList.add(delta>0?'healed':'struck');audioCue(delta>0?'heal':unit.alive?'hit':'fall');}presentationUnits.set(unit.id,{hp:unit.hp});}
+  if(game.log.length>presentationLogCount){const latest=game.log.at(-1);if(latest&&latest.k==='magic')audioCue('magic');}presentationLogCount=game.log.length;audioScene();
+}
+$('#btnTitleSettings').onclick=openSettings;$('#btnGameSettings').onclick=openSettings;$('#btnSettingsClose').onclick=closeSettings;
+for(const [id,key] of [['prefSound','sound'],['prefMusic','music'],['prefEffects','effects'],['prefContrast','contrast']])$('#'+id).onchange=()=>{preferences[key]=$('#'+id).checked;storePreferences();if(preferences.sound)unlockAudio();};
+$('#prefVolume').oninput=()=>{preferences.volume=Number($('#prefVolume').value);$('#volumeValue').textContent=preferences.volume+'%';storePreferences();};
+$('#prefPace').onchange=()=>{preferences.pace=$('#prefPace').value==='quick'?'quick':'normal';storePreferences();};
+if(typeof window!=='undefined'){
+  board.addEventListener('pointerleave',()=>{$('#tileInspect').hidden=true;});
+  document.addEventListener('pointerdown',()=>{if(preferences.sound&&!soundState.context)unlockAudio();},{passive:true});
+  document.addEventListener('visibilitychange',()=>{audioScene();if(soundState.context){const action=document.hidden?'suspend':'resume';if(action==='suspend'||preferences.sound)Promise.resolve(soundState.context[action]()).catch(()=>{});}});
+}
+applyPreferences();
+
 /* Layered menus isolate focus and pointer input; pending choices stay mandatory. */
 if(typeof MutationObserver!=='undefined'){
   const panels=[...document.querySelectorAll('.screen,.banner,#fieldNotes')],managed=new Set(),openers=new Map();let top=null,lastFocus=document.activeElement;
@@ -3680,12 +3802,12 @@ if(typeof MutationObserver!=='undefined'){
       if(!next.contains(document.activeElement)){const first=focusables(next)[0]||next;if(first===next)next.tabIndex=-1;first.focus({preventScroll:true});}
     }else if(top&&lastFocus&&lastFocus.isConnected&&!lastFocus.closest('[inert]'))lastFocus.focus({preventScroll:true});
     for(const p of panels)if(p!==next)p.removeAttribute('aria-modal');
-    top=next;
+    top=next;audioScene();
   }
   const observer=new MutationObserver(sync);for(const p of panels)observer.observe(p,{attributes:true,attributeFilter:['class']});
   document.addEventListener('focusin',e=>{const next=active();if(next&&!next.contains(e.target)){sync();return;}if(!next)lastFocus=e.target;});
   document.addEventListener('keydown',e=>{const next=active();if(!next)return;if(e.key==='Tab'){const list=focusables(next),i=list.indexOf(document.activeElement);e.preventDefault();if(list.length)list[(i+(e.shiftKey?-1:1)+list.length)%list.length].focus();}
-    if(e.key==='Escape'){const close={restartScreen:cancelRestart,saveScreen:closeSave,partyScreen:closeParty,journalScreen:()=>$('#btnJournalClose').click(),createScreen:()=>$('#btnBack').click()};if(close[next.id]){e.preventDefault();close[next.id]();}}
+    if(e.key==='Escape'){const close={settingsScreen:closeSettings,restartScreen:cancelRestart,saveScreen:closeSave,partyScreen:closeParty,journalScreen:()=>$('#btnJournalClose').click(),createScreen:()=>$('#btnBack').click()};if(close[next.id]){e.preventDefault();close[next.id]();}}
   },true);
   document.addEventListener('pointerdown',e=>{const next=active();if(next&&(e.target===next||e.target.closest('button:disabled'))){e.preventDefault();const first=focusables(next)[0];if(first)first.focus({preventScroll:true});}},true);
   document.addEventListener('click',e=>{const next=active();if(next&&!next.contains(e.target)){e.preventDefault();e.stopImmediatePropagation();}},true);

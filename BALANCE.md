@@ -1,4 +1,4 @@
-# Game balance — build 0.7.0
+# Game balance — build 0.8.0
 
 Default party; real Auto combat; loot-first exploration; camp below 70% HP; first offered boon; varied councils; no shop purchases.
 
@@ -41,10 +41,10 @@ Per-floor defeats, guardian pressure, and full seeded run records are in report.
 
 The difficulty ordering and broad regression limits pass. Every Wanderer route has at least five wins in eight seeds; all Wanderer defeats occur in the final tomb. The Ash Cantor is the largest measured Delver pressure point: 14 defeats in 29 attempts. Delver groups that survived to the final king won 15/15 fights, which is subject to survivor selection and does not imply the whole campaign is easy. Ironbound has no Auto victories on Warren/Ossuary (0/8), so that combination merits further manual play and additional seeds before any targeted retuning.
 
-This release changes Restart/build visibility and the balance verification, not encounter tuning. No result here is a promise that Auto or a human wins a particular run. The game has no telemetry; the policy is explicit and intentionally limited.
+This release changes presentation, optional audio and player preferences, not encounter tuning. Its 96-run outcomes match build 0.7.0 exactly. No result here is a promise that Auto or a human wins a particular run. The game has no telemetry; the policy is explicit and intentionally limited.
 
 ## Reproduce and inspect
 
 Serve the repo and run `node tests/balance.cjs`. `BALANCE_SAMPLES=12` runs 144 campaigns; `BALANCE_OUTPUT` changes the report directory. The deterministic seeds are `2718 + route + sample × 10000`. Each oath uses the same seed schedule; branch-dependent draws and player actions still change subsequent RNG consumption. Final choices cycle through Break/Bind/Wear. Runs are batched between seeds to release browser work.
 
-The Game quality CI job uploads per-build `report.json` and `report.md` artifacts, including failures. JSON includes all run seeds, outcomes, defeat floors, supplies, per-battle HP/rounds, guardians, and the build identifier. This checked-in snapshot is for build 0.7.0; rerun the checker after any rule/tuning change.
+The Game quality CI job uploads per-build `report.json` and `report.md` artifacts, including failures. JSON includes all run seeds, outcomes, defeat floors, supplies, per-battle HP/rounds, guardians, and the build identifier. This checked-in snapshot is for build 0.8.0; rerun the checker after any rule/tuning change.

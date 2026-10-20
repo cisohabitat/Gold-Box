@@ -22,7 +22,7 @@ const browserName=process.env.GOLD_BOX_BROWSER||'chromium';const chromium=requir
  // Nested menus keep focus inside the top sheet and restore their opener.
  await page.click('#btnParty');for(let i=0;i<12;i++){await page.keyboard.press(i%2?'Shift+Tab':'Tab');assert(await page.evaluate(()=>document.querySelector('#partyScreen').contains(document.activeElement)));}
  await page.keyboard.press('Escape');assert.equal(await page.evaluate(()=>document.activeElement.id),'btnParty');
- await page.click('#btnDetails');for(let i=0;i<5;i++){await page.keyboard.press('Tab');assert.equal(await page.evaluate(()=>document.activeElement.id),'btnDetailsClose');}await page.keyboard.press('Escape');
+ await page.click('#btnDetails');for(let i=0;i<5;i++){await page.keyboard.press('Tab');assert(await page.evaluate(()=>document.querySelector('#fieldNotes').contains(document.activeElement)));}await page.keyboard.press('Escape');
  // Clipboard success, asynchronous denial with successful fallback, and total failure.
  await page.click('#btnSave');
  for(const kind of ['success','fallback','failure']){

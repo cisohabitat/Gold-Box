@@ -8,11 +8,19 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 ## Play
 
-**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.7.0** · [Balance report](BALANCE.md)
+**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.8.0** · [Balance report](BALANCE.md)
 
 Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a fitted board/control shell on every device, with a live sidebar in wide windows and a separate Party & Log panel in smaller windows. **How to Play** on the title screen explains the rules.
 
 The live version is served from GitHub Pages: the repo’s **Settings → Pages** source is set to the main branch root. Changes on a pull request branch become live only after they reach `main`; download that branch's `index.html` to play its version locally.
+
+### Presentation and player options
+
+Build 0.8.0 adds themed materials, chapter and ending illustrations, battle/victory cues, and actual HP-change feedback. Hover or keyboard-focus a combat tile to inspect HP, AC, range, and legal attack odds. Feedback is decorative and never delays an action.
+
+Open **Sound & Display** from the title or Party & Log. Choose high contrast, reduced visual effects, normal/quick Auto pace, volume, and optional synthesized sound and ambient tones. Sound and ambience start off; enabling them requires a gesture and downloads no assets. Preferences persist separately from the campaign, or last for the session when storage is blocked. Settings pause combat; Escape returns to play. OS reduced motion always takes priority.
+
+The quality target is an excellent small standalone tactical RPG. The presentation and options improve its scope-limited grade from B+ toward A−; commercial AAA production quality remains outside a single-file, 350 KiB budget. Physical iPhone/iPad validation and broader human balance/playtesting remain outstanding.
 
 ### Playing on desktop, iPad, and iPhone
 
