@@ -311,7 +311,7 @@
   .board-stage{min-width:0;}
   #btnDetails,#btnDetailsClose{display:none;}
   button,.chip,.slot,.gslot,.ichip{touch-action:manipulation;}
-  @media(max-width:760px), (max-height:520px) and (pointer:coarse){
+  @media all{
     html{height:100%;}
     body{height:100vh;height:100dvh;min-height:0;display:block;overflow:hidden;
       padding:var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);}
@@ -368,7 +368,7 @@
     .banner{padding:var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);}
     .banner .box{max-height:100%;}
   }
-  @media(max-height:520px) and (pointer:coarse) and (min-width:761px){
+  @media(max-height:600px) and (min-width:761px){
     .cabinet{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr);padding:6px;gap:4px;}
     header.title{grid-column:1;grid-row:1;border:0;}
     .campaign-strip{grid-column:2;grid-row:1;}
@@ -387,6 +387,18 @@
     .controls.combat-active{grid-template-columns:repeat(4,minmax(0,1fr));}
     .controls.combat-active #combatControls{display:contents!important;}
   }
+
+  /* Wide windows retain the live roster; narrower windows use field notes. */
+  @media(min-width:1200px) and (min-height:650px){
+    .cabinet{max-width:1600px;margin-inline:auto;padding:12px;}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px;}
+    .side{display:flex;min-height:0;overflow-y:auto;overscroll-behavior:contain;}
+    .side .pane{flex:none;}
+    #btnDetails,#btnDetailsClose{display:none;}
+    #btnRestart{grid-column:1/-1;}
+  }
+  button:focus-visible,.cell:focus-visible{outline:3px solid #fff3b0;outline-offset:-3px;}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important;}}
 
   .cell.field-cover{background-image:linear-gradient(135deg,#43637177,#20333944);}
   .cell.field-sanctum{background-image:radial-gradient(#7fc14f55,#193c2444);}
@@ -3136,7 +3148,9 @@ function renderExplore(){
   $('#hint').textContent='Move with the arrows \u25B2\u25BC\u25C0\u25B6 (N/S/W/E). '+goal;
 }
 
+let gridCursor={x:0,y:0};
 function renderCombat(){
+  const restoreGridFocus=board.contains(document.activeElement);
   if(!validAim())spellAim=null;
   $('.controls').classList.add('combat-active');
   const c=game.current();
@@ -3157,7 +3171,15 @@ function renderCombat(){
     const terrain=game.terrainAt({x,y});if(terrain){cell.classList.add('field-'+terrain);const mark=document.createElement('span');mark.className='terrain-mark';mark.textContent=TERRAIN[terrain].glyph;cell.appendChild(mark);}
     if(spellAim&&game.cheb({x,y},spellAim)<=selectedSpell.aoe)cell.classList.add('aimed');
     const details=(here?here.name+' '+here.hp+'/'+here.maxHp+' HP. ':'')+(terrain?TERRAIN[terrain].name+': '+TERRAIN[terrain].desc:'Plain ground');
-    cell.setAttribute('role','gridcell');cell.setAttribute('aria-label',details);cell.title=details;
+    cell.setAttribute('role','gridcell');cell.setAttribute('aria-label','Column '+(x+1)+', row '+(y+1)+'. '+details);cell.title=details;
+    cell.tabIndex=x===gridCursor.x&&y===gridCursor.y?0:-1;
+    cell.onfocus=()=>{gridCursor={x,y};for(const el of cellEls)el.tabIndex=el===cell?0:-1;};
+    cell.onkeydown=e=>{
+      if(overlayOpen()||e.altKey||e.ctrlKey||e.metaKey)return;
+      const steps={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};
+      if(steps[e.key]){e.preventDefault();const d=steps[e.key];const nx=Math.max(0,Math.min(game.w-1,x+d[0])),ny=Math.max(0,Math.min(game.h-1,y+d[1]));cellEls[ny*game.w+nx].focus();}
+      else if(e.key==='Enter'||e.key===' '){e.preventDefault();if(playerTurn&&!e.repeat)combatClick(x,y);}
+    };
     if(here&&here.side!==c.side&&game.canAttack(c,here))cell.title+=' Hit chance '+game.attackPreview(c,here).chance+'%.';
     if(mover==='move'&&reachCache&&reachCache.has(k)&&!here) cell.classList.add('reach');
     if(mover==='attack'&&here&&game.canAttack(c,here)) cell.classList.add('target');
@@ -3179,6 +3201,7 @@ function renderCombat(){
     if(playerTurn) cell.onclick=()=>combatClick(x,y);
     cellEls.push(cell); board.appendChild(cell);
   } }
+  if(restoreGridFocus){const target=cellEls[gridCursor.y*game.w+gridCursor.x];if(target)target.focus({preventScroll:true});}
   roster.innerHTML='';
   game.order.forEach(id=>{ const u=game.byId(id); const row=document.createElement('div'); row.className='row '+u.side+(u===c?' cur':'')+(u.alive?'':' dead');
     const sp=(u.spells&&u.spells.length)?`<span class="sp">${u.spells.reduce((a,s)=>a+s.uses,0)}sp</span>`:'';
@@ -3236,7 +3259,7 @@ $('#btnAuto').onclick=toggleAuto;
 function closeFieldNotes(restoreFocus=true){$('#fieldNotes').classList.remove('open');$('#btnDetails').setAttribute('aria-expanded','false');if(restoreFocus)$('#btnDetails').focus();}
 $('#btnDetails').onclick=()=>{if($('#fieldNotes').classList.contains('open'))closeFieldNotes();else{$('#fieldNotes').classList.add('open');$('#btnDetails').setAttribute('aria-expanded','true');$('#btnDetailsClose').focus();}};
 $('#btnDetailsClose').onclick=()=>closeFieldNotes();
-if(typeof window!=='undefined')window.matchMedia('(max-width:760px), (max-height:520px) and (pointer:coarse)').addEventListener('change',e=>{if(!e.matches)closeFieldNotes(false);});
+if(typeof window!=='undefined')window.matchMedia('(min-width:1200px) and (min-height:650px)').addEventListener('change',()=>closeFieldNotes(false));
 $('#btnRest').onclick=makeCamp; $('#btnParty').onclick=openParty; $('#btnPartyClose').onclick=closeParty; $('#btnRestart').onclick=showStart; $('#bannerBtn').onclick=showStart;
 $('#btnAutoGear').onclick=autoAssignGear;
 $('#btnTurnL').onclick=()=>fpAct('turnL'); $('#btnTurnR').onclick=()=>fpAct('turnR'); $('#btnFwd').onclick=()=>moveDir(0,-1);
@@ -3244,7 +3267,7 @@ $('#btnFpBack').onclick=()=>moveDir(0,1); $('#btnStrafeL').onclick=()=>moveDir(-
 $('#btnTownRest').onclick=townRest; $('#btnTownParty').onclick=openParty;
 $('#btnLevelDone').onclick=confirmLevelUp;
 $('#btnLevelAuto').onclick=autoAssignLevelUp;
-document.addEventListener('keydown', e=>{ if(e.key==='Escape'&&$('#tacticsScreen').classList.contains('show')){closeTactics();return;}if(e.key==='Escape'&&$('#fieldNotes').classList.contains('open')){closeFieldNotes();return;}if(mode!=='explore'||overlayOpen())return;
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'&&$('#tacticsScreen').classList.contains('show')){closeTactics();return;}if(e.key==='Escape'&&$('#fieldNotes').classList.contains('open')){closeFieldNotes();return;}if(mode!=='explore'||overlayOpen()||e.altKey||e.ctrlKey||e.metaKey||e.target.closest('input,textarea,select,[contenteditable]'))return;
   const dirs={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],
     w:[0,-1],s:[0,1],a:[-1,0],d:[1,0],W:[0,-1],S:[0,1],A:[-1,0],D:[1,0]};
   const turns={q:'turnL',e:'turnR',Q:'turnL',E:'turnR'};
@@ -3425,6 +3448,7 @@ function openTactics(){
   const root=$('#tacticsContent');root.innerHTML='';
   const section=(title,copy)=>{const h=document.createElement('h3');h.textContent=title;root.appendChild(h);const p=document.createElement('p');p.textContent=copy;root.appendChild(p);};
   section('Your turn','Each hero can move once and take one action, in either order. Attack, cast, drink a potion, or use a signature. End Turn advances the order. Guard spends the action and ends the turn, preparing one reaction. Wait delays an untouched turn. Moving away from an adjacent foe can provoke a free strike.');
+  section('Mouse, touch, and keyboard','Choose actions with a click or tap. Explore with arrows or WASD. In combat, Tab to the grid, use arrows to move focus, and press Enter or Space to use the selected action. Area spells still need confirmation. Party & Log opens the roster in smaller windows.');
   section('Aim before you cast','Select an area spell, then tap a tile to preview it. The pink outline shows the blast; the hint counts allies and foes. Tap that tile again or Confirm cast to commit. Fireball and other damage blasts hit friends too; Sleep only affects enemies. Cover protects against ranged weapons, not magic.');
   section('Ground that matters',Object.values(TERRAIN).map(t=>t.glyph+' '+t.name+': '+t.desc).join(' '));
   section('The road below','Find keys and stairs. Camp supplies restore HP and spells; waystation rests are free. Each completed chapter grants XP once. Claim a free ember before descending. Chronicle tracks optional promises: win battles, find caches, and succeed at events. Each completed promise grants one reward.');

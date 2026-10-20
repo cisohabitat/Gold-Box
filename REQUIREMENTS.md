@@ -82,3 +82,22 @@ Commands and results:
 Limits: physical iPhone and Safari are unavailable here; viewport checks use Chromium. The managed browser blocks direct `file://` verification; local HTTP play and offline interaction after loading were checked. Old saves retain their generated layouts, and historical successful checks cannot be reconstructed. Deferred roadmap ideas remain deferred.
 
 Publication uses the standing automatic-publication instruction after these checks. The corresponding merge and GitHub Pages result are recorded in the implementation pull request and [deployment history](https://github.com/cisohabitat/Gold-Box/actions).
+
+## Cross-device requirements
+
+All dimensions below are CSS pixels. Device labels describe representative browser windows, not claims of hardware certification.
+
+| ID | Detailed requirement and acceptance |
+| --- | --- |
+| DEV-01 | Fit exploration, boss combat, and an open spell menu within the current dynamic viewport with no page overflow or board/control overlap. Board height remains at least 160px in the supported matrix. Keep every main action and movement target at least 44×44px. |
+| DEV-02 | Show a separately scrollable live roster at width ≥1200 and height ≥650. Otherwise expose Party & Log and Back to Game. At width ≥761 and height ≤600 put the board beside the controls, independent of pointer type. Never require a touch-only media query for desktop window fitting. |
+| DEV-03 | Touch and mouse use the same action handlers. Combat exposes one tab stop in the labelled grid; arrow keys move focus with edge clamping, Enter/Space uses the selected action, and rendering preserves grid focus. A held activation key does not repeatedly spend actions. Keep visible focus and existing two-step area-spell confirmation. |
+| DEV-04 | Rotation, split-view, and window resizing preserve hero HP, map position, battle round, and active engine. Crossing the sidebar breakpoint clears drawer state so an invisible overlay cannot block input. Exploration ignores typing fields and Alt/Ctrl/Meta shortcuts. Open menus block gameplay keys. |
+| DEV-05 | Respect safe-area insets, allow pinch zoom, keep menus independently scrollable, use readable save input text, and disable animation/transitions for reduced-motion preference. Offline gameplay and portable v2 saves remain intact; no new runtime dependency. |
+| DEV-06 | Reproducible browser checks cover iPad sizes 768×1024, 820×1180, 1024×768, 1180×820, 1024×1366, 1366×1024, 744×1133, 1133×744; split view 507×1024; desktop 1280×720, 1366×768, 1920×1080 and short 1024×600; plus the six existing phone scenarios. Check keyboard, menus, resize state, reduced motion, and page errors. Run the 40 engine regressions and keep runtime below 350 KiB. |
+
+The optional `tests/devices.cjs` browser harness implements the device matrix. It requires a separately installed Playwright package and Chromium; these are development tools and are not game dependencies. Native Safari, Firefox, physical iPad/iPhone, and on-device performance remain manual verification limits.
+
+### Cross-device acceptance record
+
+DEV-01–06 are implemented. `node tests/devices.cjs` passes all 19 window sizes with exploration, boss combat, and spell menus; main target bounds are at least 44px and the board remains inside the viewport. Keyboard movement changes the actor's position, area-spell Enter previews without spending a charge, and Space confirms exactly one charge while focus remains on the grid. Crossing the drawer/sidebar breakpoint preserves HP, map position, and battle round and clears drawer state. Reduced-motion styling, scrollable creation/equipment menus, and page-error checks pass. The existing touch/save/offline browser flow passes, as do all 40 engine regressions. Latest runtime: **265,834 bytes**, below 358,400 bytes. No runtime packages or save migration added. Platform limitations above still apply.

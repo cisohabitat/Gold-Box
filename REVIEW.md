@@ -36,3 +36,14 @@ Improve decisions, readability, and progression before adding more floors or ano
 ## Release outcome
 
 R1, R2, R3, and R11 are corrected with focused regression coverage. The gameplay directions R4–R10 are implemented in the scoped release. See the [requirements acceptance record](REQUIREMENTS.md#acceptance-record) for actual verification and limits. This baseline review remains intact so later contributors can distinguish the original failures from their fixes.
+
+## Desktop, iPad, and iPhone follow-up
+
+Reviewed the tactical release at `11a31dd7b457339dda799cf220e441003565b8ea` for the requested cross-device support.
+
+- **Tablet layout gap:** phone fitting ended at 760px, leaving common iPad windows with the fixed 300px sidebar and unfitted desktop board. Resolved by making the fitted shell universal and reserving the sidebar for windows at least 1200×650px.
+- **Short desktop windows:** compact landscape depended on a coarse pointer. Resolved with a height/width rule independent of input hardware.
+- **Keyboard combat gap:** clickable grid cells lacked a keyboard route. Resolved with a roving tab stop, labelled coordinates, bounded arrow navigation, Enter/Space activation, visible focus, and focus retention after rendering. Exploration now ignores typing fields and browser modifier shortcuts.
+- **Resize overlay risk:** drawer state could outlive the sidebar layout. The layout and media-query listener now share a breakpoint and clear transient drawer state when crossing it.
+
+Validation: 40 engine regressions pass. The committed optional browser harness passes 19 device sizes, including iPad split view and desktop windows, with fitted board/controls, boss/spell menus, 44px main targets, keyboard movement/casting, resize state, reduced motion, and no page errors. The existing touch-preview, save/reload, rejected-import, contract, and offline feature flow also passes. Native Safari and physical-device testing remain unavailable.

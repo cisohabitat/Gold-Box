@@ -65,3 +65,10 @@ Keep this history accurate when behavior changes. Prefer function names to line 
 - Distinguish static inspection, DOM-stub execution, and browser testing in reports. Expansion validation passed 19 regression checks (including 96 generated floors). Chromium checks covered save recovery, signatures, blessings, journal, and a 390-pixel viewport. Six seeded controller-driven campaign simulations produced one Wanderer victory and five defeats without page errors; this is not exhaustive balance testing.
 - Report remaining failures and limitations plainly. Do not describe documented defects as fixed unless the implementation and verification support that claim.
 - The tactical-depth acceptance record supersedes the historical 19-test/six-run baseline above: 40 checks, 256 generator probes, six phone viewport scenarios, and 12 seeded campaigns (six victories/six defeats, no stalls). These are DOM-stub and Chromium checks, not physical Safari or exhaustive balance testing. Keep `index.html` within 350 KiB with no runtime dependencies.
+
+## Cross-device maintenance
+
+- Fit desktop, iPad (including split view), and iPhone to the current dynamic viewport. The wide roster breakpoint is `(min-width:1200px) and (min-height:650px)`; narrower windows use field notes. Keep CSS and the drawer breakpoint listener aligned.
+- Short landscape layout applies at height ≤600px and width ≥761px for mouse and touch alike. Preserve the 44px main controls, independently scrolling menus, safe areas, and pinch zoom.
+- Combat has a roving grid tab stop: arrows navigate, Enter/Space activates, and rerenders retain focus. Keep keyboard actions behind overlay guards and preserve two-step spell aiming. Ignore form typing and browser modifiers in exploration bindings.
+- Run `node tests/regression.cjs` and the optional `node tests/devices.cjs` against a local HTTP server for layout/input changes. Browser tooling is not a runtime dependency. Report Chromium emulation separately from physical Safari/iPad/iPhone testing.
