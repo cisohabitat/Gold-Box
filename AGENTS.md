@@ -112,3 +112,10 @@ Keep this history accurate when behavior changes. Prefer function names to line 
 - Audio is opt-in after a gesture, bounded to six effect voices and two ambient voices; mute/visibility/modal/title transitions silence ambience. Do not couple sound to action scheduling or random rolls.
 - Keep settings in overlay guards, cleanup and focus isolation. Opening pauses combat; closing preserves manual aim and resumes one appropriate loop. Mobile settings return focus to Party & Log.
 - Run `tests/polish.cjs` in the three-browser gate for persisted preferences, real disabled effects/contrast styling, audio opt-in/failure, focus, paused combat, HP feedback and blocked storage. Report emulation and deterministic Auto separately from hardware/human validation.
+
+## Sprite art maintenance (0.9.0)
+
+- `SPX` contains 19 authored 24×24 grids. Only `.` is transparent; all other symbols must exist in `PX`. `px` rejects invalid geometry/palette data. Keep keylines, lighting, and silhouettes consistent, and art within the square.
+- Preserve sprite IDs used in hero saves. Every class and bestiary reference must resolve. Guardians have unique `bell_warden`, `ash_cantor`, and `crypt_lord` art; never alias them to ordinary enemies. Art remains independent of engine rules and RNG.
+- Hero frames are round, enemy frames square; guardians have a diamond and awakened state frame. Preserve active/elite/HP/status indicators and pointer-transparent SVG. Existing names/labels remain authoritative; portraits are decorative. Keep larger Tactics portraits for tiny-board inspection.
+- Run `node tests/sprites.cjs` for palette/geometry/reference/identity checks and `node tests/sprite-browser.cjs` for actual board/roster/Tactics rendering. Both are part of the three-browser gate. See SPRITE_REVIEW.md for review evidence, grading, and physical-device limits.

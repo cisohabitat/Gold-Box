@@ -8,11 +8,15 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 ## Play
 
-**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.8.0** · [Balance report](BALANCE.md)
+**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.9.0** · [Balance report](BALANCE.md)
 
 Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a fitted board/control shell on every device, with a live sidebar in wide windows and a separate Party & Log panel in smaller windows. **How to Play** on the title screen explains the rules.
 
 The live version is served from GitHub Pages: the repo’s **Settings → Pages** source is set to the main branch root. Changes on a pull request branch become live only after they reach `main`; download that branch's `index.html` to play its version locally.
+
+### Sprite art
+
+Build 0.9.0 rebuilds all 19 pixel sprites with consistent outlines, clearer weapons and class silhouettes, and unique Bell Warden, Ash Cantor and Sunless King designs. Round hero frames and square enemy frames distinguish sides by shape as well as colour. The roster and Tactics show matching portraits; use Tactics for a larger view on small screens. [Sprite review and scope-limited grading](SPRITE_REVIEW.md) documents the changes and remaining limits.
 
 ### Presentation and player options
 
