@@ -21,7 +21,9 @@ jobs:
         with:
           node-version: '22'
       - name: Engine regressions
-        run: node tests/regression.cjs
+        run: |
+          node tests/regression.cjs
+          node tests/balance-checks.cjs
       - name: Install development browser tools
         run: |
           npm install --prefix "$RUNNER_TEMP/gold-box-tools" --no-package-lock --ignore-scripts playwright@1.62.1
@@ -41,4 +43,12 @@ jobs:
           node tests/quality.cjs
           node tests/flow.cjs
           node tests/epic.cjs
-          if [ "$GOLD_BOX_BROWSER" = chromium ]; then node tests/campaign.cjs; fi
+          if [ "$GOLD_BOX_BROWSER" = chromium ]; then node tests/balance.cjs; fi
+
+      - name: Upload balance report
+        if: always() && matrix.browser == 'chromium'
+        uses: actions/upload-artifact@v4
+        with:
+          name: balance-${{ github.sha }}
+          path: artifacts/balance/
+          if-no-files-found: warn

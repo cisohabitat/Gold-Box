@@ -1,26 +1,29 @@
 const browserName=process.env.GOLD_BOX_BROWSER||'chromium';const chromium=require('playwright')[browserName];const assert=require('node:assert/strict');
-(async()=>{
+async function runCampaigns(samples=3,onSample=null){
 const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||(browserName==='chromium'?'/usr/bin/chromium':undefined),headless:true,args:browserName==='chromium'?['--no-sandbox']:[]});
+try{
 const page=await browser.newPage();const errors=[];page.on('pageerror',e=>errors.push(String(e)));
 await page.route('https://fonts.**/*',r=>r.abort());await page.goto(process.env.GOLD_BOX_URL||'http://127.0.0.1:8000');
-const results=await page.evaluate(()=>{
+const results=[];for(let sample=0;sample<samples;sample++){results.push(...await page.evaluate(sample=>{
   const results=[];
   // Drive the real controller and engines synchronously; rendering stays active.
-  for(const sample of [0,1,2])for(const oath of ['wanderer','delver','ironbound'])for(const branch of [0,1,2,3]){
-    let seed=2718+branch+sample*10000;Math.random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
+  for(const oath of ['wanderer','delver','ironbound'])for(const branch of [0,1,2,3]){
+    const runSeed=2718+branch+sample*10000;let seed=runSeed;Math.random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
     showStart();document.querySelector('#oathChoice').value=oath;startDefault();
-    let moves=0,turns=0,phases=0,stop='limit';
+    let moves=0,turns=0,phases=0,stop='limit';const fights=[];
     while(moves++<1800){
       cancelTurn();
       if(mode==='combat'){
+        const fight={floor:nodeId,depth:floorDepth(),guardians:game.living('enemy').filter(e=>e.bossTitle).map(e=>e.cls),foes:game.living('enemy').length,level:partyLevelAvg(),hpBefore:party.reduce((n,h)=>n+Math.max(0,h.hp),0),maxHp:party.reduce((n,h)=>n+h.maxHp,0),supplies:bag.rations};
         let fightTurns=0;
         while(game.phase==='playing'&&fightTurns++<800){const c=game.current();if(!game.isIncapacitated(c))game.actAuto(c);if(game.phase==='playing')game.endTurn();}
+        fights.push({...fight,turns:fightTurns,rounds:game.round,hpAfter:party.reduce((n,h)=>n+Math.max(0,h.hp),0),down:party.filter(h=>!h.alive).length,result:game.phase});
         turns+=fightTurns;phases+=game.combatants.filter(c=>c.awakened).length;
         if(game.phase==='lost'){stop='defeat';break;}
         if(game.phase==='playing'){stop='combat stalled';break;}
         resolveCombat();continue;
       }
-      if(document.querySelector('#fateScreen').classList.contains('show')){chooseCrownFate(['break','bind','wear'][sample]);continue;}
+      if(document.querySelector('#fateScreen').classList.contains('show')){chooseCrownFate(['break','bind','wear'][sample%3]);continue;}
       if(document.querySelector('#banner').classList.contains('show')){stop='victory';break;}
       if(levelUp){autoAssignLevelUp();continue;}
       if(curEvent){const options=EVENTS[curEvent.id].options;let pick=options.findIndex(o=>o.fallback),best=-Infinity;options.forEach((o,i)=>{if(!o.fallback){const score=bestForStat(o.stat).mod-o.dc;if(score>best){best=score;pick=i;}}});resolveEventOption(pick);closeEvent();continue;}
@@ -45,9 +48,15 @@ const results=await page.evaluate(()=>{
       if(!path){stop='no route '+JSON.stringify({pos:explore.pos,exit:explore.exit,keys:bag.keys,loot:explore.loot,doors:[...explore.doors],town:document.querySelector('#townScreen').className});break;}
       tryMove(...path);
     }
-    cancelTurn();results.push({sample,oath,branch,stop,floor:nodeId,moves,turns,phases,level:party.map(h=>h.level),battles:campaign.battles,relic:bag.relic,contracts:campaign.contracts.length,chapters:campaign.completedFloors.length,decisions:Object.keys(campaign.decisions).length,fate:campaign.fate});
+    cancelTurn();results.push({sample,seed:runSeed,oath,branch,stop,depth:floorDepth(),fights,floor:nodeId,moves,turns,phases,level:party.map(h=>h.level),battles:campaign.battles,relic:bag.relic,contracts:campaign.contracts.length,chapters:campaign.completedFloors.length,decisions:Object.keys(campaign.decisions).length,fate:campaign.fate});
   }
   return results;
-});
-console.log(JSON.stringify(results,null,2));console.log('ERRORS',errors);await browser.close();assert.equal(results.length,36);assert(results.every(r=>['victory','defeat'].includes(r.stop)),'campaign stalled');assert(results.filter(r=>r.stop==='victory').every(r=>r.floor==='sunless_tomb'&&r.relic&&r.decisions===5&&['break','bind','wear'].includes(r.fate)),'incomplete victory');assert.equal(new Set(results.filter(r=>r.stop==='victory').map(r=>r.fate)).size,3,'missing ending coverage');assert.deepEqual(errors,[]);console.log('PASS: 36 campaigns, '+results.filter(r=>r.stop==='victory').length+' victories, '+results.filter(r=>r.stop==='defeat').length+' defeats, no stalls.');
-})().catch(e=>{console.error(e);process.exitCode=1});
+},sample));if(onSample)onSample(sample+1,samples);}
+const build=await page.evaluate(()=>GAME_BUILD);return {build,results,errors};
+}finally{await browser.close();}
+}
+function validateCampaigns(results,errors,samples){
+assert.equal(results.length,samples*12);assert(results.every(r=>['victory','defeat'].includes(r.stop)),'campaign stalled');assert(results.filter(r=>r.stop==='victory').every(r=>r.floor==='sunless_tomb'&&r.relic&&r.decisions===5&&['break','bind','wear'].includes(r.fate)),'incomplete victory');assert.equal(new Set(results.filter(r=>r.stop==='victory').map(r=>r.fate)).size,3,'missing ending coverage');assert.deepEqual(errors,[]);
+}
+module.exports={runCampaigns,validateCampaigns};
+if(require.main===module){runCampaigns().then(({build,results,errors})=>{validateCampaigns(results,errors,3);console.log(JSON.stringify({build,results,errors},null,2));console.log('PASS: 36 campaigns, '+results.filter(r=>r.stop==='victory').length+' victories, '+results.filter(r=>r.stop==='defeat').length+' defeats, no stalls.');}).catch(e=>{console.error(e);process.exitCode=1;});}

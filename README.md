@@ -8,7 +8,7 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 ## Play
 
-**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)**
+**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.7.0** · [Balance report](BALANCE.md)
 
 Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a fitted board/control shell on every device, with a live sidebar in wide windows and a separate Party & Log panel in smaller windows. **How to Play** on the title screen explains the rules.
 
@@ -17,6 +17,8 @@ The live version is served from GitHub Pages: the repo’s **Settings → Pages*
 ### Playing on desktop, iPad, and iPhone
 
 The play area adapts to the current browser height, including Safari's expanding or collapsing bars, and leaves safe-area space around the display cutout and home indicator. In portrait, the board sits above the action buttons and movement pad. In short landscape windows at least 600px wide, the board and controls sit side by side. In very small portrait windows the play panel can scroll, keeping the board at least 160px tall and every action reachable. The boss bar and horizontally scrollable spell menu fit inside that same play area.
+
+**Restart** now asks before returning to the title screen. **Keep Playing** is selected first and remains available immediately. The return-to-title button waits 600 ms before enabling to reject a rapid second tap; Escape cancels, and combat pauses while the question is open. Confirming preserves your latest exploration save for Continue, but an in-progress battle is not saved. The build number appears on the title screen and gameplay header.
 
 The two latest events stay visible beneath the board, during exploration and combat. The full history remains available in **Party & Log** (labelled **Log** in very narrow landscape windows). Combat also shows the active hero and whether movement and the action are ready or spent.
 
@@ -157,7 +159,7 @@ No tooling is needed to play. For contributors, run the dependency-free checks w
 node tests/regression.cjs
 ```
 
-The 48 checks execute the actual inline script with DOM stubs. They cover the original defects and the requirement IDs in [REQUIREMENTS.md](REQUIREMENTS.md), including atomic imports, legacy saves, rewards, terrain, aim confirmation, paused Tactics, guardians, exit resumption, and the 350 KiB runtime budget. Generator checks cover 96 exit/key layouts plus 160 layouts with every secret cache opened while vault doors stay blocked.
+The 51 engine checks execute the actual inline script with DOM stubs. They cover the original defects and the requirement IDs in [REQUIREMENTS.md](REQUIREMENTS.md), including atomic imports, legacy saves, rewards, terrain, aim confirmation, paused Tactics, guardians, exit resumption, and the 350 KiB runtime budget. Generator checks cover 96 exit/key layouts plus 160 layouts with every secret cache opened while vault doors stay blocked.
 
 Chromium checks covered help, journal contracts, chapter rewards, terrain labels, paused Tactics, touch preview and friendly-fire confirmation, rejected imports during combat, saved rewards, and offline interaction after loading. The six phone viewport scenarios above also passed with the boss bar, spell menu, and aim confirmation open; desktop layout passed. No JavaScript page errors occurred.
 
@@ -208,10 +210,22 @@ node tests/quality.cjs
 node tests/flow.cjs
 node tests/epic.cjs
 node tests/campaign.cjs
+node tests/balance-checks.cjs
+node tests/balance.cjs
 ```
 
 The quality checks reproduce the paused-menu and clipboard bugs, create a party and assign equipment with keyboard controls, win a controlled manual battle, and recover portable saves with storage blocked. The flow check exercises rewards, touch aiming, save/reload, and offline play. The epic-campaign check exercises touch/keyboard councils, saved rewards, Chronicle, finale reload, crown-bearer selection, and all three endings at phone/tablet/desktop sizes. The campaign check runs three seeds over every oath/route combination: 36 runs, currently 17 victories and 19 defeats without stalls. With varied council choices, Wanderer wins 10/12, Delver 6/12, and Ironbound 1/12 in this Auto diagnostic; victories cover all three crown fates. Wanderer defeats occurred in the final tomb; harder-oath defeats occurred across several floors. This sample supports the intended difficulty ordering, but does not establish human win rates or justify broad retuning.
 
-The **Game quality** GitHub Actions workflow runs engine, device, quality, flow, and epic-campaign checks on Chromium, Firefox, and WebKit; Chromium also runs the campaign sample. Before automatic merge/publication, wait for every PR quality job to pass and verify the final Pages deployment. This is the release procedure; branch protection has not been configured by this change. Use `GOLD_BOX_BROWSER=firefox` or `webkit` for development checks with those Playwright browsers installed. `CHROMIUM_PATH` overrides the browser executable for CI/local installations. WebKit automation is useful compatibility evidence; physical Safari on an iPhone/iPad and real hardware performance still require manual testing.
+The **Game quality** GitHub Actions workflow runs engine, device, quality, flow, and epic-campaign checks on Chromium, Firefox, and WebKit; Chromium also runs the expanded 96-campaign balance gate and uploads build-tagged JSON/Markdown results. Before automatic merge/publication, wait for every PR quality job to pass and verify the final Pages deployment. This is the release procedure; branch protection has not been configured by this change. Use `GOLD_BOX_BROWSER=firefox` or `webkit` for development checks with those Playwright browsers installed. `CHROMIUM_PATH` overrides the browser executable for CI/local installations. WebKit automation is useful compatibility evidence; physical Safari on an iPhone/iPad and real hardware performance still require manual testing.
 
 For hardware validation, try portrait/landscape, browser-bar resizing, iPad split view, pinch zoom, opening/closing each menu, aimed spells with allies nearby, browser Continue, and a save-code transfer between devices. These cannot be certified from this environment.
+
+
+### Game balance check
+
+[**Read the build’s balance report**](BALANCE.md), also linked from the title screen. Run `node tests/balance.cjs` against a served game for 96 campaigns across all oaths and routes. It uses the real game engines with default heroes, Auto combat, loot-first exploration, camping below 70% HP, the first offered boon, varied councils, and no shopping. The report includes win-rate uncertainty, route results, defeat floors, guardian rounds/HP pressure, and every run’s seed. It is a reproducible regression canary, not a human win-rate estimate.
+
+The gate rejects stalls and invalid endings, inverted difficulty, a route with no Wanderer win, and broad oath-specific balance failures: Wanderer below 50%, Delver outside 10–90%, Ironbound without a win or above 60%, or more than 25% of Wanderer runs dying on the first floor. These limits are deliberately broad; the policy and sample remain limited. `BALANCE_SAMPLES=12 node tests/balance.cjs` expands to 144 campaigns. Reports default to `artifacts/balance/`; `BALANCE_OUTPUT` overrides that directory. Failed checks retain their reports for investigation. The dependency-free `node tests/balance-checks.cjs` verifies the gate itself.
+
+
+Build 0.7.0 balance snapshot: Wanderer **23/32 (71.9%)**, Delver **15/32 (46.9%)**, Ironbound **7/32 (21.9%)**; **0 stalls**. The broad regression criteria pass. See BALANCE.md for route results and guardian pressure; in particular, Ash Cantor on Delver and Warren/Ossuary on Ironbound remain useful manual-play targets. Encounter tuning is unchanged in this release.

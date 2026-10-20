@@ -443,13 +443,20 @@
   .council-choice strong,.council-choice small{display:block;}.council-choice small{margin-top:8px;color:var(--parch);font-size:16px;font-weight:normal;}
   #fateChoices{grid-template-columns:1fr;}#councilResult:empty{display:none;}
   @media(max-width:680px){.council-plans{grid-template-columns:1fr;}}
+  .header-meta{flex:none;text-align:right;}.header-meta .round{display:block;line-height:18px;}
+  .build-stamp{display:block;font-family:monospace;font-size:11px;line-height:12px;color:#baaa87;letter-spacing:0;}
+  .title-build{font-size:14px;line-height:18px;margin:0 0 10px;}
+  .release-info{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;margin-bottom:8px;}.release-info .title-build{margin:0;}.balance-link{display:inline-flex;align-items:center;min-height:44px;font-size:15px;color:var(--gold);}
+  .restart-actions{display:flex;flex-direction:column;gap:24px;margin-top:20px;}.restart-actions button{min-height:48px;}
+  #btnRestart{border-color:#514735;color:#b9aa8c;}#btnConfirmRestart{border-color:#be795f;color:#f0c3ad;}
+  @media(max-width:599px) and (max-height:740px){.cabinet,.board-wrap{gap:3px;}}
 </style>
 </head>
 <body>
 <div class="cabinet">
   <header class="title">
     <h1 id="titleLabel">The Crypt</h1>
-    <span class="round" id="roundLabel"></span>
+    <div class="header-meta"><span class="round" id="roundLabel"></span><small class="build-stamp" data-build>Build 0.7.0</small></div>
   </header>
   <div class="campaign-strip"><div><div id="chapterLabel">A descent in six chapters</div><p id="objective">The crown waits below.</p></div><button id="btnJournal">Chronicle</button></div>
   <div id="bossPanel" hidden><span id="bossName"></span><div id="bossHealth"><i></i></div></div>
@@ -487,7 +494,7 @@
           <button id="btnStrafeR" title="East">&#9654;</button>
         </div>
         <button id="btnDetails" aria-controls="fieldNotes" aria-expanded="false"><span class="notes-name">Party &amp; Log</span><span class="notes-short">Log</span></button>
-        <button id="btnRestart">Restart</button>
+        <button id="btnRestart" aria-haspopup="dialog">Restart…</button>
       </div>
     </div>
     <div class="side" id="fieldNotes" role="region" aria-label="Party and battle log">
@@ -505,6 +512,7 @@
   <div class="sbox">
     <div class="eyebrow">A tactical dungeon saga</div>
     <h1 class="game-title">Gold Box</h1>
+    <div class="release-info"><p class="build-stamp title-build" data-build>Build 0.7.0</p><a class="balance-link" href="https://github.com/cisohabitat/Gold-Box/blob/main/BALANCE.md" target="_blank" rel="noopener">Balance report ↗</a></div>
     <p class="subtitle">Crown of the Sunless King</p>
     <svg class="cover-art" viewBox="0 0 600 150" role="img" aria-label="A golden crown above a moonlit crypt"><defs><radialGradient id="moon"><stop stop-color="#bbd1b1"/><stop offset="1" stop-color="#718e7c"/></radialGradient></defs><circle cx="300" cy="68" r="57" fill="url(#moon)" opacity=".45"/><path d="M0 140L0 106 38 106 38 85 57 85 57 107 98 107 98 64 118 44 138 64 138 111 194 111 194 75 214 75 214 130 250 130 250 90Q300 20 350 90L350 130 387 130 387 75 407 75 407 111 462 111 462 64 482 44 502 64 502 107 543 107 543 85 562 85 562 106 600 106 600 150 0 150Z" fill="#0b1518"/><path d="M270 60L263 36 284 48 300 25 316 48 337 36 330 60Z" fill="#e8b84b"/><path d="M277 150V104Q300 68 323 104V150" fill="#03090c"/><path d="M294 148L300 114 306 148" fill="#d8ad5f" opacity=".7"/></svg>
     <p class="intro-copy">The Last Dawn. Six chapters. A kingdom waiting for sunrise. Rally the living, confront the dead, and decide what should replace the Sunless King.</p>
@@ -616,7 +624,10 @@
 <div class="screen" id="journalScreen"><div class="sbox wide"><div class="eyebrow">The story so far</div><h2 class="ctitle">The Company’s Chronicle</h2><p class="tag" id="journalOath"></p><div class="journal-grid" id="journalStats"></div><div id="journalRoute"></div><h3>The Last Dawn</h3><div id="journalStory"></div><h3>Promises to the kingdom</h3><div id="journalContracts"></div><h3>Carried embers</h3><p id="journalBoons" class="tag"></p><div class="crow"><button id="btnJournalClose" class="big">Return to the journey</button></div></div></div>
 <div class="screen" id="tacticsScreen" role="dialog" aria-modal="true" aria-labelledby="tacticsTitle"><div class="sbox wide"><h2 class="ctitle" id="tacticsTitle">The Delver’s Field Guide</h2><p class="tag" id="tacticsSubtitle"></p><div id="tacticsContent" class="tactics-copy"></div><div class="crow"><button id="btnTacticsClose" class="big">Return</button></div></div></div>
 <div class="screen" id="fateScreen" role="dialog" aria-modal="true" aria-labelledby="fateTitle"><div class="sbox wide"><div class="eyebrow">The Last Dawn · Final Choice</div><h2 id="fateTitle" class="ctitle">What will you do with the crown?</h2><p id="fateStory" class="story-copy"></p><label class="story-copy" for="crownBearer">If the crown needs a bearer, whose oath will hold it?</label><select id="crownBearer" style="display:block;width:100%;min-height:44px;font-size:18px;margin:12px 0;padding:8px"></select><div id="fateChoices" class="council-plans"></div><p class="tag">The king is defeated. The choice is yours; each path ends this campaign.</p></div></div>
+<div class="screen" id="restartScreen" role="dialog" aria-modal="true" aria-labelledby="restartTitle" aria-describedby="restartMessage"><div class="sbox"><h2 id="restartTitle" class="ctitle">Return to the title screen?</h2><p id="restartMessage" class="story-copy"></p><div class="restart-actions"><button id="btnKeepPlaying" class="big">Keep Playing</button><button id="btnConfirmRestart">Return to Title</button></div></div></div>
 <script>
+const GAME_BUILD='0.7.0';
+document.querySelectorAll('[data-build]').forEach(el=>el.textContent='Build '+GAME_BUILD);
 /* ===== CROWN CAMPAIGN : data, with controller helpers below ===== */
 const OATHS={wanderer:{name:'Wanderer',budget:0.65,recovery:0.25,desc:'Gentler battles; all heroes earn victory XP and recover 25% HP after a win.'},delver:{name:'Delver',budget:1,desc:'Fortune favours the prepared. Only standing heroes earn victory XP.'},ironbound:{name:'Ironbound',budget:1.25,desc:'Stronger enemy forces. Only standing heroes earn victory XP.'}};
 const BOONS={
@@ -2195,7 +2206,7 @@ const $=s=>document.querySelector(s);
 const board=$('#board'), roster=$('#roster'), logEl=$('#log');
 const btnMove=$('#btnMove'), btnAttack=$('#btnAttack'), btnCast=$('#btnCast'), btnItem=$('#btnItem'), btnGuard=$('#btnGuard'), btnWait=$('#btnWait'), btnEnd=$('#btnEnd');
 let mode, party, explore, game, exploreFeed, mover=null, reachCache=null, pendingKey=null, selectedSpell=null, cellEls=[];
-let turnTimer=null,turnEpoch=0;
+let turnTimer=null,turnEpoch=0,restartArmTimer=null,restartToken=0;
 function cancelTurn(){if(turnTimer!==null)clearTimeout(turnTimer);turnTimer=null;turnEpoch++;}
 function queueTurn(fn,delay){
   cancelTurn();const epoch=turnEpoch,combat=game,actor=game.current();
@@ -2299,8 +2310,8 @@ function applySave(s){
     if(!s.campaign&&s.nodeId==='sunless_tomb')state.bossSlain=Object.entries(dungeon.encounters).some(([k,enc])=>enc.lead==='crypt_lord'&&dungeon.cleared.has(k));
     next={heroes,state,dungeon,path:Array.isArray(s.worldPath)&&s.worldPath.length?s.worldPath.slice():[s.nodeId],bag:{gold:s.bag.gold,keys:s.bag.keys,rations:s.bag.rations,relic:!!s.bag.relic,items:s.bag.items.slice()},feed:s.feed&&s.feed.length?s.feed.slice():[{t:'You press on through '+dungeon.name+'.',k:'sys'}]};
   }catch(_){return false;}
-  closeFieldNotes(false);cancelTurn();autoFight=false;levelUp=null;eventLevelUp=null;curEvent=null;
-  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','saveScreen','tacticsScreen','fateScreen'])$('#'+id).classList.remove('show');
+  clearRestartArm();closeFieldNotes(false);cancelTurn();autoFight=false;levelUp=null;eventLevelUp=null;curEvent=null;
+  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','saveScreen','tacticsScreen','fateScreen','restartScreen'])$('#'+id).classList.remove('show');
   party=next.heroes;campaign=next.state;explore=next.dungeon;nodeId=s.nodeId;worldPath=next.path;bag=next.bag;exploreFeed=next.feed;
   game=null;mode='explore';mover=null;reachCache=null;pendingKey=null;selectedSpell=null;
   if(s.inTown&&(WORLD[nodeId].next||[]).length)openTown();
@@ -2334,9 +2345,10 @@ async function copySave(){
 function closeSave(){copyEpoch++;$('#btnCopySave').disabled=false;$('#btnCopySave').textContent='Copy Code';$('#saveScreen').classList.remove('show');}
 
 function newGame(chosenParty){
+  clearRestartArm();
   closeFieldNotes(false);
   cancelTurn();autoFight=false;levelUp=null;eventLevelUp=null;curEvent=null;
-  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','saveScreen','tacticsScreen','fateScreen'])$('#'+id).classList.remove('show');
+  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','saveScreen','tacticsScreen','fateScreen','restartScreen'])$('#'+id).classList.remove('show');
   campaign=freshCampaign($('#oathChoice').value);
   party=chosenParty||makeParty(); nodeId=WORLD_START; worldPath=[WORLD_START]; explore=new ExploreEngine(buildDungeon(generateLevel(WORLD[WORLD_START]))); applyScout();
   bag={ gold:40, keys:0, rations:2, relic:false, items:[] };
@@ -2355,7 +2367,7 @@ function newGame(chosenParty){
   exploreFeed.push({t:STORY.entrance.arrival,k:'flavor'});
   $('#banner').classList.remove('show'); render(); autosave();
 }
-function overlayOpen(){ return $('#fateScreen').classList.contains('show') || $('#tacticsScreen').classList.contains('show') || $('#fieldNotes').classList.contains('open') || $('#townScreen').classList.contains('show') || $('#partyScreen').classList.contains('show') || $('#levelScreen').classList.contains('show') || $('#saveScreen').classList.contains('show') || $('#eventScreen').classList.contains('show') || $('#journalScreen').classList.contains('show') || $('#startScreen').classList.contains('show') || $('#banner').classList.contains('show'); }
+function overlayOpen(){ return $('#restartScreen').classList.contains('show') || $('#fateScreen').classList.contains('show') || $('#tacticsScreen').classList.contains('show') || $('#fieldNotes').classList.contains('open') || $('#townScreen').classList.contains('show') || $('#partyScreen').classList.contains('show') || $('#levelScreen').classList.contains('show') || $('#saveScreen').classList.contains('show') || $('#eventScreen').classList.contains('show') || $('#journalScreen').classList.contains('show') || $('#startScreen').classList.contains('show') || $('#banner').classList.contains('show'); }
 function tryMove(dx,dy){
   if(mode!=='explore'||overlayOpen())return; const r=explore.move(dx,dy);
   if(r.type==='blocked') return;
@@ -2958,7 +2970,7 @@ function waitTurn(){if(overlayOpen())return; if(mode!=='combat'||game.phase!=='p
   game.log.push({t:c.name+' waits, moving to the back of the line.',k:'sys'});
   mover=null; reachCache=null; selectedSpell=null; game.delay(); render(); beginTurnFlow(); }
 function beginTurnFlow(){
-  if(mode!=='combat'||$('#tacticsScreen').classList.contains('show'))return;
+  if(mode!=='combat'||$('#restartScreen').classList.contains('show')||$('#tacticsScreen').classList.contains('show'))return;
   spellAim=null;
   if(game.phase!=='playing'){ resolveCombat(); return; }
   const c=game.current();
@@ -3382,7 +3394,7 @@ function closeFieldNotes(restoreFocus=true){$('#fieldNotes').classList.remove('o
 $('#btnDetails').onclick=()=>{if($('#fieldNotes').classList.contains('open'))closeFieldNotes();else{$('#fieldNotes').classList.add('open');$('#btnDetails').setAttribute('aria-expanded','true');$('#btnDetailsClose').focus();}};
 $('#btnDetailsClose').onclick=()=>closeFieldNotes();
 if(typeof window!=='undefined')window.matchMedia('(min-width:1200px) and (min-height:650px)').addEventListener('change',()=>closeFieldNotes(false));
-$('#btnRest').onclick=makeCamp; $('#btnParty').onclick=openParty; $('#btnPartyClose').onclick=closeParty; $('#btnRestart').onclick=showStart; $('#bannerBtn').onclick=showStart;
+$('#btnRest').onclick=makeCamp; $('#btnParty').onclick=openParty; $('#btnPartyClose').onclick=closeParty; $('#btnRestart').onclick=requestRestart; $('#bannerBtn').onclick=showStart;
 $('#btnAutoGear').onclick=autoAssignGear;
 $('#btnTurnL').onclick=()=>fpAct('turnL'); $('#btnTurnR').onclick=()=>fpAct('turnR'); $('#btnFwd').onclick=()=>moveDir(0,-1);
 $('#btnFpBack').onclick=()=>moveDir(0,1); $('#btnStrafeL').onclick=()=>moveDir(-1,0); $('#btnStrafeR').onclick=()=>moveDir(1,0);
@@ -3400,10 +3412,26 @@ document.addEventListener('keydown', e=>{ if(e.key==='Escape'&&$('#tacticsScreen
 const ABIL_KEYS=['str','dex','con','int','wis','cha'];
 let build=null;   // creation working state
 
+function clearRestartArm(){if(restartArmTimer!==null)clearTimeout(restartArmTimer);restartArmTimer=null;restartToken++;}
+function requestRestart(){
+  if(!['explore','combat'].includes(mode)||overlayOpen())return false;
+  cancelTurn();clearRestartArm();$('#btnConfirmRestart').disabled=true;const token=restartToken;restartArmTimer=setTimeout(()=>{restartArmTimer=null;if(token===restartToken&&$('#restartScreen').classList.contains('show'))$('#btnConfirmRestart').disabled=false;},600);
+  $('#restartMessage').textContent=(mode==='combat'?'Combat is paused. Returning to title ends this battle session. ':'Your run will stay open if you choose Keep Playing. ')+(decodeSave(persistRead())?'Continue will restore your latest exploration save; battles are not saved in progress.':'No browser save is available. Keep playing and export a save code before leaving if you want to retain this run.');
+  $('#restartScreen').classList.add('show');$('#btnKeepPlaying').focus();return true;
+}
+function cancelRestart(){
+  if(!$('#restartScreen').classList.contains('show'))return;
+  clearRestartArm();$('#restartScreen').classList.remove('show');$('#btnRestart').focus();
+  if(mode==='combat'&&game&&game.phase==='playing'){const c=game.current();if(c.side==='party'&&!autoFight&&!game.isIncapacitated(c))render();else beginTurnFlow();}
+}
+function confirmRestart(){if(!$('#restartScreen').classList.contains('show')||$('#btnConfirmRestart').disabled)return false;showStart();return true;}
+$('#btnKeepPlaying').onclick=cancelRestart;$('#btnConfirmRestart').onclick=confirmRestart;
+
 function showStart(){
+  clearRestartArm();
   closeFieldNotes(false);
   cancelTurn();autoFight=false;mode='start';
-  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','tacticsScreen','fateScreen'])$('#'+id).classList.remove('show');
+  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','tacticsScreen','fateScreen','restartScreen'])$('#'+id).classList.remove('show');
   $('#banner').classList.remove('show');
   $('#createScreen').classList.remove('show');
   $('#saveScreen').classList.remove('show');
@@ -3657,8 +3685,9 @@ if(typeof MutationObserver!=='undefined'){
   const observer=new MutationObserver(sync);for(const p of panels)observer.observe(p,{attributes:true,attributeFilter:['class']});
   document.addEventListener('focusin',e=>{const next=active();if(next&&!next.contains(e.target)){sync();return;}if(!next)lastFocus=e.target;});
   document.addEventListener('keydown',e=>{const next=active();if(!next)return;if(e.key==='Tab'){const list=focusables(next),i=list.indexOf(document.activeElement);e.preventDefault();if(list.length)list[(i+(e.shiftKey?-1:1)+list.length)%list.length].focus();}
-    if(e.key==='Escape'){const close={saveScreen:closeSave,partyScreen:closeParty,journalScreen:()=>$('#btnJournalClose').click(),createScreen:()=>$('#btnBack').click()};if(close[next.id]){e.preventDefault();close[next.id]();}}
+    if(e.key==='Escape'){const close={restartScreen:cancelRestart,saveScreen:closeSave,partyScreen:closeParty,journalScreen:()=>$('#btnJournalClose').click(),createScreen:()=>$('#btnBack').click()};if(close[next.id]){e.preventDefault();close[next.id]();}}
   },true);
+  document.addEventListener('pointerdown',e=>{const next=active();if(next&&(e.target===next||e.target.closest('button:disabled'))){e.preventDefault();const first=focusables(next)[0];if(first)first.focus({preventScroll:true});}},true);
   document.addEventListener('click',e=>{const next=active();if(next&&!next.contains(e.target)){e.preventDefault();e.stopImmediatePropagation();}},true);
 }
 

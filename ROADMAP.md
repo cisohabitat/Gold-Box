@@ -72,3 +72,13 @@ Build a six-chapter story on the existing eight-node/four-route world. Keep the 
 5. Verify exactly-once choices/rewards, old-save defaults, final encounter effects, all endings, complete campaign routes, and the established cross-browser/device gate. Update player and maintenance docs, then publish automatically.
 
 The Last Dawn stages 1–4 are implemented. Stage 5 passes the local 48-check suite, 25-size matrix, story/save/ending UI checks, and 36 varied-plan campaign simulations (17 victories/19 defeats; no stalls). Runtime is 294,028 bytes. Cross-browser PR jobs and publication are the remaining release gate, recorded in the implementation PR.
+
+## Safe restart and balance visibility
+
+1. Replace immediate Restart with a safe-default confirmation; pause/resume combat without spending actions, and preserve Continue on confirmed return to title.
+2. Display the release build on title/gameplay screens and link the title screen to a readable balance report.
+3. Expand the balance diagnostic to 96 oath/route/seed campaigns, with per-route/guardian/death-floor data, uncertainty, explicit regression bands, and tested failure criteria. Save build-tagged reports in CI and summarize the result in BALANCE.md.
+4. Run device/browser/input/save checks and publish only after all quality jobs pass.
+
+
+Safe Restart/build/report stages 1–3 are implemented. Local stage-4 checks pass 51 engine tests, four gate-criteria tests, 25 device sizes and the affected browser flows. The 96-run balance gate passes (23/32 Wanderer, 15/32 Delver, 7/32 Ironbound); BALANCE.md records the policy, uncertainty and specific pressure points. Cross-browser CI and Pages publication are the final release gate.

@@ -361,3 +361,20 @@ test('EPIC-05: all crown fates enforce the final gates and yield distinct compan
   run("const endings=[];for(const id of Object.keys(CROWN_FATES)){newGame();$('#startScreen').classList.remove('show');if(chooseCrownFate(id))throw Error('early');nodeId='sunless_tomb';bag.relic=true;explore.pos={...explore.exit};if(openCrownFate())throw Error('king alive');campaign.bossSlain=true;openCrownFate();if(!chooseCrownFate(id)||chooseCrownFate(id))throw Error('fate count');endings.push($('#endingStory').textContent);if(!endings.at(-1).includes(party[0].name))throw Error('missing company');if(persistRead()!==undefined)throw Error('completed save');}");
   assert.equal(run('new Set(endings).size'),3);
 });
+
+test('RESTART-01: accidental restart and cancellation preserve the exploration run and save',()=>{
+  const {run}=harness();run("const originalParty=party,originalMap=explore,originalSave=persistRead();const requested=requestRestart();const duplicate=requestRestart();");
+  assert.equal(run('requested'),true);assert.equal(run('duplicate'),false);assert.equal(run('mode'),'explore');assert.equal(run('party===originalParty&&explore===originalMap'),true);assert.equal(run('persistRead()'),run('originalSave'));
+  run('cancelRestart();');assert.equal(run("$('#restartScreen').classList.contains('show')"),false);assert.equal(run('mode'),'explore');assert.equal(run('persistRead()'),run('originalSave'));
+});
+
+test('RESTART-02: pending enemy pauses, cancellation resumes one turn, confirmation preserves Continue',()=>{
+ const h=harness(),{run}=h;run("enterCombat({pool:['goblin']},'2,2');cancelTurn();game.order=['e0',...game.order.filter(id=>id!=='e0')];game.turnIndex=0;game._begin();const restartActor=game.current(),savedBeforeRestart=persistRead();beginTurnFlow();requestRestart();");
+ assert.equal(run('turnTimer'),null);assert.equal(run('confirmRestart()'),false);assert.equal(h.tick(),true);assert.equal(run('game.current()===restartActor'),true);
+ run('cancelRestart();');assert.equal(h.timers.size,1);run('requestRestart();');h.tick();run('confirmRestart();');assert.equal(h.timers.size,0);assert.equal(run('mode'),'start');assert.equal(run("$('#restartScreen').classList.contains('show')"),false);assert.equal(run('persistRead()'),run('savedBeforeRestart'));
+});
+
+test('RESTART-03: cancelling retains a manual spell aim and unspent action',()=>{
+ const {run}=harness();run("enterCombat({pool:['goblin']},'2,2');cancelTurn();game.order=['p4',...game.order.filter(id=>id!=='p4')];game.turnIndex=0;game._begin();selectSpell('fireball');combatClick(4,4);const restartAim=spellAim,chargesBeforeRestart=party[3].spells.find(s=>s.id==='fireball').uses;requestRestart();cancelRestart();");
+ assert.equal(run('validAim()'),true);assert.equal(run('spellAim===restartAim'),true);assert.equal(run('game.current().acted.action'),false);assert.equal(run("party[3].spells.find(s=>s.id==='fireball').uses"),run('chargesBeforeRestart'));
+});
