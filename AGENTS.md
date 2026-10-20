@@ -4,7 +4,7 @@
 
 These instructions apply to the entire repository. Gold Box — Crown of the Sunless King is a single-file browser tactical RPG. `index.html` contains its HTML, CSS, data registries, engines, controller, and rendering. There is no build step or package manifest. The dependency-free regression suite is `tests/regression.cjs`. Keep the game playable by opening the file directly, including offline with system font fallbacks.
 
-Read `README.md` before changing behavior. It describes the controls, architecture, known issues, and manual verification scenarios. Keep that documentation accurate when behavior or repository contents change.
+Read `README.md` before changing behavior. It describes the controls, architecture, save compatibility, and manual verification scenarios. The tactical-depth release is defined by `REVIEW.md`, `ROADMAP.md`, and `REQUIREMENTS.md`; preserve their acceptance rules when extending related systems. Keep those documents accurate when behavior or repository contents change.
 
 ## Publication preference
 
@@ -13,7 +13,7 @@ The user has authorized automatic publication for future requested changes to th
 ## Architecture
 
 - Keep `CombatEngine` and `ExploreEngine` independent of the DOM. The controller owns UI updates and transitions between exploration, combat, town, events, and level-up screens.
-- Add content through the existing registries (`SPELLS`, `ITEMS`, `PERKS`, `CLASSES`, `BACKGROUNDS`, `BESTIARY`, `EVENTS`, `WORLD`, `OATHS`, `BOONS`, and `SIGNATURES`) where possible.
+- Add content through the existing registries (`SPELLS`, `ITEMS`, `PERKS`, `CLASSES`, `BACKGROUNDS`, `BESTIARY`, `EVENTS`, `WORLD`, `OATHS`, `BOONS`, `SIGNATURES`, `TERRAIN`, `BATTLEFIELDS`, and `CONTRACTS`) where possible.
 - Keep encounter tuning in `DIFFICULTY`, `ELITE`, and the progression tables rather than scattering new constants through the controller.
 - Preserve the `WORLD` graph's reachable routes and procedural generation's key/door solvability guarantees.
 - Follow the surrounding vanilla JavaScript and CSS conventions. Avoid introducing a build dependency for a change that fits the existing design.
@@ -29,6 +29,13 @@ The user has authorized automatic publication for future requested changes to th
 - Campaign state belongs to the controller. Apply blessing bonuses as hero data through `applyBoons`; engines should not read controller globals or manipulate journal DOM. Keep each boon unique and each waystation claim limited to one.
 - Class signatures reset when a new `CombatEngine` is constructed and spend the actor's action. Boss phase reinforcements trigger once while a living Crypt Lord is at or below half HP.
 - New campaign fields must default safely when loading version 2 codes from before the expansion. Older final-floor saves infer a defeated king from cleared encounter descriptors.
+- Validate save input and prepare candidate heroes, map, bag, and campaign locally before touching the active run or cancelling its timer. Malformed imports must leave combat and UI state intact.
+- Preserve supply amounts in both level generators and the pickup handler. New secret cache walls must not bridge the sealed side of a locked vault; test flood-fill with all cache tiles opened.
+- Chapter XP is awarded once per completed nonfinal floor, before autosaving, and goes to every hero. Infer completed chapters for older saves without retroactively granting XP. Contracts pay once using persisted IDs; only successful event checks increment `successes`.
+- Terrain is engine data. Cover affects ranged weapons only; sanctum/ember effects tick once at turn end, with death checked before healing. Plain `CombatEngine` constructor calls must remain supported for tests and extensions.
+- Guardian phases live in bestiary `bloodied` data and are capped at two reinforcements. The two intermediate guardians are pinned by the generated vault exit. Keep the Crypt Lord/crown victory gate intact.
+- Area spells use a transient aim tied to the combat instance, actor, and selected spell. First touch must not spend the action; confirmation must expose allied collateral even in landscape where the long hint is hidden.
+- Tactics pauses queued combat and resumes one loop on close. Resolve deferred exploration exits after combat and confirmed level-up choices; do not require the party to step off and back onto the stairs.
 
 ## Review baseline and resolved defects
 
@@ -57,3 +64,4 @@ Keep this history accurate when behavior changes. Prefer function names to line 
 - For turn changes, check rapid Auto toggles, incapacitated actors, combat completion, and restart with queued callbacks.
 - Distinguish static inspection, DOM-stub execution, and browser testing in reports. Expansion validation passed 19 regression checks (including 96 generated floors). Chromium checks covered save recovery, signatures, blessings, journal, and a 390-pixel viewport. Six seeded controller-driven campaign simulations produced one Wanderer victory and five defeats without page errors; this is not exhaustive balance testing.
 - Report remaining failures and limitations plainly. Do not describe documented defects as fixed unless the implementation and verification support that claim.
+- The tactical-depth acceptance record supersedes the historical 19-test/six-run baseline above: 40 checks, 256 generator probes, six phone viewport scenarios, and 12 seeded campaigns (six victories/six defeats, no stalls). These are DOM-stub and Chromium checks, not physical Safari or exhaustive balance testing. Keep `index.html` within 350 KiB with no runtime dependencies.

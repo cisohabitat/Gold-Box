@@ -1,0 +1,84 @@
+# Detailed requirements — tactical-depth release
+
+Baseline review: [REVIEW.md](REVIEW.md). Delivery order: [ROADMAP.md](ROADMAP.md).
+
+## Product constraints
+
+| ID | Requirement | Acceptance |
+| --- | --- | --- |
+| LIMIT-01 | Keep runtime HTML, CSS, SVG, data, and JavaScript in `index.html`, at most 358,400 bytes. | Check file bytes; no external scripts or runtime packages. Optional font requests retain system fallbacks. |
+| LIMIT-02 | Preserve four classes, three oaths, eight world nodes, six-floor routes, and existing valid version 2 saves. | Regression checks plus legacy-save round trips. New campaign fields default safely. |
+| LIMIT-03 | Preserve iPhone safe areas, pinch zoom, minimum 44px main buttons, and a fitted board/control shell. | Chromium touch checks at 440×956/780/680, 956×440/350, 390×844, plus desktop. Distinguish emulation from physical Safari testing. |
+| LIMIT-04 | Keep game engines independent of the DOM. | Review new engine methods; terrain and enemy descriptions return plain data. |
+
+## Reliability and rewards
+
+| ID | Detailed rule | Acceptance |
+| --- | --- | --- |
+| SAFE-01 | Validate save envelope, bag, party IDs/classes/abilities, numeric values, equipment references, map dimensions/tiles, coordinates, and persisted set-like arrays before changing live state. Bound dimensions and collection sizes. | Malformed imports return false and leave the active party, bag, map, combat, and timers intact. |
+| SAFE-02 | Prepare revived heroes, campaign, and exploration in local variables before committing them together. Optional old fields may be absent. | A valid old snapshot loads; a failed preparation does not partially replace state. |
+| MAP-01 | A newly generated hidden cache must not connect the entrance side to any floor behind a locked door. | Open all cache tiles in a flood-fill probe while blocking doors; the exit remains inaccessible. |
+| SUP-01 | Ration pickups preserve each floor's configured quantity; old pickups without an amount count as one. | Generated and fallback quiet routes grant two supplies, and a legacy pickup grants one. |
+| FLOW-01 | Victory while standing on stairs resumes the exit transition after pending level choices are confirmed. Resolve any deferred loot, cache, or event underfoot before exiting. | No extra step off and back is needed; chapter reward still occurs once; a pending level screen is not skipped. |
+| PROG-01 | Reaching a nonfinal chapter exit grants each hero `100 + 50 × floor tier` XP once. Record the completed floor before saving. | Revisiting the stairs or reloading a town save cannot grant the reward again. Pending level choices persist. |
+| PROG-02 | Legacy saves infer previously completed floors from their route and current town state. Do not retroactively invent their historical rewards or contract success counts. | Old town/route saves do not duplicate chapter XP. New fields survive portable saves. |
+| BAL-01 | Reduce the price-based gear contribution to encounter budget from 0.5 to 0.12 per gold. Keep floor/level scaling, oath multipliers, and enemy caps. | An 80-gold upgrade adds less than 10 budget rather than 40; later floors still increase the budget; campaign results are reported without claiming exhaustive balance. |
+
+## Learn and aim
+
+| ID | Detailed rule | Acceptance |
+| --- | --- | --- |
+| UX-01 | Provide How to Play from the title screen and Tactics in combat through the existing campaign-strip button. Explain turns, movement, signatures, friendly fire, terrain, supplies, and goals. | Both entry points open a scrollable sheet with a reachable close button; no permanent HUD row is added. |
+| UX-02 | Tactics shows living enemies' names, HP, AC, weapon range, remaining spells, statuses, and role descriptions. Roles describe capabilities, not guaranteed future actions. | Content derives from current combatants and stays escaped. No inaccurate exact-intent promise. |
+| UX-03 | Opening Tactics cancels the queued turn without spending it; closing resumes normal enemy/skip/Auto flow once. | No duplicate actions, no lost turn, and an unchanged actor while the sheet is open. Restart/load/completion clears it. |
+| AIM-01 | An area spell's first board tap stores an aim point, highlights the blast, and reports living allies and foes caught. It consumes neither action nor charge. | Engine state unchanged after first tap. Preview works without hover. |
+| AIM-02 | A second tap on the same tile or the Confirm cast button commits the spell. A different tile changes aim. Action/mode/spell/actor/combat changes clear stale aim. | Charges decrement exactly once, friendly fire is disclosed, and stale aim cannot cast on a later turn. Auto still rejects allied collateral. |
+
+## Battlefield rules
+
+| ID | Detailed rule | Acceptance |
+| --- | --- | --- |
+| FIELD-01 | Define Crypt, Catacomb, and Tomb layouts as small data registries on the existing 10×10 board. Terrain does not block movement or occupy spawn cells. Plain constructor defaults remain valid. | All combatants spawn on plain in-bounds cells; every terrain tile has a known kind. |
+| FIELD-02 | Cover grants +2 AC against ranged weapon attacks. Melee and spells ignore cover. | Same rule for heroes and enemies, including attack preview; ranged-in-melee penalty still applies. |
+| FIELD-03 | At the end of a living actor's turn, sanctum heals up to 3 HP; ember ground deals 2 damage and can knock the actor out. Apply once per turn and log it. | No healing above max HP, no effect after death, correct victory/loss handling. |
+| FIELD-04 | Render terrain with distinct colours, visible symbols, accessible cell labels, and explanations in Tactics. AI prefers healing when hurt and penalises embers without preventing movement. | Rules remain legible on the fitted phone board; AI checks use terrain in positional scoring. |
+
+## Optional goals and guardians
+
+| ID | Detailed rule | Acceptance |
+| --- | --- | --- |
+| QUEST-01 | Three contracts: win four battles (Sunshard staff); discover two caches (Lantern Mantle); succeed at three event checks (120 gold and two supplies). | Progress in Chronicle; fallback/failed event choices do not count as successful checks. |
+| QUEST-02 | Pay each contract once, automatically at the triggering outcome, using unique persisted IDs. Rewards use the normal bag/equipment rules. | Rechecking, saving/loading, and revisiting an event cannot duplicate rewards. Older saves start successful-check progress at zero. |
+| BOSS-01 | Replace one convergence encounter in the Catacombs with the Bell Warden and one in the Descent with the Ash Cantor. Retain the Crypt Lord finale and existing route graph. | Each new guardian is a boss lead, with a limited retinue budget, distinctive spells/role text, and an HP display. |
+| BOSS-02 | Guardian bloodied phases are registry data. A living guardian at half HP or less gains its specified buff and at most its specified reinforcements once. | Phase cannot repeat; ordinary enemies do not gain phases; Crypt Lord regression remains valid. |
+| END-01 | Chronicle and ending show contract completion and chapter progress. Escape still requires the crown and defeated Crypt Lord. | Correct state after reload and a full-run victory scenario. |
+
+## Acceptance record
+
+All in-scope feature requirements are implemented. Verification used the actual inline script rather than a separate game implementation.
+
+| Requirements | Implementation and evidence |
+| --- | --- |
+| SAFE-01/02 | `validSave` bounds and validates the full snapshot; `applySave` prepares local candidates before committing. Invalid bag, geometry, IDs, abilities, equipment, and unknown references are rejected while live references and queued timers remain unchanged. Legacy version 2 and storage-blocked round trips pass. |
+| MAP-01, SUP-01 | Cache candidates cannot bridge to the sealed side. A 160-floor probe opens every cache and blocks doors; the exit stays gated. The existing 96-floor reachability check also passes. Both generators and the pickup handler preserve ration quantities, with a legacy default of one. |
+| FLOW-01, PROG-01/02 | `resumeExplore` handles deferred underfoot content and stairs after battle or confirmed level-up. Chapter XP is recorded once. Tests cover exit timing, repeat entry, reload, pending choices, and older town saves without retroactive XP. |
+| BAL-01 | An 80-gold upgrade adds 9.6 budget instead of 40; floor/level scaling remains. Twelve full-route simulations finish with victory or defeat, without stuck transitions or combat loops. |
+| UX-01/02/03 | Title help and combat Tactics render rules and current enemy data. A queued enemy remains the current actor while Tactics is open; closing schedules one action. Chromium verified scrolling, returning to play, and the live Bell Warden sheet. |
+| AIM-01/02 | First touch preserves charges/action and displays blast/collateral; confirmation spends one charge. Mode/actor changes reject stale aim. Chromium touch checks verified the warning and confirmation; counts also remain visible on the confirmation button in landscape. |
+| FIELD-01/02/03/04 | Three themed terrain registries feed engine data. Tests cover plain spawn cells, cover odds, capped healing, lethal embers, and AI choices. Phone/desktop checks verified labelled terrain and the fitted board. |
+| QUEST-01/02 | All three contract rewards are one-time across repeated checks and portable saves. Failed/skipped/repeated events do not inflate successful-check progress. Browser reload retained the claimed Lantern Mantle and journal state. |
+| BOSS-01/02, END-01 | Both intermediate guardians guard their generated exit; their bloodied phases trigger once and summon one guard. Crypt Lord's two-guard phase and crown victory requirement pass. Successful runs exercised guardians, chapter progress, contracts, and the final ending. |
+| LIMIT-01/02/03/04 | Runtime remains below 350 KiB, without external scripts or runtime packages. Existing campaign graph/classes/oaths remain. New engine methods return data and never touch the DOM. All six phone viewport scenarios and desktop pass with boss/spells/confirmation visible. |
+
+Commands and results:
+
+- Standalone runtime: **263,967 bytes** (about 258 KiB), below the 358,400-byte limit. No build step or runtime packages added.
+- `node tests/regression.cjs`: **40 passed, 0 failed**, including 256 generator probes and the original 19 regressions.
+- `node --check` on the extracted inline script: passed. Unique HTML IDs, local documentation links, final newlines, and trailing whitespace checked before publication.
+- Chromium touch emulation: 440×956/780/680, 956×440/350, and 390×844 with simulated safe areas; exploration, boss combat, spell selection, and aim confirmation remain inside the viewport with 44px main controls. Creation/equipment menus and field notes remain usable; desktop sidebar preserved.
+- Browser feature flow: help, chapter XP and allocation, Tactics pause, terrain, collateral preview/confirmation, invalid-import atomicity, contracts, portable/browser save recovery, and offline interaction after loading passed with no page errors.
+- Twelve seeded controller-driven campaigns, one per oath/route combination: **6 victories, 6 defeats, 0 stalls, 0 page errors**. Wanderer: 4/4 victories. Delver: 2/4 victories. Ironbound Auto: 0/4 victories. This is a small diagnostic sample, not a statistical win-rate claim or assurance that Auto can beat every run.
+
+Limits: physical iPhone and Safari are unavailable here; viewport checks use Chromium. The managed browser blocks direct `file://` verification; local HTTP play and offline interaction after loading were checked. Old saves retain their generated layouts, and historical successful checks cannot be reconstructed. Deferred roadmap ideas remain deferred.
+
+Publication uses the standing automatic-publication instruction after these checks. The corresponding merge and GitHub Pages result are recorded in the implementation pull request and [deployment history](https://github.com/cisohabitat/Gold-Box/actions).
