@@ -24,6 +24,7 @@ jobs:
         run: |
           node tests/regression.cjs
           node tests/balance-checks.cjs
+          node tests/sprites.cjs
       - name: Install development browser tools
         run: |
           npm install --prefix "$RUNNER_TEMP/gold-box-tools" --no-package-lock --ignore-scripts playwright@1.62.1
@@ -42,6 +43,7 @@ jobs:
           node tests/devices.cjs
           node tests/quality.cjs
           node tests/polish.cjs
+          node tests/sprite-browser.cjs
           node tests/flow.cjs
           node tests/epic.cjs
           if [ "$GOLD_BOX_BROWSER" = chromium ]; then node tests/balance.cjs; fi

@@ -162,3 +162,17 @@ Restart/build/balance acceptance: **51 engine regressions + 4 balance-criteria c
 | POLISH-06 | Add meaningful browser checks for feedback/inspection, settings persistence, disabled effects/reduced motion, contrast, sound opt-in/failure, pause/resume and existing safe Restart. All engine/device/story/save checks and the 96-run balance gate must pass in the existing cross-browser release workflow. Document quality grades as scope-limited assessments and report remaining hardware/human validation limits. |
 
 0.8.0 local acceptance: extracted script syntax, 51 engine checks, 4 balance-policy checks, 25 Chromium device sizes, existing quality/flow/epic checks, and new presentation/settings checks pass. The 96-run Auto balance gate reproduces Wanderer 23/32, Delver 15/32, Ironbound 7/32, no stalls. Runtime is 315,271 bytes. Cross-browser release/publication evidence is recorded in the implementation PR; physical Safari and human playtesting remain unverified.
+
+## Sprite requirements (0.9.0)
+
+| ID | Acceptance |
+| --- | --- |
+| ART-01 | All 19 figures use unique, valid 24×24 palette grids, explicit dot transparency, consistent keylines and distinct silhouettes. Invalid geometry and symbols fail validation instead of silently dropping pixels. |
+| ART-02 | Every class/monster sprite reference resolves; the three guardians have dedicated identities and props. Existing hero save IDs remain valid; no combat-rule or RNG changes. |
+| ART-03 | Round hero and square enemy frames distinguish sides beyond colour. Keep active, elite, guardian, awakened, dead, HP and status indicators readable without changing hit areas. |
+| ART-04 | Roster and Tactics show the matching art beside names and stats. SVG is decorative, pointer-transparent in tokens, local/offline and bounded. Preserve accessible cell names, inspection, log and 44px controls. |
+| ART-05 | Validate art integrity and actual board/portrait rendering at phone, short landscape, tablet and desktop sizes, plus all existing cross-browser and 96-run balance gates. Stay under 350 KiB and report physical-device/human recognition limits honestly. |
+
+Local sprite integrity and four-size sprite browser checks pass, together with syntax and 51 engine regressions. Runtime: 324,527 bytes. Cross-browser and balance release evidence is recorded in the implementation PR.
+
+Sprite release balance acceptance: 96 campaigns, Wanderer 23/32, Delver 15/32, Ironbound 7/32; no stalls, identical to 0.8.0. Final 25-size matrix passes after roster/portrait changes.
