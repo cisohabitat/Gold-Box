@@ -11,7 +11,7 @@ async function visit(page,target){await page.evaluate(target=>{
   for(const id of ['warren','gallery','ossuary','shrine_road']){
    await page.evaluate(id=>{newGame();nodeId=id;worldPath=['entrance',id];explore=new ExploreEngine(buildDungeon(generateLevel(WORLD[id])));render();},id);
    assert.equal(await page.evaluate(()=>explore.task.id),id);assert(await page.locator('[data-task-site]').count()>0);await page.evaluate(()=>descendOrWin());assert.equal(await page.locator('#townScreen').isVisible(),false);assert.equal(await page.evaluate(()=>campaign.completedFloors.length),0);
-   await page.click('#btnJournal');assert.match(await page.locator('#journalStory').textContent(),/Escort the scouts|register of names|legion’s standard|small gods/);await page.keyboard.press('Escape');
+   await page.click('#btnJournal');assert.match(await page.locator('#journalTask').textContent(),/Escort the scouts|register of names|legion’s standard|small gods/);await page.keyboard.press('Escape');
    if(id==='gallery'){
     const sites=await page.evaluate(()=>explore.task.sites);await visit(page,sites[0]);assert.equal(await page.evaluate(()=>explore.task.used.join()),'0');await page.reload();await page.click('#btnContinue');assert.equal(await page.evaluate(()=>explore.task.used.join()),'0');for(const k of sites.slice(1))await visit(page,k);
    }else if(id==='shrine_road'){
