@@ -197,3 +197,16 @@ Implemented. Animation is presentation only; battle-ending results can immediate
 5. Verify actual controller progress, UI/save/level recovery and the full campaign/cross-browser/publication gates, with varied quest choices included in the balance policy.
 
 Implemented. Authored combat set pieces and observed human/physical Safari playtests remain separate follow-up work. This release does not add combat allies, floors or a higher grade by assertion.
+
+## Treasure expansion — 0.20.0
+
+1. Add twelve identity-keyed items: four class relics, four equipment alternatives, two tactical consumables and two saleable historical treasures. Keep the weapon/armour slots, campaign graph, guardians and encounter budgets.
+2. Put relics behind existing guarded encounters; leave their once-only spoils on the cleared tile. Distribute practical finds along routes, valuables in hidden caches, and six nonlegendary additions through the trader. Do not retrofit generated legacy floors.
+3. Give every addition unique inline artwork, lore, exact rules/sources, replacement comparisons and suggested pairings without set bonuses. Show the latest/selected treasure in the existing equipment panel, preserving phone HUD space.
+4. Remember run discoveries separately from ownership in optional v2 fields; retain the complete spoiler guide and add discovered/unseen/carried/equipped/trade filters. Infer only held items on legacy import.
+5. Verify engine boundaries, once-only acquisition/save recovery, artwork, device flows, generated source coverage, scripted equipment choices and complete campaigns. Retain the existing canaries and full three-browser/publication gates. Record actual runtime bytes and observed limits.
+
+Detailed acceptance rules follow in REQUIREMENTS.md. Human taste, human campaign pacing and physical Safari remain separate validation work.
+
+
+Treasure expansion delivery: stages 1–5 are implemented, with the local acceptance evidence in REQUIREMENTS.md and BALANCE.md. The publication gate remains exact-head CI followed by merged-file and live Pages verification. No additional floor, slot, runtime dependency, set bonus or save-version migration was introduced.

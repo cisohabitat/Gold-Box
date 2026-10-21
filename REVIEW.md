@@ -155,3 +155,10 @@ Review/testing corrected two integration defects before release: waystation clai
 The full campaign diagnostic now takes varied vows and claims ready rewards, so its policy differs from 0.17.0’s no-vow sample. Report that distinction with outcomes in BALANCE.md. Controlled browser fixtures complement the actual exploration/campaign runs. Overall assessment remains B+; human campaign pacing and physical Safari are unverified. Authored combat set pieces are separate follow-up work.
 
 Final local evidence: 114 engine checks, four sprite/art and four policy checks, 288 guardian probes, sixteen Chromium browser suites and unchanged 96-run canary outcomes 25/32, 20/32, 13/32. Eight extra directed campaigns complete every vow plan four times (6 wins/2 defeats), with zero stalls. Source 403,219 bytes (393.8 KiB); exact-head CI/publication evidence belongs to the release PR.
+
+
+## Treasure expansion — 0.20.0
+
+Twelve additions, unique identity art, guarded-cache acquisition, route finds, two tactical consumables, saleable historical treasures, discovery/ownership filters and equipment tradeoffs are implemented. Existing slots, world graph, guardian rules and v2 saves are preserved. Detailed acceptance and audit evidence are in REQUIREMENTS.md and BALANCE.md.
+
+The 96-run Auto canary passes with 25/32 Wanderer, 14/32 Delver and 13/32 Ironbound victories, zero stalls; Delver is lower than 0.19.0 and is not evidence of unchanged balance. Eight acquisition-directed runs collect every addition (7 wins/1 defeat), while eight companion-directed runs fulfill all plans (7 wins/1 defeat). Those planners use map metadata and do not estimate human choices or win rates. Auto Gear favours existing offensive caster weapons in this sample; the new healing/artillery relics are manual tactical alternatives, not certified universal improvements. Physical Safari and human pacing/recognition remain outstanding; the overall assessment remains B+. Exact-head three-browser/publication evidence is in the release PR.
