@@ -80,3 +80,10 @@ Ordinary encounters now use Shield & Bow, Split Watch, Hex Cell, Rallying Warban
 After defeat, actual battle evidence and two relevant suggestions help plan the next run. Reports are transient and do not restore lost runs or replace the existing save rules. Automated balance and browser evidence remain separate from human difficulty and physical Safari testing.
 
 Build 0.15.0 local evidence: 92 engine/controller checks, four sprite/art checks and four policy checks pass; all thirteen Chromium browser suites pass. The full 96-campaign canary gives 24/32 Wanderer, 24/32 Delver and 7/32 Ironbound, with zero stalls and unchanged criteria. All 288 guardian probes terminate, with unchanged outcomes. Runtime 363,723 bytes (355.2 KiB), slightly above the user-approved soft 350 KiB target. Exact-head cross-browser and live publication evidence is recorded in the release PR. Human/physical-device limitations remain open.
+
+
+## Chapter ecology — 0.16.0
+
+The four routes now introduce different ordinary threats: Warren stalkers and Gallery sentinels first, Catacomb wisps next, then Ossuary chains/leeches/silencers or Pillared Road sentinels/leeches/silencers/stalkers. Deep Stair and Tomb patrols recombine these kits. All choices remain within the existing encounter budget/cap and six-chapter graph. Guardian retinue pools and the opening floor remain unchanged; old generated encounters keep their saved creatures. The Bestiary records each habitat and counter.
+
+Full-campaign Auto results belong in BALANCE.md; these are regression diagnostics, not observed human pacing or a claim that every run encounters every new species.

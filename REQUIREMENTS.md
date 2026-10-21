@@ -273,3 +273,19 @@ Local art/engine checks pass: 58 engine/controller regressions and 4 sprite/art 
 | DEFEAT-02 | Count actual attempted/missed weapon strikes, including reactions, and Sleep/Hold skipped turns exactly once at end-turn. Do not count failed illegal actions or a Wait as an extra skipped turn. |
 | DEFEAT-03 | Loss screen presents observed facts and at most two relevant suggestions before run totals. Low starting HP, friendly fire, control, terrain/poison and attack misses may inform advice; do not invent causes when evidence is absent. Keep existing defeat semantics. Use escaped/textContent output, readable focus/top scroll, 44px reachable replay and phone/landscape/tablet/desktop fitting. New/title/win clears feedback. |
 | DEFEAT-04 | Metrics/summary never mutate combatants, spend resources, roll dice, persist new fields or transmit data. Require 92 regression checks, 288 existing guardian strategy probes, all thirteen browser suites in exact-head Chromium/Firefox/WebKit CI, unchanged full campaign balance canaries and verified Pages/live publication. Record source bytes against the soft target. |
+
+
+## Six ordinary enemy roles (0.16.0)
+
+| ID | Acceptance |
+| --- | --- |
+| ENEMY-01 | 21 bestiary types/17 ordinary/four guardians; six new unique sprites and complete lore/counters/habitats. Stage new pools from route chapter two onward; first chapter, world graph and guardian retinues unchanged. Budget/cap rules remain enforced. |
+| ENEMY-02 | Sentinel aura grants +2 AC only against weapons to other adjacent living allies, without stacking. Sleep/Hold/death removes protection immediately; spells bypass it. Preview, normal and reaction strikes agree; labels and Tactics reveal protection. |
+| ENEMY-03 | Stalker leap once/battle, distance ≤4, free bounded landing beside chosen foe. Movement consumed, normal action attack, departure and Guard reactions preserved. Stop on death; no new timers. |
+| ENEMY-04 | One death echo per wisp, fixed 3×3, due start of death-round+2. Full intervening round for everyone; 4 spell damage to both sides, ward-aware and included in defeat evidence. One release; chain deaths get fresh future deadlines. Terminal battle disperses sparks. |
+| ENEMY-05 | Silence range4/DC13 Wisdom/two active turns, two base charges. Starweave applies. Block spells without spending charges/actions; weapons, potions and signatures remain usable. UI disables Cast and says Silenced; expiry restores spells. Pending channel postpones without losing charge. |
+| ENEMY-06 | Siphon range4/three base charges/1d4+1 damage; heal one wounded living ally within3, including caster. Heal ≤3, actual post-ward HP lost, and missingHP; no absorbed damage/overkill healing. |
+| ENEMY-07 | Hook range4/two base charges/1d4 damage. Surviving target moves at most one tile toward caster only when free/in bounds/unblocked, without spending target actions or provoking. Terrain still ticks on target’s turn end. |
+| ENEMY-08 | New IDs round-trip in v2 encounters; original imported pools unchanged and malformed IDs reject atomically. No schema bump, new saved battle state or reward changes. |
+| ENEMY-09 | Wisp deadlines advance only on round wrap; skip actors killed by burst; Auto evades and risk/grid/Tactics name precise deadline. No occupied tiles or premature detonation. |
+| VERIFY-16 | 102 engine checks, sprite/policy checks, 288 guardian scenarios, fourteen browser suites including enemy lore/art/telegraph/silence/Continue at four device classes, unchanged 96-campaign canaries and exact-head three-browser CI before verified Pages publication. Report actual source bytes, no human-win-rate or physical-device certification claim. |

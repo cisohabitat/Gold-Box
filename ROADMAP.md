@@ -166,3 +166,13 @@ Implemented. Physical Safari and observed human full runs remain necessary follo
 4. Verify controlled enemy/friendly-fire losses, replay/focus/escaping, descriptor Continue, all prior suites and full campaign balance; publish after exact-head CI.
 
 Implemented. New guardian mechanics, hero-background events and physical-device/human playtesting remain separate work; this release does not claim to complete those suggestions.
+
+
+## A broader enemy ecology (0.16.0)
+
+1. Specify six distinct ordinary roles with bounded actions, readable counters and chapter habitats.
+2. Implement shield protection, one-use leap, delayed death blast, silence, bounded siphon and one-tile hook in the pure engine; preserve existing action economy, damage evidence, reactions and saves.
+3. Give each role unique 24×24 art and authored bestiary context. Show live wards, silence and exact blast deadlines through existing UI.
+4. Verify isolated mechanics, controller/device flows, guardian invariance, full campaign balance and exact-head three-browser CI, then publish automatically.
+
+Implemented. The following requirements document the acceptance boundaries. Human observation of all six roles and physical Safari play remain follow-up evidence; quantity alone does not establish an A grade.

@@ -23,3 +23,10 @@ Reviewed enlarged and 32px contact sheets plus actual 440px-wide combat and Tact
 Runtime HTML: **324,527 bytes**, below **358,400 bytes (350 KiB)**. The 24×24 grid improves silhouettes and prop identity; it cannot preserve every detail on a 16px tile. Names, HP, focus labels, tile inspection and 56px Tactics portraits remain the readable reference. No physical iPhone/iPad or human art-recognition study was performed. The grade is an editorial assessment, not a measured accessibility certification.
 
 Run `node tests/sprites.cjs` without dependencies. With the local server and optional Playwright tooling, run `node tests/sprite-browser.cjs`; the standard workflow runs both. Keep all sprites unique, correctly mapped, within bounds, and composed only of palette symbols and `.` transparency.
+
+
+## Six enemy silhouettes — 0.16.0
+
+Six additional authored 24×24 grids bring SPX to 26 entries. Shield Sentinel carries a broad sun-cross tower shield and spear; Crypt Stalker has a low lunging cloak and twin hooks; Ember Wisp is a floating ribbed funeral lantern with detached sparks; Spellbreaker has a split mitre, sealed mask and tuning fork; Grave Leech curls around a pale rib reservoir; Chain Warden wears a brass diving helm and trailing anchor-chain. All are distinct geometry using the existing palette/compiler, with bounded decorative SVG and no downloaded assets.
+
+The six were inspected in a contact sheet; geometry, palette, uniqueness, registry resolution and device rendering are checked automatically. Readability on physical hardware remains unverified; this is small pixel-art scope, not a commercial AAA art claim.
