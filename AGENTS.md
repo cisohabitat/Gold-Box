@@ -128,3 +128,9 @@ Keep this history accurate when behavior changes. Prefer function names to line 
 - Starless Breath uses a pure-engine intent: one action marks a fixed area, next active turn releases it and consumes one charge. Death removes the displayed warning; incapacitation delays release. Preserve friendly-fire semantics and accessible danger labels. Bloodied spell recharge is capped at the existing max and occurs once, alongside at most one wyrm skeleton. Existing guardian counts remain capped at two.
 - Keep dragon art unique and the core eight-node graph/crown gates intact. Hunt completion affects its reward and story acknowledgement, never bypasses the king. Item sources must be truthful; War Axe now belongs to SHOP_STOCK.
 - Run tests/atlas.cjs in all three browsers, plus the expanded 58 regression checks and existing gates. The 96-campaign policy skips the optional hunt; report hunt samples separately. See CAMPAIGN_REVIEW.md for assumptions and unverified physical-device/human difficulty limits.
+
+## Treasure identity (0.10.1)
+
+- TREASURE_ART maps every item ID plus sunless_crown to its own illustration; relicArtwork accepts identity, never equipment slot. Do not restore generic slot pictures or silently reuse/recolour a silhouette. Legendary designs must reflect their authored lore. rp builds compact SVG paths without altering art or rules.
+- Keep large relic-card art displays, readable names/rules/ownership, responsive scrolling and decorative pointer-transparent SVG. Art uses no external assets, SVG IDs/references, animations, RNG or game-state mutation. Stay inside the 350 KiB runtime budget.
+- tests/sprites.cjs checks complete mappings and unique path geometry independent of colour; tests/atlas.cjs checks all 16 rendered IDs, seven relic displays, SVG bounds and phone/landscape/tablet/desktop fitting. See TREASURE_ART_REVIEW.md for the review and remaining physical-device limits.

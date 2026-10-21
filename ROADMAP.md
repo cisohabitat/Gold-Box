@@ -102,3 +102,7 @@ Completed: review the old contact sheet; repair malformed palette data; rebuild 
 5. Verify old saves, optional progression, timing/aim/focus, danger readability, device fitting, hunt smoke samples and the complete campaign/browser gate; update docs and publish automatically.
 
 Stages 1–4 are implemented. Local stage-5 evidence and scope limits appear in CAMPAIGN_REVIEW.md; final cross-browser/publication evidence is recorded in the implementation PR. Human playtesting and physical Safari remain follow-up validation, not claims of completion.
+
+## Treasure identity correction (0.10.1)
+
+Replace the three generic slot illustrations with 16 identity-specific designs; give every legendary item a story motif and larger framed display. Preserve exact item rules and inventory state. Review all silhouettes together and on a phone, verify complete/unique artwork mappings and unclipped responsive SVG, then pass existing cross-browser/balance gates before automatic publication. Implemented designs and evidence are recorded in TREASURE_ART_REVIEW.md.

@@ -19,3 +19,9 @@ test('all class and monster sprite references resolve; guardians use unique iden
 test('sprite compiler rejects invalid dimensions and unknown palette symbols',()=>{
  assert.throws(()=>px(['.']),/Invalid sprite/);const rows=Array(24).fill('.'.repeat(24));rows[3]='?'+'.'.repeat(23);assert.throws(()=>px(rows),/Invalid sprite/);
 });
+test('every item and the story crown have distinct, local artwork keyed by identity',()=>{
+ const art=vm.createContext({});vm.runInContext(html.slice(html.indexOf('const ITEMS ='),html.indexOf('const SHOP_STOCK'))+html.slice(html.indexOf('/* ===== TREASURE ART ===== */'),html.indexOf('/* ===== END TREASURE ART ===== */'))+';globalThis.data={ids:[...Object.keys(ITEMS),"sunless_crown"],render:relicArtwork,registry:TREASURE_ART};',art);
+ const {ids,render,registry}=art.data,shapes=new Set();assert.equal(Object.keys(registry).length,ids.length);
+ for(const id of ids){const svg=render(id);assert(svg.includes('data-item-art="'+id+'"'));assert.match(svg,/viewBox="0 0 64 64"/);assert.match(svg,/aria-hidden="true" focusable="false"/);assert(!/<image|<script|href=|url\(|NaN|undefined/.test(svg),id);const geometry=[...svg.matchAll(/\bd="([^"]+)"/g)].map(m=>m[1]).join('|');assert(geometry.length>60,id);assert(!shapes.has(geometry),'reused silhouette for '+id);shapes.add(geometry);}
+ assert.throws(()=>render('armor'));assert.throws(()=>render('weapon'));
+});
