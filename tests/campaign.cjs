@@ -10,7 +10,7 @@ const results=[];for(let sample=0;sample<samples;sample++){results.push(...await
   for(const oath of ['wanderer','delver','ironbound'])for(const branch of [0,1,2,3]){
     const runSeed=2718+branch+sample*10000;let seed=runSeed;Math.random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
     showStart();document.querySelector('#oathChoice').value=oath;startDefault();
-    let moves=0,turns=0,phases=0,stop='limit';const fights=[];
+    let moves=0,turns=0,phases=0,stop='limit';const fights=[];let tasks=0;
     while(moves++<1800){
       cancelTurn();
       if(mode==='combat'){
@@ -31,12 +31,13 @@ const results=[];for(let sample=0;sample<samples;sample++){results.push(...await
       if(document.querySelector('#townScreen').classList.contains('show')){
         const offers=[...document.querySelectorAll('.boon-card')];if(offers.length)offers[0].click();townRest();autoAssignGear();document.querySelector('#partyScreen').classList.remove('show');
         if(!campaign.decisions[nodeId])chooseCouncil(STORY[nodeId].plans[(sample+branch)%2].id);
-        const next=WORLD[nodeId].next;enterDungeon(next.length===1?next[0]:next[(floorDepth()===1?branch>>1:branch&1)]);continue;
+        if(explore.task){if(!explore.task.done)throw Error("unfinished chapter objective");tasks++;}const next=WORLD[nodeId].next;enterDungeon(next.length===1?next[0]:next[(floorDepth()===1?branch>>1:branch&1)]);continue;
       }
       autoAssignGear();document.querySelector('#partyScreen').classList.remove('show');
       if(party.reduce((n,h)=>n+h.hp,0)<party.reduce((n,h)=>n+h.maxHp,0)*.7&&bag.rations>0)makeCamp();
       const loot=Object.entries(explore.loot).sort((a,b)=>(a[1].type==='key'?-1:0)-(b[1].type==='key'?-1:0));
-      const targets=loot.map(([k])=>k).concat(key(explore.exit.x,explore.exit.y));let path=null;
+      const task=explore.task;let objectives=[];if(task&&!task.done){if(task.id==='gallery')objectives=[task.sites[task.used.length]];else if(task.id==='shrine_road')objectives=task.sites.filter((k,i)=>!task.used.includes(i));else if(task.used.length)objectives=[key(task.start.x,task.start.y)];else if(task.id==='warren')objectives=[task.sites[0]];}
+      const targets=loot.map(([k])=>k).concat(objectives,key(explore.exit.x,explore.exit.y));let path=null;
       for(const target of targets){
         const start=key(explore.pos.x,explore.pos.y),q=[start],prev=new Map([[start,null]]);
         while(q.length&&!prev.has(target)){
@@ -49,7 +50,7 @@ const results=[];for(let sample=0;sample<samples;sample++){results.push(...await
       if(!path){stop='no route '+JSON.stringify({pos:explore.pos,exit:explore.exit,keys:bag.keys,loot:explore.loot,doors:[...explore.doors],town:document.querySelector('#townScreen').className});break;}
       tryMove(...path);
     }
-    cancelTurn();results.push({sample,seed:runSeed,oath,branch,stop,depth:floorDepth(),fights,floor:nodeId,moves,turns,phases,level:party.map(h=>h.level),battles:campaign.battles,relic:bag.relic,contracts:campaign.contracts.length,chapters:campaign.completedFloors.length,decisions:Object.keys(campaign.decisions).length,fate:campaign.fate});
+    cancelTurn();results.push({sample,seed:runSeed,oath,branch,stop,depth:floorDepth(),tasks,fights,floor:nodeId,moves,turns,phases,level:party.map(h=>h.level),battles:campaign.battles,relic:bag.relic,contracts:campaign.contracts.length,chapters:campaign.completedFloors.length,decisions:Object.keys(campaign.decisions).length,fate:campaign.fate});
   }
   return results;
 },sample));if(onSample)onSample(sample+1,samples);}
@@ -57,7 +58,7 @@ const build=await page.evaluate(()=>GAME_BUILD);return {build,results,errors};
 }finally{await browser.close();}
 }
 function validateCampaigns(results,errors,samples){
-assert.equal(results.length,samples*12);assert(results.every(r=>['victory','defeat'].includes(r.stop)),'campaign stalled');assert(results.filter(r=>r.stop==='victory').every(r=>r.floor==='sunless_tomb'&&r.relic&&r.decisions===5&&['break','bind','wear'].includes(r.fate)),'incomplete victory');assert.equal(new Set(results.filter(r=>r.stop==='victory').map(r=>r.fate)).size,3,'missing ending coverage');assert.deepEqual(errors,[]);
+assert.equal(results.length,samples*12);assert(results.every(r=>['victory','defeat'].includes(r.stop)),'campaign stalled');assert(results.filter(r=>r.stop==='victory').every(r=>r.floor==='sunless_tomb'&&r.relic&&r.tasks===2&&r.decisions===5&&['break','bind','wear'].includes(r.fate)),'incomplete victory');assert.equal(new Set(results.filter(r=>r.stop==='victory').map(r=>r.fate)).size,3,'missing ending coverage');assert.deepEqual(errors,[]);
 }
 module.exports={runCampaigns,validateCampaigns};
 if(require.main===module){runCampaigns().then(({build,results,errors})=>{validateCampaigns(results,errors,3);console.log(JSON.stringify({build,results,errors},null,2));console.log('PASS: 36 campaigns, '+results.filter(r=>r.stop==='victory').length+' victories, '+results.filter(r=>r.stop==='defeat').length+' defeats, no stalls.');}).catch(e=>{console.error(e);process.exitCode=1;});}
