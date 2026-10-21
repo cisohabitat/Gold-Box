@@ -176,3 +176,13 @@ Implemented. New guardian mechanics, hero-background events and physical-device/
 4. Verify isolated mechanics, controller/device flows, guardian invariance, full campaign balance and exact-head three-browser CI, then publish automatically.
 
 Implemented. The following requirements document the acceptance boundaries. Human observation of all six roles and physical Safari play remain follow-up evidence; quantity alone does not establish an A grade.
+
+
+## Readable ranged action feedback (0.17.0)
+
+1. Record bounded, immutable snapshots of actual ranged attacks/spell releases in the pure engine.
+2. Draw arrows and distinct spell shapes in a separate decorative layer that survives board redraws, with target pulses and a miss marker.
+3. Respect effects preferences/reduced motion; bound and clear visual work without touching turn scheduling or game outcomes.
+4. Verify real manual spell confirmation, arrow flight, both redraw and cleanup paths, full balance, cross-browser CI and live publication.
+
+Implemented. Animation is presentation only; battle-ending results can immediately replace it. Human full campaigns and physical Safari remain follow-up evidence.

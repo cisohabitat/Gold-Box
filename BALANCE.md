@@ -1,4 +1,4 @@
-# Game balance — build 0.16.0
+# Game balance — build 0.17.0
 
 Default party; real Auto combat; loot-first exploration; complete route objectives and accept the first two shrine beacons encountered; camp below 70% HP; first offered boon; varied councils; no shop purchases.
 
@@ -37,12 +37,10 @@ Per-floor defeats, guardian pressure, and full seeded run records are in report.
 | CryptLord | delver | 20/27 | 12.5 | 42.9% |
 | CryptLord | ironbound | 13/17 | 13.8 | 35.8% |
 
-## Enemy-ecology interpretation
+## Cosmetic-projectile interpretation
 
-The 0.15.0 baseline was 24/32 Wanderer, 24/32 Delver and 7/32 Ironbound. Six new ordinary enemy roles now enter staged chapter pools with explicit threat costs. Existing difficulty formulas, eight-enemy cap, elite rules, guardian retinues, opening floor and canary thresholds are unchanged. Earlier encounters change RNG paths and progression, so these outcomes do not isolate a particular new mechanic or estimate human difficulty.
+All 96 seeded outcomes match 0.16.0: 25/32 Wanderer, 20/32 Delver, 13/32 Ironbound. Projectile metadata and rendering consume no gameplay randomness and do not control action/turn timing. A separate enabled/disabled engine simulation verifies identical combatants, phase, rounds, XP and next RNG value. Existing budgets, caps, enemy kits, guardian retinues and canary thresholds are unchanged.
 
-Every run terminates, every Wanderer route has a sampled victory, and successful fresh campaigns retain both route objectives, five councils and a valid crown fate. Human pacing, bestiary use and counterplay need observed full runs; physical Safari remains unverified.
+Every run terminates and each Wanderer route has sampled victories. Winning fresh campaigns retain both route objectives, five councils and a valid crown fate. These are deterministic Auto checks, not human win-rate estimates or physical Safari validation.
 
-## Isolated guardian scenarios
-
-All 288 probes terminate with outcomes unchanged from 0.15.0. Bell Warden wins: Wanderer24/24, Delver11/24, Ironbound2/24; Ash Cantor21/24,3/24,0/24; Sunless King5/24,0/24,0/24; Astrax24/24 on each oath. These are isolated fixture/Auto checks, not acquisition evidence or a hard optional-hunt claim. CI uploads complete seeded records separately from the source tree.
+All 288 isolated guardian scenarios also retain their 0.16.0 outcomes with zero stalls. Bell Warden:24/24,11/24,2/24; Ash Cantor:21/24,3/24,0/24; Sunless King:5/24,0/24,0/24; Astrax:24/24 on each oath (Wanderer/Delver/Ironbound). CI uploads complete seeded records separately from source.

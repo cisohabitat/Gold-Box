@@ -135,3 +135,12 @@ All six have distinct authored pixel art, inspected together, complete bestiary 
 The overall grade remains B+. Scripted correctness and increased variety support this release’s claims; human full campaigns and physical Safari remain unverified. Balance and final publication evidence are recorded in BALANCE.md and the release PR.
 
 Build 0.16.0 local evidence: 102 engine checks, four sprite/art and four policy checks, 288 guardian scenarios and all fourteen Chromium browser suites pass. Full 96-campaign Auto canary: wanderer 25/32, delver 20/32, ironbound 13/32; zero stalls, all existing criteria pass. Runtime 377,562 bytes (368.7 KiB). Exact-head cross-browser CI and Pages/live evidence are recorded in the release PR.
+
+
+## Missing ranged projectiles — 0.17.0
+
+Review confirmed that ranged attacks/spells produced damage, flashes and logs but no visible projectile travel. The engine now emits bounded resolved-action snapshots, and a separate SVG layer draws arrows and distinct spell effects. It survives immediate turn/board redraws, uses target coordinates captured before movement/damage, and provides a glancing miss marker and target pulse.
+
+The layer never controls turns or game state. Effects/preferences, reduced motion, cleanup caps, menus, resize, visibility and new/load/title transitions are covered. A deterministic enabled/disabled combat check verifies identical outcomes and random streams; real browser checks verify intermediate flight and manual confirmation. Phone arrow and Fireball frames were visually inspected. The overall assessment remains B+; this addresses a concrete presentation gap, without claiming human or physical Safari validation.
+
+Build 0.17.0 local evidence: 106 engine checks, four sprite/art and four policy checks, 288 guardian scenarios and all fifteen Chromium browser suites pass. Full 96-campaign Auto outcomes remain 25/32 Wanderer, 20/32 Delver, 13/32 Ironbound, with zero stalls and unchanged canaries. Runtime 384,016 bytes (375.0 KiB). Exact-head three-browser CI and Pages/live evidence are recorded in the release PR.
