@@ -8,7 +8,7 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 ## Play
 
-**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.21.0**
+**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.22.0**
 
 Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a fitted board/control shell on every device, with a live sidebar in wide windows and a separate Party & Log panel in smaller windows. **How to Play** on the title screen explains the rules.
 
@@ -442,3 +442,26 @@ Auto Gear allocates physical items across classes with a bounded dynamic program
 Build 0.21.0 runtime: **438,595 bytes (428.3 KiB)**, +13,215 bytes over 0.20.0; one offline HTML file, no added runtime dependencies. The 350 KiB target remains soft. CI job timeout is 30 minutes for the expanded UI/campaign work; test counts, per-run limits and balance thresholds remain unchanged.
 
 Build 0.21.0 local acceptance: 134 engine/controller checks, four sprite/art checks, four policy checks, 192-floor sources, 288 guardian probes and 18 Chromium browser suites pass. The unchanged 96-run canary gives wanderer 29/32, delver 20/32, ironbound 18/32 victories, zero stalls. Eight extra companion campaigns win 8/8 and fulfill every plan four times; eight treasure-directed campaigns win 7/8 and each acquire all 24 recent additions. These directed policies are separate from difficulty estimates. Exact-head CI/Pages/live evidence is recorded in the release PR.
+
+
+### Equipment decisions — 0.22.0
+
+**Party → each hero’s loadout** now shows effective movement/range, weapon and spell wards, terrain ember protection, spell-control saves and healing spell bonus. Expand **Overlapping equipment** to see which sources do not stack and which movement bonuses/penalties cancel. These numbers use the actual gear accessors; they add no bonuses.
+
+Three marked lockboxes replace existing finds on newly generated shared chapters. Each lets you choose **one item**, with artwork, exact rules, class-fit names and whole-loadout comparisons, including displaced hand equipment:
+
+| Lockbox | Chapter | Choose one |
+| --- | --- | --- |
+| The Scout’s Lockbox | Upper Crypt | Veil of Cinders / Yew Scout Bow / Coalglass Focus |
+| The Vigil’s Bequest | Catacombs | Healing Potion / Vigil Helm / Rainward Ring |
+| The Last Courier’s Pack | Descent | Healing Potion / Road Boots / Watchkeeper’s Charm |
+
+Step onto the gold lockbox marker to open its choices in Party. **Leave for later** closes the panel without spending the find. Return to the tile or open Party while standing on it; an underfoot pending choice reopens after Continue/import, after any mandatory level/finale screen. A full satchel keeps the reward untouched. Gear that fits no class in the current company cannot be claimed; every cache has a universal consumable option. Claiming puts one item in the satchel and selects it for inspection; it never auto-equips. Remaining bundles are left for the people following the company. The choice disappears from the saved map only when claimed, preventing repeat payouts.
+
+Old generated floors keep their contents. The lockboxes replace single items, reuse their positions and add no encounter, XP, extra loot or gameplay RNG draws. Their first options are the original rewards. Choice sources in Treasure & Relics say **choose one of three**; the guide does not imply that all alternatives are awarded.
+
+**Party → Scouted patrols** previews only seen, spotted, uncleared patrols. The nearest twelve are listed first, with 1-based column/row coordinates and direct grid distance. Read possible foes/formations, relevant counters and standing-company gear coverage before stepping onto a patrol. Reports do not roll the actual encounter, promise exact enemy counts, reveal unseen map contents or grant combat bonuses. Spell wards, control saves, terrain protection and weapon poison are explicitly distinguished; the guide also explains interrupts and fixed blast warnings.
+
+New checks in `tests/decisions-rules.cjs` and `tests/decisions.cjs` cover truthful overlaps, deterministic replacement, once-only/capacity/class handling, pending and claimed save recovery, malformed-import atomicity, fog limits and safe keyboard focus at four device sizes. Three additional varied-choice campaigns acquire every option in every cache; these are separate from the 96-run first-option/no-shopping canary. Full exact-head cross-browser and Pages/live evidence is recorded in the release PR. The overall grade remains B+ pending physical Safari and human full-campaign testing.
+
+Build 0.22.0 local acceptance: 142 engine/controller checks, four sprite/art and four policy checks, 192-floor source audit, 288 guardian probes and all 19 Chromium browser suites pass. The new decision flow also passes local Firefox at all four device sizes. Unchanged 96-run canaries: wanderer 29/32, delver 20/32, ironbound 18/32 victories, zero stalls. Companion-directed 8/8 and treasure-directed 7/8 victories; all eight vows and all 24 recent item additions acquired across their respective samples. Three varied-choice campaigns win 3/3 and acquire all nine cache alternatives. These diagnostic policies are not human difficulty estimates. Runtime 451,387 bytes (440.8 KiB), +12,792 bytes over 0.21.0; soft size policy, offline single file and overall B+ remain. Exact-head three-browser and Pages/live evidence is recorded in the release PR.

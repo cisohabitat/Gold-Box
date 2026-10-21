@@ -1,6 +1,6 @@
-# Game balance — build 0.21.0
+# Game balance — build 0.22.0
 
-Default party; real Auto combat; loot-first exploration; complete route objectives and accept the first two shrine beacons encountered; camp below 70% HP; first offered boon; varied councils; varied companion vows with ready rewards claimed at waystations; no shop purchases.
+Default party; real Auto combat; loot-first exploration, route objectives, usual camp/boon/council/vow rules; take the first offered item in encountered three-way caches; no shopping. First options match the previous single rewards. Geometry, encounter placement and RNG consumption are unchanged by cache substitution.
 
 Deterministic regression canary, not a human win-rate estimate. Wilson intervals describe this small sample and do not validate the policy as representative of players.
 
@@ -23,68 +23,35 @@ Checks: PASS — no stalls, broad difficulty bands/order, every Wanderer route b
 
 Per-floor defeats, guardian pressure, and full seeded run records are in report.json.
 
-## Six-slot interpretation
 
-The 96-run loot-first/no-shopping policy, DIFFICULTY constants and broad canary thresholds are unchanged. Auto Gear now allocates six slots and accounts for occupied hands. Weapon/armour costs retain full encounter value; auxiliaries contribute 25% of cost, capped 40 per hero (maximum 160/company). The new slots therefore contribute at most 19.2 encounter-budget points before oath multiplication, rather than their full purchase prices. Added ground items alter layouts/RNG draw sequences; these are not paired battles or a controlled item ablation. Guardian templates and retinues were not tuned.
+## Equipment-decision interpretation — 0.22.0
 
-Previous 0.20.0 outcomes were 25/32 Wanderer, 14/32 Delver and 13/32 Ironbound. Current 0.21.0 outcomes: wanderer 29/32, delver 20/32, ironbound 18/32. These are deterministic Auto diagnostics, not human win rates. Do not attribute the change to a single piece of gear.
+Existing canary thresholds, encounter constants, item/guardian stats and safety limits are unchanged. The three caches replace one ordinary ground item each, without extra reward count or gameplay RNG. First-option diagnostics preserve the former reward identities. Equipment summaries and scouting previews are read-only and add no combat bonuses. The first-option policy intentionally does not certify balance for every human loadout/choice; alternative integration coverage is separate below.
 
-## Availability, discovery and actual equipment
+The previous 0.21.0 sample was Wanderer 29/32, Delver 20/32, Ironbound 18/32. This sample is wanderer 29/32, delver 20/32, ironbound 18/32. Compare only within the stated policy. Loot planners read map metadata, so these are not human win-rate estimates.
 
-All 32 generated six-chapter routes (192 floors) offer the existing four guarded class relics and two rare-cache trade finds. GEAR-08 additionally checks all six new head/feet/accessory relics on every route, and all six ordinary additions in shop stock. Opening ground loot includes a shield and helm. Head relics occur in Catacombs, footwear in Descent, accessories in Sunless Tomb. Existing saved floors are not retrofitted. No new map, encounter or story reward is introduced.
+## Alternative reward integration
 
-| Addition | Discovered in 96 loot-first runs | Discovered in 8 treasure-directed runs |
-| --- | --- | --- |
-| bellheart_aegis | 79/96 | 8/8 |
-| ashen_covenant | 68/96 | 8/8 |
-| mercy_reliquary | 47/96 | 8/8 |
-| nightwarden_bow | 49/96 | 8/8 |
-| pilgrim_boots | 96/96 | 8/8 |
-| ward_charm | 47/96 | 8/8 |
-| pilgrim_mace | 91/96 | 8/8 |
-| scout_bow | 47/96 | 8/8 |
-| smoke_phial | 95/96 | 8/8 |
-| dawn_salt | 91/96 | 8/8 |
-| dawn_seal | 0/96 | 8/8 |
-| royal_astrolabe | 0/96 | 8/8 |
-| round_shield | 96/96 | 8/8 |
-| ember_focus | 0/96 | 8/8 |
-| iron_helm | 95/96 | 8/8 |
-| sage_circlet | 0/96 | 8/8 |
-| trail_boots | 0/96 | 8/8 |
-| copper_ring | 0/96 | 8/8 |
-| dawnwarden_helm | 91/96 | 8/8 |
-| starseer_circlet | 91/96 | 8/8 |
-| ashwalker_boots | 85/96 | 8/8 |
-| windstep_boots | 85/96 | 8/8 |
-| oathkeeper_ring | 74/96 | 8/8 |
-| moonwell_pendant | 74/96 | 8/8 |
+Three additional default-party Wanderer campaigns use Warren/Ossuary, no shopping and cache index `(sample + chapter depth) % 3`. The planner reads map metadata as in the canary. All three complete, all three win, with no stalls. Each of the three alternatives in each of the three caches is acquired through actual map movement, claiming and continued campaign play. No alternative adds an extra item on top of the replaced find.
 
-Treasure-directed policy deliberately seeks hidden caches, prize guards and item loot before stairs, and buys unseen ordinary additions when affordable. The planner reads map metadata. Outcomes: 7 wins/1 defeats, no stalls. All 24 recent additions were acquired in all 8 companies, including all six new relics. This is a separate integration sample; no shopping or privileged cache seeking was added to the 96-run difficulty sample.
+| Sample | Scout’s Lockbox | Vigil’s Bequest | Courier’s Pack | Outcome |
+| --- | --- | --- | --- | --- |
+| 0 | scout_bow | potion_heal | ward_charm | victory |
+| 1 | ember_focus | iron_helm | potion_heal | victory |
+| 2 | smoke_phial | copper_ring | pilgrim_boots | victory |
 
-Companion-directed policy: 8 wins/0 defeats, no stalls. Each of the eight vow plans was fulfilled four times.
+This three-run integration sample covers options, not all routes/oaths/human strategies. The unchanged first-option 96-run canary remains the release balance gate.
 
-## Explicit tradeoffs
+## Acquisition, companion and source checks
 
-- Bellheart moves from armour to off-hand and drops AC 3→1. Weapon ward remains 1, movement−1. Boots can cancel its movement cost; a bow/axe/staff cannot share its hand.
-- Road Boots move to feet. Charm moves to accessory and loses AC. Armour stats remain intact. AuxiliaryAC≤1 and movement gear totals−1…+1.
-- Each weapon/spell/terrain/control ward and healing bonus uses the strongest equipped source. Aegis+Signet is still one-point weapon protection; Starweave+Helm still+2 control; Eclipsescale+Rainward still 2 spell protection; Returning Dawn+Moonwell still+2 healing.
-- Head relics trade stronger control protection against mixed spell/control wards. Footwear trades ember protection against movement/control. Accessories trade weapon ward, spell ward and healing/control. No set bonus or mandatory relic is introduced.
-- Auto Gear is a bounded per-slot recommendation with hand opportunity costs, not a global six-slot optimum. It preserves physical copies/classes and cannot replace manual tactical choices. Some wards overlap.
+Eight companion-directed campaigns: 8 wins/0 defeats, zero stalls; each of the eight plans fulfilled four times. Eight treasure-directed campaigns: 7 wins/1 defeats, zero stalls; all 24 recent additions acquired in every company. The treasure planner prioritizes choice caches as item loot, takes index 0, and seeks guarded/hidden sources/shop stock as before. These privileged directed policies remain separate from the difficulty sample.
 
-### Final treasure-directed equipment
+The 192-floor source audit counts choice options as mutually exclusive opportunities; it does not claim all three items are awarded. All six head/feet/accessory relics and four class relics retain their sources. Item/art count stays 39 plus the crown. Matching-RNG buildDungeon probes cover 24 configurations and fallback layouts, with identical geometry/encounters/events and first reward after replacing choice records by their first option. No old generated floor is retrofitted.
 
-| Class | Weapon choices | Off-hand choices | Head choices | Feet choices | Accessory choices |
-| --- | --- | --- | --- | --- | --- |
-| Fighter | dawnblade, fine_sword | bellheart_aegis | dawnwarden_helm, iron_helm | pilgrim_boots | oathkeeper_ring, ward_charm |
-| Cleric | sunshard | round_shield | dawnwarden_helm, sage_circlet | trail_boots | moonwell_pendant |
-| Thief | nightwarden_bow | empty | iron_helm, starseer_circlet | ashwalker_boots, windstep_boots | copper_ring, oathkeeper_ring |
-| Mage | nightglass | ember_focus | sage_circlet, starseer_circlet | ashwalker_boots, windstep_boots | copper_ring, ward_charm |
+## Safety and presentation evidence
 
-## Guardian pressure and verification limits
+142 engine/controller checks include once-only claims, full bags, no class fit, stale/invalid indices, malformed/wrong-chapter/duplicate/noncanonical cache records, atomic rejection before combat callbacks change, portable recovery, unclaimed/claimed Continue and RNG/base-stat isolation. Scouting excludes unseen, unspotted and cleared descriptors; never composes an encounter; and distinguishes spell damage, spell control, poison, weapon AC/wards and terrain. Coverage counts standing heroes and is not immunity.
 
-All 288 isolated guardian probes terminate. Wanderer/Delver/Ironbound victories out of24 per guardian: Bell Warden 24/13/5; Ash Cantor 20/0/0; Crypt Lord 5/1/1; Observatory 24/24/24. These use prepared squads and prescribed target priorities; they are not full campaigns, human difficulty estimates or a controlled gear comparison. Seed consumption from initial generation changes probe sequences. Harder-oath Cantor pressure remains high.
+All 19 Chromium suites pass, including actual four-size reward deferral/claim/reload, class/hand comparisons, safe heading/status focus, full-bag recovery and fog-limited reports. Local Firefox passes the new four-size decision suite. All 288 isolated guardian probes terminate; outcomes remain the 0.21.0 figures. Physical Safari and human full campaigns remain unverified. Exact-head Chromium/Firefox/WebKit conclusions, artifacts, merged blobs, Pages and live checks belong in the release PR.
 
-Local acceptance: 114 existing regressions+12 treasure checks+8 loadout checks (134 total), four sprite/art checks, four policy checks, 192-floor availability audit, 288 guardian probes and all 18 Chromium browser suites. New browser flow covers six-slot keyboard/touch use, 44px controls, hand conflicts, portable migration and Continue at 440×780,956×350,820×1180 and1366×768. Exact-head Chromium/Firefox/WebKit job conclusions, uploaded artifacts, merged blob equality, Pages and live checks are recorded in the release PR.
-
-Runtime 438,595 bytes (428.3 KiB), +13,215 bytes over 0.20.0. The 350 KiB target remains soft; there is no new runtime dependency. Overall grade remains B+. Physical Safari, broad human playtests and representative human campaign win rates remain unverified.
+Build 0.22.0 local acceptance: 142 engine/controller checks, four sprite/art and four policy checks, 192-floor source audit, 288 guardian probes and all 19 Chromium browser suites pass. The new decision flow also passes local Firefox at all four device sizes. Unchanged 96-run canaries: wanderer 29/32, delver 20/32, ironbound 18/32 victories, zero stalls. Companion-directed 8/8 and treasure-directed 7/8 victories; all eight vows and all 24 recent item additions acquired across their respective samples. Three varied-choice campaigns win 3/3 and acquire all nine cache alternatives. These diagnostic policies are not human difficulty estimates. Runtime 451,387 bytes (440.8 KiB), +12,792 bytes over 0.21.0; soft size policy, offline single file and overall B+ remain. Exact-head three-browser and Pages/live evidence is recorded in the release PR.

@@ -27,6 +27,7 @@ jobs:
           node tests/sprites.cjs
           node tests/treasure-rules.cjs
           node tests/loadout-rules.cjs
+          node tests/decisions-rules.cjs
           node tests/treasure-audit.cjs
           node tests/scenario-balance.cjs
       - name: Install development browser tools
@@ -62,10 +63,12 @@ jobs:
           node tests/companions.cjs
           node tests/treasures.cjs
           node tests/loadouts.cjs
+          node tests/decisions.cjs
           if [ "$GOLD_BOX_BROWSER" = chromium ]; then
             node tests/balance.cjs
             node tests/companion-campaign.cjs
             node tests/treasure-campaign.cjs
+            node tests/decision-campaign.cjs
           fi
 
       - name: Upload balance report
@@ -78,4 +81,5 @@ jobs:
             artifacts/scenarios/
             artifacts/companions/
             artifacts/treasure/
+            artifacts/decisions/
           if-no-files-found: warn

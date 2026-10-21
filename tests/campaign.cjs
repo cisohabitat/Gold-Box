@@ -1,16 +1,16 @@
 const browserName=process.env.GOLD_BOX_BROWSER||'chromium';const chromium=require('playwright')[browserName];const assert=require('node:assert/strict');
-async function runCampaigns(samples=3,onSample=null,{pursueVows=false,pursueTreasure=false,oaths=['wanderer','delver','ironbound'],branches=[0,1,2,3]}={}){
+async function runCampaigns(samples=3,onSample=null,{pursueVows=false,pursueTreasure=false,varyRewards=false,oaths=['wanderer','delver','ironbound'],branches=[0,1,2,3]}={}){
 const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||(browserName==='chromium'?'/usr/bin/chromium':undefined),headless:true,args:browserName==='chromium'?['--no-sandbox']:[]});
 try{
 const page=await browser.newPage();const errors=[];page.on('pageerror',e=>errors.push(String(e)));
 await page.route('https://fonts.**/*',r=>r.abort());await page.goto(process.env.GOLD_BOX_URL||'http://127.0.0.1:8000');
-const results=[];for(let sample=0;sample<samples;sample++){results.push(...await page.evaluate(({sample,pursueVows,pursueTreasure,oaths,branches})=>{
+const results=[];for(let sample=0;sample<samples;sample++){results.push(...await page.evaluate(({sample,pursueVows,pursueTreasure,varyRewards,oaths,branches})=>{
   const results=[];
   // Drive the real controller and engines synchronously; rendering stays active.
   for(const oath of oaths)for(const branch of branches){
     const runSeed=2718+branch+sample*10000;let seed=runSeed;Math.random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
     showStart();document.querySelector('#oathChoice').value=oath;startDefault();
-    let moves=0,turns=0,phases=0,stop='limit';const fights=[];let tasks=0;
+    let moves=0,turns=0,phases=0,stop='limit';const fights=[],rewardChoices=[];let tasks=0;
     while(moves++<1800){
       cancelTurn();
       if(mode==='combat'){
@@ -27,6 +27,7 @@ const results=[];for(let sample=0;sample<samples;sample++){results.push(...await
       if(document.querySelector('#banner').classList.contains('show')){stop='victory';break;}
       if(levelUp){autoAssignLevelUp();continue;}
       if(document.querySelector('#aftermathScreen').classList.contains('show')){closeAftermath();continue;}
+      if(treasureAtFeet()&&document.querySelector('#partyScreen').classList.contains('show')){const reward=treasureAtFeet(),index=varyRewards?(sample+floorDepth())%3:0,item=reward.reward.items[index];if(!chooseTreasure(reward.offer,index))throw Error('Diagnostic reward claim failed');rewardChoices.push({offer:reward.offer,index,item});closeParty();continue;}
       if(curEvent){const options=EVENTS[curEvent.id].options;let pick=options.findIndex(o=>o.fallback),best=-Infinity;options.forEach((o,i)=>{if(!o.fallback){const score=bestForStat(o.stat).mod-o.dc;if(score>best){best=score;pick=i;}}});resolveEventOption(pick);closeEvent();continue;}
       if(document.querySelector('#townScreen').classList.contains('show')){
         if(pursueTreasure)for(const id of ['smoke_phial','dawn_salt','pilgrim_boots','ward_charm','pilgrim_mace','scout_bow','round_shield','ember_focus','iron_helm','sage_circlet','trail_boots','copper_ring'])if(!campaign.discovered.includes(id)&&bag.gold>=ITEMS[id].cost)buyItem(id);
@@ -44,7 +45,7 @@ const results=[];for(let sample=0;sample<samples;sample++){results.push(...await
         if(pursueVows&&needed('events'))vowTargets.push(...Object.keys(explore.events).filter(k=>!explore.eventsDone.has(k)));
         if(pursueVows&&needed('battles'))vowTargets.push(...Object.keys(explore.encounters).filter(k=>!explore.cleared.has(k)));
         if(pursueTreasure||needed('secrets'))for(const k of Object.keys(explore.secrets)){if(explore.foundSecrets.has(k)){vowTargets.push(k);continue;}const [cx,cy]=k.split(',').map(Number),near=[];for(let y=cy-2;y<=cy+2;y++)for(let x=cx-2;x<=cx+2;x++)if(!explore.isWall(x,y)&&explore.tile(x,y)==='.')near.push({k:key(x,y),d:Math.max(Math.abs(x-cx),Math.abs(y-cy))});near.sort((a,b)=>a.d-b.d);vowTargets.push(...near.map(p=>p.k));}}
-      if(pursueTreasure)vowTargets.push(...Object.keys(explore.encounters).filter(k=>explore.encounters[k].prize&&!explore.cleared.has(k)),...Object.keys(explore.loot).filter(k=>explore.loot[k].type==='item'));
+      if(pursueTreasure)vowTargets.push(...Object.keys(explore.encounters).filter(k=>explore.encounters[k].prize&&!explore.cleared.has(k)),...Object.keys(explore.loot).filter(k=>explore.loot[k].type==='item'||explore.loot[k].type==='choice'));
       const targets=vowTargets.concat(loot.map(([k])=>k),objectives,key(explore.exit.x,explore.exit.y));let path=null;
       for(const target of targets){
         if((pursueVows||pursueTreasure)&&vowTargets.length&&target===key(explore.exit.x,explore.exit.y))continue;
@@ -59,10 +60,10 @@ const results=[];for(let sample=0;sample<samples;sample++){results.push(...await
       if(!path){stop='no route '+JSON.stringify({pos:explore.pos,exit:explore.exit,keys:bag.keys,loot:explore.loot,doors:[...explore.doors],town:document.querySelector('#townScreen').className});break;}
       tryMove(...path);
     }
-    cancelTurn();results.push({sample,seed:runSeed,oath,branch,stop,depth:floorDepth(),tasks,fights,floor:nodeId,moves,turns,phases,level:party.map(h=>h.level),battles:campaign.battles,relic:bag.relic,contracts:campaign.contracts.length,chapters:campaign.completedFloors.length,decisions:Object.keys(campaign.decisions).length,fate:campaign.fate,discovered:[...campaign.discovered],gear:party.map(h=>({cls:h.cls,...h.equip})),heroVows:Object.entries(campaign.heroQuests).map(([cls,q])=>({cls,plan:q.plan,stage:q.stage,progress:heroQuestProgress(cls,q),origin:q.origin,resolvedAt:q.resolvedAt}))});
+    cancelTurn();results.push({sample,seed:runSeed,oath,branch,stop,depth:floorDepth(),tasks,rewardChoices,fights,floor:nodeId,moves,turns,phases,level:party.map(h=>h.level),battles:campaign.battles,relic:bag.relic,contracts:campaign.contracts.length,chapters:campaign.completedFloors.length,decisions:Object.keys(campaign.decisions).length,fate:campaign.fate,discovered:[...campaign.discovered],gear:party.map(h=>({cls:h.cls,...h.equip})),heroVows:Object.entries(campaign.heroQuests).map(([cls,q])=>({cls,plan:q.plan,stage:q.stage,progress:heroQuestProgress(cls,q),origin:q.origin,resolvedAt:q.resolvedAt}))});
   }
   return results;
-},{sample,pursueVows,pursueTreasure,oaths,branches}));if(onSample)onSample(sample+1,samples);}
+},{sample,pursueVows,pursueTreasure,varyRewards,oaths,branches}));if(onSample)onSample(sample+1,samples);}
 const build=await page.evaluate(()=>GAME_BUILD);return {build,results,errors};
 }finally{await browser.close();}
 }
