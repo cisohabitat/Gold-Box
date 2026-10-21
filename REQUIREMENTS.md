@@ -289,3 +289,15 @@ Local art/engine checks pass: 58 engine/controller regressions and 4 sprite/art 
 | ENEMY-08 | New IDs round-trip in v2 encounters; original imported pools unchanged and malformed IDs reject atomically. No schema bump, new saved battle state or reward changes. |
 | ENEMY-09 | Wisp deadlines advance only on round wrap; skip actors killed by burst; Auto evades and risk/grid/Tactics name precise deadline. No occupied tiles or premature detonation. |
 | VERIFY-16 | 102 engine checks, sprite/policy checks, 288 guardian scenarios, fourteen browser suites including enemy lore/art/telegraph/silence/Continue at four device classes, unchanged 96-campaign canaries and exact-head three-browser CI before verified Pages publication. Report actual source bytes, no human-win-rate or physical-device certification claim. |
+
+
+## Ranged action feedback (0.17.0)
+
+| ID | Acceptance |
+| --- | --- |
+| FX-01 | Accepted ranged weapon strikes and reactions emit one arrow event on hit or miss; melee/invalid actions emit none. Origin/target are copied before mutation. Sequence increases per combat and buffer is bounded to 24. |
+| FX-02 | Accepted spells emit once at release toward the actual unit/tile target; self casts pulse in place. Aim preview, blocked spells and channel preparation emit none. Preserve collateral, charges and channel/interrupt rules. |
+| FX-03 | Events and presentation do not consume dice, alter combatants/resources/action order, block input or add turn scheduling. Enabled/disabled simulation outcomes and next RNG value must match. No new v2 saved fields. |
+| FX-04 | Arrows and fire/ice/heal/control/chain/ward/arcane shapes travel between actual rendered cell centres with a visible intermediate frame. Distinguish miss feedback. Layer is pointer-transparent, aria-hidden, unfocusable and adds no layout height. |
+| FX-05 | Effects stay aligned through board/turn redraws and spell-menu size changes, never replay after duplicate render, and cap at six overlapping effects/timers. Cleanup within720ms. Clear at menus, resize, hidden tabs, title/load, combat change/exit. Reduced motion and Effects Off suppress spawning; reenabling does not replay history. |
+| VERIFY-17 | 106 engine checks, sprite/policy checks, 288 guardian scenarios, fifteen browser suites including actual manual aim/confirmation and four-size animation/cleanup/preference checks. Run unchanged 96-campaign canary, exact-head Chromium/Firefox/WebKit CI and Pages/live verification. Report source size and emulated/human/hardware limits. |

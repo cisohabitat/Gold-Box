@@ -8,7 +8,7 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 ## Play
 
-**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.16.0**
+**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.17.0**
 
 Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a fitted board/control shell on every device, with a live sidebar in wide windows and a separate Party & Log panel in smaller windows. **How to Play** on the title screen explains the rules.
 
@@ -204,7 +204,7 @@ Casters also advance to spell range instead of charging into melee, and incapaci
 
 ## Validation
 
-The current dependency-free suite has **102 engine/controller checks** against the real inline script with DOM stubs. It covers save recovery, pending levels, atomic imports, turn scheduling, friendly fire, guardians, campaign gates, route goals, movement-risk forecasts and immediate inventory persistence. Generator checks include 96 exit/key layouts, 160 all-cache-open vault layouts and 256 objective/fallback layouts.
+The current dependency-free suite has **106 engine/controller checks** against the real inline script with DOM stubs. It covers save recovery, pending levels, atomic imports, turn scheduling, friendly fire, guardians, campaign gates, route goals, movement-risk forecasts and immediate inventory persistence. Generator checks include 96 exit/key layouts, 160 all-cache-open vault layouts and 256 objective/fallback layouts.
 
 Browser suites exercise real touch/keyboard controls, save/Continue, offline interaction, clipboard failure, paused menus, all endings, atlas/hunt recovery and 25 viewport sizes. The confidence suite reloads before closing Party after equip, unequip, Auto Gear and healing; it also checks full-HP potion safeguards and movement/turn previews on phone, short landscape, iPad-sized and desktop windows. Automated WebKit is compatibility evidence; physical iPhone/iPad Safari and human campaign difficulty remain unverified.
 
@@ -256,6 +256,7 @@ node tests/confidence.cjs
 node tests/arenas.cjs
 node tests/patrols.cjs
 node tests/enemies.cjs
+node tests/projectiles.cjs
 node tests/balance.cjs
 ```
 
@@ -333,3 +334,14 @@ The six sprites were visually inspected together for distinct silhouettes. Autom
 Runtime for 0.16.0: **377,562 bytes (368.7 KiB)**, +13,839 bytes (13.5 KiB) over 0.15.0. This exceeds the soft 350 KiB target in exchange for six mechanics, six sprites and their field-guide content; there are no new runtime dependencies or downloaded assets. Final campaign/CI/publication evidence is recorded in BALANCE.md and the release PR.
 
 Build 0.16.0 local evidence: 102 engine checks, four sprite/art and four policy checks, 288 guardian scenarios and all fourteen Chromium browser suites pass. Full 96-campaign Auto canary: wanderer 25/32, delver 20/32, ironbound 13/32; zero stalls, all existing criteria pass. Runtime 377,562 bytes (368.7 KiB). Exact-head cross-browser CI and Pages/live evidence are recorded in the release PR.
+
+
+### Visible arrows and spell flight — 0.17.0
+
+Ranged weapon attacks now send a visible arrow from the attacker to the target, including a glancing miss marker. Confirmed spells travel to their actual target tile: flame, ice shard, healing cross, control rings, chain hook, ward and arcane bolt use distinct shapes and colours. Self-centred spells pulse in place. Preparing an aim or a guardian channel creates no shot; the projectile appears when the spell releases.
+
+Effects survive normal board/turn redraws without replaying. They are decorative and do not delay damage, block input, spend resources, roll extra dice or change turn timing. Up to six effects can overlap; they clean up within 720 ms. Menus, resize, hidden tabs, title/load and leaving combat clear them. **Sound & Display → Effects** disables them, and OS reduced motion suppresses them. The combat log and HP values remain authoritative, including when a battle-ending hit immediately opens its result.
+
+Phone screenshots were visually reviewed. Browser checks cover actual arrow misses, real Fireball aim/confirmation, intermediate flight position, target snapshots, distinct spell shapes, self pulses, rerender persistence, cleanup/caps and accessibility preferences at phone portrait, short landscape, tablet and desktop sizes. Physical Safari remains unverified. Runtime: 384,016 bytes (375.0 KiB), +6,454 bytes over 0.16.0, under the existing soft-size policy with no new dependency or downloaded asset.
+
+Build 0.17.0 local evidence: 106 engine checks, four sprite/art and four policy checks, 288 guardian scenarios and all fifteen Chromium browser suites pass. Full 96-campaign Auto outcomes remain 25/32 Wanderer, 20/32 Delver, 13/32 Ironbound, with zero stalls and unchanged canaries. Runtime 384,016 bytes (375.0 KiB). Exact-head three-browser CI and Pages/live evidence are recorded in the release PR.

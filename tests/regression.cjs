@@ -605,3 +605,18 @@ test('ENEMY-09: round-boundary burst grants a full cycle, skips a newly fallen f
 test('ENEMY-10: silenced channel is postponed without charge loss, then resumes once after expiry',()=>{
  const {run}=harness();run("const crew=makeParty(),w=spawnMonster('bell_warden',0,false),b=new CombatEngine(crew,[w],10,10);b._castPoint(w,SPELLS.war_chant,w.pos);w.acted.action=false;w.statuses.push({type:'silence',duration:2});b.actAuto(w);");assert.equal(run('!!w.intent'),true);assert.equal(run('w.spells[0].uses'),1);run('b._tick(w);b._tick(w);b.actAuto(w);');assert.equal(run('w.intent'),null);assert.equal(run('w.spells[0].uses'),0);assert.equal(run('w.acted.action'),true);
 });
+
+test('FX-01: ranged hits/misses and reactions publish bounded immutable origin/target snapshots; melee does not',()=>{
+ const {run}=harness();run("const crew=makeParty(),a=spawnMonster('archer',0,false),b=new CombatEngine(crew,[a],10,10);a.pos={x:5,y:3};crew[0].pos={x:2,y:3};Rules.attack=()=>({hit:false});b.doAttack(a,crew[0]);const e=b.visualEvents[0];a.pos.x=7;crew[0].pos.x=1;");assert.equal(run('e.kind'),'arrow');assert.equal(run('e.hit'),false);assert.equal(run('e.from.x'),5);assert.equal(run('e.to.x'),2);run("b._reactStrike(a,crew[0],'guard');crew[1].pos={x:7,y:4};crew[1].range=1;crew[1].acted.action=false;b.doAttack(crew[1],a);");assert.equal(run('b.visualSeq'),2);run("for(let i=0;i<30;i++)b._visual('arrow',a,crew[0]);");assert.equal(run('b.visualEvents.length'),24);assert.equal(run('b.visualEvents.at(-1).seq'),32);
+});
+test('FX-02: accepted spells emit once; aim, invalid/blocked actions and channel preparation emit nothing',()=>{
+ const {run}=harness();run("enterCombat({pool:['ogre'],budgetMul:.01},'2,2');cancelTurn();game.order=['p4',...game.order.filter(id=>id!=='p4')];game.turnIndex=0;game._begin();selectSpell('fireball');combatClick(4,4);");assert.equal(run('game.visualSeq'),0);run('confirmAim();');assert.equal(run('game.visualSeq'),1);assert.equal(run('game.visualEvents[0].spell'),'fireball');run("party[3].acted.action=false;party[3].statuses.push({type:'silence',duration:2});game.castSpell(party[3],SPELLS.fireball,{x:4,y:4});");assert.equal(run('game.visualSeq'),1);
+ run("const w=spawnMonster('ash_cantor',0,false),b=new CombatEngine(makeParty(),[w],10,10);b._castPoint(w,SPELLS.cinder,{x:2,y:2});");assert.equal(run('b.visualSeq'),0);run('w.acted.action=false;b.actAuto(w);');assert.equal(run('b.visualSeq'),1);assert.equal(run('b.visualEvents[0].to.x'),2);
+});
+test('FX-03: visuals do not alter gameplay outcomes, action order or random stream',()=>{
+ const enabled=harness({seed:875}),disabled=harness({seed:875});disabled.run('CombatEngine.prototype._visual=()=>{};');
+ const code="const crew=makeParty(),b=new CombatEngine(crew,['archer','shaman','hexer'].map((id,i)=>spawnMonster(id,i,false)),10,10);let n=0;while(b.phase==='playing'&&n++<800){b.actAuto(b.current());if(b.phase==='playing')b.endTurn();}JSON.stringify({units:b.combatants,round:b.round,phase:b.phase,xp:b.xpEarned,next:Math.random()});";assert.equal(enabled.run(code),disabled.run(code));
+});
+test('FX-04: visual events are transient and absent from portable campaign saves',()=>{
+ const {run}=harness();run("enterCombat({pool:['archer'],budgetMul:.01},'2,2');cancelTurn();const a=game.living('enemy')[0];game._visual('arrow',a,party[0]);const saved=encodeSave(saveState());");assert.equal(run("JSON.stringify(decodeSave(saved)).includes('visualEvents')"),false);assert.equal(run('applySave(decodeSave(saved))'),true);assert.equal(run('mode'),'explore');
+});
