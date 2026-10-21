@@ -212,6 +212,7 @@
   .pcard .bgtrait b{color:var(--gold);}
   .gslot{display:flex;justify-content:space-between;align-items:center;background:#1b140b;border:1px solid #3a2c18;padding:3px 8px;margin:3px 0;cursor:pointer;font-size:17px;}
   .loadout-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;}.loadout-grid .gslot{min-height:44px;min-width:0;flex-direction:column;align-items:flex-start;justify-content:center;margin:0;overflow-wrap:anywhere;line-height:1.15;}.loadout-grid .lab{font-size:14px;}
+  .loadout-summary{margin-top:8px;border:1px solid #596459;padding:8px;background:#101d22;font-size:15px;line-height:1.3;}.loadout-summary p{margin:3px 0;}.loadout-summary summary,.decision-pane summary{min-height:44px;cursor:pointer;padding:10px 0;color:var(--gold);}.loadout-summary ul{padding-left:18px;}.decision-pane{border:1px solid var(--frame);padding:12px;text-align:left;margin:12px 0;overflow-wrap:anywhere;}.decision-pane[hidden]{display:none;}.decision-pane h3{margin:0;color:var(--gold);}.reward-option,.scout-report{padding:10px 0;border-top:1px solid #57605c;}.reward-option::after{content:"";display:block;clear:both;}.reward-option h4,.scout-report h4{margin:5px 0;color:var(--parch);}.reward-option p,.scout-report p{font-size:16px;line-height:1.3;margin:7px 0;}.decision-pane>button,.reward-option button{min-height:44px;max-width:100%;white-space:normal;}.reward-option .atlas-art{width:68px;height:68px;}
   .gslot:hover{border-color:var(--frame-hi);}
   .gslot .lab{color:var(--dim);}
   .gslot .it{color:var(--parch);}
@@ -666,13 +667,15 @@
 <div class="screen" id="partyScreen">
   <div class="sbox wide">
     <h2 class="ctitle">Party &amp; Equipment</h2>
-    <p class="tag" id="partySub">Tap an item, then tap a hero to equip or use it. Tap an equipped item to remove it.</p>
+    <p class="tag" id="partySub" role="status" tabindex="-1">Tap an item, then tap a hero to equip or use it. Tap an equipped item to remove it.</p>
     <article id="treasureFind" class="treasure-find" hidden aria-labelledby="treasureFindTitle"></article>
+    <section id="treasureChoices" class="decision-pane" hidden aria-labelledby="treasureChoiceTitle"></section>
+    <section id="patrolScouts" class="decision-pane" hidden aria-labelledby="patrolScoutTitle"></section>
     <div id="partyHeroes"></div>
     <div class="pane" style="margin-top:12px;text-align:left">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
         <h2 style="margin:0">Satchel</h2>
-        <button id="btnAutoGear" title="Give each hero the recommended weapon and armour they can use">Auto-assign gear</button>
+        <button id="btnAutoGear" title="Recommend six-slot loadouts while respecting classes and occupied hands">Auto-assign gear</button>
       </div>
       <div id="partyBag"></div>
     </div>
@@ -698,7 +701,7 @@
 <div class="screen" id="settingsScreen" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="sbox"><h2 id="settingsTitle" class="ctitle">Sound &amp; Display</h2><p class="tag">Make the journey your own. Combat pauses while this sheet is open.</p><div class="settings-list"><label><input id="prefSound" type="checkbox"> Synthesized sound effects</label><label><input id="prefMusic" type="checkbox"> Quiet ambient tones (requires sound)</label><label for="prefVolume">Volume <output id="volumeValue">35%</output><input id="prefVolume" type="range" min="0" max="100" step="5" value="35"></label><label><input id="prefEffects" type="checkbox" checked> Visual effects (respects reduced motion)</label><label><input id="prefContrast" type="checkbox"> High contrast / clean display</label><label for="prefPace">Auto pace<select id="prefPace"><option value="normal">Deliberate · normal speed</option><option value="quick">Quick · shorter Auto turns</option></select></label></div><p id="audioStatus" class="tag" role="status">Sound is off by default. No downloads are needed.</p><p id="preferenceStatus" class="tag" role="status"></p><button id="btnSettingsClose" class="big">Back to Game</button></div></div>
 <div class="screen" id="codexScreen" role="dialog" aria-modal="true" aria-labelledby="codexTitle"><div class="sbox wide"><div class="eyebrow">Eren’s field atlas</div><h2 id="codexTitle" class="ctitle">The Bestiary</h2><div class="atlas-nav" role="group" aria-label="Atlas pages"><button id="codexBeasts" aria-pressed="true">Bestiary</button><button id="codexTreasure" aria-pressed="false">Treasure &amp; Relics</button><button id="codexLegends" aria-pressed="false">Legends &amp; Hunt</button><button id="btnCodexClose">Back</button></div><p class="tag" id="codexNote"></p><div id="codexTools" class="atlas-tools"><label for="codexSearch">Search<input id="codexSearch" type="search" maxlength="80" placeholder="Name, spell, source or lore"></label><label for="codexFilter">Show<select id="codexFilter"><option value="all">All entries</option><option value="guardians">Guardians</option><option value="relics">Relics</option><option value="potions">Potions</option></select></label></div><p id="codexCount" class="tag" role="status"></p><div id="codexContent" class="atlas-grid"></div></div></div>
 <script>
-const GAME_BUILD='0.21.0';
+const GAME_BUILD='0.22.0';
 document.querySelectorAll('[data-build]').forEach(el=>el.textContent='Build '+GAME_BUILD);
 /* ===== CROWN CAMPAIGN : data, with controller helpers below ===== */
 const OATHS={wanderer:{name:'Wanderer',budget:0.65,recovery:0.25,desc:'Gentler battles; all heroes earn victory XP and recover 25% HP after a win.'},delver:{name:'Delver',budget:1,desc:'Fortune favours the prepared. Only standing heroes earn victory XP.'},ironbound:{name:'Ironbound',budget:1.25,desc:'Stronger enemy forces. Only standing heroes earn victory XP.'}};
@@ -869,6 +872,12 @@ const ITEMS = {
   potion_fury:{ id:'potion_fury', name:'Draught of Fury', slot:'potion', buff:{status:'fury', duration:3, atk:2, dmg:2}, cost:45 }
 };
 const SHOP_STOCK = ['round_shield','ember_focus','iron_helm','sage_circlet','trail_boots','copper_ring','pilgrim_boots','ward_charm','pilgrim_mace','scout_bow','smoke_phial','dawn_salt','war_axe','potion_heal','potion_fury','leather','fine_sword','oak_staff','chain','warded_cloak'];
+// Each cache replaces one existing find after placement, without extra RNG.
+const CHOICE_REWARDS={
+ road_cache:{node:'entrance',replace:'smoke_phial',name:'The Scout’s Lockbox',story:'Three bundles remain beneath a broken watch standard. Take one for the company; leave the others for Ilyra’s scouts.',items:['smoke_phial','scout_bow','ember_focus']},
+ vigil_cache:{node:'catacombs',replace:'potion_heal',name:'The Vigil’s Bequest',story:'The hospice left one blessing for each company that reached the bells. Choose the help your next battle needs.',items:['potion_heal','iron_helm','copper_ring']},
+ courier_cache:{node:'deep_stair',replace:'potion_heal',name:'The Last Courier’s Pack',story:'A courier’s last note asks the next travellers to take one bundle and pass the others back up the road.',items:['potion_heal','pilgrim_boots','ward_charm']}
+};
 // Gear is a modifier layer applied at use-time, never baked into stored stats,
 // so levelling (which re-derives base stats) can never erase equipment.
 // Auxiliary AC is capped at +1. Wards/healing use their strongest source, never sum.
@@ -1338,6 +1347,7 @@ function buildDungeon(cfg){
   for(let y=0;y<h;y++){ const row=[]; for(let x=0;x<w;x++) row.push((x===0||y===0||x===w-1||y===h-1)?'#':'.'); tiles.push(row); }
   (cfg.walls||[]).forEach(([x,y])=> tiles[y][x]='#');
   const loot={}; for(const [k,v] of Object.entries(cfg.loot||{})) loot[k]={...v};
+  for(const [offer,r] of Object.entries(CHOICE_REWARDS))if(r.node===cfg.chapter){const found=Object.entries(loot).find(([k,v])=>v.type==='item'&&v.item===r.replace);if(found)loot[found[0]]={type:'choice',offer};}
   const secrets={}; for(const [k,v] of Object.entries(cfg.secrets||{})) secrets[k]={...v};
   const start={x:cfg.start[0], y:cfg.start[1]}, exit={x:cfg.exit[0], y:cfg.exit[1]};
   const doors=new Set((cfg.doors||[]).map(([x,y])=>key(x,y)));
@@ -2590,7 +2600,8 @@ function validSave(s){
     if(e.task!=null){const q=e.task;if(s.inTown&&!q.done)return false;if(!obj(q)||q.id!==s.nodeId||!own(CHAPTER_TASKS,q.id)||!pos(q.start)||typeof q.done!=='boolean'||!list(q.sites,3,k=>coord(k)&&e.tiles[k.split(',')[1]][k.split(',')[0]]==='.')||q.sites.length!==(q.id==='gallery'||q.id==='shrine_road'?3:1)||new Set(q.sites).size!==q.sites.length||!list(q.used,3,n=>num(n,0,2))||new Set(q.used).size!==q.used.length||q.used.some(n=>n>=(q.id==='gallery'||q.id==='shrine_road'?3:1))||q.id==='gallery'&&(q.used.some((n,i)=>n!==i)||q.done!==(q.used.length===3))||q.id==='shrine_road'&&(q.used.length>2||q.done!==(q.used.length===2))||q.done&&q.used.length!==(q.id==='gallery'?3:q.id==='shrine_road'?2:1))return false;}
     if(e.task){const q=e.task,reach=new Set([key(q.start.x,q.start.y)]),queue=[q.start];if(e.tiles[q.start.y][q.start.x]!=='.')return false;for(let i=0;i<queue.length;i++){const p=queue[i];for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){const x=p.x+dx,y=p.y+dy,k=key(x,y);if(e.tiles[y]?.[x]==='.'&&!reach.has(k)&&!(e.doors||[]).includes(k)){reach.add(k);queue.push({x,y});}}}if(q.sites.some(k=>!reach.has(k)))return false;}
     if(!entries(e.encounters,enc=>obj(enc)&&(enc.prize===undefined||['bellheart_aegis','ashen_covenant','mercy_reliquary','nightwarden_bow'].includes(enc.prize))&&(enc.tactic===undefined||own(PATROL_TACTICS,enc.tactic))&&(enc.pool===undefined||list(enc.pool,30,id=>own(BESTIARY,id)))&&(!enc.lead||own(BESTIARY,enc.lead))&&(!enc.budgetMul||typeof enc.budgetMul==='number'&&enc.budgetMul>0&&enc.budgetMul<=5)))return false;
-    if(!entries(e.loot,v=>obj(v)&&['gold','key','ration','relic','item'].includes(v.type)&&(v.amount===undefined||num(v.amount,1))&&(v.type!=='item'||own(ITEMS,v.item))))return false;
+    if(!entries(e.loot,v=>obj(v)&&['gold','key','ration','relic','item','choice'].includes(v.type)&&(v.amount===undefined||num(v.amount,1))&&(v.type!=='item'||own(ITEMS,v.item))))return false;
+    const offered=new Set();for(const [k,v] of Object.entries(e.loot||{}))if(v.type==='choice'){const r=CHOICE_REWARDS[v.offer],[x,y]=k.split(',').map(Number);if(!own(CHOICE_REWARDS,v.offer)||r.node!==s.nodeId||offered.has(v.offer)||Object.keys(v).some(f=>!['type','offer'].includes(f))||k!==key(x,y)||e.tiles[y][x]!=='.'||(e.doors||[]).includes(k)||k===key(e.exit.x,e.exit.y))return false;offered.add(v.offer);}
     if(!entries(e.events,id=>own(EVENTS,id))||!entries(e.secrets,v=>obj(v)&&(v.gold===undefined||num(v.gold))&&(!v.item||own(ITEMS,v.item))))return false;
     if(e.tiles[e.pos.y][e.pos.x]==='#'&&!(e.foundSecrets||[]).includes(key(e.pos.x,e.pos.y)))return false;
     if(e.wanderPool!==undefined&&!list(e.wanderPool,30,id=>own(BESTIARY,id)))return false;
@@ -2630,11 +2641,11 @@ function applySave(s){
 }
 function autosave(){ if(mode!=='explore' || !party || !explore) return; if($('#banner').classList.contains('show')) return; persistWrite(encodeSave(saveState())); }
 function continueRun(){ const s=decodeSave(persistRead()); if(!applySave(s)) return;
-  $('#startScreen').classList.remove('show'); $('#banner').classList.remove('show'); render();resumeFinale(); }
+  $('#startScreen').classList.remove('show'); $('#banner').classList.remove('show'); render();resumeFinale();showTreasureChoice(); }
 function loadFromCode(){ const s=decodeSave(($('#loadCode').value||'').trim());
   if(!applySave(s)){ $('#loadMsg').textContent='That save code is not valid.'; return; }
   persistWrite(encodeSave(saveState()));
-  $('#startScreen').classList.remove('show'); $('#banner').classList.remove('show'); render();resumeFinale(); }
+  $('#startScreen').classList.remove('show'); $('#banner').classList.remove('show'); render();resumeFinale();showTreasureChoice(); }
 function openSave(){ if(mode!=='explore'){ return; } const code=encodeSave(saveState()); const ok=persistWrite(code);
   $('#saveCode').value=code;
   $('#saveMsg').textContent = ok
@@ -2712,7 +2723,7 @@ function moveDir(dx,dy){
 }
 function handleEnter(r){
   if(r.type!=='combat')advanceTask();
-  if(r.type==='loot'){ if(collect(r.item)===false)explore.loot[r.at]=r.item;render();return; }
+  if(r.type==='loot'){ if(collect(r.item)===false)explore.loot[r.at]=r.item;render();if(r.item.type==='choice')showTreasureChoice();return; }
   if(r.type==='secret'){if(collectSecret(r.cache)===false)explore.secrets[r.at]=r.cache;render();return;}
   if(r.type==='combat'){ exploreFeed.push({t:'Enemies bar the way. Battle!',k:'kill'}); enterCombat(r.spec,r.at); return; }
   if(r.type==='event'){ openEvent(r.ev, r.at); render(); return; }
@@ -2724,6 +2735,7 @@ function handleEnter(r){
   render();
 }
 function collect(item){
+  if(item.type==='choice')return false;
   if(item.type==='item'&&bag.items.length>=1000){exploreFeed.push({t:'Satchel full. Treasure stays here; sell, equip or use an item before returning.',k:'sys'});return false;}
   if(item.type==='gold'){ bag.gold+=item.amount; exploreFeed.push({t:'You find '+item.amount+' gold.',k:'magic'}); }
   else if(item.type==='key'){ bag.keys++; exploreFeed.push({t:'You find an iron key.',k:'magic'}); }
@@ -2858,7 +2870,7 @@ function resumeExplore(){
   if(explore.secrets[k]&&explore.foundSecrets.has(k)){const cache=explore.secrets[k];delete explore.secrets[k];if(collectSecret(cache)===false)explore.secrets[k]=cache;}
   const event=explore.eventAt(explore.pos.x,explore.pos.y);if(event){openEvent(event,k);render();return;}
   if(explore.pos.x===explore.exit.x&&explore.pos.y===explore.exit.y){descendOrWin();return;}
-  render();
+  render();showTreasureChoice();
 }
 function taskText(){const q=explore&&explore.task;if(!q)return '';return CHAPTER_TASKS[q.id][0]+(q.done?' · Complete':q.id==='gallery'?' · '+q.used.length+'/3 names':q.id==='shrine_road'?' · '+q.used.length+'/2 shrines':q.used.length?' · Return to C':' · '+(q.id==='warren'?'Find S':'Recover Dawnblade'));}
 function advanceTask(){
@@ -3140,8 +3152,59 @@ function autoAssignGear(){
  if(changed)exploreFeed.push({t:'The company sorts six-slot loadouts, respecting classes and occupied hands.',k:'sys'});
  $('#partySub').textContent=changed?'Auto Gear assigned equipment. Inspect tradeoffs: wards use their strongest source; two-handed weapons occupy the off-hand.':'Current loadouts match the Auto Gear recommendation.';
 }
+const WARD_LABELS={weaponGuard:'Weapon ward',spellGuard:'Spell ward',emberGuard:'Terrain ember ward',controlWard:'Spell-control saves',healPower:'Healing spell bonus'};
+function loadoutSummary(hero){
+ const items=equippedItems(hero),overlap=[];
+ for(const [power,label] of Object.entries(WARD_LABELS)){
+  const sources=items.filter(it=>(it[power]||0)>0),amount=power==='healPower'?healingPower(hero):gearPower(hero,power);
+  if(sources.length>1)overlap.push(label+' uses '+amount+' total; '+sources.map(it=>it.name).join(' / ')+' do not stack.');
+ }
+ const movement=items.map(it=>it.speedMod||0);if(movement.some(n=>n>0)&&movement.some(n=>n<0))overlap.push('Movement bonuses and penalties combine: '+movement.filter(Boolean).map(n=>(n>0?'+':'')+n).join(' / ')+'. Effective movement '+effSpeed(hero)+'.');
+ const auxiliary=items.filter(it=>it.slot!=='armor').reduce((n,it)=>n+(it.ac||0),0);if(auxiliary>1)overlap.push('Auxiliary AC totals '+auxiliary+' before its +1 cap.');
+ return {move:effSpeed(hero),range:effRange(hero),wards:Object.fromEntries(Object.keys(WARD_LABELS).map(k=>[k,k==='healPower'?healingPower(hero):gearPower(hero,k)])),overlap};
+}
+function loadoutSummaryHTML(hero){const v=loadoutSummary(hero);return '<div class="loadout-summary" data-loadout-summary="'+escapeHTML(hero.id)+'"><p>Movement <b>'+v.move+'</b> · Range <b>'+v.range+'</b></p><p>'+Object.entries(v.wards).map(([k,n])=>WARD_LABELS[k]+' <b>'+(k==='controlWard'||k==='healPower'?'+':'')+n+'</b>').join(' · ')+'</p>'+(v.overlap.length?'<details><summary tabindex="0">Overlapping equipment ('+v.overlap.length+')</summary><ul>'+v.overlap.map(t=>'<li>'+escapeHTML(t)+'</li>').join('')+'</ul></details>':'<small>Wards and healing use their strongest source.</small>')+'</div>';}
+function treasureAtFeet(){if(mode!=='explore'||!explore)return null;const at=key(explore.pos.x,explore.pos.y),loot=explore.loot[at];return loot?.type==='choice'&&Object.hasOwn(CHOICE_REWARDS,loot.offer)&&CHOICE_REWARDS[loot.offer].node===nodeId?{at,offer:loot.offer,reward:CHOICE_REWARDS[loot.offer]}:null;}
+function showTreasureChoice(){const current=treasureAtFeet();if(!current||overlayOpen())return false;const origin=explore;openParty();$('#treasureChoices').scrollIntoView?.({block:'start'});const focus=()=>{if(explore===origin&&$('#partyScreen').classList.contains('show')&&treasureAtFeet()?.offer===current.offer)$('#treasureChoiceTitle').focus({preventScroll:true});};if(typeof queueMicrotask==='function')queueMicrotask(focus);else focus();return true;}
+function chooseTreasure(offer,index){
+ if(mode!=='explore'||!$('#partyScreen').classList.contains('show')||['townScreen','eventScreen','levelScreen','saveScreen','codexScreen','tacticsScreen','restartScreen','settingsScreen','fateScreen','aftermathScreen','journalScreen'].some(id=>$('#'+id).classList.contains('show')))return false;
+ const current=treasureAtFeet();if(!current||current.offer!==offer||!Number.isInteger(index)||index<0||index>2)return false;
+ const id=current.reward.items[index],it=ITEMS[id];if(bag.items.length>=1000||!party.some(h=>canUse(it,h)))return false;
+ // Collection and removal commit together. Rewards are carried, never auto-equipped.
+ bag.items.push(id);delete explore.loot[current.at];discoverItem(id);
+ exploreFeed.push({t:'From '+current.reward.name+', you choose '+it.name+'. The other bundles remain for the people following you.',k:'magic'});
+ pickItem=bag.items.length-1;autosave();renderParty();$('#partySub').textContent='You chose '+it.name+'. Select a hero to equip it, or keep it in the satchel.';$('#partySub').focus();return true;
+}
+function renderTreasureChoices(){
+ const root=$('#treasureChoices'),current=treasureAtFeet();root.hidden=!current;root.innerHTML='';if(!current)return;
+ root.innerHTML='<h3 id="treasureChoiceTitle" tabindex="-1">'+escapeHTML(current.reward.name)+'</h3><p>'+escapeHTML(current.reward.story)+'</p><p>Choose <b>one</b>. It goes into the satchel. You may close Party and return later.'+(bag.items.length>=1000?' <b>Satchel full: equip, use or sell an item before claiming.</b>':'')+'</p><button id="btnTreasureLater">Leave for later</button>';
+ $('#btnTreasureLater').onclick=closeParty;
+ current.reward.items.forEach((id,index)=>{const it=ITEMS[id],fits=party.filter(h=>canUse(it,h)),card=document.createElement('article');card.className='reward-option';card.dataset.rewardOption=id;
+ card.innerHTML='<div class="atlas-art">'+relicArtwork(id)+'</div><h4>'+escapeHTML(it.name)+'</h4><p>'+escapeHTML(itemRules(it))+'</p><p>Fits: '+escapeHTML(fits.map(h=>h.name+' ('+h.cls+')').join(', ')||'No one in this company')+'</p><details><summary tabindex="0">Compare with this company</summary>'+party.map(h=>'<p><b>'+escapeHTML(h.name)+'</b>: '+escapeHTML(gearComparison(h,it))+'</p>').join('')+'</details>';
+ const button=document.createElement('button');button.textContent='Take '+it.name;button.disabled=bag.items.length>=1000||!fits.length;button.onclick=()=>chooseTreasure(current.offer,index);card.appendChild(button);root.appendChild(card);
+ });
+}
+function patrolIntel(desc){
+ const types=[...new Set([...(desc.lead?[desc.lead]:[]),...(desc.pool?.length?desc.pool:['goblin'])])].filter(id=>Object.hasOwn(BESTIARY,id)),foes=types.map(id=>BESTIARY[id]),spells=foes.flatMap(m=>(m.spells||[]).map(sp=>SPELLS[sp.id])),notes=[];
+ if(foes.some(m=>m.range>1))notes.push('Bows possible: use cover and close the gap. Shields need a free off-hand.');
+ if(spells.some(sp=>sp.effect.kind==='damage')||foes.some(m=>m.deathBurst))notes.push('Spell damage possible: spell wards reduce hits, including friendly fire; terrain wards do not.');
+ if(spells.some(sp=>['status','debuff'].includes(sp.effect.kind)))notes.push('Control spells possible: control wards improve saves. Dawn Salt clears your own Silence, Hex and Enfeeble, but not Sleep or Hold.');
+ if(foes.some(m=>m.onHit?.status==='poison'))notes.push('Weapon poison possible: weapon/spell wards do not stop poison ticks. Keep Dawn Salt for cleansing.');
+ if(spells.some(sp=>['heal','buff','summon'].includes(sp.effect.kind)))notes.push('Support magic possible: focus healers and summoners before the fight grows.');
+ if(foes.some(m=>m.shieldAura))notes.push('Sentinel protection possible: separate or defeat the sentinel; its weapon-AC aura does not protect against spells.');
+ if(desc.lead==='bell_warden')notes.push('The Warden’s toll can be interrupted by a damaging weapon hit. Misses, spells and fully absorbed hits do not interrupt.');
+ if(desc.lead==='ash_cantor'||desc.lead==='eclipse_wyrm')notes.push('Leave fixed blast warnings. Lantern/Ashwalker protects against terrain embers, not the spell blast itself.'+(desc.lead==='ash_cantor'?' A damaging weapon hit can interrupt the Cantor.':' The dragon’s breath cannot be interrupted.'));
+ if(!notes.length)notes.push('Weapon pressure possible: shields improve AC, weapon wards reduce each hit. Keep healing in reach and focus one foe.');
+ return {types,formation:desc.boss?'Guardian and possible retinue':PATROL_TACTICS[encounterTactic(desc)]?.name||'Uncertain patrol',notes};
+}
+function scoutedPatrols(e=explore){if(mode!=='explore'||!e)return [];return Object.entries(e.encounters).filter(([at])=>e.seen.has(at)&&e.spotted.has(at)&&!e.cleared.has(at)).map(([at,desc])=>{const [x,y]=at.split(',').map(Number);return {at,x,y,distance:Math.max(Math.abs(x-e.pos.x),Math.abs(y-e.pos.y)),intel:patrolIntel(desc),prize:desc.prize};}).sort((a,b)=>a.distance-b.distance||a.y-b.y||a.x-b.x);}
+function companyWardCoverage(heroes=party){const standing=heroes.filter(h=>h.hp>0);if(!standing.length)return 'No standing heroes; no active gear coverage.';return 'Standing company ('+standing.length+'): '+Object.entries(WARD_LABELS).filter(([k])=>k!=='healPower').map(([k,label])=>label+' '+standing.filter(h=>gearPower(h,k)>0).length+'/'+standing.length).join(' · ')+'. Gear coverage, not immunity.';}
+function renderPatrolScouts(){
+ const root=$('#patrolScouts');root.hidden=mode!=='explore';root.innerHTML='';if(mode!=='explore')return;const patrols=scoutedPatrols();
+ root.innerHTML='<details><summary tabindex="0" id="patrolScoutTitle">Scouted patrols ('+patrols.length+')</summary><p>Only seen, spotted, uncleared patrols. Possible foes and formations are clues; exact enemies and numbers are revealed in battle. Columns/rows start at 1.</p><p>'+escapeHTML(companyWardCoverage())+'</p>'+(patrols.length?patrols.slice(0,12).map(p=>'<article class="scout-report" data-patrol-at="'+p.at+'"><h4>Column '+(p.x+1)+', row '+(p.y+1)+' · '+p.distance+' squares (direct distance)</h4><p>Possible formation: '+escapeHTML(p.intel.formation)+'</p><p>Possible foes: '+escapeHTML(p.intel.types.map(id=>BESTIARY[id].name).join(', '))+'</p>'+p.intel.notes.map(t=>'<p>'+escapeHTML(t)+'</p>').join('')+(p.prize?'<p>Guarded find: '+escapeHTML(ITEMS[p.prize].name)+'</p>':'')+'</article>').join(''):'<p>No patrol is currently visible to your scouts. Explore to spot nearby enemies.</p>')+(patrols.length>12?'<p>Showing the nearest 12 patrols.</p>':'')+'</details>';
+}
 function renderParty(){
-  renderTreasureFind();
+  renderTreasureFind();renderTreasureChoices();renderPatrolScouts();
   const root=$('#partyHeroes'); root.innerHTML='';
   party.forEach((h,hi)=>{
     const card=document.createElement('div'); card.className='pcard'+(pickItem!==null&&ITEMS[bag.items[pickItem]].slot!=='treasure'&&canUse(ITEMS[bag.items[pickItem]],h)?' sel':'');
@@ -3153,6 +3216,7 @@ function renderParty(){
       html+=`<p class="bgbio">${escapeHTML(bgFill(bg.bio,h.name))}</p>`;
       const bl=boonLabel(h.bg); if(bl) html+=`<p class="bgtrait">Trait: <b>${bl}</b></p>`; }
     html+='<div class="loadout-grid">'+Object.entries(GEAR_SLOTS).map(([slot,label])=>{const id=h.equip[slot],blocked=slot==='offhand'&&ITEMS[h.equip.weapon]?.hands===2;return `<div class="gslot" data-hi="${hi}" data-slot="${slot}"><span class="lab">${label}</span><span class="it${id?(ITEMS[id].legendary?' legendary':''):' none'}">${id?ITEMS[id].name:blocked?'Both hands occupied':'—'}</span></div>`;}).join('')+'</div>';
+    html+=loadoutSummaryHTML(h);
     if(pickItem!==null&&ITEMS[bag.items[pickItem]])html+='<p class="gear-compare">'+escapeHTML(gearComparison(h,ITEMS[bag.items[pickItem]]))+'</p>';
     for(const id of Object.values(h.equip))if(ITEMS[id]?.legendary)html+='<p class="gear-detail">'+escapeHTML(itemRules(ITEMS[id]))+'</p>';
     html+=`<div class="eff">HP <b>${h.hp}/${h.maxHp}</b> &nbsp; AC <b>${effAc(h)}</b> &nbsp; Atk <b>+${effAttack(h)}</b> &nbsp; Dmg <b>${dmg.n}d${dmg.sides}+${dmg.bonus}</b></div>`;
@@ -3165,7 +3229,7 @@ function renderParty(){
       else unequip(h, slot);                      // tap an equipped slot to remove
     },'.gslot[data-hi="'+hi+'"][data-slot="'+sl.dataset.slot+'"]',h.name+' '+sl.textContent));
     if(pickItem!==null&&ITEMS[bag.items[pickItem]].slot!=='treasure'){const give=document.createElement('button');give.textContent='Give selected item to '+h.name;give.onclick=()=>{applyItem(h);$('#btnAutoGear').focus();};card.appendChild(give);}
-    card.onclick=(e)=>{ if(e.target.closest('.gslot'))return; if(pickItem!==null) applyItem(h); };
+    card.onclick=(e)=>{ if(e.target.closest('.gslot,.loadout-summary'))return; if(pickItem!==null) applyItem(h); };
     root.appendChild(card);
   });
   const bagEl=$('#partyBag'); bagEl.innerHTML='';
@@ -3376,6 +3440,7 @@ function renderMinimap(){
     else if(e.found.has(k)&&e.loot[k]) dot='#f0c860';
     else if(x===e.exit.x&&y===e.exit.y) dot='#9fd8a0';
     if(dot) s+='<circle cx="'+(x+0.5)+'" cy="'+(y+0.5)+'" r="0.34" fill="'+dot+'"/>';
+    if(e.found.has(k)&&e.loot[k]?.type==='choice')s+='<g data-choice-cache="'+e.loot[k].offer+'"><title>'+escapeHTML(CHOICE_REWARDS[e.loot[k].offer].name+' · choose one of three in Party')+'</title><rect x="'+(x+.2)+'" y="'+(y+.22)+'" width=".6" height=".56" fill="#7d5525" stroke="#ffe08a" stroke-width=".1"/></g>';
     const prize=e.spotted.has(k)&&e.encounterAt(x,y)?.prize;if(prize)s+='<g data-guarded-prize="'+prize+'"><title>'+escapeHTML('Guarded treasure: '+ITEMS[prize].name)+'</title><rect x="'+(x+.08)+'" y="'+(y+.08)+'" width=".84" height=".84" rx=".1" fill="none" stroke="#ffe08a" stroke-width=".1"/></g>';
   }
   s+='<rect width="'+e.w+'" height="'+e.h+'" fill="url(#map-stone)" pointer-events="none"/>';
@@ -3857,6 +3922,7 @@ function openTactics(){
   if(fighting&&BATTLEFIELDS[game.battlefield]?.desc)section(BATTLEFIELDS[game.battlefield].name,BATTLEFIELDS[game.battlefield].desc);
   if(fighting&&game.arenaShelter?.size)section('Allies on the battlefield',game.arenaAidNotes.join(' ')+' Your council choices protect '+game.arenaShelter.size+' sanctum tile'+(game.arenaShelter.size===1?'':'s')+'. These stay sanctums during the guardian’s phase change.');
   section('Your turn','Each hero can move once and take one action, in either order. Attack, cast, drink a potion, or use a signature. End Turn advances the order. Guard spends the action and ends the turn, preparing one reaction. Wait delays an untouched turn. Moving away from an adjacent foe can provoke a free strike.');
+  section('Prepare before battle','Open Party to read Scouted patrols and current standing-company ward coverage. Reports show only spotted, seen enemies; potential foes and formation are not exact counts. Compare gear and overlapping bonuses before walking onto the patrol. Three marked lockboxes offer one of three finds; close Party to leave a choice for later.');
   section('Guarded treasure','A gold frame around a spotted red patrol marks a treasure guard. Win, then step onto the defeated enemy’s map tile to claim its cache. It stays there if your satchel is full. Party shows a discovery portrait; Treasure & Relics explains sources, tradeoffs and what this run has found.');
   section('Mouse, touch, and keyboard','Choose actions with a click or tap. Explore with arrows or WASD. In combat, Tab to the grid, use arrows to move focus, and press Enter or Space to use the selected action. Area spells still need confirmation. Party & Log opens the roster in smaller windows.');
   section('Aim before you cast','Select an area spell, then tap a tile to preview it. The pink outline shows the blast; the hint counts allies and foes. Tap that tile again or Confirm cast to commit. Fireball and other damage blasts hit friends too; Sleep only affects enemies. Cover protects against ranged weapons, not magic.');
@@ -3885,7 +3951,7 @@ function closeCodex(){
  if(mode==='combat'&&game&&game.phase==='playing'){const c=game.current();if(c.side==='party'&&!autoFight&&!game.isIncapacitated(c))render();else beginTurnFlow();}
 }
 function itemSources(id){
- const from=[];for(const w of Object.values(WORLD)){if((w.items||[]).includes(id))from.push(w.name);if((w.secretItems||[]).includes(id))from.push(w.name+' hidden caches');if((w.encounters||[]).some(e=>e.prize===id))from.push(w.name+' · defeat the '+((w.encounters||[]).find(e=>e.prize===id).lead?BESTIARY[(w.encounters||[]).find(e=>e.prize===id).lead].name:'guarded patrol')+' and claim its cache');}
+ const from=[];for(const r of Object.values(CHOICE_REWARDS))if(r.items.includes(id))from.push(WORLD[r.node].name+' · '+r.name+' (choose one of three)');for(const w of Object.values(WORLD)){if((w.items||[]).includes(id))from.push(w.name);if((w.secretItems||[]).includes(id))from.push(w.name+' hidden caches');if((w.encounters||[]).some(e=>e.prize===id))from.push(w.name+' · defeat the '+((w.encounters||[]).find(e=>e.prize===id).lead?BESTIARY[(w.encounters||[]).find(e=>e.prize===id).lead].name:'guarded patrol')+' and claim its cache');}
  for(const q of Object.values(CONTRACTS))if(q.reward.item===id)from.push('Promise: '+q.name);
  if(SHOP_STOCK.includes(id))from.push('Waystation trader');if(id==='eclipsescale')from.push('Defeat Astrax in the optional Observatory hunt');
  

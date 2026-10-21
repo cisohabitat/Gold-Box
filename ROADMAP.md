@@ -215,3 +215,10 @@ Treasure expansion delivery: stages 1–5 are implemented, with the local accept
 ## Six-slot loadouts — 0.21.0
 
 Implemented the accepted next step: weapon/offhand/armour/head/feet/accessory; rebalanced migrated gear; strongest-source wards and bounded auxiliary stats; two-handed swaps; legacy migration; bounded Auto Gear; discounted auxiliary encounter scaling. Six ordinary additions arrive early, six new relics arrive in the three shared later chapters. Complete artwork/lore/guide and portable/device acceptance accompany the feature. Retain the next priorities of human campaign playtesting and physical Safari checks before raising the overall B+ grade.
+
+
+## Equipment decisions — 0.22.0
+
+Implement accepted priorities 1–3: truthful per-hero loadout summaries/overlap explanations; three bounded choose-one treasure caches using existing loot positions; spotted-patrol counterplay and gear coverage inside Party. Follow DECISION-01…08, retain legacy generated maps and the existing balance/release gates. Campaign pacing and physical Safari/human playtests remain subsequent work.
+
+Equipment-decision implementation: priorities 1–3 are implemented. Acceptance includes once-only map choices, deterministic first-option replacement, truthful gear overlap, fog-limited scouting, safe Continue focus and additional full-campaign alternative coverage. Final counts and publication evidence follow in the release record. Campaign pacing/human physical-device testing remain next.
