@@ -29,7 +29,7 @@ const results=[];for(let sample=0;sample<samples;sample++){results.push(...await
       if(document.querySelector('#aftermathScreen').classList.contains('show')){closeAftermath();continue;}
       if(curEvent){const options=EVENTS[curEvent.id].options;let pick=options.findIndex(o=>o.fallback),best=-Infinity;options.forEach((o,i)=>{if(!o.fallback){const score=bestForStat(o.stat).mod-o.dc;if(score>best){best=score;pick=i;}}});resolveEventOption(pick);closeEvent();continue;}
       if(document.querySelector('#townScreen').classList.contains('show')){
-        if(pursueTreasure)for(const id of ['smoke_phial','dawn_salt','pilgrim_boots','ward_charm','pilgrim_mace','scout_bow'])if(!campaign.discovered.includes(id)&&bag.gold>=ITEMS[id].cost)buyItem(id);
+        if(pursueTreasure)for(const id of ['smoke_phial','dawn_salt','pilgrim_boots','ward_charm','pilgrim_mace','scout_bow','round_shield','ember_focus','iron_helm','sage_circlet','trail_boots','copper_ring'])if(!campaign.discovered.includes(id)&&bag.gold>=ITEMS[id].cost)buyItem(id);
         const offers=[...document.querySelectorAll('.boon-card')];if(offers.length)offers[0].click();townRest();autoAssignGear();document.querySelector('#partyScreen').classList.remove('show');
         if(!campaign.decisions[nodeId])chooseCouncil(STORY[nodeId].plans[(sample+branch)%2].id);
         for(const [i,cls]of Object.keys(HERO_QUESTS).entries()){if(!campaign.heroQuests[cls])chooseHeroQuest(cls,HERO_QUESTS[cls].plans[(sample+branch+i)%2].id);if(campaign.heroQuests[cls])fulfillHeroQuest(cls);}

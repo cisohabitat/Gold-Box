@@ -57,3 +57,12 @@ The artwork is authored inline SVG. A small path builder removes repeated XML sy
 Reviewed a 16-item contact sheet and the actual 440×780 treasure page. Dependency-free checks enforce complete mappings, unique path geometry independent of colour and decorative local SVG. Browser checks cover all 16 art identities, seven larger relic displays, unclipped 64×64 geometry, pointer transparency, search/filter/ownership and both atlas sections at phone, landscape, tablet and desktop sizes. Existing engine, device, story, hunt and balance gates remain required; final workflow/publication evidence is recorded in the implementation PR.
 
 The review demonstrates distinct, legible item illustrations within the standalone budget. It does not establish commercial AAA production quality or physical iPhone/iPad certification.
+
+
+## Six-slot artwork — 0.21.0
+
+![Forty individual equipment, relic, consumable, trade and crown illustrations](Treasure-Art-0.21.png)
+
+The twelve new identities use individually authored64×64 offline SVGgeometry: a round road shield; caged coal; closed iron helm; leafy apprentice diadem; scored greaves; blue copper ring; suncrested captain’s helm; broken orbital halo; furnace sabatons with heel lanterns; wing-clasp courier boots; rooted shield signet; and crescent-caged moonwell tear. Their silhouette, material and focal motif distinguish ordinary items and relics. Existing28 artworks remain. The contact sheet is documentation only.
+
+Inspected the enlarged40-image sheet and the actual440×780 phone loadout. Automated atlas checks inspect every art’s bounds, identity and filter count; they do not certify human recognition. Overall game grade stays B+.

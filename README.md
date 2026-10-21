@@ -8,7 +8,7 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 ## Play
 
-**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.20.0**
+**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.21.0**
 
 Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a fitted board/control shell on every device, with a live sidebar in wide windows and a separate Party & Log panel in smaller windows. **How to Play** on the title screen explains the rules.
 
@@ -384,16 +384,16 @@ This changes presentation only: no stats, encounter pools, rewards, saves, timin
 
 ### Treasures worth hunting — 0.20.0
 
-Twelve additions bring the guide to **27 items plus the Sunless Crown**. Equipment still uses one weapon and one armour slot. Boots, charms and shields replace other armour; they are not extra slots. No set is mandatory and no hidden set bonus applies.
+The 0.20.0 expansion added twelve items. Build 0.21.0 expands that collection to **39 items plus the Sunless Crown**, with six equipment slots described below. No set is mandatory and no hidden set bonus applies.
 
 | Find | Rules and tradeoff | Source |
 | --- | --- | --- |
-| **Bellheart Aegis** · Fighter relic | +3 AC, −1 damage per weapon hit, −1 movement. Spells, terrain and poison bypass the ward. | Defeat the Bell Warden, then claim its cache. |
+| **Bellheart Aegis** · Fighter relic | Off-hand: +1 AC, −1 damage per weapon hit, −1 movement. Spells, terrain and poison bypass the ward. | Defeat the Bell Warden, then claim its cache. |
 | **Ashen Covenant** · Mage relic | Covenant Flare once per battle: 2d6, range 4, 3×3, hits allies. No weapon attack/damage bonus. Wellspring does not refresh the relic charge. | Defeat the Ash Cantor, then claim its cache. |
 | **Reliquary of Returning Dawn** · Cleric relic | +1 attack, +2 HP per healing spell. Potions and Dawn’s Mercy receive no bonus. Trades away the damage of Sunshard or Dawnblade. | The first ordinary patrol in either fourth-chapter route guards it. |
 | **Nightwarden’s Bow** · Thief relic | +1 attack/+1 weapon damage, range 6; +2 damage at distance ≥4, −2 when adjacent. Ranged melee-pressure penalty still applies. | The Descent’s ordinary procession guards it. |
-| **Pilgrim’s Road Boots** | +1 move, no AC; replace protective armour. | Upper Crypt and trader. |
-| **Watchkeeper’s Charm** | +1 AC/+1 spell-control saves, replaces armour. | Gallery and trader. |
+| **Pilgrim’s Road Boots** | Feet: +1 move, no AC; wear alongside armour. | Upper Crypt and trader. |
+| **Watchkeeper’s Charm** | Accessory: +1 spell-control saves, no AC. | Gallery and trader. |
 | **Hospice Mace** · Cleric | +1 attack/+1 HP per healing spell, less weapon power. Replaced by, not stacked with, the Reliquary. | Catacombs and trader. |
 | **Yew Scout Bow** · Fighter/Thief | +0 attack/+1 weapon damage, range 4. Less accuracy than Fine Sword, with normal ranged melee penalty. | Warren and trader. |
 | **Veil of Cinders** | Combat action: +3 AC for two active turns. Does not stack with itself, conceal the party or cancel reactions. | Upper Crypt and trader. |
@@ -405,7 +405,7 @@ Spotted treasure guards have a **gold frame** around their red map marker. Arriv
 
 Open **Party → treasure portrait → Inspect history, rules and build choices** for the latest find, or select another satchel item to inspect it. The card starts collapsed to keep equipment reachable on phones. Comparisons show stat changes, movement/range, new passives and replaced protection. Pairings support a slow shield front line, mobile archery, protected healing or limited artillery; they grant no extra bonuses. Auto Gear is a specialist-aware recommendation, not a substitute for deciding what the next fight needs.
 
-**Treasure & Relics** remains a complete spoiler guide. Filter **Discovered this run**, **Unseen this run**, **Carried now**, **Equipped now**, or **Trade treasures** independently of relic/consumable categories. Selling or consuming an item keeps its discovery; ownership counts stay current. Every identity has unique offline artwork, lore, exact rules and an actual acquisition source. [Artwork review and contact sheet](TREASURE_ART_REVIEW.md) show all 28 illustrations.
+**Treasure & Relics** remains a complete spoiler guide. Filter **Discovered this run**, **Unseen this run**, **Carried now**, **Equipped now**, or **Trade treasures** independently of relic/consumable categories. Selling or consuming an item keeps its discovery; ownership counts stay current. Every identity has unique offline artwork, lore, exact rules and an actual acquisition source. [Artwork review and contact sheet](TREASURE_ART_REVIEW.md) show the current 40 illustrations.
 
 Discovery/last-find records and optional encounter prizes extend existing v2 saves. Older saves infer only carried/equipped items and the held story crown, not sold or missed history. Existing generated floors keep their loot and descriptors; future floors use the new sources. No retroactive guardian reward is invented. Base speed/range/stats remain saved unchanged; gear properties are read when needed. The Covenant’s charge is transient battle state, like battle actions, not a portable spell charge.
 
@@ -414,3 +414,31 @@ No-effect healing, cleansing or already-active full-duration item buffs keep the
 Validation includes twelve new engine checks, a 192-floor source audit, the expanded artwork checks, seventeen browser suites, 288 guardian probes, the unchanged 96-run difficulty canaries, eight companion-directed campaigns and eight additional treasure-directed campaigns. The latter deliberately seek guards/caches and buy unseen additions using map metadata; they do not estimate human behavior. Final measured outcomes and exact-head three-browser/Pages evidence are recorded in BALANCE.md and the release PR. Human campaign pacing and physical Safari remain unverified; overall grade remains B+.
 
 Runtime: **425,380 bytes (415.4 KiB), +22,187 bytes over 0.19.0**. The 350 KiB target stays soft; the game remains one offline HTML file without new runtime dependencies or downloaded artwork.
+
+
+### Six-slot loadouts — 0.21.0
+
+Each hero has **Weapon, Off-hand, Armour, Head, Feet and one Accessory**. Party shows a two-column, keyboard/touch-friendly loadout. Selecting an item compares the complete resulting loadout and lists every item it will stow. Bows, War Axe and Oak Staff require both hands. Equipping a shield stows an equipped two-handed weapon; equipping a two-handed weapon stows a shield/focus. Items return to the satchel, and a swap that would exceed capacity leaves the loadout unchanged.
+
+Bellheart Aegis now occupies **Off-hand**, with **+1 AC**, one less damage per weapon hit and −1 movement. Road Boots occupy **Feet** (+1 movement). Watchkeeper’s Charm occupies **Accessory**, with +1 spell-control saves and **no AC**. Armour retains its previous protection. Auxiliary equipment adds at most +1 AC in total. Movement modifiers sum, bounded from −1 to +1. Each weapon/spell/terrain/control ward and healing bonus uses its strongest equipped source, never a sum; healing tops out at +2. Spell wards still include friendly fire; weapon wards still affect reactions and can absorb a one-point hit completely.
+
+Twelve supporting items add six ordinary options and six relics. All have individual offline artwork, lore, sources and explicit tradeoffs:
+
+| Slot | Ordinary equipment | New relics |
+| --- | --- | --- |
+| Off-hand | Roadwarden’s Shield (+1 AC, Fighter/Cleric); Coalglass Focus (1 terrain ember ward, Mage/Cleric) | Bellheart Aegis moves here |
+| Head | Vigil Helm (Fighter/Cleric/Thief), Apprentice’s Diadem (Mage/Cleric): +1 control saves | Helm of the Unbowed Dawn: +2 control saves, Fighter/Cleric; Starseer’s Broken Halo: 1 spell ward/+1 control, Mage/Thief |
+| Feet | Gravepath Greaves: +1 control saves; existing Road Boots: +1 movement | Ashwalker’s Sabatons: 2 terrain ember ward; Steps of the Last Courier: +1 movement/+1 control, Thief/Mage |
+| Accessory | Rainward Ring: 1 spell ward; existing Charm: +1 control saves | Oathkeeper’s Signet: 1 weapon ward, Fighter/Thief; Tear of the Moonwell: +1 healing/+1 control, Cleric/Mage |
+
+The trader carries all six ordinary additions from the first waystation. The Upper Crypt also has a shield and helm. The two head relics appear as ordinary ground finds in the Catacombs, the footwear relics in the Descent, and the accessory relics in the Sunless Tomb. These sources exist on every newly generated route; older generated floors keep their contents. The four guarded class relics and the Observatory hunt retain their sources. The guide now holds **39 items: 16 legendary equipment, 17 ordinary equipment, four consumables and two trade treasures**, plus the story crown.
+
+**Old saves migrate safely.** Version 2, GBS1 and the storage key remain unchanged. A new optional `gearVersion:1` distinguishes six-slot equipment; old armour-slot Aegis/Boots/Charm move to their new slots without modifying base stats. An old bow/Aegis conflict stows the shield. Up to four displaced shields can temporarily raise a full legacy satchel above the usual 1000-item pickup limit (maximum 1004); export/Continue preserve them while further pickups wait for room. Invalid slots, class locks, conflicting hands and unsupported gear versions reject before the current run or timer changes.
+
+Auto Gear allocates physical items across classes with a bounded dynamic program, then respects occupied hands. It considers off-hand opportunity cost for two-handed weapons, but remains a recommendation rather than a globally optimal build solver. Wards can overlap; inspect the whole loadout. Encounter scaling retains the existing weapon/armour cost contribution; extra slots contribute only 25% of cost, capped at 40 per hero (160 per company), so filling four new slots does not add their full sticker prices to enemy budgets.
+
+`tests/loadout-rules.cjs` covers migration, conservation/capacity, hand restrictions, bounded wards/scaling, all-route sources and malformed-import atomicity. `tests/loadouts.cjs` verifies six-slot keyboard/touch use, hand swaps, portable migration and Continue at phone portrait, short landscape, iPad and desktop sizes. Exact-head Chromium/Firefox/WebKit CI and Pages/live evidence are recorded in the release PR. Physical Safari and human campaign balance remain unverified; overall grade remains B+.
+
+Build 0.21.0 runtime: **438,595 bytes (428.3 KiB)**, +13,215 bytes over 0.20.0; one offline HTML file, no added runtime dependencies. The 350 KiB target remains soft. CI job timeout is 30 minutes for the expanded UI/campaign work; test counts, per-run limits and balance thresholds remain unchanged.
+
+Build 0.21.0 local acceptance: 134 engine/controller checks, four sprite/art checks, four policy checks, 192-floor sources, 288 guardian probes and 18 Chromium browser suites pass. The unchanged 96-run canary gives wanderer 29/32, delver 20/32, ironbound 18/32 victories, zero stalls. Eight extra companion campaigns win 8/8 and fulfill every plan four times; eight treasure-directed campaigns win 7/8 and each acquire all 24 recent additions. These directed policies are separate from difficulty estimates. Exact-head CI/Pages/live evidence is recorded in the release PR.
