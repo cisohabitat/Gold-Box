@@ -226,3 +226,10 @@ Keep this history accurate when behavior changes. Prefer function names to line 
 - Require 114 engine checks, four sprite/art and four policy checks, 288 guardian scenarios, all sixteen browser suites including `tests/companions.cjs`, unchanged 96-run canaries with varied vows/rewards included, exact-head three-browser CI and Pages/live verification. Default-party victories must have all four vows started and Fighter/Mage fulfilled. Report policy changes, source bytes under the soft target, and human/physical-device limitations.
 
 Additional companion integration gate: `node tests/companion-campaign.cjs` runs eight Wanderer campaigns with quest-directed exploration, all four routes/two seeds. Require all eight authored plans fulfilled across the sample, no stalls, and all vows fulfilled for each victory. Keep this privileged planning policy separate from the 96-run loot-first canary; upload `artifacts/companions/` with CI evidence.
+
+
+## Epic sprite redraw (0.19.0)
+
+- Keep all 26 stable SPX IDs and authored 24×24 geometry: four heroes, 21 monsters, one company standard. `PX` is shared art data only. Small heads, separated limbs/props, varied poses, dark keylines and focused highlights should remain legible at 24px; 16px views lose detail. Do not substitute colour swaps, shared guardian silhouettes or effects for distinct geometry.
+- Preserve hero/enemy frame shapes, active/elite/awakened/channel indicators, HP rails, decorative SVG and larger named Tactics/Bestiary views. Sprite edits must not touch game stats, save identity, gameplay RNG or action timing. Keep the contact sheet in SPRITE_REVIEW.md current after future redraws.
+- Inspect enlarged, 24px and 16px contact sheets plus actual board/roster/Tactics/Bestiary views on portrait phone, short landscape, tablet and desktop. Geometry tests cannot certify aesthetics or recognition. Run existing sprite integrity/browser tests and exact-head full three-browser release gates before automatic publication; verify Pages/live. Runtime for 0.19.0 is 403,193 bytes, with the existing soft size policy and overall B+ assessment.
