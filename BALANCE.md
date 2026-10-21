@@ -1,4 +1,4 @@
-# Game balance — build 0.13.0
+# Game balance — build 0.13.1
 
 Default party; real Auto combat; loot-first exploration; complete route objectives and accept the first two shrine beacons encountered; camp below 70% HP; first offered boon; varied councils; no shop purchases.
 
@@ -46,3 +46,7 @@ Optional hunts are excluded. Separately, 72 prepared level-three/four Auto hunt 
 Serve the repo and run `node tests/balance.cjs` for 96 runs. Seeds are `2718 + route + sample × 10000`. `BALANCE_SAMPLES=12` expands the sample; `BALANCE_OUTPUT` selects the output directory. CI uploads report.json with fight records and outcome detail.
 
 Physical Safari/iPhone/iPad and human full-run difficulty remain unverified. Reports stay in the repository and are not linked from the game or README Play line.
+
+## Manual-play confidence follow-up (0.13.1)
+
+A fresh 96-run local sample produced the same 27/32 Wanderer, 16/32 Delver and 10/32 Ironbound outcomes and guardian-pressure aggregates as 0.13.0. All current canaries pass, with zero stalls and a Wanderer victory on every route. This release changes immediate inventory saving, manual full-HP potion protection, read-only forecasts and Tactics focus/scroll behavior. It changes no monster stats, rewards, dice policy or balance thresholds. The Auto runner does not drink potions, so its unchanged results do not assess the new potion interaction; focused engine/browser checks do.

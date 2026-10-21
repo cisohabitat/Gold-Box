@@ -231,3 +231,13 @@ Local art/engine checks pass: 58 engine/controller regressions and 4 sprite/art 
 | GUARD-02 | Damaging weapon hits, including reactions, break interruptible channels and spend one charge. Misses/spells do not interrupt; wyrm breath stays uninterruptible. |
 | GUARD-03 | Cantor Cinderburst warns a fixed 3×3 area, releases next active turn, waits during incapacity and disappears on death. Boss header, caster outline, tile accessibility/inspection and Tactics explain the counter. Buffs are not painted as damaging zones. |
 | GUARD-04 | Auto chooses reachable safe ground before its action, respects reactions/Guard and stops if killed; warned terrain receives a penalty on either side. Preserve all controls and phone/tablet/desktop fit, offline/v2 saves and 350 KiB cap. Require 70 engine checks, all browser suites including new guardian interactions, unchanged full campaign balance canaries and all three exact-head PR jobs before publication. |
+
+## Manual-play confidence (0.13.1)
+
+| ID | Acceptance |
+| --- | --- |
+| CONF-01 | Successful equip, unequip and Auto Gear persist equipment and satchel immediately, before Party closes. Real reload/Continue must recover each outcome. Preserve v2 codes and blocked-storage fallback. |
+| CONF-02 | Exploration healing saves resulting HP and consumed potion together. At full HP keep the item and explain why; no dice draw. |
+| CONF-03 | Full-HP combat healing spends neither potion nor action nor RNG; disabled menu choice says Full HP. Wounded actors still heal and pay once. Fury remains unchanged. |
+| CONF-04 | Read-only turn preview follows the current initiative order, skips dead units, includes incapacitated turns, labels round wrapping and updates after Wait/summons. Show up to twelve in paused Tactics, with sides and a forecast caveat. Open at the top every time with a sticky, focused Return button; retain focus/pause semantics. |
+| CONF-05 | Reachable risky destinations have an amber ! plus accessible/inspection text for available free strikes, fixed marked blasts and ember damage. Opportunity warnings and actual reactions share eligibility. No mutation, RNG, forced move restriction or extra HUD row. Check keyboard input, 44px actions, visible log and device fit. Require 75 engine checks, confidence suite and all existing suites in three-browser exact-head CI, unchanged 96-campaign canaries and verified Pages publication. |

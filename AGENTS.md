@@ -81,7 +81,7 @@ Keep this history accurate when behavior changes. Prefer function names to line 
 - All layered menus use focus isolation and inert background branches. Manual combat handlers also reject overlays. Preserve nesting (town → equipment/save, event → level), mandatory choices, focus restoration, and existing Tactics timer semantics.
 - Custom score/slot/inventory/level controls use `keyboardControl` for Enter/Space and focus retention. Keep pointer and keyboard behavior equivalent; do not add a second activation through bubbling.
 - Await Clipboard API results; try the fallback after rejection; report failure with manual-copy instructions. Never show Copied for an unconfirmed result.
-- Before automatic merging/publication, require all Game quality PR jobs to succeed. The workflow runs engine/device/quality/flow checks in Chromium, Firefox, and WebKit, plus 36 seeded campaigns in Chromium. The publisher must inspect the exact tested head and verify Pages success after merge. This procedure does not imply configured branch protection.
+- Before automatic merging/publication, require all Game quality PR jobs to succeed. The workflow runs all browser suites in Chromium, Firefox and WebKit, plus the 96-run release balance gate in Chromium. The publisher must inspect the exact tested head and verify Pages success after merge. This procedure does not imply configured branch protection.
 - The local polish baseline passes 41 engine checks, 25 device sizes, keyboard creation/equipment/manual battle, clipboard success/fallback/failure, portable recovery with blocked storage, and touch/save/offline flow. The 36-campaign Auto sample yielded 17 wins/19 defeats with no stalls; physical Safari/hardware and human full-run balance remain unverified. Record final cross-browser workflow evidence in the release PR.
 
 
@@ -159,3 +159,11 @@ Keep this history accurate when behavior changes. Prefer function names to line 
 - Auto escape uses reachable movement with opportunity/Guard reactions, preserves the action and stops on death. Terrain scores discourage moving into warned tiles on either side. No extra timer or loop.
 - Astrax base HP is 46; Starless Breath is 3d6. Retain charge/phase/summon caps and Eclipsescale protection. Prepared hunt Auto wins are accessibility smoke checks, not evidence of a hard encounter.
 - Require 70 regressions, sprite/policy checks, `tests/guardians.cjs`, all existing browser suites and unchanged 96-campaign balance canaries. Cross-browser exact-head CI and successful Pages/live verification precede automatic publication. Physical Safari and human full-run testing remain outstanding.
+
+## Manual-play confidence (0.13.1)
+
+- Commit successful exploration equip/unequip, Auto Gear and healing with `autosave()` before returning from the action, while Party may still be open. Save HP, equipment and satchel together; do not change v2 shape or claim success if browser storage is unavailable.
+- Full-HP healing must consume neither potion, action nor dice roll. Both exploration and combat handlers enforce this; the combat menu disables/labels unusable healing. Fury is unaffected.
+- `CombatEngine.turnPreview` reads the current order without mutation/RNG, skips dead units, retains incapacitated turns and reports actual round wrapping. Tactics displays up to twelve entries; predictions may change after Wait/summons. Open it at scrollTop 0 with a sticky top Return button and preventScroll focus; never jump past threats to a bottom close button.
+- `movementRisk` shares opportunity-attack eligibility with `_provoke`. Marker/label/inspection data must respect used reactions and incapacitation, fixed blast coordinates and ember end-turn damage. Markers are decorative and do not prevent legal risky moves, modify combat, or add HUD height. Do not present forecast as a damage guarantee.
+- Require 75 engine checks, all prior suites, new `tests/confidence.cjs` on each CI browser and unchanged 96-campaign canaries. The new suite reloads from actual inventory interactions before modal close. Keep grade evidence current; do not turn test counts into automatic letter-grade upgrades.

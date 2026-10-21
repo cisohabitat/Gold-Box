@@ -133,3 +133,12 @@ Steps 1–3 are implemented; current validation and balance evidence are recorde
 4. Verify timing, costs, incapacity/death, reactions, manual input and four device classes, then run all release checks and publish after exact-head CI.
 
 Implemented in this release. Next priorities: observed human campaign sessions and physical Safari/iPad testing; use that evidence before further difficulty tuning. New chapters or a rendering rewrite remain outside the current scope.
+
+## Fresh review and manual-play confidence (0.13.1)
+
+1. Reproduce inventory reload loss and full-HP potion waste; add focused regressions before changing behavior.
+2. Persist successful Party actions immediately and protect healing resources in both modes.
+3. Add read-only upcoming turns and movement-risk forecasts using actual engine data, with no extra main-screen row or RNG draws. Fix the reproduced Tactics jump to its bottom Return button; start at the top with a sticky close control.
+4. Exercise real controls and reloads, focused/fitted device views, all prior browser flows and the unchanged full balance gate; publish only after exact-head CI.
+
+Implemented. Next: observe human full campaigns (especially Warden/Cantor pacing and optional hunt) and validate actual Safari devices. Keep a B+ overall assessment until that evidence supports a higher grade.

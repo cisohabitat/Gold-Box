@@ -68,7 +68,7 @@ Verification targets the new persistent risks: pay a plan exactly once; do not s
 
 The user reported accidental Restart activation. The previous button directly invoked `showStart`, immediately discarding the active battle session without confirmation. It now opens an isolated safe-default dialog, pauses combat, and requires a separate confirmation action. Keep Playing, Escape, and rapid double taps preserve the active run; confirmed return keeps the latest exploration Continue save. Build 0.7.0 is visible on title and gameplay screens.
 
-The prior 36-run campaign exercise verified progression but did not enforce balance bands or publish a structured route/guardian report. The new balance canary covers 96 seeded oath/route combinations, records pressure and defeat locations, checks broad difficulty/order/accessibility criteria, and writes build-tagged reports even on failure. The title screen links to BALANCE.md; detailed JSON/Markdown reports become CI artifacts. Auto-policy outcomes are diagnostic evidence, not measured player win rates.
+The prior 36-run campaign exercise verified progression but did not enforce balance bands or publish a structured route/guardian report. The new balance canary covers 96 seeded oath/route combinations, records pressure and defeat locations, checks broad difficulty/order/accessibility criteria, and writes build-tagged reports even on failure. Build 0.7.0 originally linked BALANCE.md from the title; that link was later removed at the user’s request. Detailed JSON/Markdown reports remain CI artifacts. Auto-policy outcomes are diagnostic evidence, not measured player win rates.
 
 The expanded double-click matrix reproduced a second-tap landing on confirmation at 600×350. A 600 ms confirmation arming delay now blocks that transition; cancellation is immediate, and the delay timer is independent of combat scheduling. All 25 device scenarios now exercise rapid restart activation.
 
@@ -81,3 +81,24 @@ This release adds interruptible Warden tolls and Cantor hymns, fixed warnings wi
 Evidence: 70 engine/controller regressions plus four sprite and four balance-policy checks; a new real manual-attack/telegraph browser suite at phone, short landscape, tablet and desktop sizes. Full seeded balance and exact-head cross-browser/publication results are recorded with the release. Native Safari/physical hardware and human full-run testing remain unverified.
 
 Local 0.13.0 balance: Wanderer 27/32, Delver 16/32, Ironbound 10/32; 96 completed runs, no stalls, unchanged canaries pass and every Wanderer route has a victory. Runtime 345,004 bytes (<350 KiB). All existing Chromium browser suites and the new guardian suite pass. Exact-head Chromium/Firefox/WebKit CI and live deployment evidence belong in the release PR.
+
+## Fresh review — 0.13.1
+
+Reviewed published 0.13.0 (`bb7568d9a3f9d006ab5952a9d67c41745421f0fa`) independently of the previous grade. **B+ overall** is more defensible than the earlier A−: automated reliability received too much weight, while manual tactical readability, encounter variety and observed human difficulty remain incomplete.
+
+| Area | Fresh assessment | Improvement / remaining gap |
+| --- | --- | --- |
+| Recovery and input | B+ before fixes; A− within automated scope after | Equipment and exploration healing were not saved until closing Party. Successful actions now persist immediately; reload/Continue tests reproduce the original loss and verify the correction. |
+| Manual tactical clarity | B → B+ | Tactics now opens at the top and exposes upcoming units/rounds; Move marks reaction, blast and ember risk with accessible inspection. The compact board still requires opening Tactics for the complete forecast. |
+| Resource safety | B → A− for the specific interaction | Healing at full HP wasted a potion and combat action. Both handlers now reject it, and the combat choice is visibly disabled. |
+| Campaign and visual identity | B+ | Authored routes, councils, aftermaths and unique monsters/relics remain strengths. Encounter variety is still bounded by the small registries. No new content or art is claimed. |
+| Balance evidence | B | Strong deterministic canaries; human decision-making and challenge are not measured. No combat stats, rewards, thresholds or RNG policy changed here. |
+| Device support | A− in automation | Existing matrix plus new confidence interactions; physical Safari/iPhone/iPad remain unverified. |
+
+Reproduced before fixing: a Fine Sword equip left saved equipment null; exploration healing left old saved HP/satchel; a full-HP combat potion consumed one item and an action. The three regression checks failed on 0.13.0. New forecast tests specify dead/incapacitated units, Wait/round wrapping, reaction availability, blast/ember risks and no mutation.
+
+Improvements keep the overall grade **B+**. They resolve concrete weaknesses without claiming the untested experience has reached A or AAA. The next evidence needed is observed human full runs and physical Safari testing; further content/difficulty work should respond to those findings.
+
+Visual phone review also reproduced Tactics scrolling directly to its bottom Return control and hiding imminent threats. Return now stays at the top; initial/reopened scroll position and visible keyboard focus are checked in all four confidence viewports.
+
+Build 0.13.1 local evidence: 75 engine/controller checks, four sprite/art checks and four balance-policy checks pass; all eleven Chromium browser suites pass. The 96-run canary remains 27/32 Wanderer, 16/32 Delver, 10/32 Ironbound with no stalls. Runtime 347,155 bytes (<350 KiB). Exact-head cross-browser and live publication results are recorded in the release PR; physical Safari/human difficulty remain unverified.
