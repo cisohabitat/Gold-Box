@@ -124,3 +124,12 @@ Steps 1–3 are implemented; current validation and balance evidence are recorde
 3. Persist task progress with safe legacy defaults and atomic validation; keep all rewards bounded and once-only.
 4. Verify real movement/Continue/import and all device/browser gates; make full campaign diagnostics complete both route tasks and record balance.
 5. Publish automatically after all exact-head jobs pass. Tactical guardian expansion and physical-device/human testing remain later work.
+
+## Guardian counterplay (0.13.0)
+
+1. Give Bell Warden a delayed rally and Ash Cantor a fixed delayed hymn, with weapon interruption as an alternative to escape.
+2. Make imminent actions readable in the board, boss header, tile inspection and paused Tactics; teach Auto to escape through legal movement.
+3. Strengthen Astrax's durability/breath while preserving its existing phase limits and escape window.
+4. Verify timing, costs, incapacity/death, reactions, manual input and four device classes, then run all release checks and publish after exact-head CI.
+
+Implemented in this release. Next priorities: observed human campaign sessions and physical Safari/iPad testing; use that evidence before further difficulty tuning. New chapters or a rendering rewrite remain outside the current scope.

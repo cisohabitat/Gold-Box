@@ -222,3 +222,12 @@ Local art/engine checks pass: 58 engine/controller regressions and 4 sprite/art 
 | OBJ-03 | Shrine entry commits one choice: B +1 supply, R up to +4 HP/hero, M one spent spell charge/hero. Two distinct rewards maximum; never repeat, over-heal or exceed spell maxima. No additional XP, enemies or timer. Dawnblade is retained. |
 | OBJ-04 | Preserve v2 codes and current legacy floors (no task retrofit or rewards). Persist partial and completed task state; validate malformed/unreachable/duplicate/out-of-order task data before touching active state. New route floors still generate objectives after a legacy load. |
 | OBJ-05 | Require 66 engine/controller regressions, 256 generated/fallback objective layouts, new actual-movement browser suite across phone/landscape/tablet/desktop, all existing suites and full 96-campaign gate on the tested PR head before automatic publication. Completed fresh campaigns must finish two route objectives and a crown fate. Stay under 350 KiB and record Auto policy and hardware/human limits. |
+
+## Guardian counterplay requirements (0.13.0)
+
+| ID | Acceptance |
+| --- | --- |
+| GUARD-01 | Warden War Chant winds up for one active turn without immediate buff/charge loss. Release spends one charge/action exactly once. Ordinary shamans remain immediate. |
+| GUARD-02 | Damaging weapon hits, including reactions, break interruptible channels and spend one charge. Misses/spells do not interrupt; wyrm breath stays uninterruptible. |
+| GUARD-03 | Cantor Cinderburst warns a fixed 3×3 area, releases next active turn, waits during incapacity and disappears on death. Boss header, caster outline, tile accessibility/inspection and Tactics explain the counter. Buffs are not painted as damaging zones. |
+| GUARD-04 | Auto chooses reachable safe ground before its action, respects reactions/Guard and stops if killed; warned terrain receives a penalty on either side. Preserve all controls and phone/tablet/desktop fit, offline/v2 saves and 350 KiB cap. Require 70 engine checks, all browser suites including new guardian interactions, unchanged full campaign balance canaries and all three exact-head PR jobs before publication. |
