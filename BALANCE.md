@@ -1,4 +1,4 @@
-# Game balance — build 0.13.1
+# Game balance — build 0.14.0
 
 Default party; real Auto combat; loot-first exploration; complete route objectives and accept the first two shrine beacons encountered; camp below 70% HP; first offered boon; varied councils; no shop purchases.
 
@@ -6,16 +6,16 @@ Deterministic regression canary, not a human win-rate estimate. Wilson intervals
 
 | Oath | Wins / runs | Win rate | 95% interval | Mean depth |
 | --- | --- | --- | --- | --- |
-| wanderer | 27 / 32 | 84.4% | 68.2%–93.1% | 6.00 |
-| delver | 16 / 32 | 50.0% | 33.6%–66.4% | 5.53 |
-| ironbound | 10 / 32 | 31.3% | 18.0%–48.6% | 4.72 |
+| wanderer | 28 / 32 | 87.5% | 71.9%–95.0% | 6.00 |
+| delver | 23 / 32 | 71.9% | 54.6%–84.4% | 5.72 |
+| ironbound | 15 / 32 | 46.9% | 30.9%–63.6% | 5.00 |
 
 | Route | Wanderer | Delver | Ironbound |
 | --- | --- | --- | --- |
-| 0 | 7/8 | 6/8 | 2/8 |
-| 1 | 8/8 | 2/8 | 4/8 |
-| 2 | 6/8 | 3/8 | 2/8 |
-| 3 | 6/8 | 5/8 | 2/8 |
+| 0 | 7/8 | 4/8 | 1/8 |
+| 1 | 6/8 | 6/8 | 6/8 |
+| 2 | 8/8 | 6/8 | 4/8 |
+| 3 | 7/8 | 7/8 | 4/8 |
 
 Routes: 0 Warren/Ossuary; 1 Warren/Pillared Road; 2 Gallery/Ossuary; 3 Gallery/Pillared Road.
 
@@ -27,26 +27,37 @@ Per-floor defeats, guardian pressure, and full seeded run records are in report.
 
 | Guardian | Oath | Wins / attempts | Mean rounds | Mean party HP remaining |
 | --- | --- | --- | --- | --- |
-| BellWarden | wanderer | 32/32 | 5.3 | 91.6% |
-| BellWarden | delver | 31/31 | 7.5 | 78.0% |
-| BellWarden | ironbound | 24/28 | 9.7 | 57.4% |
-| AshCantor | wanderer | 32/32 | 6.8 | 88.6% |
-| AshCantor | delver | 22/28 | 11.7 | 42.5% |
-| AshCantor | ironbound | 12/21 | 11.0 | 24.9% |
-| CryptLord | wanderer | 27/32 | 13.6 | 51.2% |
-| CryptLord | delver | 16/21 | 12.6 | 40.2% |
-| CryptLord | ironbound | 10/12 | 12.4 | 45.6% |
+| BellWarden | wanderer | 32/32 | 5.3 | 91.0% |
+| BellWarden | delver | 31/31 | 7.4 | 79.6% |
+| BellWarden | ironbound | 25/28 | 10.2 | 56.7% |
+| AshCantor | wanderer | 32/32 | 6.6 | 86.6% |
+| AshCantor | delver | 27/29 | 10.5 | 56.2% |
+| AshCantor | ironbound | 18/22 | 12.2 | 45.6% |
+| CryptLord | wanderer | 28/32 | 11.8 | 52.7% |
+| CryptLord | delver | 23/26 | 11.7 | 60.0% |
+| CryptLord | ironbound | 15/18 | 12.1 | 44.4% |
 
-## Interpretation and reproduction
+## Interpretation
 
-Compared with 0.12.0 (26/32 Wanderer, 18/32 Delver, 7/32 Ironbound), this release changes delayed guardian spells and Auto escape decisions, so subsequent RNG paths differ. The objective-aware policy is unchanged. This is a regression canary, not evidence that a particular boss is harder or easier for a person. All successful fresh campaigns complete two route objectives, five councils and a crown fate. No balance threshold was relaxed.
+The 0.13.1 snapshot was 27/32 Wanderer, 16/32 Delver and 10/32 Ironbound. The current 28/32, 23/32 and 15/32 sample passes all unchanged canaries with zero stalls and victories on every Wanderer route. Enemy stats/budgets and existing threshold bands are unchanged; authored terrain, council sanctums and armour wards change combat decisions and subsequent RNG paths. The combined changes make this sample more forgiving; these results do not isolate one feature's effect or estimate human difficulty. Ironbound's 95% interval is broad and extends above the point canary's 60% ceiling. More human/seed evidence is needed before further difficulty tuning.
 
-Optional hunts are excluded. Separately, 72 prepared level-three/four Auto hunt probes across all oaths still win without stalls after Astrax's HP/breath increases. This establishes sampled accessibility, not a challenging human encounter; further difficulty tuning needs observed play.
+Completed fresh victories still require two route objectives, five councils and a valid crown fate. Reports remain in the repository/CI artifacts and are not linked from the game or README Play line.
 
-Serve the repo and run `node tests/balance.cjs` for 96 runs. Seeds are `2718 + route + sample × 10000`. `BALANCE_SAMPLES=12` expands the sample; `BALANCE_OUTPUT` selects the output directory. CI uploads report.json with fight records and outcome detail.
+## Separate scripted arena probes
 
-Physical Safari/iPhone/iPad and human full-run difficulty remain unverified. Reports stay in the repository and are not linked from the game or README Play line.
+Scripted front-line guardian-first or retinue-first targeting; casters and enemies use Auto. Two squads, plain or ward relic fixtures, three oaths, three seeds per combination. Isolated stage-level arenas; no council bonuses, campaign attrition or shopping. Gear budget contribution is held at zero in both fixtures; actual campaign budgets still scale with equipped value. Not human testing or a difficulty guarantee.
 
-## Manual-play confidence follow-up (0.13.1)
+| Guardian | Wanderer | Delver | Ironbound |
+| --- | --- | --- | --- |
+| bell_warden | 24/24 | 11/24 | 2/24 |
+| ash_cantor | 21/24 | 3/24 | 0/24 |
+| crypt_lord | 5/24 | 0/24 | 0/24 |
+| eclipse_wyrm | 24/24 | 24/24 | 24/24 |
 
-A fresh 96-run local sample produced the same 27/32 Wanderer, 16/32 Delver and 10/32 Ironbound outcomes and guardian-pressure aggregates as 0.13.0. All current canaries pass, with zero stalls and a Wanderer victory on every route. This release changes immediate inventory saving, manual full-HP potion protection, read-only forecasts and Tactics focus/scroll behavior. It changes no monster stats, rewards, dice policy or balance thresholds. The Auto runner does not drink potions, so its unchanged results do not assess the new potion interaction; focused engine/browser checks do.
+All 288 scenarios terminate. Underprepared King probes have few Wanderer wins and no sampled harder-oath wins; these omit actual campaign gear/story benefits and attrition. Optional Astrax remains highly accessible in these prepared level-four fixtures. Separately, 72 prepared level-three/four Auto hunt probes now use the authored Observatory arena and all win. These are diagnostic observations, not proof of exciting or hard human encounters. Results retain losses; fixture equipment does not establish acquisition.
+
+## Reproduce and limits
+
+Serve the repo and run `node tests/balance.cjs` for 96 campaigns. Seeds: `2718 + route + sample × 10000`. `BALANCE_SAMPLES=12` expands the sample; `BALANCE_OUTPUT` selects the report directory. Run `node tests/scenario-balance.cjs` for isolated probes; `SCENARIO_OUTPUT` selects its directory. The JSON reports include seeds, loadouts/policies and outcomes; CI uploads both reports.
+
+Physical Safari/iPhone/iPad and human full-run balance remain unverified. Runtime bytes are reported against the user's soft 350 KiB target, without an arbitrary hard byte ceiling.

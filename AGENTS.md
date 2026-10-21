@@ -1,5 +1,9 @@
 # Contributor instructions
 
+## Current size policy — user override for 0.14.0
+
+The user clarified that **350 KiB is a soft target**, superseding earlier hard-cap wording in this document. Keep one offline HTML file and avoid unnecessary dependencies/assets. Report actual bytes and review growth for play value and device performance; do not fail a release solely for exceeding 358,400 bytes or invent a replacement hard ceiling. Historical byte measurements below remain historical. Save compatibility, accessible device fit, correctness and the full release gates remain mandatory.
+
 ## Scope and project shape
 
 These instructions apply to the entire repository. Gold Box — Crown of the Sunless King is a single-file browser tactical RPG. `index.html` contains its HTML, CSS, data registries, engines, controller, and rendering. There is no build step or package manifest. The dependency-free regression suite is `tests/regression.cjs`. Keep the game playable by opening the file directly, including offline with system font fallbacks.
@@ -64,7 +68,7 @@ Keep this history accurate when behavior changes. Prefer function names to line 
 - For turn changes, check rapid Auto toggles, incapacitated actors, combat completion, and restart with queued callbacks.
 - Distinguish static inspection, DOM-stub execution, and browser testing in reports. Expansion validation passed 19 regression checks (including 96 generated floors). Chromium checks covered save recovery, signatures, blessings, journal, and a 390-pixel viewport. Six seeded controller-driven campaign simulations produced one Wanderer victory and five defeats without page errors; this is not exhaustive balance testing.
 - Report remaining failures and limitations plainly. Do not describe documented defects as fixed unless the implementation and verification support that claim.
-- The tactical-depth acceptance record supersedes the historical 19-test/six-run baseline above: 40 checks, 256 generator probes, six phone viewport scenarios, and 12 seeded campaigns (six victories/six defeats, no stalls). These are DOM-stub and Chromium checks, not physical Safari or exhaustive balance testing. Keep `index.html` within 350 KiB with no runtime dependencies.
+- The tactical-depth acceptance record supersedes the historical 19-test/six-run baseline above: 40 checks, 256 generator probes, six phone viewport scenarios, and 12 seeded campaigns (six victories/six defeats, no stalls). These are DOM-stub and Chromium checks, not physical Safari or exhaustive balance testing. Keep `index.html` near the soft 350 KiB target, with no runtime dependencies.
 
 ## Cross-device maintenance
 
@@ -107,7 +111,7 @@ Keep this history accurate when behavior changes. Prefer function names to line 
 
 ## Presentation and preferences (0.8.0)
 
-- Presentation must derive from actual HP/state; never consume gameplay RNG or mutate engine data. Keep overlays pointer-transparent, the log visible, and the 350 KiB budget. Transient feedback has its own timer/token and clears on load/new game/title.
+- Presentation must derive from actual HP/state; never consume gameplay RNG or mutate engine data. Keep overlays pointer-transparent, the log visible, and report runtime size against the soft 350 KiB target. Transient feedback has its own timer/token and clears on load/new game/title.
 - Store player options under `goldbox_preferences_v1`, independently of v2 campaign saves. Defaults: sound/music off, normal pace, effects on, clean contrast off. Respect OS reduced motion even if effects are on; handle blocked storage and unavailable Web Audio.
 - Audio is opt-in after a gesture, bounded to six effect voices and two ambient voices; mute/visibility/modal/title transitions silence ambience. Do not couple sound to action scheduling or random rolls.
 - Keep settings in overlay guards, cleanup and focus isolation. Opening pauses combat; closing preserves manual aim and resumes one appropriate loop. Mobile settings return focus to Party & Log.
@@ -132,7 +136,7 @@ Keep this history accurate when behavior changes. Prefer function names to line 
 ## Treasure identity (0.10.1)
 
 - TREASURE_ART maps every item ID plus sunless_crown to its own illustration; relicArtwork accepts identity, never equipment slot. Do not restore generic slot pictures or silently reuse/recolour a silhouette. Legendary designs must reflect their authored lore. rp builds compact SVG paths without altering art or rules.
-- Keep large relic-card art displays, readable names/rules/ownership, responsive scrolling and decorative pointer-transparent SVG. Art uses no external assets, SVG IDs/references, animations, RNG or game-state mutation. Stay inside the 350 KiB runtime budget.
+- Keep large relic-card art displays, readable names/rules/ownership, responsive scrolling and decorative pointer-transparent SVG. Art uses no external assets, SVG IDs/references, animations, RNG or game-state mutation. Review growth against the soft 350 KiB target.
 - tests/sprites.cjs checks complete mappings and unique path geometry independent of colour; tests/atlas.cjs checks all 16 rendered IDs, seven relic displays, SVG bounds and phone/landscape/tablet/desktop fitting. See TREASURE_ART_REVIEW.md for the review and remaining physical-device limits.
 
 ## Campaign payoff (0.11.0)
@@ -140,7 +144,7 @@ Keep this history accurate when behavior changes. Prefer function names to line 
 - Guardian wins open `aftermathScreen` after rewards commit. Pending level choices take priority at z-index 90 over the aftermath's 85; acknowledgement/Escape resumes deferred exploration/stairs only after levels finish. Include it in overlay guards, town/council exclusions, import/title/new-game cleanup and focus isolation. Never replay or duplicate rewards. The panel is transient; Chronicle derives persistent guardian outcomes from cleared encounters/completed chapters/bossSlain/hunt after reload.
 - `campaignEpilogue` must distinguish both plans of every council encountered, including Gallery, Catacombs, second fork and Deep Stair. Skip missing/legacy decisions; do not invent outcomes or grant retroactive benefits. Keep three crown fates and named bearers.
 - Eclipsescale's registry `spellGuard:2` reduces each equipped wearer's damaging spell hit to a minimum of zero. Apply in the pure combat engine to single-target and area spells, including friendly fire. It never alters healing, weapons, poison, terrain or status saves. Equipment transfer/removal must immediately transfer/remove protection. Report absorption in combat and exact rules in gear/atlas/hunt descriptions. Auto Gear uses it only to break equal-AC ties.
-- Run 62 engine regressions and `tests/campaign-payoff.cjs` alongside existing gates. The latter covers portrait/short landscape/tablet/desktop, level priority, movement/focus isolation, Escape, deferred stairs, town Continue and Chronicle persistence. It runs in all three CI browsers. Keep new panels within the standalone 350 KiB limit; retain the visible two-line log.
+- Run 62 engine regressions and `tests/campaign-payoff.cjs` alongside existing gates. The latter covers portrait/short landscape/tablet/desktop, level priority, movement/focus isolation, Escape, deferred stairs, town Continue and Chronicle persistence. It runs in all three CI browsers. Keep new panels efficient and offline; 350 KiB is a soft target; retain the visible two-line log.
 
 - Campaign pacing tuning changes only the Ash Cantor encounter multiplier from 0.55 to 0.50; retain its full spells, stats, and once-only phase. Compare seeded outcomes and guardian pressure in BALANCE.md; do not compensate with unmeasured king buffs or loosen balance gates.
 
@@ -167,3 +171,13 @@ Keep this history accurate when behavior changes. Prefer function names to line 
 - `CombatEngine.turnPreview` reads the current order without mutation/RNG, skips dead units, retains incapacitated turns and reports actual round wrapping. Tactics displays up to twelve entries; predictions may change after Wait/summons. Open it at scrollTop 0 with a sticky top Return button and preventScroll focus; never jump past threats to a bottom close button.
 - `movementRisk` shares opportunity-attack eligibility with `_provoke`. Marker/label/inspection data must respect used reactions and incapacitation, fixed blast coordinates and ember end-turn damage. Markers are decorative and do not prevent legal risky moves, modify combat, or add HUD height. Do not present forecast as a damage guarantee.
 - Require 75 engine checks, all prior suites, new `tests/confidence.cjs` on each CI browser and unchanged 96-campaign canaries. The new suite reloads from actual inventory interactions before modal close. Keep grade evidence current; do not turn test counts into automatic letter-grade upgrades.
+
+## Guardian arenas, relic builds and actor recovery (0.14.0)
+
+- `GUARDIAN_ARENAS` maps guardian encounter lead IDs to authored `BATTLEFIELDS` entries. Ordinary encounters retain their theme and plain/null constructor calls remain valid. Terrain uses existing cover/sanctum/ember rules for both sides; do not add impassable paths or block spell line of sight implicitly.
+- Arena `shift` data applies only to the matching living guardian's existing once-only bloodied phase. Never mutate templates, grant an extra action or deal immediate terrain damage. End-turn ticks remain authoritative; descriptions warn of the phase before it occurs.
+- Campaign-aware `applyCouncilArena` stays in the controller. Valid plans may add bounded sanctums, tracked in transient `arenaShelter`; those cells survive the phase shift. Legacy/other plans grant no new aid. Keep support previews, logs and Tactics truthful. No new saved rewards or schema.
+- Lantern's `emberGuard:2` protects only terrain embers; it also affects terrain scoring/risk warnings. Starweave's `controlWard:2` adds to saves against spell status/debuff effects only. No poison, attack or damage-spell protection. Eclipsescale retains its per-hit damage ward. Read equipment at use time, including after old-save load or a swap.
+- `itemRules`, `ITEM_TACTICS` and `gearComparison` expose exact passives, replaced-item tradeoffs and class locks. Do not imply weapon bonuses amplify spells. Auto Gear still prefers spell protection at equal AC; manual contextual choices may differ.
+- A hero killed by a movement reaction or its own spell must yield to the next living unit automatically. Use `beginTurnFlow`/the existing scheduler; keep exactly one timer and check terminal combat before advancing. Dead units must not receive enabled action controls.
+- Require 84 regression checks, sprite/policy checks, 288 scripted arena probes, all existing browser suites and new `tests/arenas.cjs`, then the unchanged 96-campaign canary and exact-head cross-browser CI before automatic publication. Scripted boss/retinue priorities and fixture gear are not human playtests or acquisition evidence. Shared VM harness lives in `tests/harness.cjs`.

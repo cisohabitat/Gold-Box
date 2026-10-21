@@ -1,12 +1,16 @@
 # Detailed requirements — tactical-depth release
 
+## Current size policy — user override for 0.14.0
+
+The user clarified that **350 KiB is a soft target**, superseding earlier hard-cap wording in this document. Keep one offline HTML file and avoid unnecessary dependencies/assets. Report actual bytes and review growth for play value and device performance; do not fail a release solely for exceeding 358,400 bytes or invent a replacement hard ceiling. Historical byte measurements below remain historical. Save compatibility, accessible device fit, correctness and the full release gates remain mandatory.
+
 Baseline review: [REVIEW.md](REVIEW.md). Delivery order: [ROADMAP.md](ROADMAP.md).
 
 ## Product constraints
 
 | ID | Requirement | Acceptance |
 | --- | --- | --- |
-| LIMIT-01 | Keep runtime HTML, CSS, SVG, data, and JavaScript in `index.html`, at most 358,400 bytes. | Check file bytes; no external scripts or runtime packages. Optional font requests retain system fallbacks. |
+| LIMIT-01 | Keep runtime HTML, CSS, SVG, data, and JavaScript in `index.html`; 350 KiB is a soft target. | Report actual bytes and justify useful growth; no external scripts or runtime packages. Optional font requests retain system fallbacks. |
 | LIMIT-02 | Preserve four classes, three oaths, eight world nodes, six-floor routes, and existing valid version 2 saves. | Regression checks plus legacy-save round trips. New campaign fields default safely. |
 | LIMIT-03 | Preserve iPhone safe areas, pinch zoom, minimum 44px main buttons, and a fitted board/control shell. | Chromium touch checks at 440×956/780/680, 956×440/350, 390×844, plus desktop. Distinguish emulation from physical Safari testing. |
 | LIMIT-04 | Keep game engines independent of the DOM. | Review new engine methods; terrain and enemy descriptions return plain data. |
@@ -241,3 +245,18 @@ Local art/engine checks pass: 58 engine/controller regressions and 4 sprite/art 
 | CONF-03 | Full-HP combat healing spends neither potion nor action nor RNG; disabled menu choice says Full HP. Wounded actors still heal and pay once. Fury remains unchanged. |
 | CONF-04 | Read-only turn preview follows the current initiative order, skips dead units, includes incapacitated turns, labels round wrapping and updates after Wait/summons. Show up to twelve in paused Tactics, with sides and a forecast caveat. Open at the top every time with a sticky, focused Return button; retain focus/pause semantics. |
 | CONF-05 | Reachable risky destinations have an amber ! plus accessible/inspection text for available free strikes, fixed marked blasts and ember damage. Opportunity warnings and actual reactions share eligibility. No mutation, RNG, forced move restriction or extra HUD row. Check keyboard input, 44px actions, visible log and device fit. Require 75 engine checks, confidence suite and all existing suites in three-browser exact-head CI, unchanged 96-campaign canaries and verified Pages publication. |
+
+## Guardian arenas and concrete fixes (0.14.0)
+
+| ID | Acceptance |
+| --- | --- |
+| ACTOR-01 | A manual movement reaction that kills the active hero automatically transfers to the next living unit. No stale enabled dead-actor actions, duplicate timer or requirement to click End Turn. Combat defeat still resolves before advancing. |
+| ACTOR-02 | A caster killed by its own confirmed area blast also yields exactly once; retain friendly-fire confirmation and correct charges. |
+| ARENA-01 | Four named layouts for Bell Warden, Ash Cantor, Sunless King and Astrax, selected by controller encounter lead; ordinary theme layouts and null engine construction remain valid. Exact arena name/description readable in board accessibility/Tactics. |
+| ARENA-02 | Terrain coordinates bounded and unique per initial layout, no blocked spawn or impassable partition; all existing terrain rules/AI apply to both sides. |
+| ARENA-03 | Matching living guardian's bloodied phase changes its arena once with bounded, data-authored cells. Templates unchanged, no immediate HP damage, no extra phase/summon/action. Bell reveals sanctums; Cantor/King/Astrax ignite named areas. Explain before combat decisions in Tactics and log the change. |
+| ARENA-04 | Lantern-road and remembered-name councils add one Bell sanctum each; freed choir shelters two Cantor tiles, including one phase tile. Derive from saved valid decisions; legacy/other choices grant none; shelters persist through shift. Existing reward/bonus caps and world graph remain unchanged. |
+| RELIC-05 | Lantern Mantle (+2 AC) prevents up to 2 terrain ember damage, including at 1 HP; no spell/poison protection. Removing it takes effect immediately. Auto terrain score and movement warnings acknowledge protection. |
+| RELIC-06 | Starweave (+3 AC) grants +2 saves against spell control and debuffs only; exact save stat/roll preserved. No attack, poison or damage-spell reduction. Eclipsescale unchanged. Old valid equipped IDs gain current registry rules without schema changes. |
+| RELIC-07 | Party compares selected gear with the current item, shows class locks, AC/weapon deltas and replaced passives. Atlas explains contextual build choices and exact effects. Keep keyboard/touch equip, immediate save, 44px controls and scrolling/escaping correct. |
+| VERIFY-14 | 84 engine/controller checks, four sprite and four policy checks, 288 isolated scripted arena scenarios with two squads/two gear fixtures/two front-line priorities/three oaths/three seeds, all twelve browser suites on three exact-head CI jobs, unchanged 96-campaign canaries and successful verified Pages/live publication. Record losses and no human/physical-device claims. Size is diagnostic, not a hard gate. |

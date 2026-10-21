@@ -102,3 +102,15 @@ Improvements keep the overall grade **B+**. They resolve concrete weaknesses wit
 Visual phone review also reproduced Tactics scrolling directly to its bottom Return control and hiding imminent threats. Return now stays at the top; initial/reopened scroll position and visible keyboard focus are checked in all four confidence viewports.
 
 Build 0.13.1 local evidence: 75 engine/controller checks, four sprite/art checks and four balance-policy checks pass; all eleven Chromium browser suites pass. The 96-run canary remains 27/32 Wanderer, 16/32 Delver, 10/32 Ironbound with no stalls. Runtime 347,155 bytes (<350 KiB). Exact-head cross-browser and live publication results are recorded in the release PR; physical Safari/human difficulty remain unverified.
+
+## Concrete fixes and guardian variety — 0.14.0
+
+The user clarified that 350 KiB is a soft target. Earlier hard-cap requirements are superseded; size is now reported while offline simplicity, device fit, save compatibility and release verification remain enforced.
+
+Two reproduced P2 issues were corrected: a hero killed by an opportunity attack during manual movement remained the active actor, and a caster killed by its own blast also retained its turn. Both old-source checks failed. The controller now resolves/advances once through the existing scheduler and excludes dead actors from player controls.
+
+The next gameplay weaknesses were repetitive guardian terrain, council support that mainly waited until the finale, and generic armour tradeoffs. Four authored arenas now change in the existing once-only bloodied phase; three councils supply protected sanctums; Lantern and Starweave gain bounded, distinct wards. Party comparisons and atlas notes explain what is gained and lost. No new floors, classes, enemy types or persistent schema were introduced.
+
+The scope grade remains B+ pending observed human difficulty and physical-device evidence. More authored tactics and corrected defects are concrete improvements; automated checks alone do not justify another whole-game grade increase. Arena fires have pre-described positions/areas and apply only at turn end; they can still punish poor positioning. Scripted scenario losses are retained, especially unprepared King fights.
+
+Build 0.14.0 local evidence: 84 engine/controller checks, four sprite/art checks and four policy checks pass; all twelve Chromium browser suites pass. The full 96-campaign canary gives 28/32 Wanderer, 23/32 Delver and 15/32 Ironbound with zero stalls and unchanged thresholds. All 288 isolated strategy scenarios terminate; 72 prepared Observatory hunt probes win. Runtime 354,308 bytes (346.0 KiB), reported against the soft 350 KiB target. Exact-head cross-browser/publication evidence is recorded in the release PR. Human/physical-device limits remain open.
