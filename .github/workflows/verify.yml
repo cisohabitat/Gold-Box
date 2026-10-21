@@ -25,6 +25,7 @@ jobs:
           node tests/regression.cjs
           node tests/balance-checks.cjs
           node tests/sprites.cjs
+          node tests/scenario-balance.cjs
       - name: Install development browser tools
         run: |
           npm install --prefix "$RUNNER_TEMP/gold-box-tools" --no-package-lock --ignore-scripts playwright@1.62.1
@@ -51,6 +52,7 @@ jobs:
           node tests/atlas.cjs
           node tests/guardians.cjs
           node tests/confidence.cjs
+          node tests/arenas.cjs
           if [ "$GOLD_BOX_BROWSER" = chromium ]; then node tests/balance.cjs; fi
 
       - name: Upload balance report
@@ -58,5 +60,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: balance-${{ github.sha }}
-          path: artifacts/balance/
+          path: |
+            artifacts/balance/
+            artifacts/scenarios/
           if-no-files-found: warn

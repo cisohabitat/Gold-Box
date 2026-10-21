@@ -8,7 +8,7 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 ## Play
 
-**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.13.1**
+**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.14.0**
 
 Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a fitted board/control shell on every device, with a live sidebar in wide windows and a separate Party & Log panel in smaller windows. **How to Play** on the title screen explains the rules.
 
@@ -26,7 +26,7 @@ Build 0.8.0 adds themed materials, chapter and ending illustrations, battle/vict
 
 Open **Sound & Display** from the title or Party & Log. Choose high contrast, reduced visual effects, normal/quick Auto pace, volume, and optional synthesized sound and ambient tones. Sound and ambience start off; enabling them requires a gesture and downloads no assets. Preferences persist separately from the campaign, or last for the session when storage is blocked. Settings pause combat; Escape returns to play. OS reduced motion always takes priority.
 
-The quality target is an excellent small standalone tactical RPG. The fresh overall grade is B+; commercial AAA production quality remains outside a single-file, 350 KiB budget. Physical iPhone/iPad validation and broader human balance/playtesting remain outstanding.
+The quality target is an excellent small standalone tactical RPG. The fresh overall grade is B+; the size target is now a soft 350 KiB, and commercial AAA production remains outside this project’s scope. Physical iPhone/iPad validation and broader human balance/playtesting remain outstanding.
 
 ### Guardian counterplay — build 0.13.0
 
@@ -204,7 +204,7 @@ Casters also advance to spell range instead of charging into melee, and incapaci
 
 ## Validation
 
-The current dependency-free suite has **75 engine/controller checks** against the real inline script with DOM stubs. It covers save recovery, pending levels, atomic imports, turn scheduling, friendly fire, guardians, campaign gates, route goals, movement-risk forecasts and immediate inventory persistence. Generator checks include 96 exit/key layouts, 160 all-cache-open vault layouts and 256 objective/fallback layouts.
+The current dependency-free suite has **84 engine/controller checks** against the real inline script with DOM stubs. It covers save recovery, pending levels, atomic imports, turn scheduling, friendly fire, guardians, campaign gates, route goals, movement-risk forecasts and immediate inventory persistence. Generator checks include 96 exit/key layouts, 160 all-cache-open vault layouts and 256 objective/fallback layouts.
 
 Browser suites exercise real touch/keyboard controls, save/Continue, offline interaction, clipboard failure, paused menus, all endings, atlas/hunt recovery and 25 viewport sizes. The confidence suite reloads before closing Party after equip, unequip, Auto Gear and healing; it also checks full-HP potion safeguards and movement/turn previews on phone, short landscape, iPad-sized and desktop windows. Automated WebKit is compatibility evidence; physical iPhone/iPad Safari and human campaign difficulty remain unverified.
 
@@ -241,6 +241,7 @@ With the local server running and development browser tools installed:
 node tests/regression.cjs
 node tests/balance-checks.cjs
 node tests/sprites.cjs
+node tests/scenario-balance.cjs
 node tests/devices.cjs
 node tests/quality.cjs
 node tests/polish.cjs
@@ -252,6 +253,7 @@ node tests/objectives.cjs
 node tests/atlas.cjs
 node tests/guardians.cjs
 node tests/confidence.cjs
+node tests/arenas.cjs
 node tests/balance.cjs
 ```
 
@@ -278,3 +280,19 @@ Equipping, unequipping, Auto Gear and exploration healing now autosave immediate
 Fresh scope grade: **B+ overall**. Reliability and clarity improved; encounter variety, human-tested difficulty and physical-device evidence still limit a higher grade. See REVIEW.md for findings and the release PR for exact-head cross-browser/publication evidence.
 
 Build 0.13.1 local evidence: 75 engine/controller checks, four sprite/art checks and four balance-policy checks pass; all eleven Chromium browser suites pass. The 96-run canary remains 27/32 Wanderer, 16/32 Delver, 10/32 Ironbound with no stalls. Runtime 347,155 bytes (<350 KiB). Exact-head cross-browser and live publication results are recorded in the release PR; physical Safari/human difficulty remain unverified.
+
+### Guardian battlefields and relic builds — 0.14.0
+
+350 KiB is a **soft size target**. Useful features may exceed it; byte count is reported instead of blocking the release. Offline play, no runtime packages, old saves and phone/tablet/desktop usability remain requirements.
+
+The Bell Warden holds the **Nave of the Last Bell**, with covered approaches and healing anchors; breaking its bell reveals two more sanctums. The Ash Cantor's **Choir of Living Ash** has ember aisles and two outer refuges; the final hymn ignites the inner aisle. In the **Throne of the Stolen Dawn**, the King's wrath turns four central tiles into embers while the western refuge remains. Astrax's **Observatory of Broken Stars** ignites four star-fall tiles at half HP. All changes occur once, use normal end-turn terrain rules and are described in paused Tactics. They do not deal immediate damage. Ordinary battles keep their themed layouts.
+
+Existing council choices now have visible battlefield support: the lantern road and remembered names each light one additional Bell sanctum; the freed choir shelters two Cantor tiles, even through its final hymn. These come from your saved choice, add no new claimable rewards and do not replace existing final-battle consequences. Previews, battle logs and Tactics identify the help.
+
+**Choose armour for the threat:** Lantern Mantle is +2 AC and blocks up to 2 damage from terrain embers; Starweave is +3 AC and +2 saves against spell control/debuffs; Eclipsescale is +2 AC and reduces every damaging spell hit by 2. These are distinct protections: Lantern does not stop fire spells, Starweave does not stop poison, and Eclipsescale does not stop terrain fire. Select an item in Party to compare it with each hero's equipped item, including the passives being replaced. Atlas build notes explain weapon bonuses versus spell power. Auto Gear does not infer every situational preference.
+
+Heroes who fall during their own move or friendly-fire spell now yield automatically to the next living unit. Players no longer need to end a dead hero's turn.
+
+`tests/scenario-balance.cjs` adds 288 deterministic isolated-arena probes with two squads, plain/ward gear fixtures, guardian-first/retinue-first front-line priorities, three oaths and three seeds. Casters/enemies still use Auto. Fixture equipment does not prove acquisition, and these are not human playtests or full-campaign win rates. `tests/arenas.cjs` verifies actual movement/spell death recovery, terrain shifts, council support, gear comparisons and save recovery at four device sizes.
+
+Build 0.14.0 local evidence: 84 engine/controller checks, four sprite/art checks and four policy checks pass; all twelve Chromium browser suites pass. The full 96-campaign canary gives 28/32 Wanderer, 23/32 Delver and 15/32 Ironbound with zero stalls and unchanged thresholds. All 288 isolated strategy scenarios terminate; 72 prepared Observatory hunt probes win. Runtime 354,308 bytes (346.0 KiB), reported against the soft 350 KiB target. Exact-head cross-browser/publication evidence is recorded in the release PR. Human/physical-device limits remain open.

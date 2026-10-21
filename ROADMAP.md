@@ -1,10 +1,14 @@
 # Roadmap — deeper choices within a small game
 
+## Current size policy — user override for 0.14.0
+
+The user clarified that **350 KiB is a soft target**, superseding earlier hard-cap wording in this document. Keep one offline HTML file and avoid unnecessary dependencies/assets. Report actual bytes and review growth for play value and device performance; do not fail a release solely for exceeding 358,400 bytes or invent a replacement hard ceiling. Historical byte measurements below remain historical. Save compatibility, accessible device fit, correctness and the full release gates remain mandatory.
+
 ## Goal and limits
 
 Make the existing six-floor game feel like a complete tactical adventure: understandable fights, meaningful positioning, optional goals, steady chapter progress, and distinctive encounters before the finale.
 
-Release limits: one offline-capable HTML file, no build step or runtime packages, `index.html` at most 350 KiB (358,400 bytes), the current eight world nodes and four routes, version 2 save compatibility, and visible iPhone controls in portrait and landscape. New information belongs in existing menus or an optional sheet, not another permanent phone HUD row. Keep desktop play intact.
+Release limits: one offline-capable HTML file, no build step or runtime packages, a soft 350 KiB target with measured, justified growth, the current eight world nodes and four routes, version 2 save compatibility, and visible iPhone controls in portrait and landscape. New information belongs in existing menus or an optional sheet, not another permanent phone HUD row. Keep desktop play intact.
 
 ## Delivery order
 
@@ -142,3 +146,14 @@ Implemented in this release. Next priorities: observed human campaign sessions a
 4. Exercise real controls and reloads, focused/fitted device views, all prior browser flows and the unchanged full balance gate; publish only after exact-head CI.
 
 Implemented. Next: observe human full campaigns (especially Warden/Cantor pacing and optional hunt) and validate actual Safari devices. Keep a B+ overall assessment until that evidence supports a higher grade.
+
+## Guardian arenas and concrete fixes (0.14.0)
+
+1. Adopt the user's soft size target; keep offline simplicity and device/recovery requirements.
+2. Reproduce and fix dead-active-hero turns after lethal movement reactions and self-cast blasts.
+3. Give the four guardians authored terrain and once-only arena shifts, using existing rules and phase gates.
+4. Bring three existing council plans onto those battlefields as bounded protected sanctums, with explicit previews and no new save fields.
+5. Differentiate Lantern/Starweave wards, retain Eclipsescale, and explain gear tradeoffs in Party and atlas.
+6. Verify scripted strategy variants, real manual browser interactions and the full campaign/cross-browser/publication gates.
+
+Implemented. Physical Safari and observed human full runs remain necessary follow-up evidence; fixture victories and Auto percentages do not establish subjective epicness or human win rates.
