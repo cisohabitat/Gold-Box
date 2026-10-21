@@ -64,6 +64,7 @@
   .cell.alt{background:var(--tile-2);}
   .cell.reach{background:#3c3414;cursor:pointer;}
   .cell.reach:hover{background:#554612;}
+  .cell.move-risk::after{content:'!';position:absolute;top:1px;right:2px;color:#ffe19a;font-weight:bold;text-shadow:0 1px 2px #000;pointer-events:none;}
   .cell.target{cursor:pointer;box-shadow:inset 0 0 0 2px var(--blood);}
   .cell.target:hover{box-shadow:inset 0 0 0 3px var(--enemy-glow);}
   .cell.cast-enemy{cursor:pointer;box-shadow:inset 0 0 0 2px var(--magic);}
@@ -427,6 +428,7 @@
   .terrain-mark{position:absolute;top:1px;left:2px;font-size:clamp(9px,1.4vw,15px);line-height:1;color:#f4e6ba;pointer-events:none;}
   .cell.aimed{box-shadow:inset 0 0 0 2px #e69bdf;}
   #tacticsScreen{z-index:95;}
+  .tactics-toolbar{position:sticky;top:0;z-index:2;background:var(--panel);padding:5px 0;}
   .tactics-copy{text-align:left;line-height:1.3;}
   .tactics-copy h3{color:var(--gold);margin:16px 0 8px;}
   .tactics-copy p{margin:8px 0;color:var(--parch);}
@@ -675,13 +677,13 @@
 
 <div class="screen" id="aftermathScreen" aria-labelledby="aftermathTitle"><div class="sbox"><div class="eyebrow">A legend falls</div><h2 class="ctitle" id="aftermathTitle"></h2><div id="aftermathArt" class="atlas-art" aria-hidden="true"></div><p id="aftermathStory"></p><button id="btnAftermathClose" class="big">Carry the story onward</button></div></div>
 <div class="screen" id="journalScreen"><div class="sbox wide"><div class="eyebrow">The story so far</div><h2 class="ctitle">The Company’s Chronicle</h2><p class="story-copy" id="journalTask" hidden></p><p class="tag" id="journalOath"></p><div class="journal-grid" id="journalStats"></div><div id="journalRoute"></div><h3>The Last Dawn</h3><div id="journalStory"></div><h3>Promises to the kingdom</h3><div id="journalContracts"></div><h3>Carried embers</h3><p id="journalBoons" class="tag"></p><div class="crow"><button id="btnJournalClose" class="big">Return to the journey</button></div></div></div>
-<div class="screen" id="tacticsScreen" role="dialog" aria-modal="true" aria-labelledby="tacticsTitle"><div class="sbox wide"><h2 class="ctitle" id="tacticsTitle">The Delver’s Field Guide</h2><p class="tag" id="tacticsSubtitle"></p><div id="tacticsContent" class="tactics-copy"></div><div class="crow"><button id="btnTacticsClose" class="big">Return</button></div></div></div>
+<div class="screen" id="tacticsScreen" role="dialog" aria-modal="true" aria-labelledby="tacticsTitle"><div class="sbox wide"><div class="crow tactics-toolbar"><button id="btnTacticsClose" class="big">Return</button></div><h2 class="ctitle" id="tacticsTitle">The Delver’s Field Guide</h2><p class="tag" id="tacticsSubtitle"></p><div id="tacticsContent" class="tactics-copy"></div></div></div>
 <div class="screen" id="fateScreen" role="dialog" aria-modal="true" aria-labelledby="fateTitle"><div class="sbox wide"><div class="eyebrow">The Last Dawn · Final Choice</div><h2 id="fateTitle" class="ctitle">What will you do with the crown?</h2><p id="fateStory" class="story-copy"></p><label class="story-copy" for="crownBearer">If the crown needs a bearer, whose oath will hold it?</label><select id="crownBearer" style="display:block;width:100%;min-height:44px;font-size:18px;margin:12px 0;padding:8px"></select><div id="fateChoices" class="council-plans"></div><p class="tag">The king is defeated. The choice is yours; each path ends this campaign.</p></div></div>
 <div class="screen" id="restartScreen" role="dialog" aria-modal="true" aria-labelledby="restartTitle" aria-describedby="restartMessage"><div class="sbox"><h2 id="restartTitle" class="ctitle">Return to the title screen?</h2><p id="restartMessage" class="story-copy"></p><div class="restart-actions"><button id="btnKeepPlaying" class="big">Keep Playing</button><button id="btnConfirmRestart">Return to Title</button></div></div></div>
 <div class="screen" id="settingsScreen" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="sbox"><h2 id="settingsTitle" class="ctitle">Sound &amp; Display</h2><p class="tag">Make the journey your own. Combat pauses while this sheet is open.</p><div class="settings-list"><label><input id="prefSound" type="checkbox"> Synthesized sound effects</label><label><input id="prefMusic" type="checkbox"> Quiet ambient tones (requires sound)</label><label for="prefVolume">Volume <output id="volumeValue">35%</output><input id="prefVolume" type="range" min="0" max="100" step="5" value="35"></label><label><input id="prefEffects" type="checkbox" checked> Visual effects (respects reduced motion)</label><label><input id="prefContrast" type="checkbox"> High contrast / clean display</label><label for="prefPace">Auto pace<select id="prefPace"><option value="normal">Deliberate · normal speed</option><option value="quick">Quick · shorter Auto turns</option></select></label></div><p id="audioStatus" class="tag" role="status">Sound is off by default. No downloads are needed.</p><p id="preferenceStatus" class="tag" role="status"></p><button id="btnSettingsClose" class="big">Back to Game</button></div></div>
 <div class="screen" id="codexScreen" role="dialog" aria-modal="true" aria-labelledby="codexTitle"><div class="sbox wide"><div class="eyebrow">Eren’s field atlas</div><h2 id="codexTitle" class="ctitle">The Bestiary</h2><div class="atlas-nav" role="group" aria-label="Atlas pages"><button id="codexBeasts" aria-pressed="true">Bestiary</button><button id="codexTreasure" aria-pressed="false">Treasure &amp; Relics</button><button id="codexLegends" aria-pressed="false">Legends &amp; Hunt</button><button id="btnCodexClose">Back</button></div><p class="tag" id="codexNote"></p><div id="codexTools" class="atlas-tools"><label for="codexSearch">Search<input id="codexSearch" type="search" maxlength="80" placeholder="Name, spell, source or lore"></label><label for="codexFilter">Show<select id="codexFilter"><option value="all">All entries</option><option value="guardians">Guardians</option><option value="relics">Relics</option><option value="potions">Potions</option></select></label></div><p id="codexCount" class="tag" role="status"></p><div id="codexContent" class="atlas-grid"></div></div></div>
 <script>
-const GAME_BUILD='0.13.0';
+const GAME_BUILD='0.13.1';
 document.querySelectorAll('[data-build]').forEach(el=>el.textContent='Build '+GAME_BUILD);
 /* ===== CROWN CAMPAIGN : data, with controller helpers below ===== */
 const OATHS={wanderer:{name:'Wanderer',budget:0.65,recovery:0.25,desc:'Gentler battles; all heroes earn victory XP and recover 25% HP after a win.'},delver:{name:'Delver',budget:1,desc:'Fortune favours the prepared. Only standing heroes earn victory XP.'},ironbound:{name:'Ironbound',budget:1.25,desc:'Stronger enemy forces. Only standing heroes earn victory XP.'}};
@@ -1608,6 +1610,18 @@ class CombatEngine{
   passable(x,y,self){ if(!this.inBounds(x,y))return false; if(this.blocked.has(key(x,y)))return false; const o=this.at(x,y); return !o||o===self; }
   cheb(a,b){ return Math.max(Math.abs(a.x-b.x),Math.abs(a.y-b.y)); }
   current(){ return this.byId(this.order[this.turnIndex]); }
+  turnPreview(limit=12){
+    const out=[];
+    for(let i=0;i<this.order.length&&out.length<limit;i++){
+      const index=this.turnIndex+i,unit=this.byId(this.order[index%this.order.length]);
+      if(unit&&unit.alive)out.push({unit,round:this.round+Math.floor(index/this.order.length)});
+    }
+    return out;
+  }
+  movementRisk(c,pos,from=c.pos){
+    const opportunity=this.combatants.filter(o=>o.alive&&o.side!==c.side&&!this.isIncapacitated(o)&&!o.aooUsed&&this.cheb(o.pos,from)<=1&&this.cheb(o.pos,pos)>1);
+    return {opportunity,blast:this.dangerAt(pos),ember:this.terrainAt(pos)==='ember'};
+  }
   living(side){ return this.combatants.filter(c=>c.alive&&c.side===side); }
   reachable(c){
     const seen=new Map([[key(c.pos.x,c.pos.y),0]]); let f=[c.pos];
@@ -2001,10 +2015,7 @@ class CombatEngine{
   // punish a hero who walks out of melee. One reaction per unit per round.
   _provoke(mover, ox, oy){
     if(!mover.alive) return;
-    const wasAdj=(o)=> Math.max(Math.abs(o.pos.x-ox),Math.abs(o.pos.y-oy))<=1;
-    const nowAdj=(o)=> this.cheb(o.pos, mover.pos)<=1;
-    const threats=this.combatants.filter(o=> o.alive && o.side!==mover.side
-      && !this.isIncapacitated(o) && !o.aooUsed && wasAdj(o) && !nowAdj(o));
+    const threats=this.movementRisk(mover,mover.pos,{x:ox,y:oy}).opportunity;
     for(const o of threats){ o.aooUsed=true; this._reactStrike(o, mover, 'aoo'); if(!mover.alive) break; }
   }
   // A guarding hero strikes any enemy that moves into its melee reach, once, before the enemy acts.
@@ -2829,6 +2840,7 @@ function applyItem(hero){
   const id=bag.items[pickItem]; const it=ITEMS[id]; if(!it) { pickItem=null; renderParty(); return; }
   if(!canUse(it,hero)){ $('#partySub').textContent=hero.name+' (the '+hero.cls+') cannot use the '+it.name+'.'; return; }
   if(it.slot==='potion'){
+    if(it.heal&&hero.hp>=hero.maxHp){$('#partySub').textContent=hero.name+' is at full HP. Healing potion kept.';return;}
     if(it.heal){ const before=hero.hp; hero.hp=Math.min(hero.maxHp, hero.hp+Dice.roll(it.heal.n,it.heal.sides)+it.heal.bonus);
       exploreFeed.push({t:hero.name+' drinks a '+it.name+' (+'+(hero.hp-before)+' HP).',k:'magic'}); bag.items.splice(pickItem,1); }
     else { $('#partySub').textContent='The '+it.name+' is best saved for battle (Use Item in a fight).'; return; }
@@ -2839,12 +2851,12 @@ function applyItem(hero){
     if(prev) bag.items.push(prev);            // old gear returns to the satchel
     exploreFeed.push({t:hero.name+' equips the '+it.name+'.',k:'sys'});
   }
-  pickItem=null; renderParty();
+  pickItem=null; autosave();renderParty();
 }
 function unequip(hero, slot){
   const id=hero.equip[slot]; if(!id) return;
   hero.equip[slot]=null; bag.items.push(id);
-  exploreFeed.push({t:hero.name+' stows the '+ITEMS[id].name+'.',k:'sys'}); renderParty();
+  exploreFeed.push({t:hero.name+' stows the '+ITEMS[id].name+'.',k:'sys'}); autosave();renderParty();
 }
 // Auto-assign equippable gear: pool every weapon (or armour) the party holds plus the
 // satchel, then choose the assignment that maximises the party's total worth from that
@@ -2886,7 +2898,7 @@ function autoAssignGear(){
     leftover.forEach(id=>bag.items.push(id));
     party.forEach((h,hi)=>{ if(h.equip[slot]!==orig[hi]) changed++; });
   }
-  pickItem=null;
+  pickItem=null;autosave();
   if(!changed){ renderParty(); $('#partySub').textContent='Everyone already carries the best gear available \u2014 nothing to reassign.'; return; }
   exploreFeed.push({t:'You sort the satchel, handing each hero the best weapon and armour they can use.',k:'sys'});
   renderParty();
@@ -3005,6 +3017,7 @@ function combatPotions(){ return bag.items.map((id,idx)=>({idx, item:ITEMS[id]})
 function useItem(idx){if(overlayOpen())return; if(mode!=='combat'||game.phase!=='playing')return; const c=game.current();
   if(c.side!=='party'||!c.alive||game.isIncapacitated(c)||c.acted.action)return;
   const id=bag.items[idx], it=ITEMS[id]; if(!it||it.slot!=='potion')return;
+  if(it.heal&&c.hp>=c.maxHp){game.log.push({t:c.name+' is at full HP. Healing potion and action kept.',k:'sys'});render();return;}
   if(it.heal){ const before=c.hp; c.hp=Math.min(c.maxHp, c.hp+Dice.roll(it.heal.n,it.heal.sides)+it.heal.bonus);
     game.log.push({t:c.name+' drinks a '+it.name+' (+'+(c.hp-before)+' HP).',k:'magic'}); }
   else if(it.buff){ const b=it.buff, cur=c.statuses.find(s=>s.type===b.status);
@@ -3189,7 +3202,7 @@ function renderCombat(){
     cell.onpointerenter=()=>inspectTile(x,y);
     const rememberFocus=cell.onfocus;cell.onfocus=()=>{rememberFocus();inspectTile(x,y);};
     if(here&&here.side!==c.side&&game.canAttack(c,here)){const chance=game.attackPreview(c,here).chance+'% hit';cell.title+=' '+chance+'.';cell.setAttribute('data-chance',chance);cell.setAttribute('aria-label',cell.getAttribute('aria-label')+'. '+chance);}
-    if(mover==='move'&&reachCache&&reachCache.has(k)&&!here) cell.classList.add('reach');
+    if(mover==='move'&&reachCache&&reachCache.has(k)&&!here){cell.classList.add('reach');const risk=movementRiskText(c,{x,y});if(risk){cell.classList.add('move-risk');cell.title+=' '+risk;cell.setAttribute('aria-label',cell.getAttribute('aria-label')+'. '+risk);}}
     if(mover==='attack'&&here&&game.canAttack(c,here)) cell.classList.add('target');
     if(castEnemy.has(k)) cell.classList.add('cast-enemy');
     if(castAlly.has(k)) cell.classList.add('cast-ally');
@@ -3231,7 +3244,7 @@ function renderCombat(){
     const counts={}; combatPotions().forEach(p=>{ counts[p.item.id]=counts[p.item.id]||{name:p.item.name, idx:p.idx, n:0}; counts[p.item.id].n++; });
     const groups=Object.values(counts);
     if(!groups.length) sm.innerHTML='<span style="color:var(--dim)">No usable items.</span>';
-    groups.forEach(g=>{ const b=document.createElement('button'); b.className='spellbtn'; b.textContent=g.name+' ('+g.n+')'; b.onclick=()=>useItem(g.idx); sm.appendChild(b); });
+    groups.forEach(g=>{ const b=document.createElement('button'); b.className='spellbtn'; b.disabled=!!ITEMS[bag.items[g.idx]].heal&&c.hp>=c.maxHp;b.textContent=g.name+' ('+g.n+')'+(b.disabled?' · Full HP':''); b.onclick=()=>useItem(g.idx); sm.appendChild(b); });
   } else sm.style.display='none';
 
   const sig=SIGNATURES[c.cls];$('#btnSignature').innerHTML='<span class="signature-name">'+(sig?sig.name:'Signature')+'</span><span class="signature-short">Signature</span>';$('#btnSignature').setAttribute('aria-label',sig?sig.name:'Signature');$('#btnSignature').title=sig?sig.desc:'';$('#btnSignature').disabled=!playerTurn||autoFight||c.acted.action||c.signatureUsed||!sig;
@@ -3250,7 +3263,7 @@ function renderCombat(){
   let hint='';
   if(game.phase!=='playing') hint='';
   else if(!playerTurn) hint=c.name+' is acting...';
-  else if(mover==='move') hint='Click a highlighted tile to move.';
+  else if(mover==='move') hint='Choose a highlighted tile. Amber ! marks free strikes, a blast or embers; focus or hover for details.';
   else if(mover==='attack') hint='Click a flagged enemy to strike.';
   else if(mover==='cast'&&!selectedSpell) hint='Choose a spell.';
   else if(mover==='item') hint='Choose an item to use. It is consumed and spends this action.';
@@ -3525,6 +3538,13 @@ function checkContracts(){
 function validAim(){return !!(spellAim&&mode==='combat'&&game&&game.phase==='playing'&&spellAim.combat===game&&game.current().id===spellAim.actorId&&!game.current().acted.action&&mover==='cast'&&selectedSpell&&selectedSpell.target==='point'&&selectedSpell.id===spellAim.spellId);}
 function aimSummary(){const summary={allies:0,foes:0};if(!validAim())return summary;const c=game.current();for(const u of game.combatants)if(u.alive&&game.cheb(u.pos,spellAim)<=selectedSpell.aoe)summary[u.side===c.side?'allies':'foes']++;return summary;}
 function confirmAim(){if(overlayOpen())return false;if(!validAim()||autoFight||game.isIncapacitated(game.current()))return false;const target={x:spellAim.x,y:spellAim.y};doCast(target);return true;}
+function movementRiskText(c,pos){
+  const r=game.movementRisk(c,pos),parts=[];
+  if(r.opportunity.length)parts.push('Provokes '+r.opportunity.length+' free weapon strike'+(r.opportunity.length===1?'':'s'));
+  if(r.blast.length)parts.push('Marked for '+r.blast.map(u=>SPELLS[u.intent.spell].name).join(', '));
+  if(r.ember)parts.push('2 ember damage at turn end');
+  return parts.join(' · ');
+}
 function intentText(c){return c?.intent?SPELLS[c.intent.spell].name+' releases next active turn. '+(c.intent.interrupt?'A weapon hit interrupts and spends its charge. ':'Move off the marked tiles. '):'';}
 function openTactics(){
   if(mode==='combat')cancelTurn();tacticsOpener=typeof document.activeElement!=='undefined'?document.activeElement:null;
@@ -3534,6 +3554,7 @@ function openTactics(){
   const root=$('#tacticsContent');root.innerHTML='';
   const section=(title,copy)=>{const h=document.createElement('h3');h.textContent=title;root.appendChild(h);const p=document.createElement('p');p.textContent=copy;root.appendChild(p);};
   if(fighting){const pending=game.combatants.filter(c=>c.alive&&c.intent);if(pending.length)section('Imminent threats',pending.map(c=>c.name+': '+intentText(c)).join(' '));}
+  if(fighting)section('Turn order',game.turnPreview().map((t,i)=>(i===0?'Now: ':'')+t.unit.name+' ['+(t.unit.side==='party'?'Ally':'Enemy')+', round '+t.round+(game.isIncapacitated(t.unit)?', incapacitated':'')+']').join(' → ')+'. Current order; Wait and new summons can change it.');
   section('Your turn','Each hero can move once and take one action, in either order. Attack, cast, drink a potion, or use a signature. End Turn advances the order. Guard spends the action and ends the turn, preparing one reaction. Wait delays an untouched turn. Moving away from an adjacent foe can provoke a free strike.');
   section('Mouse, touch, and keyboard','Choose actions with a click or tap. Explore with arrows or WASD. In combat, Tab to the grid, use arrows to move focus, and press Enter or Space to use the selected action. Area spells still need confirmation. Party & Log opens the roster in smaller windows.');
   section('Aim before you cast','Select an area spell, then tap a tile to preview it. The pink outline shows the blast; the hint counts allies and foes. Tap that tile again or Confirm cast to commit. Fireball and other damage blasts hit friends too; Sleep only affects enemies. Cover protects against ranged weapons, not magic.');
@@ -3544,7 +3565,7 @@ function openTactics(){
   if(fighting){section(game.battlefield?BATTLEFIELDS[game.battlefield].name:'Current opposition','These are the foes still standing. Their remaining resources and positions determine what they can do.');
     for(const u of game.living('enemy')){const card=document.createElement('div');card.className='tactics-enemy';const spellText=(u.spells||[]).map(sp=>SPELLS[sp.id].name+' '+sp.uses+'/'+sp.max).join(' · ')||'No spells';const status=(u.statuses||[]).map(st=>st.type+' '+st.duration+'t').join(', ')||'No statuses';const c=game.current();const preview=c.side==='party'&&game.canAttack(c,u)?' · Your attack: '+game.attackPreview(c,u).chance+'% hit':'';card.innerHTML='<span class="tactics-portrait" aria-hidden="true">'+(SPRITES[u.sprite]||escapeHTML(u.glyph))+'</span><strong>'+escapeHTML(u.name)+'</strong><small>'+u.hp+'/'+u.maxHp+' HP · AC '+effAc(u)+' · Range '+u.range+preview+'</small><p>'+escapeHTML(game.describeRole(u))+'</p><small>'+escapeHTML(spellText)+'<br>'+escapeHTML(status)+'</small>';root.appendChild(card);}
   }
-  $('#tacticsScreen').classList.add('show');$('#btnTacticsClose').focus();
+  $('#tacticsScreen').classList.add('show');$('#btnTacticsClose').focus({preventScroll:true});$('#tacticsScreen').scrollTop=0;
 }
 function closeTactics(){if(!$('#tacticsScreen').classList.contains('show'))return;$('#tacticsScreen').classList.remove('show');if(tacticsOpener&&typeof tacticsOpener.focus==='function')tacticsOpener.focus();if(mode==='combat'){const c=game.current();if(c.side==='party'&&!autoFight&&!game.isIncapacitated(c))render();else beginTurnFlow();}}
 $('#btnHowToPlay').onclick=openTactics;
@@ -3693,6 +3714,7 @@ function inspectTile(x,y){
   const unit=game.at(x,y),terrain=game.terrainAt({x,y}),actor=game.current();
   let text=unit?unit.name+' · '+unit.hp+'/'+unit.maxHp+' HP · AC '+effAc(unit)+' · Range '+unit.range:'Tile '+(x+1)+', '+(y+1)+' · '+(terrain?TERRAIN[terrain].name:'Plain ground');
   if(unit)text+=' '+intentText(unit);else if(game.dangerAt({x,y}).length)text+=' · Leave this marked tile before the blast.';
+  if(!unit&&mover==='move'&&reachCache?.has(key(x,y)))text+=' · '+(movementRiskText(actor,{x,y})||'No free strike, marked blast or embers here.');
   if(unit&&actor.side==='party'&&game.canAttack(actor,unit))text+=' · '+game.attackPreview(actor,unit).chance+'% hit';
   const label=$('#tileInspect');label.textContent=text;label.hidden=false;
 }

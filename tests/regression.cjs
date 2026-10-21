@@ -503,3 +503,24 @@ test('GUARD-04: Auto evades fixed blasts legally without spending its action; re
  const {run}=harness();run("const crew=makeParty(),w=spawnMonster('ash_cantor',0,false),b=new CombatEngine(crew,[w],10,10),h=crew[0];w.pos={x:8,y:8};h.pos={x:3,y:3};b._castPoint(w,SPELLS.cinder,{x:3,y:3});const legal=b.reachable(h);b._evade(h);");assert.equal(run('b.dangerAt(h.pos).length'),0);assert.equal(run("legal.has(h.pos.x+','+h.pos.y)"),true);assert.equal(run('h.acted.move'),true);assert.equal(run('h.acted.action'),false);
  run("h.acted.move=false;h.pos={x:3,y:3};b._provoke=()=>{h.hp=0;b._drop(h);};b._evade(h);");assert.equal(run('h.alive'),false);assert(!run("b.log.at(-1).t.includes('moves clear')"));
 });
+
+test('CONF-01: equipment and Auto Gear persist before the Party screen closes',()=>{
+ const {run}=harness();run("renderParty=()=>{};bag.items.push('fine_sword');autosave();pickItem=bag.items.length-1;applyItem(party[0]);const equipped=decodeSave(persistRead());");assert.equal(run('equipped.party[0].eq.weapon'),'fine_sword');
+ run("unequip(party[0],'weapon');const removed=decodeSave(persistRead());");assert.equal(run('removed.party[0].eq.weapon'),null);assert(run("removed.bag.items.includes('fine_sword')"));
+ run('autoAssignGear();const assigned=decodeSave(persistRead());');assert.equal(run('assigned.party[0].eq.weapon'),run('party[0].equip.weapon'));assert.equal(run('assigned.bag.items.join()'),run('bag.items.join()'));const blocked=harness({storageBlocked:true});blocked.run("renderParty=()=>{};bag.items.push('fine_sword');pickItem=bag.items.length-1;applyItem(party[0]);");assert.equal(blocked.run('decodeSave(encodeSave(saveState())).party[0].eq.weapon'),'fine_sword');
+});
+test('CONF-02: exploration healing saves HP and consumed potion together; full HP preserves the potion',()=>{
+ const {run}=harness();run("renderParty=()=>{};party[0].hp=1;bag.items.push('potion_heal');pickItem=bag.items.length-1;applyItem(party[0]);const healed=decodeSave(persistRead());");assert.equal(run('healed.party[0].hp'),run('party[0].hp'));assert.equal(run('healed.bag.items.join()'),run('bag.items.join()'));
+ run("party[0].hp=party[0].maxHp;bag.items.push('potion_heal');pickItem=bag.items.length-1;const before=bag.items.length;applyItem(party[0]);");assert.equal(run('bag.items.length'),run('before'));assert.match(run("$('#partySub').textContent"),/full HP/);
+});
+test('CONF-03: full-HP combat healing spends neither potion nor action; wounded heroes still heal',()=>{
+ const {run}=harness();run("enterCombat({pool:['skeleton']},'2,2');cancelTurn();game.order=['p1',...game.order.filter(id=>id!=='p1')];game.turnIndex=0;game._begin();bag.items.push('potion_heal');const index=bag.items.length-1,before=bag.items.length;const originalRoll=Dice.roll;let potionRolls=0;Dice.roll=(...args)=>{potionRolls++;return originalRoll(...args);};useItem(index);");assert.equal(run('bag.items.length'),run('before'));assert.equal(run('party[0].acted.action'),false);assert.equal(run('potionRolls'),0);
+ run('party[0].hp=1;useItem(index);');assert.equal(run('bag.items.length'),run('before-1'));assert.equal(run('party[0].acted.action'),true);assert(run('party[0].hp>1'));
+});
+test('CONF-04: turn forecast skips dead units, keeps incapacitated turns, wraps rounds and follows Wait',()=>{
+ const {run}=harness();run("const crew=makeParty(),foe=spawnMonster('ogre',0,false),b=new CombatEngine(crew,[foe],10,10);b.order=['p1','p2','e0','p3','p4'];b.turnIndex=2;b.round=3;crew[2].alive=false;crew[3].statuses=[{type:'hold',duration:2}];const original=b.order.join(),forecast=b.turnPreview();");assert.equal(run('forecast.map(t=>t.unit.id).join()'),'e0,p4,p1,p2');assert.equal(run('forecast.map(t=>t.round).join()'),'3,3,4,4');assert.equal(run('b.order.join()'),run('original'));assert.equal(run('b.turnPreview(1).length'),1);run('b.delay();');assert.equal(run('b.turnPreview().slice(0,2).map(t=>t.unit.id).join()'),'p4,e0');assert.equal(run('b.turnPreview()[1].round'),3);
+});
+test('CONF-05: movement warnings match available reactions, marked areas and embers without mutation',()=>{
+ const {run}=harness();run("const crew=makeParty(),w=spawnMonster('ash_cantor',0,false),b=new CombatEngine(crew,[w],10,10),h=crew[0];h.pos={x:3,y:3};w.pos={x:4,y:3};b._castPoint(w,SPELLS.cinder,{x:6,y:6});b.terrain.set('6,6','ember');const before=JSON.stringify([h,w]);const risk=b.movementRisk(h,{x:6,y:6});");assert.equal(run('risk.opportunity.length'),1);assert.equal(run('risk.blast.length'),1);assert.equal(run('risk.ember'),true);assert.equal(run('JSON.stringify([h,w])===before'),true);
+ run('w.aooUsed=true;');assert.equal(run('b.movementRisk(h,{x:6,y:6}).opportunity.length'),0);run("w.aooUsed=false;w.statuses.push({type:'hold',duration:2});");assert.equal(run('b.movementRisk(h,{x:6,y:6}).opportunity.length'),0);assert.equal(run('b.movementRisk(h,{x:3,y:4}).opportunity.length'),0);
+});

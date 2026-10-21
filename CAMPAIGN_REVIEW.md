@@ -58,3 +58,9 @@ The earlier 2d6 breath above records the 0.10 baseline. Current Astrax uses 3d6 
 The grade moves from B+ toward A− within the single-file scope, subject to the full release gate. More warning/counterplay improves tactical agency; it does not prove harder bosses or human balance. No floors, mandatory encounters, save schema or council rewards changed.
 
 Local 0.13.0 balance: Wanderer 27/32, Delver 16/32, Ironbound 10/32; 96 completed runs, no stalls, unchanged canaries pass and every Wanderer route has a victory. Runtime 345,004 bytes (<350 KiB). All existing Chromium browser suites and the new guardian suite pass. Exact-head Chromium/Firefox/WebKit CI and live deployment evidence belong in the release PR.
+
+## Fresh review — 0.13.1
+
+Overall grade reassessed to B+; the previous A− weighted automated reliability too heavily. This release improves immediate inventory recovery and manual combat information (current turn forecast and destination risks), and prevents wasted healing at full HP. It adds no chapters, encounters, rewards or combat-stat changes. Human campaign difficulty and native Safari remain open validation gaps; campaign structure and existing unique artwork are retained.
+
+Build 0.13.1 local evidence: 75 engine/controller checks, four sprite/art checks and four balance-policy checks pass; all eleven Chromium browser suites pass. The 96-run canary remains 27/32 Wanderer, 16/32 Delver, 10/32 Ironbound with no stalls. Runtime 347,155 bytes (<350 KiB). Exact-head cross-browser and live publication results are recorded in the release PR; physical Safari/human difficulty remain unverified.

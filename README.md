@@ -8,7 +8,7 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 ## Play
 
-**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.13.0**
+**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.13.1**
 
 Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a fitted board/control shell on every device, with a live sidebar in wide windows and a separate Party & Log panel in smaller windows. **How to Play** on the title screen explains the rules.
 
@@ -26,7 +26,7 @@ Build 0.8.0 adds themed materials, chapter and ending illustrations, battle/vict
 
 Open **Sound & Display** from the title or Party & Log. Choose high contrast, reduced visual effects, normal/quick Auto pace, volume, and optional synthesized sound and ambient tones. Sound and ambience start off; enabling them requires a gesture and downloads no assets. Preferences persist separately from the campaign, or last for the session when storage is blocked. Settings pause combat; Escape returns to play. OS reduced motion always takes priority.
 
-The quality target is an excellent small standalone tactical RPG. The presentation and options improve its scope-limited grade from B+ toward A−; commercial AAA production quality remains outside a single-file, 350 KiB budget. Physical iPhone/iPad validation and broader human balance/playtesting remain outstanding.
+The quality target is an excellent small standalone tactical RPG. The fresh overall grade is B+; commercial AAA production quality remains outside a single-file, 350 KiB budget. Physical iPhone/iPad validation and broader human balance/playtesting remain outstanding.
 
 ### Guardian counterplay — build 0.13.0
 
@@ -204,28 +204,11 @@ Casters also advance to spell range instead of charging into melee, and incapaci
 
 ## Validation
 
-No tooling is needed to play. For contributors, run the dependency-free checks with Node.js 18 or newer:
+The current dependency-free suite has **75 engine/controller checks** against the real inline script with DOM stubs. It covers save recovery, pending levels, atomic imports, turn scheduling, friendly fire, guardians, campaign gates, route goals, movement-risk forecasts and immediate inventory persistence. Generator checks include 96 exit/key layouts, 160 all-cache-open vault layouts and 256 objective/fallback layouts.
 
-```bash
-node tests/regression.cjs
-```
+Browser suites exercise real touch/keyboard controls, save/Continue, offline interaction, clipboard failure, paused menus, all endings, atlas/hunt recovery and 25 viewport sizes. The confidence suite reloads before closing Party after equip, unequip, Auto Gear and healing; it also checks full-HP potion safeguards and movement/turn previews on phone, short landscape, iPad-sized and desktop windows. Automated WebKit is compatibility evidence; physical iPhone/iPad Safari and human campaign difficulty remain unverified.
 
-The 51 engine checks execute the actual inline script with DOM stubs. They cover the original defects and the requirement IDs in [REQUIREMENTS.md](REQUIREMENTS.md), including atomic imports, legacy saves, rewards, terrain, aim confirmation, paused Tactics, guardians, exit resumption, and the 350 KiB runtime budget. Generator checks cover 96 exit/key layouts plus 160 layouts with every secret cache opened while vault doors stay blocked.
-
-Chromium checks covered help, journal contracts, chapter rewards, terrain labels, paused Tactics, touch preview and friendly-fire confirmation, rejected imports during combat, saved rewards, and offline interaction after loading. The six phone viewport scenarios above also passed with the boss bar, spell menu, and aim confirmation open; desktop layout passed. No JavaScript page errors occurred.
-
-Twelve seeded, controller-driven campaigns exercised all four routes under all three oaths: six victories and six defeats, with no stalled runs. All four Wanderer routes and two Delver routes reached the ending; the four Ironbound Auto runs lost. This is limited balance evidence, not a promise that Auto wins or exhaustive testing. Physical iPhone/Safari remain unverified. Direct `file://` verification is blocked by this managed browser's administrator policy; local HTTP and offline interaction after loading were checked.
-
-For changes to game behavior, serve the file locally and exercise the affected flow in a browser. Useful regression checks are:
-
-- Start both a default and a custom party, move, reveal terrain, collect loot, and enter combat.
-- Complete combat manually and with Auto; test rapid toggles and restarting while a turn is pending.
-- Test melee, ranged retreat, guard reactions, and area spells with allies nearby.
-- Earn a level through combat and an event; confirm ability and build choices, then save and reload. Reload with choices pending and confirm the allocation screen returns.
-- Round-trip a portable save code and browser Continue; check town, equipment, HP, spell uses, and progression. Confirm portable codes still work when browser storage is unavailable.
-- Check the board and Party screen on desktop and a narrow mobile viewport.
-
-Check new scenarios when their related behavior changes; the DOM-stub checks do not replace browser verification.
+Serve the game locally and use the release commands below. DOM-stub tests do not replace browser or hardware checks. Direct file:// browser automation is blocked by the managed browser policy; local HTTP and offline-after-load interaction are tested.
 
 ## Repository
 
@@ -256,17 +239,23 @@ With the local server running and development browser tools installed:
 
 ```bash
 node tests/regression.cjs
+node tests/balance-checks.cjs
+node tests/sprites.cjs
 node tests/devices.cjs
 node tests/quality.cjs
+node tests/polish.cjs
+node tests/sprite-browser.cjs
 node tests/flow.cjs
 node tests/epic.cjs
+node tests/campaign-payoff.cjs
+node tests/objectives.cjs
 node tests/atlas.cjs
-node tests/campaign.cjs
-node tests/balance-checks.cjs
+node tests/guardians.cjs
+node tests/confidence.cjs
 node tests/balance.cjs
 ```
 
-The quality checks reproduce the paused-menu and clipboard bugs, create a party and assign equipment with keyboard controls, win a controlled manual battle, and recover portable saves with storage blocked. The flow check exercises rewards, touch aiming, save/reload, and offline play. The epic-campaign check exercises touch/keyboard councils, saved rewards, Chronicle, finale reload, crown-bearer selection, and all three endings at phone/tablet/desktop sizes. The campaign check runs three seeds over every oath/route combination: 36 runs, currently 17 victories and 19 defeats without stalls. With varied council choices, Wanderer wins 10/12, Delver 6/12, and Ironbound 1/12 in this Auto diagnostic; victories cover all three crown fates. Wanderer defeats occurred in the final tomb; harder-oath defeats occurred across several floors. This sample supports the intended difficulty ordering, but does not establish human win rates or justify broad retuning.
+These suites cover input safety, storage recovery, campaign choices, route objectives, guardian counterplay, illustrated content and tactical feedback. The release balance gate drives 96 fresh campaigns across all oaths/routes using real controllers and Auto combat; `tests/campaign.cjs` offers a shorter 36-run diagnostic. Read current results in the repository's BALANCE.md; previous release samples are historical evidence, not current win rates.
 
 The **Game quality** GitHub Actions workflow runs engine, device, quality, flow, and epic-campaign checks on Chromium, Firefox, and WebKit; Chromium also runs the expanded 96-campaign balance gate and uploads build-tagged JSON/Markdown results. Before automatic merge/publication, wait for every PR quality job to pass and verify the final Pages deployment. This is the release procedure; branch protection has not been configured by this change. Use `GOLD_BOX_BROWSER=firefox` or `webkit` for development checks with those Playwright browsers installed. `CHROMIUM_PATH` overrides the browser executable for CI/local installations. WebKit automation is useful compatibility evidence; physical Safari on an iPhone/iPad and real hardware performance still require manual testing.
 
@@ -275,13 +264,17 @@ For hardware validation, try portrait/landscape, browser-bar resizing, iPad spli
 
 ### Game balance check
 
-[**Read the build’s balance report**](BALANCE.md), also linked from the title screen. Run `node tests/balance.cjs` against a served game for 96 campaigns across all oaths and routes. It uses the real game engines with default heroes, Auto combat, loot-first exploration, camping below 70% HP, the first offered boon, varied councils, and no shopping. The report includes win-rate uncertainty, route results, defeat floors, guardian rounds/HP pressure, and every run’s seed. It is a reproducible regression canary, not a human win-rate estimate.
+Balance diagnostics are recorded in the repository’s BALANCE.md and CI artifacts. The game and README Play line do not link to the report. Run `node tests/balance.cjs` against a served game for 96 campaigns across all oaths and routes. It uses the real game engines with default heroes, Auto combat, loot-first exploration, camping below 70% HP, the first offered boon, varied councils, and no shopping. The report includes win-rate uncertainty, route results, defeat floors, guardian rounds/HP pressure, and every run’s seed. It is a reproducible regression canary, not a human win-rate estimate.
 
 The gate rejects stalls and invalid endings, inverted difficulty, a route with no Wanderer win, and broad oath-specific balance failures: Wanderer below 50%, Delver outside 10–90%, Ironbound without a win or above 60%, or more than 25% of Wanderer runs dying on the first floor. These limits are deliberately broad; the policy and sample remain limited. `BALANCE_SAMPLES=12 node tests/balance.cjs` expands to 144 campaigns. Reports default to `artifacts/balance/`; `BALANCE_OUTPUT` overrides that directory. Failed checks retain their reports for investigation. The dependency-free `node tests/balance-checks.cjs` verifies the gate itself.
 
 
-Build 0.7.0 balance snapshot: Wanderer **23/32 (71.9%)**, Delver **15/32 (46.9%)**, Ironbound **7/32 (21.9%)**; **0 stalls**. The broad regression criteria pass. See BALANCE.md for route results and guardian pressure; in particular, Ash Cantor on Delver and Warren/Ossuary on Ironbound remain useful manual-play targets. Encounter tuning is unchanged in this release.
+### Manual-play clarity and recovery — 0.13.1
 
-The guardian release adds `node tests/guardians.cjs` to the three-browser gate, covering visible toll/hymn warnings, manual weapon interruption and fixed-area escape on phone, short landscape, tablet and desktop.
+Tactics opens at the top with a sticky Return button, keeping threats readable and keyboard focus visible. It shows the next twelve living units in current turn order, their sides, round boundaries and incapacitated turns. Wait and new summons may change the forecast. During Move, amber **!** markers identify destinations that provoke free weapon strikes, sit in a marked blast, or contain embers. Hover or keyboard-focus a tile for the risk details; a marker warns without preventing a deliberate move. Forecasts use the same reaction checks as movement and do not roll dice.
 
-Current build 0.13.0 verification: 70 engine checks; 96 objective-aware Auto campaigns (Wanderer 27/32, Delver 16/32, Ironbound 10/32), no stalls and unchanged balance canaries; all Chromium device/input/campaign/atlas suites plus guardian counterplay checks. Scope grade: A− as a small standalone RPG; human full-run difficulty and physical Safari testing remain outstanding. Cross-browser/publication evidence is recorded in the release PR.
+Equipping, unequipping, Auto Gear and exploration healing now autosave immediately, including while Party remains open. Reload/Continue keeps the updated gear, HP and satchel together when browser storage is available; portable codes remain the fallback when storage is blocked. Full-HP heroes keep a healing potion and their combat action. The combat menu labels that potion Full HP and disables it until healing is useful. Fury potions keep their existing rules.
+
+Fresh scope grade: **B+ overall**. Reliability and clarity improved; encounter variety, human-tested difficulty and physical-device evidence still limit a higher grade. See REVIEW.md for findings and the release PR for exact-head cross-browser/publication evidence.
+
+Build 0.13.1 local evidence: 75 engine/controller checks, four sprite/art checks and four balance-policy checks pass; all eleven Chromium browser suites pass. The 96-run canary remains 27/32 Wanderer, 16/32 Delver, 10/32 Ironbound with no stalls. Runtime 347,155 bytes (<350 KiB). Exact-head cross-browser and live publication results are recorded in the release PR; physical Safari/human difficulty remain unverified.
