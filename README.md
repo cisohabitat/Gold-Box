@@ -8,7 +8,7 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 ## Play
 
-**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.15.0**
+**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.16.0**
 
 Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a fitted board/control shell on every device, with a live sidebar in wide windows and a separate Party & Log panel in smaller windows. **How to Play** on the title screen explains the rules.
 
@@ -94,7 +94,7 @@ Build 0.10.1 replaces the shared weapon/cloak/potion pictures with 16 individual
 
 ### Bestiary, treasure and the Star-Eater
 
-Open **Bestiary** or **Treasure & Relics** on the title, in **Party & Log**, or at a waystation. The illustrated field guide covers all 15 creatures with lore, base statistics, spells, habitats and counterplay. The treasure page covers all 15 items plus the Sunless Crown, with exact effects, usable classes, sources, current carried counts and equipped heroes. Search and category filters help find an entry. The complete guide contains campaign spoilers. Combat pauses while it is open; Back or Escape resumes the same battle and preserves spell aim.
+Open **Bestiary** or **Treasure & Relics** on the title, in **Party & Log**, or at a waystation. The illustrated field guide covers all 21 creatures with lore, base statistics, spells, habitats and counterplay. The treasure page covers all 15 items plus the Sunless Crown, with exact effects, usable classes, sources, current carried counts and equipped heroes. Search and category filters help find an entry. The complete guide contains campaign spoilers. Combat pauses while it is open; Back or Escape resumes the same battle and preserves spell aim.
 
 **Legends & Hunt** introduces Astrax, the Star-Eater, a sky-dragon chained beneath the Observatory of Ash. Its hunt opens at a waystation after four chapters and the current council choice. Rest and equip first. Starless Breath marks nine amber tiles, then strikes them on the dragon’s next active turn: move out before it releases. At half health it gains attack, restores one breath charge and summons one skeleton once. The hunt is optional; victory gives the Eclipsescale Mantle (+2 AC and 2 less damage per spell hit, any class), a supply and battle XP once, returns the company to the waystation, and changes the final story acknowledgement. Defeat ends the run. Restart during the battle preserves the latest pre-hunt town Continue when storage is available.
 
@@ -204,7 +204,7 @@ Casters also advance to spell range instead of charging into melee, and incapaci
 
 ## Validation
 
-The current dependency-free suite has **92 engine/controller checks** against the real inline script with DOM stubs. It covers save recovery, pending levels, atomic imports, turn scheduling, friendly fire, guardians, campaign gates, route goals, movement-risk forecasts and immediate inventory persistence. Generator checks include 96 exit/key layouts, 160 all-cache-open vault layouts and 256 objective/fallback layouts.
+The current dependency-free suite has **102 engine/controller checks** against the real inline script with DOM stubs. It covers save recovery, pending levels, atomic imports, turn scheduling, friendly fire, guardians, campaign gates, route goals, movement-risk forecasts and immediate inventory persistence. Generator checks include 96 exit/key layouts, 160 all-cache-open vault layouts and 256 objective/fallback layouts.
 
 Browser suites exercise real touch/keyboard controls, save/Continue, offline interaction, clipboard failure, paused menus, all endings, atlas/hunt recovery and 25 viewport sizes. The confidence suite reloads before closing Party after equip, unequip, Auto Gear and healing; it also checks full-HP potion safeguards and movement/turn previews on phone, short landscape, iPad-sized and desktop windows. Automated WebKit is compatibility evidence; physical iPhone/iPad Safari and human campaign difficulty remain unverified.
 
@@ -255,6 +255,7 @@ node tests/guardians.cjs
 node tests/confidence.cjs
 node tests/arenas.cjs
 node tests/patrols.cjs
+node tests/enemies.cjs
 node tests/balance.cjs
 ```
 
@@ -309,3 +310,26 @@ After a loss, **Learn from this battle** shows the starting party HP, actual HP 
 This evidence is local to the completed battle, uses no extra dice rolls and is not saved or sent anywhere. The existing defeat/save rules are unchanged. Full campaign balance, device checks and cross-browser CI remain release gates; physical Safari and human campaign playtesting remain outstanding.
 
 Build 0.15.0 local evidence: 92 engine/controller checks, four sprite/art checks and four policy checks pass; all thirteen Chromium browser suites pass. The full 96-campaign canary gives 24/32 Wanderer, 24/32 Delver and 7/32 Ironbound, with zero stalls and unchanged criteria. All 288 guardian probes terminate, with unchanged outcomes. Runtime 363,723 bytes (355.2 KiB), slightly above the user-approved soft 350 KiB target. Exact-head cross-browser and live publication evidence is recorded in the release PR. Human/physical-device limitations remain open.
+
+
+### Six new enemy roles — 0.16.0
+
+The bestiary now holds **21 enemy types: 17 regular enemies and four guardians**. Six new creatures appear gradually in ordinary chapter pools, with distinct 24×24 sprites, lore, habitats and exact counters in Bestiary and Tactics. The first chapter and guardian retinue pools retain their previous creatures. Existing generated saves keep their encounter pools.
+
+| Enemy | What changes the fight | Counter |
+| --- | --- | --- |
+| Shield Sentinel | Other adjacent allies gain +2 AC against weapons; several sentinels do not stack the bonus. | Separate allies, disable the bearer with Sleep/Hold, or use magic. Weapon previews include the ward. |
+| Crypt Stalker | One leap per battle, up to four tiles onto a free square beside a vulnerable hero; movement spent, then a normal attack. | Guard intercepts the landing; leaving melee still provokes. Keep casters protected. |
+| Ember Wisp | Death marks a fixed 3×3 blast for 4 spell damage to both sides at the start of round N+2, where N is the death round. | Everyone gets a full round to move. Amber tiles, log and Tactics name the exact round; Auto evades. Victory disperses sparks. |
+| Spellbreaker | Two range-four Silence charges: Wisdom DC 13, spells blocked for two active turns on failure. | Weapons, signatures and potions remain available. Starweave improves the save. No blocked spell charge is spent. |
+| Grave Leech | Three range-four siphons deal 1d4+1 spell damage; one wounded ally within three tiles recovers up to three actual HP lost. | Focus the leech or separate its allies. Eclipsescale reduces damage and the healing it can fuel. |
+| Chain Warden | Two range-four hooks deal 1d4 spell damage and pull a surviving target one tile toward the gaoler if free. | Avoid unsafe ground near its reach. Forced pulls do not provoke or spend the target’s movement; terrain ticks at turn end. |
+
+Warren introduces stalkers; Gallery introduces sentinels; Catacombs adds funeral wisps. The fourth-chapter routes introduce siphoners, silencers and chain gaolers. Deeper ordinary patrols mix these roles within existing threat budgets and the eight-enemy cap. No new floor, map gate, action button, save version or runtime dependency is added.
+
+The six sprites were visually inspected together for distinct silhouettes. Automated checks cover ability boundaries, protection and damage evidence, round timing, movement reactions, silence expiry, old/new saves and four device classes. Human full-campaign balance and physical Safari testing remain outstanding; the overall assessment remains B+.
+
+
+Runtime for 0.16.0: **377,562 bytes (368.7 KiB)**, +13,839 bytes (13.5 KiB) over 0.15.0. This exceeds the soft 350 KiB target in exchange for six mechanics, six sprites and their field-guide content; there are no new runtime dependencies or downloaded assets. Final campaign/CI/publication evidence is recorded in BALANCE.md and the release PR.
+
+Build 0.16.0 local evidence: 102 engine checks, four sprite/art and four policy checks, 288 guardian scenarios and all fourteen Chromium browser suites pass. Full 96-campaign Auto canary: wanderer 25/32, delver 20/32, ironbound 13/32; zero stalls, all existing criteria pass. Runtime 377,562 bytes (368.7 KiB). Exact-head cross-browser CI and Pages/live evidence are recorded in the release PR.

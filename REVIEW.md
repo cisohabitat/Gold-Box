@@ -124,3 +124,14 @@ The report is deliberately limited: damage totals are not a causal model, damage
 The scope grade remains B+ pending human difficulty and physical-device evidence. This release addresses repeated fights and unhelpful defeats; it adds no chapters/classes/enemy types or save schema. Enemy budgets/stats, guardian arenas and all existing balance thresholds remain intact. Full campaign outcomes can still change because composition/deployment changes subsequent RNG paths.
 
 Build 0.15.0 local evidence: 92 engine/controller checks, four sprite/art checks and four policy checks pass; all thirteen Chromium browser suites pass. The full 96-campaign canary gives 24/32 Wanderer, 24/32 Delver and 7/32 Ironbound, with zero stalls and unchanged criteria. All 288 guardian probes terminate, with unchanged outcomes. Runtime 363,723 bytes (355.2 KiB), slightly above the user-approved soft 350 KiB target. Exact-head cross-browser and live publication evidence is recorded in the release PR. Human/physical-device limitations remain open.
+
+
+## Ordinary enemy breadth — 0.16.0
+
+The 0.15 roster had eleven regular enemies and four guardians; patrol formations reused a small set of tactical problems. Six new ordinary roles expand this to seventeen regular enemies and four guardians. Each introduces a bounded mechanic and an explicit counter: weapon ward, single leap, delayed death blast, silence, actual-loss siphon and one-tile forced pull. Existing guardian templates/retinues, opening chapter and difficulty formulas remain intact.
+
+All six have distinct authored pixel art, inspected together, complete bestiary context and staged route habitats. Exact live shield protection, silence and death-blast deadlines are readable without adding a phone HUD row. Engine tests cover protection, damage accounting, reaction deaths, round-wrap deaths/Auto escape, control expiry, postponed channels, bounded healing and old/new saves. Browser checks cover the four supported device classes and actual disabled/restored casting controls.
+
+The overall grade remains B+. Scripted correctness and increased variety support this release’s claims; human full campaigns and physical Safari remain unverified. Balance and final publication evidence are recorded in BALANCE.md and the release PR.
+
+Build 0.16.0 local evidence: 102 engine checks, four sprite/art and four policy checks, 288 guardian scenarios and all fourteen Chromium browser suites pass. Full 96-campaign Auto canary: wanderer 25/32, delver 20/32, ironbound 13/32; zero stalls, all existing criteria pass. Runtime 377,562 bytes (368.7 KiB). Exact-head cross-browser CI and Pages/live evidence are recorded in the release PR.
