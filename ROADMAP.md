@@ -157,3 +157,12 @@ Implemented. Next: observe human full campaigns (especially Warden/Cantor pacing
 6. Verify scripted strategy variants, real manual browser interactions and the full campaign/cross-browser/publication gates.
 
 Implemented. Physical Safari and observed human full runs remain necessary follow-up evidence; fixture victories and Auto percentages do not establish subjective epicness or human win rates.
+
+## Ordinary fights and defeat learning (0.15.0)
+
+1. Author five patrol patterns using existing enemies, complementary budget-safe roles and distinct front/rear deployment.
+2. Explain actual patterns and counters through the opening log and paused Tactics; keep boss arenas and legacy saves compatible.
+3. Capture transient, ward-aware damage/control/attack evidence and derive two grounded suggestions after a defeat.
+4. Verify controlled enemy/friendly-fire losses, replay/focus/escaping, descriptor Continue, all prior suites and full campaign balance; publish after exact-head CI.
+
+Implemented. New guardian mechanics, hero-background events and physical-device/human playtesting remain separate work; this release does not claim to complete those suggestions.

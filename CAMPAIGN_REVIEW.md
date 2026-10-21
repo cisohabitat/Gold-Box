@@ -72,3 +72,11 @@ Distinct arena terrain now gives each convergence guardian, King and optional dr
 Lantern Mantle's terrain-fire protection and Starweave's spell-control save ward create contextual armour choices alongside Eclipsescale. Party and atlas expose their exact tradeoffs. Full-campaign and isolated scripted strategy evidence are reported separately; neither measures human win rates. Size is a soft target under the user's updated preference. Overall B+ remains the current assessment.
 
 Build 0.14.0 local evidence: 84 engine/controller checks, four sprite/art checks and four policy checks pass; all twelve Chromium browser suites pass. The full 96-campaign canary gives 28/32 Wanderer, 23/32 Delver and 15/32 Ironbound with zero stalls and unchanged thresholds. All 288 isolated strategy scenarios terminate; 72 prepared Observatory hunt probes win. Runtime 354,308 bytes (346.0 KiB), reported against the soft 350 KiB target. Exact-head cross-browser/publication evidence is recorded in the release PR. Human/physical-device limits remain open.
+
+## Patrol patterns and defeat learning — 0.15.0
+
+Ordinary encounters now use Shield & Bow, Split Watch, Hex Cell, Rallying Warband or Grave Procession, with budget-safe role packets and distinct deployment. Existing enemies, arena/guardian rules, chapter goals, council rewards and ending gates remain intact. Older encounter descriptors derive profiles from their saved pools.
+
+After defeat, actual battle evidence and two relevant suggestions help plan the next run. Reports are transient and do not restore lost runs or replace the existing save rules. Automated balance and browser evidence remain separate from human difficulty and physical Safari testing.
+
+Build 0.15.0 local evidence: 92 engine/controller checks, four sprite/art checks and four policy checks pass; all thirteen Chromium browser suites pass. The full 96-campaign canary gives 24/32 Wanderer, 24/32 Delver and 7/32 Ironbound, with zero stalls and unchanged criteria. All 288 guardian probes terminate, with unchanged outcomes. Runtime 363,723 bytes (355.2 KiB), slightly above the user-approved soft 350 KiB target. Exact-head cross-browser and live publication evidence is recorded in the release PR. Human/physical-device limitations remain open.

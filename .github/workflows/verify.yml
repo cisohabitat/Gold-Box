@@ -53,6 +53,7 @@ jobs:
           node tests/guardians.cjs
           node tests/confidence.cjs
           node tests/arenas.cjs
+          node tests/patrols.cjs
           if [ "$GOLD_BOX_BROWSER" = chromium ]; then node tests/balance.cjs; fi
 
       - name: Upload balance report
