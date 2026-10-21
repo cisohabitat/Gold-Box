@@ -26,6 +26,7 @@ const results=[];for(let sample=0;sample<samples;sample++){results.push(...await
       if(document.querySelector('#fateScreen').classList.contains('show')){chooseCrownFate(['break','bind','wear'][sample%3]);continue;}
       if(document.querySelector('#banner').classList.contains('show')){stop='victory';break;}
       if(levelUp){autoAssignLevelUp();continue;}
+      if(document.querySelector('#aftermathScreen').classList.contains('show')){closeAftermath();continue;}
       if(curEvent){const options=EVENTS[curEvent.id].options;let pick=options.findIndex(o=>o.fallback),best=-Infinity;options.forEach((o,i)=>{if(!o.fallback){const score=bestForStat(o.stat).mod-o.dc;if(score>best){best=score;pick=i;}}});resolveEventOption(pick);closeEvent();continue;}
       if(document.querySelector('#townScreen').classList.contains('show')){
         const offers=[...document.querySelectorAll('.boon-card')];if(offers.length)offers[0].click();townRest();autoAssignGear();document.querySelector('#partyScreen').classList.remove('show');

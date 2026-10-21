@@ -203,3 +203,12 @@ Local expansion acceptance: 58 regressions, sprite/policy checks, atlas/hunt bro
 | RELIC-ART-03 | All artwork remains bounded, decorative, pointer-transparent, inline and offline. No duplicate SVG IDs/references, assets, animation loop, RNG consumption or rule/save changes. Verify phone/landscape/tablet/desktop layouts and existing atlas input/hunt recovery. Stay below 350 KiB. |
 
 Local art/engine checks pass: 58 engine/controller regressions and 4 sprite/art checks. Runtime is 356,903 bytes of the 358,400-byte budget. Final browser, balance and publication evidence is recorded in the implementation PR.
+
+## Campaign payoff requirements (0.11.0)
+
+| ID | Acceptance |
+| --- | --- |
+| SAGA-04 | Bell Warden, Ash Cantor, Crypt Lord and Astrax wins show an illustrated, scrollable aftermath that cannot be displaced by XP log lines. Level allocations precede acknowledgement; movement remains blocked; touch/keyboard/Escape dismiss and resume stairs once. Reload clears transient panels while Chronicle reconstructs known guardian aftermaths from existing saved progress. |
+| SAGA-05 | Both plans of every visited council produce distinct ending callbacks. Preserve Break/Bind/Wear, named bearer and hunt acknowledgement. Missing/legacy decisions produce no invented callbacks or rewards. |
+| RELIC-04 | Eclipsescale retains +2 AC, any class, and reduces each damaging spell hit by 2 (minimum zero). Include enemy spells and allied area damage. Exclude weapons/terrain/poison/healing/status saves; equipment transfer and removal take immediate effect. Exact rules visible in atlas, hunt and inventory. Auto Gear prefers it over equal AC only. |
+| SAGA-06 | Investigate difficulty using expanded deterministic oath/route evidence, compare a bounded Ash Cantor retinue-budget reduction against the same seeds, report guardian pressure and optional hunt separately, and keep balance thresholds unchanged. Do not claim Auto results establish human difficulty. Require 62 regressions, four sprite checks, policy checks, existing browser suites and new payoff suite on Chromium/Firefox/WebKit before automatic publication. Runtime <350 KiB; preserve graph, offline play and v2 saves. |

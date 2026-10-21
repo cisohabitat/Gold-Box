@@ -397,13 +397,58 @@ test('HUNT-03: malformed hunt state is rejected atomically; legacy codes default
 test('HUNT-04: wyrm has one bounded living phase and no template mutation',()=>{
  const {run}=harness();run("const wyrm=spawnMonster('eclipse_wyrm',0,true),wyrmBattle=new CombatEngine(makeParty(),[wyrm],10,10);wyrm.hp=Math.floor(wyrm.maxHp/2);wyrm.spells[0].uses=0;wyrmBattle._checkEnd();wyrmBattle._checkEnd();");assert.equal(run('wyrm.awakened'),true);assert.equal(run("wyrmBattle.living('enemy').length"),2);assert.equal(run('BESTIARY.eclipse_wyrm.bloodied.count'),1);assert.equal(run('wyrm.spells[0].uses'),1);
 });
-test('HUNT-05: prepared level-four Wanderer parties can defeat the optional hunt without stalls',()=>{
- const outcomes=[];for(let seed=31;seed<43;seed++){
-  const {run}=harness({seed});outcomes.push(run("const heroes=DEFAULT_BLOCKS.map((b,i)=>buildHero(CLASSES[b.cls],b.name,b.ab,'p'+(i+1),4,b.bg));const mob=composeEncounter({boss:true,lead:'eclipse_wyrm',pool:['skeleton'],budgetMul:.45},{floor:2,partyLevel:4,gear:0,difficulty:OATHS.wanderer.budget});const battle=new CombatEngine(heroes,mob,10,10,'tomb');let turns=0;while(battle.phase==='playing'&&turns++<1000){battle.actAuto(battle.current());if(battle.phase==='playing')battle.endTurn();}battle.phase;"));
+test('HUNT-05: prepared level-three/four hunts across every oath complete without stalls',()=>{
+ const report=[];for(const level of [3,4])for(const oath of ['wanderer','delver','ironbound']){
+  const outcomes=[];for(let seed=31;seed<43;seed++){
+   const {run}=harness({seed});outcomes.push(run(`const heroes=DEFAULT_BLOCKS.map((b,i)=>buildHero(CLASSES[b.cls],b.name,b.ab,'p'+(i+1),${level},b.bg));const mob=composeEncounter({boss:true,lead:'eclipse_wyrm',pool:['skeleton'],budgetMul:.45},{floor:2,partyLevel:${level},gear:0,difficulty:OATHS.${oath}.budget});const battle=new CombatEngine(heroes,mob,10,10,'tomb');let turns=0;while(battle.phase==='playing'&&turns++<1000){battle.actAuto(battle.current());if(battle.phase==='playing')battle.endTurn();}battle.phase;`));
+  }
+  assert(outcomes.every(x=>['won','lost'].includes(x)),'hunt stalled');if(oath==='wanderer')assert(outcomes.includes('won'),'prepared Wanderer hunt has no sampled wins');report.push({level,oath,wins:outcomes.filter(x=>x==='won').length,runs:outcomes.length});
  }
- assert(outcomes.every(x=>['won','lost'].includes(x)),'hunt stalled');assert(outcomes.includes('won'),'prepared Wanderer hunt has no sampled wins');console.log('Optional hunt sample: '+outcomes.filter(x=>x==='won').length+'/12 level-four Wanderer Auto victories, no shopping/boons.');
+ console.log('Optional hunt sample (Auto, no gear/boons/shopping): '+JSON.stringify(report));
 });
 
 test('HUNT-06: breath telegraphs without damage or charge use; moving out avoids the later fixed blast',()=>{
  const {run}=harness();run("const dragon=spawnMonster('eclipse_wyrm',0,false),crew=makeParty(),b=new CombatEngine(crew,[dragon],10,10);dragon.pos={x:6,y:5};crew.forEach((h,i)=>h.pos={x:1,y:i});const hp=crew.map(h=>h.hp).join();b._castPoint(dragon,SPELLS.starless_breath,{x:1,y:1});const charges=dragon.spells[0].uses;");assert.equal(run('crew.map(h=>h.hp).join()===hp'),true);assert.equal(run('charges'),2);assert.equal(run('dragon.intent.x'),1);run("crew.forEach((h,i)=>h.pos={x:4,y:i});dragon.acted.action=false;b.actAuto(dragon);");assert.equal(run('dragon.intent'),null);assert.equal(run('dragon.spells[0].uses'),1);assert.equal(run('crew.map(h=>h.hp).join()===hp'),true);
+});
+
+test('SAGA-04: guardian aftermath blocks movement and defers stairs until acknowledged',()=>{
+ const {run}=harness();run("explore.pos={...explore.exit};enterCombat({boss:true,lead:'bell_warden',pool:['skeleton']},'2,2');cancelTurn();game.phase='won';game.xpEarned=0;resolveCombat();");
+ assert.equal(run("$('#aftermathScreen').classList.contains('show')"),true);
+ assert.match(run("$('#aftermathStory').textContent"),/bell splits/);
+ assert.equal(run('campaign.completedFloors.length'),0);
+ assert.equal(run('overlayOpen()'),true);
+ run('closeAftermath();');assert.equal(run('campaign.completedFloors.length'),1);
+ assert.equal(run("$('#townScreen').classList.contains('show')"),true);
+ const final=harness().run;final("nodeId='sunless_tomb';worldPath=['entrance','warren','catacombs','ossuary','deep_stair','sunless_tomb'];explore=new ExploreEngine(buildDungeon(generateLevel(WORLD.sunless_tomb)));explore.pos={...explore.exit};bag.relic=true;enterCombat({boss:true,lead:'crypt_lord',pool:['skeleton']},'2,2');cancelTurn();game.phase='won';game.xpEarned=0;resolveCombat();");assert.equal(final("$('#fateScreen').classList.contains('show')"),false);final('closeAftermath();');assert.equal(final("$('#fateScreen').classList.contains('show')"),true);
+});
+
+test('SAGA-04: level choices precede aftermath and load clears transient panels',()=>{
+ const {run}=harness();run("enterCombat({boss:true,lead:'ash_cantor',pool:['skeleton']},'2,2');cancelTurn();game.phase='won';game.xpEarned=100;resolveCombat();closeAftermath();");
+ assert.equal(run("$('#aftermathScreen').classList.contains('show')"),true);
+ assert.equal(run('party.every(h=>h.pendingLevels>0)'),true);
+ run('autoAssignLevelUp();');assert.equal(run("$('#aftermathScreen').classList.contains('show')"),true);
+ run('closeAftermath();');assert.equal(run("$('#aftermathScreen').classList.contains('show')"),false);
+ run("$('#aftermathScreen').classList.add('show');applySave(decodeSave(encodeSave(saveState())));");assert.equal(run("$('#aftermathScreen').classList.contains('show')"),false);
+});
+
+test('SAGA-05: every later council plan changes the epilogue without inventing legacy rewards',()=>{
+ const {run}=harness();
+ for(const node of ['gallery','catacombs','ossuary','shrine_road','deep_stair']){
+  run(`worldPath=['entrance','${node}','sunless_tomb'];campaign.decisions={};`);
+  const endings=run(`STORY['${node}'].plans.map(p=>{campaign.decisions['${node}']=p.id;return campaignEpilogue('break');})`);
+  assert.notEqual(endings[0],endings[1],node);
+ }
+ run("campaign.decisions={gallery:'legacy',catacombs:'legacy'};worldPath=['entrance','gallery','catacombs','sunless_tomb'];");
+ assert.doesNotMatch(run("campaignEpilogue('break')"),/recovered names|freed choir|bell-forged/);
+ run("campaign.decisions={gallery:'names'};worldPath=['entrance','warren','sunless_tomb'];");assert.doesNotMatch(run("campaignEpilogue('break')"),/recovered names/);
+});
+
+test('RELIC-04: Eclipsescale reduces spell hits only, clamps at zero, and follows equipment',()=>{
+ const {run}=harness();run("const caster=party[3],wearer=party[0],other=party[1],foe=spawnMonster('ogre',0,false),battle=new CombatEngine(party,[foe],10,10);wearer.equip.armor='eclipsescale';wearer.hp=other.hp=100;Rules.spellAmount=()=>5;caster.spells=[{id:'fireball',uses:4,max:4},{id:'magic_missile',uses:4,max:4}];wearer.pos={x:4,y:4};other.pos={x:5,y:4};foe.pos={x:9,y:9};battle.castSpell(caster,SPELLS.fireball,{x:4,y:4});");
+ assert.equal(run('wearer.hp'),97);assert.equal(run('other.hp'),95);
+ run("caster.acted.action=false;battle.castSpell(caster,SPELLS.magic_missile,wearer);");assert.equal(run('wearer.hp'),94);
+ run("Rules.spellAmount=()=>1;caster.acted.action=false;battle.castSpell(caster,SPELLS.magic_missile,wearer);");assert.equal(run('wearer.hp'),94);
+ run("wearer.equip.armor=null;other.equip.armor='eclipsescale';Rules.spellAmount=()=>5;caster.acted.action=false;battle.castSpell(caster,SPELLS.magic_missile,wearer);");assert.equal(run('wearer.hp'),89);
+ run("foe.pos={x:4,y:5};Rules.attack=()=>({hit:true,crit:false});Rules.damage=()=>5;battle.doAttack(foe,wearer);");assert.equal(run('wearer.hp'),84);
+ assert.match(run("itemRules(ITEMS.eclipsescale)"),/2 less damage per spell hit/);
 });
