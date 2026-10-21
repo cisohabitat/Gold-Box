@@ -92,3 +92,13 @@ Implementation: themed materials and inline chapter/end artwork, actual-HP tile 
 ## Sprite art pass (0.9.0)
 
 Completed: review the old contact sheet; repair malformed palette data; rebuild all 19 figures on a consistent 24×24 grid; give guardians unique art; clarify hero/enemy/guardian framing; reuse art in roster/Tactics; validate geometry, references, tiny-screen rendering and existing campaign gates. Sprite art grades C+ → A− within the project scope. See SPRITE_REVIEW.md. Remaining: physical Safari art/input review and human recognition/playtesting before claiming broader quality gains.
+
+## Campaign and Field Atlas expansion (0.10.0)
+
+1. Review the six-chapter arc, existing guardian identity and treasure acquisition gaps.
+2. Add authored chapter set pieces, guardian aftermaths and a foreshadowed optional sky-dragon legend without changing the required world graph.
+3. Build an illustrated in-game Bestiary, Treasure & Relics and Legends pages from authored lore plus registry-backed rules/sources; include search, relevant filters and current ownership.
+4. Implement the stage-gated Observatory hunt, a fixed-area telegraphed breath, bounded second phase, unique art, exactly-once mantle reward, town/save recovery and ending acknowledgement.
+5. Verify old saves, optional progression, timing/aim/focus, danger readability, device fitting, hunt smoke samples and the complete campaign/browser gate; update docs and publish automatically.
+
+Stages 1–4 are implemented. Local stage-5 evidence and scope limits appear in CAMPAIGN_REVIEW.md; final cross-browser/publication evidence is recorded in the implementation PR. Human playtesting and physical Safari remain follow-up validation, not claims of completion.

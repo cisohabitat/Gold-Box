@@ -378,3 +378,32 @@ test('RESTART-03: cancelling retains a manual spell aim and unspent action',()=>
  const {run}=harness();run("enterCombat({pool:['goblin']},'2,2');cancelTurn();game.order=['p4',...game.order.filter(id=>id!=='p4')];game.turnIndex=0;game._begin();selectSpell('fireball');combatClick(4,4);const restartAim=spellAim,chargesBeforeRestart=party[3].spells.find(s=>s.id==='fireball').uses;requestRestart();cancelRestart();");
  assert.equal(run('validAim()'),true);assert.equal(run('spellAim===restartAim'),true);assert.equal(run('game.current().acted.action'),false);assert.equal(run("party[3].spells.find(s=>s.id==='fireball').uses"),run('chargesBeforeRestart'));
 });
+
+test('ATLAS-01: every monster/item has authored context and valid spell/art references',()=>{
+ const {run}=harness();assert.equal(run("Object.entries(BESTIARY).every(([id,m])=>MONSTER_LORE[id]?.length===3&&SPRITES[m.sprite]&&(m.spells||[]).every(s=>SPELLS[s.id]))"),true);assert.equal(run("Object.keys(ITEMS).every(id=>RELIC_LORE[id]&&itemSources(id)&&itemRules(ITEMS[id]))"),true);assert.equal(run('Object.keys(SAGAS).length===Object.keys(WORLD).length'),true);
+});
+test('HUNT-01: legendary hunt is optional, stage-gated, and saved before combat',()=>{
+ const {run}=harness();assert.equal(run("$('#codexScreen').classList.add('show');codexTab='legends';beginLegendHunt()"),false);
+ run("campaign.completedFloors=['entrance','gallery','catacombs','shrine_road'];nodeId='shrine_road';worldPath=[...campaign.completedFloors];campaign.decisions.shrine_road='hearths';openTown();$('#codexScreen').classList.add('show');codexTab='legends';const beforeHunt=JSON.stringify(saveState());");
+ assert.equal(run('beginLegendHunt()'),true);assert.equal(run("mode==='combat'&&legendHunt&&game.combatants.some(c=>c.cls==='EclipseWyrm')"),true);assert.equal(run('decodeSave(persistRead()).inTown'),true);assert.equal(run('decodeSave(persistRead()).campaign.hunt'),false);
+});
+test('HUNT-02: victory grants one reward, preserves map geometry, and survives town reload',()=>{
+ const {run}=harness();run("campaign.completedFloors=['entrance','gallery','catacombs','shrine_road'];nodeId='shrine_road';worldPath=[...campaign.completedFloors];campaign.decisions.shrine_road='hearths';openTown();$('#codexScreen').classList.add('show');codexTab='legends';beginLegendHunt();cancelTurn();game.phase='won';game.xpEarned=0;const supplyBefore=bag.rations;resolveCombat();const huntCode=encodeSave(saveState());");
+ assert.equal(run('campaign.hunt'),true);assert.equal(run("bag.items.filter(x=>x==='eclipsescale').length"),1);assert.equal(run('bag.rations===supplyBefore+1'),true);assert.equal(run("[...explore.cleared].every(k=>/^\\d+,\\d+$/.test(k))"),true);assert.equal(run('applySave(decodeSave(huntCode))'),true);assert.equal(run('campaign.hunt'),true);assert.equal(run("$('#townScreen').classList.contains('show')"),true);run("$('#codexScreen').classList.add('show');codexTab='legends';");assert.equal(run('beginLegendHunt()'),false);assert.equal(run("campaignEpilogue('break').includes('freed constellations')"),true);
+});
+test('HUNT-03: malformed hunt state is rejected atomically; legacy codes default safely',()=>{
+ const {run}=harness();run("const old=saveState();delete old.campaign.hunt;applySave(old);");assert.equal(run('campaign.hunt'),false);run("const bad=saveState();bad.campaign.hunt='yes';const intact=JSON.stringify(saveState());");assert.equal(run('applySave(bad)'),false);assert.equal(run('JSON.stringify(saveState())===intact'),true);
+});
+test('HUNT-04: wyrm has one bounded living phase and no template mutation',()=>{
+ const {run}=harness();run("const wyrm=spawnMonster('eclipse_wyrm',0,true),wyrmBattle=new CombatEngine(makeParty(),[wyrm],10,10);wyrm.hp=Math.floor(wyrm.maxHp/2);wyrm.spells[0].uses=0;wyrmBattle._checkEnd();wyrmBattle._checkEnd();");assert.equal(run('wyrm.awakened'),true);assert.equal(run("wyrmBattle.living('enemy').length"),2);assert.equal(run('BESTIARY.eclipse_wyrm.bloodied.count'),1);assert.equal(run('wyrm.spells[0].uses'),1);
+});
+test('HUNT-05: prepared level-four Wanderer parties can defeat the optional hunt without stalls',()=>{
+ const outcomes=[];for(let seed=31;seed<43;seed++){
+  const {run}=harness({seed});outcomes.push(run("const heroes=DEFAULT_BLOCKS.map((b,i)=>buildHero(CLASSES[b.cls],b.name,b.ab,'p'+(i+1),4,b.bg));const mob=composeEncounter({boss:true,lead:'eclipse_wyrm',pool:['skeleton'],budgetMul:.45},{floor:2,partyLevel:4,gear:0,difficulty:OATHS.wanderer.budget});const battle=new CombatEngine(heroes,mob,10,10,'tomb');let turns=0;while(battle.phase==='playing'&&turns++<1000){battle.actAuto(battle.current());if(battle.phase==='playing')battle.endTurn();}battle.phase;"));
+ }
+ assert(outcomes.every(x=>['won','lost'].includes(x)),'hunt stalled');assert(outcomes.includes('won'),'prepared Wanderer hunt has no sampled wins');console.log('Optional hunt sample: '+outcomes.filter(x=>x==='won').length+'/12 level-four Wanderer Auto victories, no shopping/boons.');
+});
+
+test('HUNT-06: breath telegraphs without damage or charge use; moving out avoids the later fixed blast',()=>{
+ const {run}=harness();run("const dragon=spawnMonster('eclipse_wyrm',0,false),crew=makeParty(),b=new CombatEngine(crew,[dragon],10,10);dragon.pos={x:6,y:5};crew.forEach((h,i)=>h.pos={x:1,y:i});const hp=crew.map(h=>h.hp).join();b._castPoint(dragon,SPELLS.starless_breath,{x:1,y:1});const charges=dragon.spells[0].uses;");assert.equal(run('crew.map(h=>h.hp).join()===hp'),true);assert.equal(run('charges'),2);assert.equal(run('dragon.intent.x'),1);run("crew.forEach((h,i)=>h.pos={x:4,y:i});dragon.acted.action=false;b.actAuto(dragon);");assert.equal(run('dragon.intent'),null);assert.equal(run('dragon.spells[0].uses'),1);assert.equal(run('crew.map(h=>h.hp).join()===hp'),true);
+});

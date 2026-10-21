@@ -1,0 +1,24 @@
+# Campaign, monsters and collections review — 0.10.0
+
+The Last Dawn had a sound six-chapter, four-route structure and consequential councils. The gaps were presentation and reference: important encounters lacked immediate narrative aftermath, two route relics had little context, players could only inspect living opposition, and there was no browsable treasure guide. The War Axe existed in data but had no acquisition source.
+
+## Delivered
+
+- Eight authored chapter set pieces develop Ilyra, Eren, Nessa and the kingdom above the dungeon. Bell Warden, Ash Cantor and king victories now have immediate story aftermath. Chronicle retains the expanded chapter accounts.
+- Astrax, the Star-Eater is an optional fourth guardian at the Observatory of Ash. The dragon is foreshadowed early, revealed along both fourth-chapter routes, and acknowledged by the king and all three endings if defeated. The original required world path and crown gates remain intact.
+- Its distinctive mechanic is a telegraphed Starless Breath. The dragon spends an action marking a 3×3 area, then releases 2d6 damage there on its next active turn. The coordinates remain fixed so heroes can leave the amber tiles. Incapacitation delays release; killing the dragon removes the threat. The blast can hit either side. At half health, its once-only phase grants +1 attack, restores at most one breath charge up to the existing maximum, and summons one skeleton.
+- A rested company can accept the hunt at a waystation after four completed chapters and the current council decision. The acceptance button follows a page explaining the danger, preparation and reward. It is optional and never required to reach the king. Defeat ends the run; voluntary Restart preserves the pre-hunt town Continue when storage is available, following existing combat-save semantics.
+- Victory grants the Eclipsescale Mantle (+2 AC, any class), one supply and normal battle XP once, then returns to the same waystation, including any pending level choices. A saved boolean prevents duplicate rewards and adds the freed constellations to the ending. Old v2 saves default to no hunt completion and receive no retroactive reward.
+- An illustrated Bestiary covers all 15 creatures with authored lore, base HP/AC/attack/damage/movement/range, registry-backed spell charges, known locations and counterplay. The four guardians show run completion when known. Elite/council/live changes are explicitly distinguished from reference statistics.
+- Treasure & Relics covers all 15 equipment/consumable entries plus the Sunless Crown, including exact effects, classes, value, acquisition sources, current satchel counts and equipped heroes. The War Axe is now sold by the trader. Ownership is current inventory, not a permanent collection achievement. Title browsing shows reference data without presenting an abandoned run as an active collection.
+- A Legends page joins the hunt briefing to all eight chapter set pieces. The pages are reachable from title, Party & Log and waystations; search, relevant category filters, empty states, internal navigation and Back work without external links. Combat pauses for the atlas and resumes one appropriate loop while preserving manual aim.
+
+## Limits and validation
+
+These changes strengthen the campaign's authored arc and monster identity within the standalone scope. They do not establish a commercial AAA rating. Fine details on tiny combat tiles remain available through larger portraits and readable reference text. The full guide intentionally contains campaign spoilers; it is not an encounter-unlock system.
+
+Local checks include script syntax, 58 engine/controller regressions, 4 balance-policy checks, 3 sprite-integrity checks, the 25-size device matrix, existing quality/flow/epic/polish/sprite browser scenarios, and the new atlas/hunt flow. The atlas scenarios cover search/filtering, equipment counts/escaped names, phone/landscape/tablet/desktop layout, focus isolation/return, paused enemy resumption, retained aim, nine danger tiles, a real controller hunt, exactly-once reward and town Continue. Final Chromium/Firefox/WebKit and 96-campaign evidence is recorded in the implementation PR.
+
+The deterministic main-campaign policy skips the optional hunt; its report does not measure hunt difficulty. A separate prepared level-four Wanderer sample (12 seeds, no gear/boons/shopping) records 12 Auto victories with no stalls. This is an accessibility smoke check, not a human difficulty estimate or proof that an unprepared company wins. Broader oath/level, human and physical Safari testing remain useful follow-up work.
+
+No external assets or runtime dependencies were added. The eight-node graph, v2 save format, safe Restart, visible log and 350 KiB limit remain release constraints. The runtime is 350,700 bytes (below 358,400 bytes / 350 KiB); final publication evidence is recorded in the implementation PR.

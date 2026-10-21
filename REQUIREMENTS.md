@@ -176,3 +176,20 @@ Restart/build/balance acceptance: **51 engine regressions + 4 balance-criteria c
 Local sprite integrity and four-size sprite browser checks pass, together with syntax and 51 engine regressions. Runtime: 324,527 bytes. Cross-browser and balance release evidence is recorded in the implementation PR.
 
 Sprite release balance acceptance: 96 campaigns, Wanderer 23/32, Delver 15/32, Ironbound 7/32; no stalls, identical to 0.8.0. Final 25-size matrix passes after roster/portrait changes.
+
+## Campaign, monsters and collections (0.10.0)
+
+| ID | Requirement and acceptance |
+| --- | --- |
+| SAGA-01 | Add authored set pieces for every world node and immediate aftermath for the three required guardians. Foreshadow Astrax on both fourth-chapter routes; defeated-hunt status changes the king’s arrival and all three endings. Preserve route/council/final-crown gates. |
+| ATLAS-01 | In-game Bestiary covers all 15 monsters with unique art, authored lore/counterplay, base stats, actual spell charges and habitats. Clearly distinguish base from elite/live stats and identify run guardian completions when known. |
+| ATLAS-02 | Treasure page covers 15 registered items plus the story crown: exact effects including poison, class eligibility, value, true acquisition sources, carried count and equipped names. Crown has no passive equipment bonus. Ownership is current inventory, not permanent collection history. Keep title browsing independent of an abandoned run. |
+| ATLAS-03 | Pages are reachable from title/notes/town, with internal tabs, search, relevant filters, empty results, 44px controls and independently scrolling content. Keyboard focus stays within the top overlay and returns correctly. Opening pauses combat; closing preserves aim and resumes exactly one appropriate loop. Cleanup covers load/new game/restart/title. |
+| HUNT-01 | Hunt acceptance requires an active waystation, four completed chapters, current council decision and no pending allocation/menu. Explain risk/preparation/reward before accepting. It is optional and does not block the main campaign. Save the town before entering. |
+| HUNT-02 | Wyrm has unique 24×24 art and a pure-engine fixed-area telegraph. Charge action spends no breath use/damage; next active turn consumes one use and hits the marked 3×3 area for 2d6, including allies. Amber tile marks, grid labels and boss text expose the warning. Moving out avoids damage; incapacitation delays release; a dead wyrm cannot release. |
+| HUNT-03 | At half health while alive, trigger one phase: +1 attack, at most one replenished breath use up to max, and one skeleton. Repeated end checks do not duplicate recharge/summons or mutate templates. |
+| HUNT-04 | Victory grants one +2 AC universal Eclipsescale Mantle, one supply and normal XP once, then reopens the same town before pending level choices. Persist completion and reward together; no invalid map-cleared markers. Legacy v2 defaults safely; malformed hunt flags reject atomically. Continue before an abandoned battle restores the pre-hunt town; Continue after victory retains completion. |
+| SAGA-02 | War Axe has a real obtainable source in SHOP_STOCK. No invented sources in the collection guide. Keep runtime below 350 KiB, offline, dependency-free and v2-save compatible. |
+| SAGA-03 | Require syntax, 58 regressions, sprite integrity, existing browser/device/story/save gates and new atlas/hunt browser scenarios across Chromium/Firefox/WebKit before auto-publication. Retain the 96-run main-campaign gate and disclose that its policy skips the optional hunt; record separate hunt evidence and physical/human limits. |
+
+Local expansion acceptance: 58 regressions, sprite/policy checks, atlas/hunt browser flow and existing device/game-flow checks pass. Runtime 350,700 bytes. The 96-run required-path sample is unchanged at 23/32 Wanderer, 15/32 Delver and 7/32 Ironbound wins, no stalls; its policy excludes the optional hunt. The prepared level-four Wanderer hunt smoke sample is 12/12, with no stalls. Final tested-head browser and publication evidence is recorded in the implementation PR.
