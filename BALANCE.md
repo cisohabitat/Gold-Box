@@ -1,6 +1,6 @@
-# Game balance — build 0.17.0
+# Game balance — build 0.18.0
 
-Default party; real Auto combat; loot-first exploration; complete route objectives and accept the first two shrine beacons encountered; camp below 70% HP; first offered boon; varied councils; no shop purchases.
+Default party; real Auto combat; loot-first exploration; complete route objectives and accept the first two shrine beacons encountered; camp below 70% HP; first offered boon; varied councils; varied companion vows with ready rewards claimed at waystations; no shop purchases.
 
 Deterministic regression canary, not a human win-rate estimate. Wilson intervals describe this small sample and do not validate the policy as representative of players.
 
@@ -23,6 +23,23 @@ Checks: PASS — no stalls, broad difficulty bands/order, every Wanderer route b
 
 Per-floor defeats, guardian pressure, and full seeded run records are in report.json.
 
+## Companion participation in the loot-first canary
+
+| Class | Pledged | Fulfilled |
+| --- | --- | --- |
+| Fighter | 3 | 93 |
+| Thief | 76 | 20 |
+| Cleric | 48 | 47 |
+| Mage | 16 | 76 |
+
+All 58 winning companies started four vows and fulfilled Fighter/Mage. Many event/cache vows stay unfinished under loot-first exploration; taking a promise is not equivalent to pursuing it. This canary retains its exploration/rest/shopping policy and unchanged balance thresholds, with varied vow choices and ready claims added. Outcome totals happen to match 0.17.0 (25/32,20/32,13/32), but the policy now includes rewards, so it is not a controlled no-vow comparison or a human win-rate estimate.
+
+## Quest-directed integration sample
+
+Eight additional Wanderer campaigns prioritize encounters, events and cache approaches needed for pledged vows before loot/stairs. This planner reads map metadata and deliberately revisits cache approaches for discovery; it is privileged scripted exploration, not a model of human behavior. Both seeds and all four routes are covered. Each of the eight plans was fulfilled four times, and all eight companies fulfilled all four vows before the final battle. All route objectives/councils/fate checks still apply to victories.
+
+Outcomes: 6 victories, 2 defeats, zero stalls. This is a separate integration sample, not an extension of the 96-run difficulty canary. Complete records are in the CI companions artifact.
+
 ## Guardian pressure
 
 | Guardian | Oath | Wins / attempts | Mean rounds | Mean party HP remaining |
@@ -37,10 +54,4 @@ Per-floor defeats, guardian pressure, and full seeded run records are in report.
 | CryptLord | delver | 20/27 | 12.5 | 42.9% |
 | CryptLord | ironbound | 13/17 | 13.8 | 35.8% |
 
-## Cosmetic-projectile interpretation
-
-All 96 seeded outcomes match 0.16.0: 25/32 Wanderer, 20/32 Delver, 13/32 Ironbound. Projectile metadata and rendering consume no gameplay randomness and do not control action/turn timing. A separate enabled/disabled engine simulation verifies identical combatants, phase, rounds, XP and next RNG value. Existing budgets, caps, enemy kits, guardian retinues and canary thresholds are unchanged.
-
-Every run terminates and each Wanderer route has sampled victories. Winning fresh campaigns retain both route objectives, five councils and a valid crown fate. These are deterministic Auto checks, not human win-rate estimates or physical Safari validation.
-
-All 288 isolated guardian scenarios also retain their 0.16.0 outcomes with zero stalls. Bell Warden:24/24,11/24,2/24; Ash Cantor:21/24,3/24,0/24; Sunless King:5/24,0/24,0/24; Astrax:24/24 on each oath (Wanderer/Delver/Ironbound). CI uploads complete seeded records separately from source.
+All 288 isolated guardian probes terminate with unchanged outcomes. These fixtures do not model quest acquisition or human play. Physical Safari and human campaign pacing remain unverified.

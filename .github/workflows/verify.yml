@@ -56,7 +56,11 @@ jobs:
           node tests/patrols.cjs
           node tests/enemies.cjs
           node tests/projectiles.cjs
-          if [ "$GOLD_BOX_BROWSER" = chromium ]; then node tests/balance.cjs; fi
+          node tests/companions.cjs
+          if [ "$GOLD_BOX_BROWSER" = chromium ]; then
+            node tests/balance.cjs
+            node tests/companion-campaign.cjs
+          fi
 
       - name: Upload balance report
         if: always() && matrix.browser == 'chromium'
@@ -66,4 +70,5 @@ jobs:
           path: |
             artifacts/balance/
             artifacts/scenarios/
+            artifacts/companions/
           if-no-files-found: warn

@@ -87,3 +87,10 @@ Build 0.15.0 local evidence: 92 engine/controller checks, four sprite/art checks
 The four routes now introduce different ordinary threats: Warren stalkers and Gallery sentinels first, Catacomb wisps next, then Ossuary chains/leeches/silencers or Pillared Road sentinels/leeches/silencers/stalkers. Deep Stair and Tomb patrols recombine these kits. All choices remain within the existing encounter budget/cap and six-chapter graph. Guardian retinue pools and the opening floor remain unchanged; old generated encounters keep their saved creatures. The Bestiary records each habitat and counter.
 
 Full-campaign Auto results belong in BALANCE.md; these are regression diagnostics, not observed human pacing or a claim that every run encounters every new species.
+
+
+## The company’s own promises — 0.18.0
+
+Four staged companion vows add eight choices alongside the five public councils. The Fighter teaches Tamsin what a watch owes the living or the fallen; the Thief helps Vey break debt chains or restore grave-goods; the Cleric joins Mother Alis’s refuge or vigil; the Mage shares Eren’s theorem or destroys the binding. Eight existing backgrounds supply personal openings and closure. Later roads and all crown fates remember the named owner and consequence, with a challenge when that owner becomes ruler.
+
+Goals use existing company victories, resolved events, caches and completion of the Descent of Ash. Tasks start at pledge and require a later completed waystation to resolve. Rewards are one potion, 20 gold or one supply according to plan, once per class; no new combat ally, permanent bonus, map or mandatory gate. Duplicate/missing classes and legacy runs remain supported. Unfinished promises stay unfinished in endings. See current BALANCE.md for the changed varied-vow Auto policy and its limits; this is not human playtest evidence.
