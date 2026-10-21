@@ -50,3 +50,11 @@ The unused first-person drawing functions were removed to fund gameplay under th
 Local evidence: 66 regression checks including 256 generated/fallback objective probes; four sprite/art checks; four balance-policy fixtures; the existing 25-size device/quality/flow/epic/guardian-payoff/atlas/polish/sprite suites; and a new actual-movement objective suite at 320×568, 956×350, 820×1180 and 1440×900. The latter covers exit gates, beacons/Chronicle/HUD, scout return, ordered-name Continue, retained sword, alternate shrine choice and saved completion. Controlled older flow fixtures explicitly mark their synthetic chapter-skip task complete; the new suite and campaign runner traverse actual maps.
 
 The full 96-campaign Auto gate passes: wanderer 26/32, delver 18/32, ironbound 7/32, no stalls; successful runs completed two objectives and five councils. The policy takes the first two shrine beacons encountered on loot/objective paths and excludes optional hunts/shopping. New movement and shrine benefits affect later RNG/actions, so comparison with 0.11.0 is not a paired tuning experiment. All cross-browser/publication evidence belongs in the release PR. Physical-device/human validation remains outstanding.
+
+## Guardian follow-up — 0.13.0
+
+The earlier 2d6 breath above records the 0.10 baseline. Current Astrax uses 3d6 and 46 base HP. The Warden's rally and Cantor's Cinderburst now spend one turn channeling; weapon damage interrupts these two channels and consumes their charge. Their deaths remove warnings; incapacitation postpones release. Auto can escape damaging fixed areas without bypassing movement reactions. Spell damage and misses do not break channels; Astrax remains uninterruptible.
+
+The grade moves from B+ toward A− within the single-file scope, subject to the full release gate. More warning/counterplay improves tactical agency; it does not prove harder bosses or human balance. No floors, mandatory encounters, save schema or council rewards changed.
+
+Local 0.13.0 balance: Wanderer 27/32, Delver 16/32, Ironbound 10/32; 96 completed runs, no stalls, unchanged canaries pass and every Wanderer route has a victory. Runtime 345,004 bytes (<350 KiB). All existing Chromium browser suites and the new guardian suite pass. Exact-head Chromium/Firefox/WebKit CI and live deployment evidence belong in the release PR.

@@ -489,7 +489,7 @@
   .token.enemy.elite{border-color:#ffe29a;box-shadow:0 0 0 1px #e8b84b;}
   .token.guardian{border:2px double #f1d58c;background:radial-gradient(circle at 50% 30%,#654559,#281c32);}
   .token.guardian::after{content:'◆';position:absolute;top:-5px;left:50%;color:#ffe29a;font-size:clamp(7px,1vw,12px);line-height:1;text-shadow:0 1px #000;pointer-events:none;}
-  .token.guardian.awakened{border-color:#ffb397;background:radial-gradient(circle at 50% 30%,#7c3b3a,#33182c);}
+  .token.channeling{outline:2px dashed #ffe19a;outline-offset:1px;}.token.guardian.awakened{border-color:#ffb397;background:radial-gradient(circle at 50% 30%,#7c3b3a,#33182c);}
   .token.dead{opacity:.45;filter:grayscale(1);border-style:dashed;}
   .token .hpbar{left:8%;right:8%;bottom:-1px;height:3px;border:1px solid #111827;box-sizing:content-box;}
   html[data-contrast=high] .token.party{background:#061e2e;border-color:#a9eeff;}
@@ -681,7 +681,7 @@
 <div class="screen" id="settingsScreen" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="sbox"><h2 id="settingsTitle" class="ctitle">Sound &amp; Display</h2><p class="tag">Make the journey your own. Combat pauses while this sheet is open.</p><div class="settings-list"><label><input id="prefSound" type="checkbox"> Synthesized sound effects</label><label><input id="prefMusic" type="checkbox"> Quiet ambient tones (requires sound)</label><label for="prefVolume">Volume <output id="volumeValue">35%</output><input id="prefVolume" type="range" min="0" max="100" step="5" value="35"></label><label><input id="prefEffects" type="checkbox" checked> Visual effects (respects reduced motion)</label><label><input id="prefContrast" type="checkbox"> High contrast / clean display</label><label for="prefPace">Auto pace<select id="prefPace"><option value="normal">Deliberate · normal speed</option><option value="quick">Quick · shorter Auto turns</option></select></label></div><p id="audioStatus" class="tag" role="status">Sound is off by default. No downloads are needed.</p><p id="preferenceStatus" class="tag" role="status"></p><button id="btnSettingsClose" class="big">Back to Game</button></div></div>
 <div class="screen" id="codexScreen" role="dialog" aria-modal="true" aria-labelledby="codexTitle"><div class="sbox wide"><div class="eyebrow">Eren’s field atlas</div><h2 id="codexTitle" class="ctitle">The Bestiary</h2><div class="atlas-nav" role="group" aria-label="Atlas pages"><button id="codexBeasts" aria-pressed="true">Bestiary</button><button id="codexTreasure" aria-pressed="false">Treasure &amp; Relics</button><button id="codexLegends" aria-pressed="false">Legends &amp; Hunt</button><button id="btnCodexClose">Back</button></div><p class="tag" id="codexNote"></p><div id="codexTools" class="atlas-tools"><label for="codexSearch">Search<input id="codexSearch" type="search" maxlength="80" placeholder="Name, spell, source or lore"></label><label for="codexFilter">Show<select id="codexFilter"><option value="all">All entries</option><option value="guardians">Guardians</option><option value="relics">Relics</option><option value="potions">Potions</option></select></label></div><p id="codexCount" class="tag" role="status"></p><div id="codexContent" class="atlas-grid"></div></div></div>
 <script>
-const GAME_BUILD='0.12.0';
+const GAME_BUILD='0.13.0';
 document.querySelectorAll('[data-build]').forEach(el=>el.textContent='Build '+GAME_BUILD);
 /* ===== CROWN CAMPAIGN : data, with controller helpers below ===== */
 const OATHS={wanderer:{name:'Wanderer',budget:0.65,recovery:0.25,desc:'Gentler battles; all heroes earn victory XP and recover 25% HP after a win.'},delver:{name:'Delver',budget:1,desc:'Fortune favours the prepared. Only standing heroes earn victory XP.'},ironbound:{name:'Ironbound',budget:1.25,desc:'Stronger enemy forces. Only standing heroes earn victory XP.'}};
@@ -748,7 +748,7 @@ const key=(x,y)=>x+','+y;
 
 
 const SPELLS = {
-  starless_breath:{id:'starless_breath',name:'Starless Breath',telegraph:true,target:'point',range:5,aoe:1,effect:{kind:'damage',dice:{n:2,sides:6,bonus:0}}},
+  starless_breath:{id:'starless_breath',name:'Starless Breath',telegraph:true,target:'point',range:5,aoe:1,effect:{kind:'damage',dice:{n:3,sides:6,bonus:0}}},
   magic_missile:{ id:'magic_missile', name:'Magic Missile', target:'enemy', range:6, aoe:0,
     effect:{kind:'damage', dice:{n:3,sides:4,bonus:3}} },
   fireball:{ id:'fireball', name:'Fireball', target:'point', range:6, aoe:1,
@@ -1126,9 +1126,9 @@ const DEFAULT_BLOCKS = [
 ];
 function makeParty(){ return DEFAULT_BLOCKS.map((b,i)=> buildHero(CLASSES[b.cls], b.name, b.ab, 'p'+(i+1), 1, b.bg)); }
 const BESTIARY = {
-  eclipse_wyrm:{name:'Astrax, the Star-Eater',cls:'EclipseWyrm',bossTitle:'ASTRAX · STAR-EATER',role:'Sky-dragon — telegraphed 3×3 breath punishes clusters; move off the amber tiles before its next active turn. At half health it gains +1 attack and calls one skeleton once.',glyph:'D',sprite:'eclipse_wyrm',side:'enemy',xp:180,threat:50,abilities:{str:17,dex:10,con:16,int:14,wis:13,cha:16},maxHp:38,ac:14,attackBonus:4,damage:{n:1,sides:8,bonus:1},speed:4,range:1,spells:[{id:'starless_breath',uses:2,max:2}],bloodied:{id:'star_wrath',recharge:'starless_breath',atk:1,count:1,summon:'skeleton',text:'ASTRAX BREAKS ITS LAST CHAIN. The dragon gains +1 attack and regains one breath; one star-bound watchman rises for a final defence.'}},
-  bell_warden:{name:'The Bell Warden',cls:'BellWarden',bossTitle:'BELL WARDEN',role:'Sentinel — holds the line and rallies its allies. At half health it calls one skeleton and gains +1 attack.',glyph:'W',sprite:'bell_warden',side:'enemy',xp:100,threat:31,abilities:{str:16,dex:10,con:15,int:10,wis:12,cha:12},maxHp:22,ac:14,attackBonus:4,damage:{n:1,sides:8,bonus:2},speed:4,range:1,spells:[{id:'war_chant',uses:1,max:1}],bloodied:{id:'bell_wrath',atk:1,count:1,summon:'skeleton',text:'The cracked bell tolls. Its Warden calls one last watchman and gains +1 attack!'}},
-  ash_cantor:{name:'The Ash Cantor',cls:'AshCantor',bossTitle:'ASH CANTOR',role:'Hex singer — weakens heroes and burns clusters. At half health it calls one skeleton and gains +1 attack and damage.',glyph:'A',sprite:'ash_cantor',side:'enemy',xp:130,threat:35,abilities:{str:10,dex:12,con:13,int:16,wis:14,cha:15},maxHp:24,ac:14,attackBonus:4,damage:{n:1,sides:6,bonus:1},speed:4,range:1,spells:[{id:'hex',uses:2,max:2},{id:'cinder',uses:1,max:1},{id:'spirit_bolt',uses:3,max:3}],bloodied:{id:'ash_wrath',atk:1,dmg:1,count:1,summon:'skeleton',text:'The Cantor burns its final hymn. One skeleton rises; the singer gains +1 attack and damage!'}},
+  eclipse_wyrm:{name:'Astrax, the Star-Eater',cls:'EclipseWyrm',bossTitle:'ASTRAX · STAR-EATER',role:'Sky-dragon — telegraphed 3×3 breath punishes clusters; move off the amber tiles before its next active turn. At half health it gains +1 attack and calls one skeleton once.',glyph:'D',sprite:'eclipse_wyrm',side:'enemy',xp:180,threat:50,abilities:{str:17,dex:10,con:16,int:14,wis:13,cha:16},maxHp:46,ac:14,attackBonus:4,damage:{n:1,sides:8,bonus:1},speed:4,range:1,spells:[{id:'starless_breath',uses:2,max:2}],bloodied:{id:'star_wrath',recharge:'starless_breath',atk:1,count:1,summon:'skeleton',text:'ASTRAX BREAKS ITS LAST CHAIN. The dragon gains +1 attack and regains one breath; one star-bound watchman rises for a final defence.'}},
+  bell_warden:{channel:'war_chant',name:'The Bell Warden',cls:'BellWarden',bossTitle:'BELL WARDEN',role:'Sentinel — channels a toll before rallying allies. A weapon hit interrupts it and spends the chant. At half health it calls one skeleton and gains +1 attack.',glyph:'W',sprite:'bell_warden',side:'enemy',xp:100,threat:31,abilities:{str:16,dex:10,con:15,int:10,wis:12,cha:12},maxHp:22,ac:14,attackBonus:4,damage:{n:1,sides:8,bonus:2},speed:4,range:1,spells:[{id:'war_chant',uses:1,max:1}],bloodied:{id:'bell_wrath',atk:1,count:1,summon:'skeleton',text:'The cracked bell tolls. Its Warden calls one last watchman and gains +1 attack!'}},
+  ash_cantor:{channel:'cinder',name:'The Ash Cantor',cls:'AshCantor',bossTitle:'ASH CANTOR',role:'Hex singer — marks a hymn’s blast one active turn ahead. Move off the tiles or land a weapon hit to interrupt it. At half health it calls one skeleton and gains +1 attack and damage.',glyph:'A',sprite:'ash_cantor',side:'enemy',xp:130,threat:35,abilities:{str:10,dex:12,con:13,int:16,wis:14,cha:15},maxHp:24,ac:14,attackBonus:4,damage:{n:1,sides:6,bonus:1},speed:4,range:1,spells:[{id:'hex',uses:2,max:2},{id:'cinder',uses:1,max:1},{id:'spirit_bolt',uses:3,max:3}],bloodied:{id:'ash_wrath',atk:1,dmg:1,count:1,summon:'skeleton',text:'The Cantor burns its final hymn. One skeleton rises; the singer gains +1 attack and damage!'}},
   goblin:{ name:'Goblin', cls:'Goblin', glyph:'g', sprite:'goblin', side:'enemy', xp:25, abilities:{str:11,dex:13,con:12,int:8,wis:9,cha:7}, maxHp:8, ac:13, attackBonus:2, damage:{n:1,sides:6,bonus:0}, speed:4, range:1, spells:[] },
   orc:{ name:'Orc', cls:'Orc', glyph:'o', sprite:'orc', side:'enemy', xp:60, abilities:{str:16,dex:12,con:14,int:9,wis:10,cha:9}, maxHp:15, ac:14, attackBonus:4, damage:{n:1,sides:8,bonus:1}, speed:4, range:1, spells:[] },
   shaman:{ name:'Goblin Shaman', cls:'Shaman', glyph:'s', sprite:'shaman', side:'enemy', xp:70, threat:24, abilities:{str:10,dex:13,con:12,int:11,wis:13,cha:11}, maxHp:10, ac:13, attackBonus:2, damage:{n:1,sides:4,bonus:0}, speed:4, range:1, spells:[{id:'spirit_bolt',uses:3,max:3},{id:'war_chant',uses:2,max:2}] },
@@ -1617,7 +1617,10 @@ class CombatEngine{
   }
   terrainAt(pos){return this.terrain.get(key(pos.x,pos.y))||null;}
   coverBonus(att,def){return att.range>1&&this.terrainAt(def.pos)==='cover'?2:0;}
-  tileScore(c,pos){const type=this.terrainAt(pos);return type==='ember'?-6:type==='sanctum'&&c.hp<c.maxHp?4:type==='cover'&&(c.range>1||(c.spells||[]).length)?2:0;}
+  tileScore(c,pos){const type=this.terrainAt(pos);return (this.dangerAt(pos).length?-30:0)+(type==='ember'?-6:type==='sanctum'&&c.hp<c.maxHp?4:type==='cover'&&(c.range>1||(c.spells||[]).length)?2:0);}
+  dangerAt(pos){return this.combatants.filter(u=>u.alive&&u.intent&&SPELLS[u.intent.spell].effect.kind==='damage'&&this.cheb(pos,u.intent)<=SPELLS[u.intent.spell].aoe);}
+  _interrupt(c){if(!c.intent?.interrupt)return;const sp=c.spells.find(s=>s.id===c.intent.spell);c.intent=null;if(sp)sp.uses=Math.max(0,sp.uses-1);this.log.push({t:c.name+' is interrupted! The channel breaks and its spell charge is lost.',k:'magic'});}
+  _evade(c){if(c.acted.move||!this.dangerAt(c.pos).length)return;let best=null,score=-Infinity;const foes=this._foes(c);for(const [k,steps]of this.reachable(c)){const [x,y]=k.split(',').map(Number),pos={x,y};if(this.dangerAt(pos).length)continue;const reactions=foes.filter(e=>!this.isIncapacitated(e)&&!e.aooUsed&&this.cheb(e.pos,c.pos)<=1&&this.cheb(e.pos,pos)>1).length;const value=this.tileScore(c,pos)-steps*.1-reactions*20;if(value>score){score=value;best=pos;}}if(best){this.moveTo(c,best.x,best.y);if(c.alive)this._checkGuards(c);if(c.alive)this.log.push({t:c.name+' moves clear of the marked blast.',k:'sys'});}}
   attackPreview(att,def){const cover=this.coverBonus(att,def),penalty=att.range>1&&this.meleeThreatened(att)?RANGED_MELEE_PENALTY:0;
     const needed=effAc(def)+cover-effAttack(att)+penalty;
     return {chance:this.isIncapacitated(def)?100:Math.max(5,Math.min(95,(21-needed)*5)),cover,penalty};
@@ -1654,7 +1657,7 @@ class CombatEngine{
     const pen = harried ? RANGED_MELEE_PENALTY : 0;
     const r = helpless ? {hit:true,crit:false} : Rules.attack(att,def,pen,this.coverBonus(att,def));
     if(!r.hit){ this.log.push({t:att.name+' attacks '+def.name+' and misses'+(harried?', harried in close quarters.':'.'),k:'miss'}); }
-    else{ const dmg=Rules.damage(att,r.crit) + perkStrikeBonus(att,def); def.hp-=dmg;
+    else{ const dmg=Rules.damage(att,r.crit) + perkStrikeBonus(att,def); def.hp-=dmg;if(dmg>0)this._interrupt(def);
       const how = helpless ? ' strikes the helpless '+def.name+' for ' : ' hits '+def.name+(r.crit?' (critical) for ':' for ');
       this.log.push({t:att.name+how+dmg+' damage.',k:'hit'});
       if(def.hp<=0){ this._drop(def); if(att.side==='party' && Math.random()<0.18){ const kl=bgLine(att,'kill'); if(kl) this.log.push({t:kl,k:'flavor'}); } }
@@ -1774,7 +1777,7 @@ class CombatEngine{
     }
   }
   _checkEnd(){ this._bossPhase(); if(!this.living('enemy').length) this.phase='won'; else if(!this.living('party').length) this.phase='lost'; }
-  _drop(o){ o.hp=0; o.alive=false; this.log.push({t:o.name+' falls.',k:'kill'}); if(o.side==='enemy') this.xpEarned += (o.xp||0);
+  _drop(o){ o.intent=null;o.hp=0; o.alive=false; this.log.push({t:o.name+' falls.',k:'kill'}); if(o.side==='enemy') this.xpEarned += (o.xp||0);
     else { const line=bgLine(o,'fall'); if(line) this.log.push({t:line,k:'flavor'}); } }
   _begin(){ const c=this.current(); if(c){ c.acted={move:false,action:false}; c.guarding=false; c.guardUsed=false; c.aooUsed=false; } }
   isIncapacitated(c){ return !!(c&&c.alive&&c.statuses&&c.statuses.some(s=>(s.type==='sleep'||s.type==='hold')&&s.duration>0)); }
@@ -1827,6 +1830,7 @@ class CombatEngine{
   actAuto(c){
     if(!c.alive||this.isIncapacitated(c))return;
     if(c.intent){if(c.acted.action)return;const intent=c.intent;c.intent=null;this.castSpell(c,SPELLS[intent.spell],intent);return;}
+    this._evade(c);if(!c.alive||this.phase!=='playing')return;
     if(c.side==='party'&&!c.signatureUsed&&!c.acted.action){
       const kind=SIGNATURES[c.cls]&&SIGNATURES[c.cls].kind;
       const needed=kind==='rally'||kind==='shadow'||(kind==='heal'&&this._allies(c).some(h=>h.hp<h.maxHp*.6))||(kind==='recharge'&&(c.spells||[]).some(sp=>sp.uses===0));
@@ -1874,7 +1878,7 @@ class CombatEngine{
     const st=buff.def.effect.status, aoe=buff.def.aoe||0;
     const near=this._allies(c).filter(a=>this.cheb(c.pos,a.pos)<=aoe);
     const fresh=near.filter(a=>!(a.statuses&&a.statuses.some(s=>s.type===st)));
-    if(near.length>=2 && fresh.length>=2){ this.castSpell(c, buff.def, c.pos); return true; }
+    if(near.length>=2 && fresh.length>=2){ this._castPoint(c, buff.def, c.pos); return true; }
     return false;
   }
   // Ranged attacker (a bow, not a spell): kite away from adjacent melee, then
@@ -1909,7 +1913,8 @@ class CombatEngine{
     this._stepToward(c, goal.pos);
     if(c.alive && this.canAttack(c,goal)) this.doAttack(c,goal);
   }
-  _castPoint(c,sp,tile){if(sp.telegraph){if(c.acted.action)return false;c.intent={spell:sp.id,x:tile.x,y:tile.y};c.acted.action=true;this.log.push({t:c.name+' draws in the stolen sky. Starless Breath marks a 3×3 area around tile '+(tile.x+1)+','+(tile.y+1)+': it erupts on the dragon’s next active turn. Move out of the marked tiles!',k:'kill'});return true;}return this.castSpell(c,sp,{x:tile.x,y:tile.y});}
+  _castPoint(c,sp,tile){if(sp.telegraph||c.channel===sp.id){if(!c.alive||this.isIncapacitated(c)||c.acted.action||c.intent||!c.spells.some(s=>s.id===sp.id&&s.uses>0))return false;c.intent={spell:sp.id,x:tile.x,y:tile.y,interrupt:c.channel===sp.id};c.acted.action=true;this.log.push({t:c.name+' channels '+sp.name+': releases on its next active turn. '+(sp.effect.kind==='damage'?'Leave the marked tiles. ':'')+(c.intent.interrupt?'A weapon hit interrupts and consumes its charge.':'The marked area stays fixed.'),k:'kill'});return true;}return this.castSpell(c,sp,{x:tile.x,y:tile.y});}
+
   _casterTurn(c, heroes){
     const offensive=this._offensiveSpells(c);
     const damage=offensive.filter(s=>s.def.effect.kind==='damage' && s.def.target==='enemy').sort((a,b)=>b.def.range-a.def.range);
@@ -2016,7 +2021,7 @@ class CombatEngine{
     const helpless=this.isIncapacitated(def);
     const r = helpless ? {hit:true,crit:false} : Rules.attack(att,def);
     if(!r.hit){ this.log.push({t: att.name+(kind==='guard'?' guards but misses ':' lunges at ')+def.name+(kind==='guard'?'.':' but misses.'),k:'miss'}); return; }
-    const dmg=Rules.damage(att, r.crit); def.hp-=dmg;
+    const dmg=Rules.damage(att, r.crit); def.hp-=dmg;if(dmg>0)this._interrupt(def);
     const phrase = kind==='guard' ? ' guards and strikes ' : ' seizes the opening and strikes ';
     this.log.push({t:att.name+phrase+def.name+' for '+dmg+(r.crit?' (critical)':'')+' damage.',k:'hit'});
     if(def.hp<=0) this._drop(def);
@@ -2239,10 +2244,10 @@ const MONSTER_LORE={
  acolyte:['Keeper of false dawns','The candle burns with a morning stolen from someone who never lived to see it. Its keeper calls that faith.','Mends wounded allies. Pressure the healer before committing damage to its companions.'],
  bonecaller:['Marshal of the nameless','A cloak of finger bones records every soldier it has raised. There is room for four more names.','Raise Dead has limited charges. Engage the caller and prevent it from fighting behind an untouched screen.'],
  ogre:['Vault breaker','Once it hauled the city’s bells. Now it breaks the doors of those who will not answer them.','Slow, durable melee force with a heavy club. Control it while dealing with lighter threats.'],
- bell_warden:['The census of the dead','Ilyra’s ancestor carries the names of his children in a bell he cannot stop ringing. He is a jailer and a prisoner.','At half HP, gains +1 attack and calls one skeleton once. Save resources for the second phase.'],
- ash_cantor:['The king’s discarded voice','When the king abandoned his mortal body, his last hymn kept singing. It has been trying to finish ever since.','Hex and Cinderburst punish clusters. At half HP, gains +1 attack/damage and calls one skeleton once.'],
+ bell_warden:['The census of the dead','Ilyra’s ancestor carries the names of his children in a bell he cannot stop ringing. He is a jailer and a prisoner.','Its toll channels War Chant for one active turn. Hit with a weapon to interrupt and consume the charge. At half HP gains +1 attack and calls one skeleton once.'],
+ ash_cantor:['The king’s discarded voice','When the king abandoned his mortal body, his last hymn kept singing. It has been trying to finish ever since.','Cinderburst is a marked 3×3 hymn: move away before its next active turn, or land a weapon hit to interrupt and spend its charge. Hex and Spirit Bolt remain immediate. At half HP gains +1 attack/damage and calls one skeleton once.'],
  crypt_lord:['Sovereign of stolen mornings','He sealed the first sunrise to save a dying kingdom. A thousand years later, he can no longer distinguish saving it from owning it.','Spirit Bolt, Hold and Raise Dead. At half HP gains +2 attack/damage and calls two guards once; council choices can deny one.'],
- eclipse_wyrm:['Astrax, the Star-Eater','The king chained a sky-dragon beneath the Observatory of Ash. Each scale imprisons a constellation; each breath burns with a dawn it was forbidden to release.','Optional hunt. Starless Breath marks a 3×3 area, then hits it for 2d6 damage on the dragon’s next active turn, including allies. Leave the amber tiles. Spread out; cover does not block magic. At half HP gains +1 attack, regains one breath charge (capped at its maximum), and calls one skeleton once.']
+ eclipse_wyrm:['Astrax, the Star-Eater','The king chained a sky-dragon beneath the Observatory of Ash. Each scale imprisons a constellation; each breath burns with a dawn it was forbidden to release.','Optional hunt. Starless Breath marks a 3×3 area, then hits it for 3d6 damage on the dragon’s next active turn, including allies. Leave the amber tiles. Spread out; cover does not block magic. At half HP gains +1 attack, regains one breath charge (capped at its maximum), and calls one skeleton once.']
 };
 const RELIC_LORE={
  sunshard:'A fragment of the first sun, carried by the watch that refused to surrender.',lantern_mantle:'Its stitched lanterns remember paths that no longer exist.',dawnblade:'The lost captain planted this sword in the stone and ordered the legion to wait for morning.',nightglass:'A blade made from the night before the first sunrise. A shallow cut remembers its venom.',starweave:'Village gods wove small mercies between the stars. The king could steal the sky, but never find every thread.',eclipsescale:'Astrax’s last unbroken scale. The constellation inside it shines for its bearer instead of its captor.',fine_sword:'A soldier’s honest steel, sharpened for one more watch.',war_axe:'A heavy edge made to end a siege, one shield at a time.',venom_dagger:'The flooded guild sealed its last bargain beneath a drop of green glass.',oak_staff:'A pilgrim’s walking stick, carved with prayers against the dark.',leather:'Patched by generations who could afford courage more easily than mail.',chain:'Links from the last watch, each stamped with a name.',warded_cloak:'A traveller’s cloak lined with patient protective stitches.',potion_heal:'Summer herbs preserved beneath a city that has forgotten summer.',potion_fury:'Bottled battle-courage. Drink carefully; the bottle remembers every war.'
@@ -3168,10 +3173,10 @@ function renderCombat(){
   }
   for(let y=0;y<game.h;y++){ for(let x=0;x<game.w;x++){
     const cell=document.createElement('div'); cell.className='cell'+(((x+y)%2)?' alt':''); const k=key(x,y); const here=game.at(x,y);
-    const terrain=game.terrainAt({x,y});if(game.living('enemy').some(u=>u.intent&&game.cheb({x,y},u.intent)<=SPELLS[u.intent.spell].aoe))cell.classList.add('breath-zone');if(terrain){cell.classList.add('field-'+terrain);const mark=document.createElement('span');mark.className='terrain-mark';mark.textContent=TERRAIN[terrain].glyph;cell.appendChild(mark);}
+    const terrain=game.terrainAt({x,y});if(game.dangerAt({x,y}).length>0)cell.classList.add('breath-zone');if(terrain){cell.classList.add('field-'+terrain);const mark=document.createElement('span');mark.className='terrain-mark';mark.textContent=TERRAIN[terrain].glyph;cell.appendChild(mark);}
     if(spellAim&&game.cheb({x,y},spellAim)<=selectedSpell.aoe)cell.classList.add('aimed');
-    const danger=game.living('enemy').some(u=>u.intent&&game.cheb({x,y},u.intent)<=SPELLS[u.intent.spell].aoe);
-    const details=(danger?'Danger: Starless Breath on the dragon’s next active turn. ':'')+(here?here.name+' '+here.hp+'/'+here.maxHp+' HP. ':'')+(terrain?TERRAIN[terrain].name+': '+TERRAIN[terrain].desc:'Plain ground');
+    const danger=game.dangerAt({x,y}).length>0;
+    const details=(danger?'Danger: '+game.dangerAt({x,y}).map(u=>SPELLS[u.intent.spell].name+' on its caster’s next active turn').join('; ')+'. ':'')+(here?here.name+' '+here.hp+'/'+here.maxHp+' HP. '+intentText(here):'')+(terrain?TERRAIN[terrain].name+': '+TERRAIN[terrain].desc:'Plain ground');
     cell.setAttribute('role','gridcell');cell.setAttribute('aria-label','Column '+(x+1)+', row '+(y+1)+'. '+details);cell.title=details;
     cell.tabIndex=x===gridCursor.x&&y===gridCursor.y?0:-1;
     cell.onfocus=()=>{gridCursor={x,y};for(const el of cellEls)el.tabIndex=el===cell?0:-1;};
@@ -3189,7 +3194,7 @@ function renderCombat(){
     if(castEnemy.has(k)) cell.classList.add('cast-enemy');
     if(castAlly.has(k)) cell.classList.add('cast-ally');
     if(castPoint.has(k)){ cell.classList.add('cast-point'); cell.onmouseenter=()=>aoePreview(x,y,true); cell.onmouseleave=()=>aoePreview(x,y,false); }
-    if(here){ const t=document.createElement('div'); t.className='token '+here.side+(here===c?' active':'')+(here.alive?'':' dead')+(here.elite?' elite':'')+(here.bossTitle?' guardian':'')+(here.awakened?' awakened':'');
+    if(here){ const t=document.createElement('div'); t.className='token '+here.side+(here===c?' active':'')+(here.alive?'':' dead')+(here.elite?' elite':'')+(here.bossTitle?' guardian':'')+(here.awakened?' awakened':'')+(here.intent?' channeling':'');
       if(SPRITES[here.sprite]) t.innerHTML=SPRITES[here.sprite]; else t.textContent=here.glyph;
       if(here.alive&&here.guarding){ const g=document.createElement('div'); g.className='stbadge guard'; g.textContent='\u26E8'; t.appendChild(g); }
       if(here.alive&&here.statuses&&here.statuses.length){
@@ -3444,7 +3449,7 @@ function renderCampaign(){
   $('#objective').textContent=explore.task?taskText():bag.relic?(campaign.bossSlain?'Carry the crown to the final stairs.':'The crown is yours. Defeat the king and reach the stairs.'):(STORY[nodeId]?STORY[nodeId].objective:'Find the key and descend.');
   const boss=mode==='combat'&&game&&game.combatants.find(c=>c.bossTitle&&c.alive);
   $('#bossPanel').hidden=!boss;
-  if(boss){$('#bossName').textContent=(boss.intent?'⚠ BREATH NEXT TURN · ':boss.awakened?'II · WRATH · ':'I · GUARDIAN · ')+boss.bossTitle+' · '+boss.hp+' / '+boss.maxHp+' HP';$('#bossHealth i').style.width=(boss.hp/boss.maxHp*100)+'%';}
+  if(boss){$('#bossPanel').setAttribute('aria-label',boss.bossTitle+'. '+intentText(boss));$('#bossPanel').title=intentText(boss);$('#bossName').textContent=(boss.intent?'⚠ '+(boss.intent.spell==='war_chant'?'TOLL':boss.intent.spell==='cinder'?'HYMN':'BREATH')+' NEXT TURN · ':boss.awakened?'II · WRATH · ':'I · GUARDIAN · ')+boss.bossTitle+' · '+boss.hp+' / '+boss.maxHp+' HP';$('#bossHealth i').style.width=(boss.hp/boss.maxHp*100)+'%';}
 }
 function renderCouncil(){
   $('#chapterArtwork').innerHTML=campaignArtwork(explore.theme,floorDepth(),false);
@@ -3520,6 +3525,7 @@ function checkContracts(){
 function validAim(){return !!(spellAim&&mode==='combat'&&game&&game.phase==='playing'&&spellAim.combat===game&&game.current().id===spellAim.actorId&&!game.current().acted.action&&mover==='cast'&&selectedSpell&&selectedSpell.target==='point'&&selectedSpell.id===spellAim.spellId);}
 function aimSummary(){const summary={allies:0,foes:0};if(!validAim())return summary;const c=game.current();for(const u of game.combatants)if(u.alive&&game.cheb(u.pos,spellAim)<=selectedSpell.aoe)summary[u.side===c.side?'allies':'foes']++;return summary;}
 function confirmAim(){if(overlayOpen())return false;if(!validAim()||autoFight||game.isIncapacitated(game.current()))return false;const target={x:spellAim.x,y:spellAim.y};doCast(target);return true;}
+function intentText(c){return c?.intent?SPELLS[c.intent.spell].name+' releases next active turn. '+(c.intent.interrupt?'A weapon hit interrupts and spends its charge. ':'Move off the marked tiles. '):'';}
 function openTactics(){
   if(mode==='combat')cancelTurn();tacticsOpener=typeof document.activeElement!=='undefined'?document.activeElement:null;
   const fighting=mode==='combat'&&game;
@@ -3527,6 +3533,7 @@ function openTactics(){
   $('#tacticsSubtitle').textContent=fighting?'Combat is paused while this sheet is open. Roles describe capabilities; the enemy adapts to your actions.':'Four heroes. One crown. Bring back the dawn.';
   const root=$('#tacticsContent');root.innerHTML='';
   const section=(title,copy)=>{const h=document.createElement('h3');h.textContent=title;root.appendChild(h);const p=document.createElement('p');p.textContent=copy;root.appendChild(p);};
+  if(fighting){const pending=game.combatants.filter(c=>c.alive&&c.intent);if(pending.length)section('Imminent threats',pending.map(c=>c.name+': '+intentText(c)).join(' '));}
   section('Your turn','Each hero can move once and take one action, in either order. Attack, cast, drink a potion, or use a signature. End Turn advances the order. Guard spends the action and ends the turn, preparing one reaction. Wait delays an untouched turn. Moving away from an adjacent foe can provoke a free strike.');
   section('Mouse, touch, and keyboard','Choose actions with a click or tap. Explore with arrows or WASD. In combat, Tab to the grid, use arrows to move focus, and press Enter or Space to use the selected action. Area spells still need confirmation. Party & Log opens the roster in smaller windows.');
   section('Aim before you cast','Select an area spell, then tap a tile to preview it. The pink outline shows the blast; the hint counts allies and foes. Tap that tile again or Confirm cast to commit. Fireball and other damage blasts hit friends too; Sleep only affects enemies. Cover protects against ranged weapons, not magic.');
@@ -3685,6 +3692,7 @@ function inspectTile(x,y){
   if(mode!=='combat'||!game||overlayOpen())return;
   const unit=game.at(x,y),terrain=game.terrainAt({x,y}),actor=game.current();
   let text=unit?unit.name+' · '+unit.hp+'/'+unit.maxHp+' HP · AC '+effAc(unit)+' · Range '+unit.range:'Tile '+(x+1)+', '+(y+1)+' · '+(terrain?TERRAIN[terrain].name:'Plain ground');
+  if(unit)text+=' '+intentText(unit);else if(game.dangerAt({x,y}).length)text+=' · Leave this marked tile before the blast.';
   if(unit&&actor.side==='party'&&game.canAttack(actor,unit))text+=' · '+game.attackPreview(actor,unit).chance+'% hit';
   const label=$('#tileInspect');label.textContent=text;label.hidden=false;
 }

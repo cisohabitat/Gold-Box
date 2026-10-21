@@ -8,7 +8,7 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 ## Play
 
-**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.12.0**
+**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.13.0**
 
 Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a fitted board/control shell on every device, with a live sidebar in wide windows and a separate Party & Log panel in smaller windows. **How to Play** on the title screen explains the rules.
 
@@ -27,6 +27,12 @@ Build 0.8.0 adds themed materials, chapter and ending illustrations, battle/vict
 Open **Sound & Display** from the title or Party & Log. Choose high contrast, reduced visual effects, normal/quick Auto pace, volume, and optional synthesized sound and ambient tones. Sound and ambience start off; enabling them requires a gesture and downloads no assets. Preferences persist separately from the campaign, or last for the session when storage is blocked. Settings pause combat; Escape returns to play. OS reduced motion always takes priority.
 
 The quality target is an excellent small standalone tactical RPG. The presentation and options improve its scope-limited grade from B+ toward A−; commercial AAA production quality remains outside a single-file, 350 KiB budget. Physical iPhone/iPad validation and broader human balance/playtesting remain outstanding.
+
+### Guardian counterplay — build 0.13.0
+
+The Bell Warden channels its rallying toll for one active turn; a damaging weapon hit breaks the chant and spends its charge. The Ash Cantor marks a fixed 3×3 Cinderburst one active turn ahead: leave the amber tiles or interrupt with a weapon hit. Misses and spell damage do not interrupt. Incapacitation delays release; death clears the warning. Ordinary casters still cast immediately.
+
+The boss bar, outlined caster, labelled grid tiles and Tactics explain imminent threats. Auto seeks legal safe ground before acting and still takes movement reactions. Astrax has 46 base HP and a 3d6 Starless Breath; its breath remains uninterruptible, with a fixed warning area and bounded half-health recharge. Move out before it releases.
 
 ### Playing on desktop, iPad, and iPhone
 
@@ -275,3 +281,7 @@ The gate rejects stalls and invalid endings, inverted difficulty, a route with n
 
 
 Build 0.7.0 balance snapshot: Wanderer **23/32 (71.9%)**, Delver **15/32 (46.9%)**, Ironbound **7/32 (21.9%)**; **0 stalls**. The broad regression criteria pass. See BALANCE.md for route results and guardian pressure; in particular, Ash Cantor on Delver and Warren/Ossuary on Ironbound remain useful manual-play targets. Encounter tuning is unchanged in this release.
+
+The guardian release adds `node tests/guardians.cjs` to the three-browser gate, covering visible toll/hymn warnings, manual weapon interruption and fixed-area escape on phone, short landscape, tablet and desktop.
+
+Current build 0.13.0 verification: 70 engine checks; 96 objective-aware Auto campaigns (Wanderer 27/32, Delver 16/32, Ironbound 10/32), no stalls and unchanged balance canaries; all Chromium device/input/campaign/atlas suites plus guardian counterplay checks. Scope grade: A− as a small standalone RPG; human full-run difficulty and physical Safari testing remain outstanding. Cross-browser/publication evidence is recorded in the release PR.

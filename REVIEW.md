@@ -71,3 +71,13 @@ The user reported accidental Restart activation. The previous button directly in
 The prior 36-run campaign exercise verified progression but did not enforce balance bands or publish a structured route/guardian report. The new balance canary covers 96 seeded oath/route combinations, records pressure and defeat locations, checks broad difficulty/order/accessibility criteria, and writes build-tagged reports even on failure. The title screen links to BALANCE.md; detailed JSON/Markdown reports become CI artifacts. Auto-policy outcomes are diagnostic evidence, not measured player win rates.
 
 The expanded double-click matrix reproduced a second-tap landing on confirmation at 600×350. A 600 ms confirmation arming delay now blocks that transition; cancellation is immediate, and the delay timer is independent of combat scheduling. All 25 device scenarios now exercise rapid restart activation.
+
+## Grade and improvements — 0.13.0
+
+Scope: a standalone six-chapter tactical RPG under 350 KiB. Baseline 0.12.0 earns **B+ overall**: persistent route goals and councils work, but the middle guardians offer limited visible counterplay. This is an editorial scope assessment, not a commercial AAA certification.
+
+This release adds interruptible Warden tolls and Cantor hymns, fixed warnings with explicit counter instructions, and legal Auto escape movement. Astrax gains 46 base HP and 3d6 breath; phase and charge caps remain intact. The implementation targets **A− within this scope**, conditional on the release gate. Campaign structure/identity and save/device engineering are strongest; human-tested difficulty, encounter variety and native-device evidence still limit the grade. Automated victories cannot establish whether these bosses feel epic to a person.
+
+Evidence: 70 engine/controller regressions plus four sprite and four balance-policy checks; a new real manual-attack/telegraph browser suite at phone, short landscape, tablet and desktop sizes. Full seeded balance and exact-head cross-browser/publication results are recorded with the release. Native Safari/physical hardware and human full-run testing remain unverified.
+
+Local 0.13.0 balance: Wanderer 27/32, Delver 16/32, Ironbound 10/32; 96 completed runs, no stalls, unchanged canaries pass and every Wanderer route has a victory. Runtime 345,004 bytes (<350 KiB). All existing Chromium browser suites and the new guardian suite pass. Exact-head Chromium/Firefox/WebKit CI and live deployment evidence belong in the release PR.
