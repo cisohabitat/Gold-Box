@@ -8,7 +8,7 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 ## Play
 
-**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.10.0**
+**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.10.1**
 
 Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a fitted board/control shell on every device, with a live sidebar in wide windows and a separate Party & Log panel in smaller windows. **How to Play** on the title screen explains the rules.
 
@@ -62,6 +62,10 @@ Captain Ilyra holds the last gate. Archivist Eren has discovered where the king 
 At each of the five waystations, a **War Council** appears before the trader. Read both plans and their exact benefits, then commit to one before descending. There are seven authored councils across the branching world and fourteen possible plans; one run encounters five councils. Supplies and permanent bonuses help on the road. Other choices weaken the final king, draw away part of his retinue, deny one bloodied-phase reinforcement, or grant a three-turn opening ward. The battle log explains your allies’ help. Decisions and rewards save immediately and cannot be claimed twice; Chronicle recalls the road and its consequences.
 
 The finale offers three distinct endings: **Break** releases the dawn, **Bind** leaves your chosen hero as Warden, and **Wear** places your chosen hero on the throne. The epilogue remembers the named company, refugees, and route. The choice only opens with the crown, the king defeated, and the final stairs reached. Reloading before you choose returns to that decision. Older portable saves remain supported; earlier chapters receive no retroactive story rewards.
+
+### Relic artwork
+
+Build 0.10.1 replaces the shared weapon/cloak/potion pictures with 16 individual treasure illustrations. Dawnblade carries a sunburst, Nightglass has a hooked glass blade, Starweave bears constellations, Eclipsescale preserves a winged dragon scale, and the Sunless Crown holds a chained sun. Legendary relics have larger framed displays. Every ordinary item also has its own silhouette. [Artwork review](TREASURE_ART_REVIEW.md) records the designs and checks.
 
 ### Bestiary, treasure and the Star-Eater
 

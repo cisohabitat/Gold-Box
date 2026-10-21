@@ -193,3 +193,13 @@ Sprite release balance acceptance: 96 campaigns, Wanderer 23/32, Delver 15/32, I
 | SAGA-03 | Require syntax, 58 regressions, sprite integrity, existing browser/device/story/save gates and new atlas/hunt browser scenarios across Chromium/Firefox/WebKit before auto-publication. Retain the 96-run main-campaign gate and disclose that its policy skips the optional hunt; record separate hunt evidence and physical/human limits. |
 
 Local expansion acceptance: 58 regressions, sprite/policy checks, atlas/hunt browser flow and existing device/game-flow checks pass. Runtime 350,700 bytes. The 96-run required-path sample is unchanged at 23/32 Wanderer, 15/32 Delver and 7/32 Ironbound wins, no stalls; its policy excludes the optional hunt. The prepared level-four Wanderer hunt smoke sample is 12/12, with no stalls. Final tested-head browser and publication evidence is recorded in the implementation PR.
+
+## Treasure artwork correction (0.10.1)
+
+| ID | Acceptance |
+| --- | --- |
+| RELIC-ART-01 | All 15 items and the story crown have distinct identity-keyed illustrations; silhouette/path geometry must differ, beyond colour. No generic weapon/armour/potion fallback. Every registry ID resolves. |
+| RELIC-ART-02 | Legendary designs reflect their lore: solar Dawnblade, hooked Nightglass, crystal Sunshard, lantern-bearing mantle, constellation Starweave, winged Eclipsescale, chained-sun crown. Provide larger 176px framed relic art without replacing readable names, exact rules or ownership. |
+| RELIC-ART-03 | All artwork remains bounded, decorative, pointer-transparent, inline and offline. No duplicate SVG IDs/references, assets, animation loop, RNG consumption or rule/save changes. Verify phone/landscape/tablet/desktop layouts and existing atlas input/hunt recovery. Stay below 350 KiB. |
+
+Local art/engine checks pass: 58 engine/controller regressions and 4 sprite/art checks. Runtime is 356,903 bytes of the 358,400-byte budget. Final browser, balance and publication evidence is recorded in the implementation PR.
