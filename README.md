@@ -8,7 +8,7 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 ## Play
 
-**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.14.0**
+**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.15.0**
 
 Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a fitted board/control shell on every device, with a live sidebar in wide windows and a separate Party & Log panel in smaller windows. **How to Play** on the title screen explains the rules.
 
@@ -204,7 +204,7 @@ Casters also advance to spell range instead of charging into melee, and incapaci
 
 ## Validation
 
-The current dependency-free suite has **84 engine/controller checks** against the real inline script with DOM stubs. It covers save recovery, pending levels, atomic imports, turn scheduling, friendly fire, guardians, campaign gates, route goals, movement-risk forecasts and immediate inventory persistence. Generator checks include 96 exit/key layouts, 160 all-cache-open vault layouts and 256 objective/fallback layouts.
+The current dependency-free suite has **92 engine/controller checks** against the real inline script with DOM stubs. It covers save recovery, pending levels, atomic imports, turn scheduling, friendly fire, guardians, campaign gates, route goals, movement-risk forecasts and immediate inventory persistence. Generator checks include 96 exit/key layouts, 160 all-cache-open vault layouts and 256 objective/fallback layouts.
 
 Browser suites exercise real touch/keyboard controls, save/Continue, offline interaction, clipboard failure, paused menus, all endings, atlas/hunt recovery and 25 viewport sizes. The confidence suite reloads before closing Party after equip, unequip, Auto Gear and healing; it also checks full-HP potion safeguards and movement/turn previews on phone, short landscape, iPad-sized and desktop windows. Automated WebKit is compatibility evidence; physical iPhone/iPad Safari and human campaign difficulty remain unverified.
 
@@ -254,6 +254,7 @@ node tests/atlas.cjs
 node tests/guardians.cjs
 node tests/confidence.cjs
 node tests/arenas.cjs
+node tests/patrols.cjs
 node tests/balance.cjs
 ```
 
@@ -296,3 +297,15 @@ Heroes who fall during their own move or friendly-fire spell now yield automatic
 `tests/scenario-balance.cjs` adds 288 deterministic isolated-arena probes with two squads, plain/ward gear fixtures, guardian-first/retinue-first front-line priorities, three oaths and three seeds. Casters/enemies still use Auto. Fixture equipment does not prove acquisition, and these are not human playtests or full-campaign win rates. `tests/arenas.cjs` verifies actual movement/spell death recovery, terrain shifts, council support, gear comparisons and save recovery at four device sizes.
 
 Build 0.14.0 local evidence: 84 engine/controller checks, four sprite/art checks and four policy checks pass; all twelve Chromium browser suites pass. The full 96-campaign canary gives 28/32 Wanderer, 23/32 Delver and 15/32 Ironbound with zero stalls and unchanged thresholds. All 288 isolated strategy scenarios terminate; 72 prepared Observatory hunt probes win. Runtime 354,308 bytes (346.0 KiB), reported against the soft 350 KiB target. Exact-head cross-browser/publication evidence is recorded in the release PR. Human/physical-device limits remain open.
+
+### Patrol tactics and learning from defeat — 0.15.0
+
+Ordinary encounters now deploy as five patrol patterns: **Shield & Bow**, **Split Watch**, **Hex Cell**, **Rallying Warband** and **Grave Procession**. They use existing enemies and the same encounter budget/count cap. When affordable, a group reserves two complementary roles before filling its remaining budget; elites cannot spend the budget reserved for the second role. Small groups fall back safely. Rear attackers and support units deploy behind staggered or split front ranks. A lone sentry gets no misleading formation name, and a group missing its intended specialist falls back to Split Watch.
+
+The opening log and paused Tactics name the pattern, explain a counter and list the living enemies' roles. Formations change starting positions, not line of sight or movement/attack rules. Bosses keep their own composition/arenas. Older v2 encounter descriptors derive a suitable pattern from their existing pool; new descriptors save their authored pattern, and invalid pattern IDs are rejected before changing a run.
+
+After a loss, **Learn from this battle** shows the starting party HP, actual HP lost to weapons/spells/embers/poison, friendly-fire contribution, missed weapon strikes, turns lost to Sleep/Hold and the first hero to fall. Overkill is excluded and protective wards are accounted for. Friendly fire is already included in spell damage, not an extra damage total. Weapon strikes include reactions. The report offers at most two suggestions based on what was observed; it does not claim that one statistic explains the entire defeat. Feedback appears before run totals, with readable focus, independent scrolling and the existing Play Again action. New runs and victories clear it.
+
+This evidence is local to the completed battle, uses no extra dice rolls and is not saved or sent anywhere. The existing defeat/save rules are unchanged. Full campaign balance, device checks and cross-browser CI remain release gates; physical Safari and human campaign playtesting remain outstanding.
+
+Build 0.15.0 local evidence: 92 engine/controller checks, four sprite/art checks and four policy checks pass; all thirteen Chromium browser suites pass. The full 96-campaign canary gives 24/32 Wanderer, 24/32 Delver and 7/32 Ironbound, with zero stalls and unchanged criteria. All 288 guardian probes terminate, with unchanged outcomes. Runtime 363,723 bytes (355.2 KiB), slightly above the user-approved soft 350 KiB target. Exact-head cross-browser and live publication evidence is recorded in the release PR. Human/physical-device limitations remain open.
