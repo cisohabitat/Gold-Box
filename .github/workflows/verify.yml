@@ -10,7 +10,7 @@ jobs:
   verify:
     name: Verify (${{ matrix.browser }})
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -25,6 +25,8 @@ jobs:
           node tests/regression.cjs
           node tests/balance-checks.cjs
           node tests/sprites.cjs
+          node tests/treasure-rules.cjs
+          node tests/treasure-audit.cjs
           node tests/scenario-balance.cjs
       - name: Install development browser tools
         run: |
@@ -57,9 +59,11 @@ jobs:
           node tests/enemies.cjs
           node tests/projectiles.cjs
           node tests/companions.cjs
+          node tests/treasures.cjs
           if [ "$GOLD_BOX_BROWSER" = chromium ]; then
             node tests/balance.cjs
             node tests/companion-campaign.cjs
+            node tests/treasure-campaign.cjs
           fi
 
       - name: Upload balance report
@@ -71,4 +75,5 @@ jobs:
             artifacts/balance/
             artifacts/scenarios/
             artifacts/companions/
+            artifacts/treasure/
           if-no-files-found: warn

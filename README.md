@@ -8,7 +8,7 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 ## Play
 
-**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.19.0**
+**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.20.0**
 
 Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a fitted board/control shell on every device, with a live sidebar in wide windows and a separate Party & Log panel in smaller windows. **How to Play** on the title screen explains the rules.
 
@@ -94,7 +94,7 @@ Build 0.10.1 replaces the shared weapon/cloak/potion pictures with 16 individual
 
 ### Bestiary, treasure and the Star-Eater
 
-Open **Bestiary** or **Treasure & Relics** on the title, in **Party & Log**, or at a waystation. The illustrated field guide covers all 21 creatures with lore, base statistics, spells, habitats and counterplay. The treasure page covers all 15 items plus the Sunless Crown, with exact effects, usable classes, sources, current carried counts and equipped heroes. Search and category filters help find an entry. The complete guide contains campaign spoilers. Combat pauses while it is open; Back or Escape resumes the same battle and preserves spell aim.
+Open **Bestiary** or **Treasure & Relics** on the title, in **Party & Log**, or at a waystation. The illustrated field guide covers all 21 creatures with lore, base statistics, spells, habitats and counterplay. The treasure page covers all 27 items plus the Sunless Crown, with exact effects, usable classes, sources, current carried counts and equipped heroes. Search and category filters help find an entry. The complete guide contains campaign spoilers. Combat pauses while it is open; Back or Escape resumes the same battle and preserves spell aim.
 
 **Legends & Hunt** introduces Astrax, the Star-Eater, a sky-dragon chained beneath the Observatory of Ash. Its hunt opens at a waystation after four chapters and the current council choice. Rest and equip first. Starless Breath marks nine amber tiles, then strikes them on the dragon’s next active turn: move out before it releases. At half health it gains attack, restores one breath charge and summons one skeleton once. The hunt is optional; victory gives the Eclipsescale Mantle (+2 AC and 2 less damage per spell hit, any class), a supply and battle XP once, returns the company to the waystation, and changes the final story acknowledgement. Defeat ends the run. Restart during the battle preserves the latest pre-hunt town Continue when storage is available.
 
@@ -380,3 +380,37 @@ Build 0.18.0 local evidence: 114 engine checks, four sprite/art and four policy 
 All 26 existing sprite identities have new authored 24×24 art and a shared palette with brighter steel, gold, spell-light and skin highlights. Heroes have distinct weapons and poses; enemies carry role-specific silhouettes, including a crouching Stalker, hanging funeral lantern, fork-bearing Spellbreaker, coiled Grave Leech and anchor-chain gaoler. Guardian silhouettes emphasize their signature equipment and crowns. The company standard now bears a sun emblem.
 
 This changes presentation only: no stats, encounter pools, rewards, saves, timing, gameplay randomness or controls change. All art remains inline and offline, with no new downloaded asset or dependency. Runtime is **403,193 bytes (393.7 KiB)**, 26 bytes smaller than 0.18.0; the 350 KiB target remains soft. Enlarged, 24px and 16px contact sheets and actual device-sized combat/guide views were visually reviewed. Physical iPhone/iPad recognition and human playtesting remain unverified; the overall grade remains B+.
+
+
+### Treasures worth hunting — 0.20.0
+
+Twelve additions bring the guide to **27 items plus the Sunless Crown**. Equipment still uses one weapon and one armour slot. Boots, charms and shields replace other armour; they are not extra slots. No set is mandatory and no hidden set bonus applies.
+
+| Find | Rules and tradeoff | Source |
+| --- | --- | --- |
+| **Bellheart Aegis** · Fighter relic | +3 AC, −1 damage per weapon hit, −1 movement. Spells, terrain and poison bypass the ward. | Defeat the Bell Warden, then claim its cache. |
+| **Ashen Covenant** · Mage relic | Covenant Flare once per battle: 2d6, range 4, 3×3, hits allies. No weapon attack/damage bonus. Wellspring does not refresh the relic charge. | Defeat the Ash Cantor, then claim its cache. |
+| **Reliquary of Returning Dawn** · Cleric relic | +1 attack, +2 HP per healing spell. Potions and Dawn’s Mercy receive no bonus. Trades away the damage of Sunshard or Dawnblade. | The first ordinary patrol in either fourth-chapter route guards it. |
+| **Nightwarden’s Bow** · Thief relic | +1 attack/+1 weapon damage, range 6; +2 damage at distance ≥4, −2 when adjacent. Ranged melee-pressure penalty still applies. | The Descent’s ordinary procession guards it. |
+| **Pilgrim’s Road Boots** | +1 move, no AC; replace protective armour. | Upper Crypt and trader. |
+| **Watchkeeper’s Charm** | +1 AC/+1 spell-control saves, replaces armour. | Gallery and trader. |
+| **Hospice Mace** · Cleric | +1 attack/+1 HP per healing spell, less weapon power. Replaced by, not stacked with, the Reliquary. | Catacombs and trader. |
+| **Yew Scout Bow** · Fighter/Thief | +0 attack/+1 weapon damage, range 4. Less accuracy than Fine Sword, with normal ranged melee penalty. | Warren and trader. |
+| **Veil of Cinders** | Combat action: +3 AC for two active turns. Does not stack with itself, conceal the party or cancel reactions. | Upper Crypt and trader. |
+| **Dawn Salt** | Combat action: clear own poison, silence, Hex and Enfeeble. Cannot act while asleep/held; no HP healing. | Catacombs and trader. |
+| **Seal of the First Refuge** | A historical trade treasure; sell for 60 gold. No stat bonus. | Hidden caches in Warren/Gallery. |
+| **Exiled Astronomer’s Astrolabe** | A rare trade treasure; sell for 90 gold. No stat bonus. | Hidden caches in Ossuary/Pillared Road. |
+
+Spotted treasure guards have a **gold frame** around their red map marker. Arrival prose and the battle log name their guarded find. Victory leaves the reward on the cleared enemy’s tile: step onto it to claim the cache. Pools, budgets, guardian phases and map gates are preserved; there are no new encounters or floors. A full satchel leaves ground finds and caches available rather than consuming their rewards. Relic sources are opportunities, not automatic grants on chapter completion.
+
+Open **Party → treasure portrait → Inspect history, rules and build choices** for the latest find, or select another satchel item to inspect it. The card starts collapsed to keep equipment reachable on phones. Comparisons show stat changes, movement/range, new passives and replaced protection. Pairings support a slow shield front line, mobile archery, protected healing or limited artillery; they grant no extra bonuses. Auto Gear is a specialist-aware recommendation, not a substitute for deciding what the next fight needs.
+
+**Treasure & Relics** remains a complete spoiler guide. Filter **Discovered this run**, **Unseen this run**, **Carried now**, **Equipped now**, or **Trade treasures** independently of relic/consumable categories. Selling or consuming an item keeps its discovery; ownership counts stay current. Every identity has unique offline artwork, lore, exact rules and an actual acquisition source. [Artwork review and contact sheet](TREASURE_ART_REVIEW.md) show all 28 illustrations.
+
+Discovery/last-find records and optional encounter prizes extend existing v2 saves. Older saves infer only carried/equipped items and the held story crown, not sold or missed history. Existing generated floors keep their loot and descriptors; future floors use the new sources. No retroactive guardian reward is invented. Base speed/range/stats remain saved unchanged; gear properties are read when needed. The Covenant’s charge is transient battle state, like battle actions, not a portable spell charge.
+
+No-effect healing, cleansing or already-active full-duration item buffs keep the consumable and action. Battle consumables stay in the satchel during exploration. Trade treasures cannot be equipped. Emptying space or spending gold resolves capacity limits before another pickup/purchase/sale.
+
+Validation includes twelve new engine checks, a 192-floor source audit, the expanded artwork checks, seventeen browser suites, 288 guardian probes, the unchanged 96-run difficulty canaries, eight companion-directed campaigns and eight additional treasure-directed campaigns. The latter deliberately seek guards/caches and buy unseen additions using map metadata; they do not estimate human behavior. Final measured outcomes and exact-head three-browser/Pages evidence are recorded in BALANCE.md and the release PR. Human campaign pacing and physical Safari remain unverified; overall grade remains B+.
+
+Runtime: **425,367 bytes (415.4 KiB), +22,174 bytes over 0.19.0**. The 350 KiB target stays soft; the game remains one offline HTML file without new runtime dependencies or downloaded artwork.

@@ -493,6 +493,7 @@
   @media(prefers-reduced-motion:reduce){.combat-float{display:none;}}
   @media(max-height:500px){.chapter-art,.ending-art{height:65px;}}
 
+  .treasure-find{border:1px solid var(--gold);background:linear-gradient(145deg,#2c2930,#172a30);padding:14px;margin:14px 0;text-align:left;overflow:auto;}.treasure-find[hidden]{display:none;}.treasure-find summary{display:block;min-height:112px;cursor:pointer;}.treasure-find summary:focus-visible{outline:2px solid var(--gold);outline-offset:4px;}.treasure-story{clear:both;border-top:1px solid var(--frame);}.treasure-find h3{font-size:25px;color:var(--gold);margin:8px 0;}.treasure-find p{font-size:18px;line-height:1.45;}.treasure-find .atlas-art{width:112px;height:112px;}.gear-compare,.gear-detail{overflow-wrap:anywhere;}#partyBag .ichip{white-space:normal;max-width:100%;text-align:left;}#partyBag .ichip .tag{display:block;max-width:100%;}.shrow .nm{min-width:0;overflow-wrap:anywhere;}.shrow .tag{display:block;}@media(max-width:500px){.treasure-find .atlas-art{width:84px;height:84px;}.treasure-find summary{display:block;min-height:112px;cursor:pointer;}.treasure-find summary:focus-visible{outline:2px solid var(--gold);outline-offset:4px;}.treasure-story{clear:both;border-top:1px solid var(--frame);}.treasure-find h3{font-size:22px;}}
   /* Team frames use shape as well as colour; art stays clear of the HP rail. */
   .token,.ptoken{width:88%;height:88%;border:1px solid;}
   .token.party,.ptoken{border-radius:50%;border-color:#71c9e3;background:radial-gradient(circle at 50% 30%,#294c5a,#12212f);box-shadow:0 1px 3px #0009;}
@@ -665,11 +666,12 @@
   <div class="sbox wide">
     <h2 class="ctitle">Party &amp; Equipment</h2>
     <p class="tag" id="partySub">Tap an item, then tap a hero to equip or use it. Tap an equipped item to remove it.</p>
+    <article id="treasureFind" class="treasure-find" hidden aria-labelledby="treasureFindTitle"></article>
     <div id="partyHeroes"></div>
     <div class="pane" style="margin-top:12px;text-align:left">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
         <h2 style="margin:0">Satchel</h2>
-        <button id="btnAutoGear" title="Give each hero the best weapon and armour they can use">Auto-assign gear</button>
+        <button id="btnAutoGear" title="Give each hero the recommended weapon and armour they can use">Auto-assign gear</button>
       </div>
       <div id="partyBag"></div>
     </div>
@@ -695,7 +697,7 @@
 <div class="screen" id="settingsScreen" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="sbox"><h2 id="settingsTitle" class="ctitle">Sound &amp; Display</h2><p class="tag">Make the journey your own. Combat pauses while this sheet is open.</p><div class="settings-list"><label><input id="prefSound" type="checkbox"> Synthesized sound effects</label><label><input id="prefMusic" type="checkbox"> Quiet ambient tones (requires sound)</label><label for="prefVolume">Volume <output id="volumeValue">35%</output><input id="prefVolume" type="range" min="0" max="100" step="5" value="35"></label><label><input id="prefEffects" type="checkbox" checked> Visual effects (respects reduced motion)</label><label><input id="prefContrast" type="checkbox"> High contrast / clean display</label><label for="prefPace">Auto pace<select id="prefPace"><option value="normal">Deliberate · normal speed</option><option value="quick">Quick · shorter Auto turns</option></select></label></div><p id="audioStatus" class="tag" role="status">Sound is off by default. No downloads are needed.</p><p id="preferenceStatus" class="tag" role="status"></p><button id="btnSettingsClose" class="big">Back to Game</button></div></div>
 <div class="screen" id="codexScreen" role="dialog" aria-modal="true" aria-labelledby="codexTitle"><div class="sbox wide"><div class="eyebrow">Eren’s field atlas</div><h2 id="codexTitle" class="ctitle">The Bestiary</h2><div class="atlas-nav" role="group" aria-label="Atlas pages"><button id="codexBeasts" aria-pressed="true">Bestiary</button><button id="codexTreasure" aria-pressed="false">Treasure &amp; Relics</button><button id="codexLegends" aria-pressed="false">Legends &amp; Hunt</button><button id="btnCodexClose">Back</button></div><p class="tag" id="codexNote"></p><div id="codexTools" class="atlas-tools"><label for="codexSearch">Search<input id="codexSearch" type="search" maxlength="80" placeholder="Name, spell, source or lore"></label><label for="codexFilter">Show<select id="codexFilter"><option value="all">All entries</option><option value="guardians">Guardians</option><option value="relics">Relics</option><option value="potions">Potions</option></select></label></div><p id="codexCount" class="tag" role="status"></p><div id="codexContent" class="atlas-grid"></div></div></div>
 <script>
-const GAME_BUILD='0.19.0';
+const GAME_BUILD='0.20.0';
 document.querySelectorAll('[data-build]').forEach(el=>el.textContent='Build '+GAME_BUILD);
 /* ===== CROWN CAMPAIGN : data, with controller helpers below ===== */
 const OATHS={wanderer:{name:'Wanderer',budget:0.65,recovery:0.25,desc:'Gentler battles; all heroes earn victory XP and recover 25% HP after a win.'},delver:{name:'Delver',budget:1,desc:'Fortune favours the prepared. Only standing heroes earn victory XP.'},ironbound:{name:'Ironbound',budget:1.25,desc:'Stronger enemy forces. Only standing heroes earn victory XP.'}};
@@ -716,12 +718,13 @@ const SIGNATURES={
 const HERO_QUESTS={"Fighter":{"title":"The Banner Without a Lord","min":1,"intro":"Ilyra brings Tamsin, a recruit carrying a torn banner. The child asks whether a soldier serves a lord, a wage, or the people standing behind the shield.","plans":[{"id":"shelter","name":"Teach the living to stand","task":"Lead the company to two more battle victories, then return at a later waystation.","metric":"battles","goal":2,"reward":"potion","stakes":"Tamsin will form a watch sworn to protect refugees, without a lord’s colours.","road":"Tamsin follows {name}’s hand signals, practising how to bring the last person home.","result":"Tamsin raises a plain shield above the refugee road. “We serve the people behind us.” Ilyra entrusts {name} with a healing potion for the next watch.","echo":"Tamsin’s new watch holds the road behind {name}; families can follow the company’s lanterns.","ending":"Tamsin asks {name} to teach the first watch of the new morning. Its shields bear no lord’s crest.","challenge":"Tamsin asks the crowned {name} whether a ruler’s shield still belongs to the people."},{"id":"names","name":"Recover the fallen company’s honour","task":"Lead the company to two more battle victories, then return at a later waystation.","metric":"battles","goal":2,"reward":"gold","stakes":"Tamsin will carry the names of soldiers abandoned by their commanders.","road":"{name} teaches Tamsin the names beneath the torn banner, one watch at a time.","result":"Tamsin stitches the fallen names into the banner. Ilyra pays twenty gold from the watch’s honest treasury; no lord will own this company’s honour again.","echo":"The names on {name}’s recovered banner pass from watch to watch; the forgotten soldiers have witnesses.","ending":"Tamsin plants {name}’s banner at the gate, where every fallen soldier’s name can be read.","challenge":"Tamsin hangs the fallen names where the crowned {name} must face them."}]},"Thief":{"title":"The Last Debt of the Guild","min":2,"intro":"Vey, a young courier, recognises the company’s thief. A guild ledger offers a choice: open a road for people hunted by the guild, or return what the dead were robbed of.","plans":[{"id":"freedom","name":"Break the guild’s last collar","task":"Resolve two more dungeon events, then return at a later waystation. Any resolved choice counts.","metric":"events","goal":2,"reward":"gold","stakes":"Vey will turn the guild’s old contacts into an escape route for debtors.","road":"Vey carries {name}’s message between the hidden doors: a debt is not a chain.","result":"Vey burns the debt ledger and keeps only the routes. Twenty gold from the guild’s abandoned toll box belongs to the company now.","echo":"Vey’s couriers guide escaped debtors along the route {name} opened; the guild no longer owns their names.","ending":"Vey invites {name} to a house with two unlocked doors. Nobody there owes the guild another day.","challenge":"Vey leaves the palace door unlocked, reminding the crowned {name} that no new collar was promised."},{"id":"restitution","name":"Return the grave-gold","task":"Find one more hidden cache, then return at a later waystation.","metric":"secrets","goal":1,"reward":"potion","stakes":"Vey will carry grave-goods back to the families the guild cheated.","road":"{name} marks the graves that the guild’s ledger called profitable. Vey learns their owners’ names instead.","result":"Vey returns the recovered grave-goods to their families. A grateful apothecary sends {name} a healing potion; the dead are debts no longer.","echo":"Families carrying restored keepsakes make way for {name}; Vey has turned the guild’s ledger into a register of restitution.","ending":"Vey helps {name} return the last keepsake. The emptied ledger becomes a book of names, not prices.","challenge":"Vey brings the crowned {name} a list of what still must be returned."}]},"Cleric":{"title":"A Bell for Those Who Return","min":3,"intro":"Mother Alis waits beside a cracked handbell. The Bell Warden is gone, but the living need shelter and the dead still need someone willing to speak their names.","plans":[{"id":"hearth","name":"Build a refuge for the living","task":"Resolve two more dungeon events, then return at a later waystation. Any resolved choice counts.","metric":"events","goal":2,"reward":"supply","stakes":"Mother Alis will make a hospice where faith is measured by the people brought home.","road":"Mother Alis asks {name} to learn what each frightened traveller needs before offering a prayer.","result":"Mother Alis opens the hospice doors. One camp supply is packed for {name}: mercy must have bread as well as words.","echo":"Mother Alis’s hospice sends lantern-bearers after {name}; the wounded on the road now have somewhere to return.","ending":"Mother Alis rings the handbell as {name} opens the hospice to the first ordinary morning.","challenge":"Mother Alis asks the crowned {name} to keep the palace doors open to the wounded."},{"id":"witness","name":"Give the unburied their names","task":"Lead the company to two more battle victories, then return at a later waystation.","metric":"battles","goal":2,"reward":"supply","stakes":"Mother Alis will keep a vigil for those the king ordered the kingdom to forget.","road":"{name} carries Mother Alis’s handbell. Each victory ends with a name spoken, rather than another body counted.","result":"Mother Alis reads the recovered names before the whole watch. She gives {name} one camp supply to carry the vigil onward.","echo":"The watch answers {name}’s handbell with the names of the fallen. The king’s silence has lost its hold.","ending":"Mother Alis and {name} speak the last forgotten names. The handbell finally rings for a birth, not a burial.","challenge":"Mother Alis places the forgotten names before the crowned {name}, before any new law can be spoken."}]},"Mage":{"title":"The Dawn That Cannot Be Owned","min":4,"intro":"Eren finds the theorem that fastens the Cantor’s voice to the stolen sun. A mage could publish the knowledge, or destroy its means of becoming another king’s chain.","plans":[{"id":"share","name":"Give the theorem to everyone","task":"Complete the Descent of Ash, including its guardian, then return to its waystation.","metric":"cantor","goal":1,"reward":"potion","stakes":"Eren will found an open school whose knowledge cannot be held by one throne.","road":"{name} and Eren translate the forbidden theorem into words an apprentice could learn.","result":"The Cantor’s last note becomes a lesson, not an order. Eren copies {name}’s theorem for every surviving school and packs one healing potion for the final descent.","echo":"Eren’s apprentices carry copies of {name}’s theorem past the throne’s broken seals; no academy can lock this dawn away.","ending":"Eren opens the first free school beside {name}. Its first lesson is that knowledge grants no right to rule.","challenge":"Eren asks the crowned {name} to submit the throne to the school’s first lesson."},{"id":"unmake","name":"Unmake the king’s binding","task":"Complete the Descent of Ash, including its guardian, then return to its waystation.","metric":"cantor","goal":1,"reward":"potion","stakes":"Eren will preserve the warning while destroying the formula that could chain another sunrise.","road":"{name} and Eren mark the dangerous clauses for destruction, keeping only the names of those they harmed.","result":"The Cantor’s binding burns out of the manuscript. Eren keeps {name}’s warning and gives one healing potion for the road; nobody will cast this chain again.","echo":"Eren carries the ash of the formula beside {name}. The last seals open onto a dawn that cannot be copied into a cage.","ending":"Eren records why {name} destroyed the binding. Its missing pages become a promise that no ruler can inherit it.","challenge":"Eren keeps the ash before the crowned {name}: no dawn must become another binding."}]}};
 const HERO_VOICES={"disgraced_knight":["{name} remembers the order that cost a title. Tamsin offers a chance to choose what an oath means without a lord to name it.","For {name}, honour is finally something kept with the living, rather than restored by a title."],"sellsword":["{name} has priced a dozen wars. Tamsin asks what the next generation should be taught to value.","{name} takes payment without selling the promise. Tamsin has learned the difference."],"guild_runaway":["{name} knows the sound of a guild door locking. Vey is still looking for the way out.","{name} leaves Vey an unlocked road, and finally outruns more than a pursuer."],"reformed_grave_robber":["{name} recognises the grave marks in the ledger. Vey asks whether a thief can leave something better than an empty tomb.","{name} has returned something the guild could never price: the right to be remembered."],"temple_orphan":["{name} recognises the little bell that once called children in from the rain. Mother Alis asks who it should call now.","{name} has made a family out of the mercy that once offered a child a door."],"battle_chaplain":["{name} counts the company twice. Mother Alis asks what a prayer should promise to those who do not return.","For once, {name} has built a place where a company can be counted home."],"hedge_wizard":["No academy taught {name} how to answer Eren’s question. The answer will decide what the next apprentice is allowed to learn.","{name} needs no academy’s permission to decide what magic owes the world."],"exiled_scholar":["{name} recognises the forbidden notation that once cost an exile. Eren asks what finishing that research should mean.","{name} has finished the research by choosing who must be safe from it."]};
 let campaign=freshCampaign('delver');
-function freshCampaign(oath){return {oath:OATHS[oath]?oath:'delver',boons:[],shrines:[],battles:0,foes:0,steps:0,secrets:0,events:0,successes:0,contracts:[],completedFloors:[],decisions:{},heroQuests:{},fate:null,crownBearer:null,bossSlain:false,hunt:false};}
+function freshCampaign(oath){return {oath:OATHS[oath]?oath:'delver',boons:[],shrines:[],battles:0,foes:0,steps:0,secrets:0,events:0,successes:0,contracts:[],completedFloors:[],decisions:{},heroQuests:{},discovered:[],lastFind:null,fate:null,crownBearer:null,bossSlain:false,hunt:false};}
 function restoreCampaign(s){const c=freshCampaign(s&&s.oath);if(!s)return c;
   for(const k of ['battles','foes','steps','secrets','events','successes'])c[k]=Math.max(0,Math.min(10000000,Math.floor(Number(s[k])||0)));
   for(const [field,registry] of [['boons',BOONS],['shrines',WORLD],['contracts',CONTRACTS],['completedFloors',WORLD]])c[field]=[...new Set((Array.isArray(s[field])?s[field]:[]).filter(id=>Object.prototype.hasOwnProperty.call(registry,id)))];
   if(s.decisions&&typeof s.decisions==='object'&&!Array.isArray(s.decisions))for(const [id,pick] of Object.entries(s.decisions))if(Object.prototype.hasOwnProperty.call(STORY,id)&&(pick==='legacy'||STORY[id].plans.some(p=>p.id===pick)))c.decisions[id]=pick;
   if(s.heroQuests)for(const [cls,q]of Object.entries(s.heroQuests))if(Object.prototype.hasOwnProperty.call(HERO_QUESTS,cls))c.heroQuests[cls]={...q};
+  c.discovered=Array.isArray(s.discovered)?s.discovered.slice():[];c.lastFind=s.lastFind||null;
   c.fate=Object.prototype.hasOwnProperty.call(CROWN_FATES,s.fate)?s.fate:null;c.crownBearer=typeof s.crownBearer==='string'?s.crownBearer:null;
   c.bossSlain=!!s.bossSlain;c.hunt=s.hunt===true;return c;}
 function applyBoons(heroes=party,state=campaign){const bonus={atk:0,ac:0,dmg:0};state.boons.forEach(id=>{const b=BOONS[id];for(const k of ['atk','ac','dmg'])bonus[k]+=b[k]||0;});const story=storyEffects(state);for(const k of ['atk','ac','dmg'])bonus[k]+=story[k];heroes.forEach(h=>h.campaignBonus={...bonus});}
@@ -770,6 +773,7 @@ const key=(x,y)=>x+','+y;
 
 
 const SPELLS = {
+  ashen_flare:{id:'ashen_flare',name:'Covenant Flare',target:'point',range:4,aoe:1,effect:{kind:'damage',dice:{n:2,sides:6,bonus:0}}},
   ember_requiem:{id:'ember_requiem',name:'Ember Requiem',target:'point',range:0,aoe:1,effect:{kind:'damage',dice:{n:0,sides:1,bonus:4}}},
   hush:{id:'hush',name:'Seal of Silence',target:'enemy',range:4,aoe:0,effect:{kind:'debuff',status:'silence',duration:2,dc:13,saveStat:'wis',verb:'is silenced: no spells for two active turns'}},
   grave_siphon:{id:'grave_siphon',name:'Grave Siphon',target:'enemy',range:4,aoe:0,effect:{kind:'damage',dice:{n:1,sides:4,bonus:1},siphon:3}},
@@ -821,6 +825,18 @@ const SPELLS = {
 
 
 const ITEMS = {
+  bellheart_aegis:{id:'bellheart_aegis',name:'Bellheart Aegis',slot:'armor',ac:3,weaponGuard:1,speedMod:-1,cost:180,classes:['Fighter'],legendary:true},
+  ashen_covenant:{id:'ashen_covenant',name:'Ashen Covenant',slot:'weapon',atk:0,dmg:0,relicSpell:'ashen_flare',cost:140,classes:['Mage'],legendary:true},
+  mercy_reliquary:{id:'mercy_reliquary',name:'Reliquary of Returning Dawn',slot:'weapon',atk:1,dmg:0,healPower:2,cost:150,classes:['Cleric'],legendary:true},
+  nightwarden_bow:{id:'nightwarden_bow',name:'Nightwarden’s Bow',slot:'weapon',atk:1,dmg:1,range:6,farDmg:2,nearDmg:-2,cost:150,classes:['Thief'],legendary:true},
+  pilgrim_boots:{id:'pilgrim_boots',name:'Pilgrim’s Road Boots',slot:'armor',ac:0,speedMod:1,cost:70},
+  ward_charm:{id:'ward_charm',name:'Watchkeeper’s Charm',slot:'armor',ac:1,controlWard:1,cost:85},
+  pilgrim_mace:{id:'pilgrim_mace',name:'Hospice Mace',slot:'weapon',atk:1,dmg:0,healPower:1,cost:75,classes:['Cleric']},
+  scout_bow:{id:'scout_bow',name:'Yew Scout Bow',slot:'weapon',atk:0,dmg:1,range:4,cost:90,classes:['Fighter','Thief']},
+  smoke_phial:{id:'smoke_phial',name:'Veil of Cinders',slot:'potion',buff:{status:'smokeveil',duration:2,ac:3},cost:45},
+  dawn_salt:{id:'dawn_salt',name:'Dawn Salt',slot:'potion',cleanse:['poison','silence','hex','weaken'],cost:35},
+  dawn_seal:{id:'dawn_seal',name:'Seal of the First Refuge',slot:'treasure',cost:120},
+  royal_astrolabe:{id:'royal_astrolabe',name:'The Exiled Astronomer’s Astrolabe',slot:'treasure',cost:180},
   eclipsescale:{id:'eclipsescale',name:'Eclipsescale Mantle',slot:'armor',ac:2,spellGuard:2,cost:130,legendary:true},
   sunshard:{id:'sunshard',name:'Sunshard',slot:'weapon',atk:2,dmg:2,cost:140,classes:['Mage','Cleric'],legendary:true},
   lantern_mantle:{id:'lantern_mantle',name:'Lantern Mantle',slot:'armor',ac:2,emberGuard:2,cost:120,legendary:true},
@@ -837,7 +853,7 @@ const ITEMS = {
   potion_heal:{ id:'potion_heal', name:'Healing Potion', slot:'potion', heal:{n:2,sides:8,bonus:2}, cost:35 },
   potion_fury:{ id:'potion_fury', name:'Draught of Fury', slot:'potion', buff:{status:'fury', duration:3, atk:2, dmg:2}, cost:45 }
 };
-const SHOP_STOCK = ['war_axe','potion_heal','potion_fury','leather','fine_sword','oak_staff','chain','warded_cloak'];
+const SHOP_STOCK = ['pilgrim_boots','ward_charm','pilgrim_mace','scout_bow','smoke_phial','dawn_salt','war_axe','potion_heal','potion_fury','leather','fine_sword','oak_staff','chain','warded_cloak'];
 // Gear is a modifier layer applied at use-time, never baked into stored stats,
 // so levelling (which re-derives base stats) can never erase equipment.
 function equipBonuses(c){
@@ -861,6 +877,18 @@ function effAttack(c){ return c.attackBonus + equipBonuses(c).atk + statusBonuse
 function effAc(c){ return c.ac + equipBonuses(c).ac + statusBonuses(c).ac + perkBonuses(c).ac + bgBonuses(c).ac; }
 function effDamage(c){ const b=equipBonuses(c), s=statusBonuses(c), p=perkBonuses(c), g=bgBonuses(c); return {n:c.damage.n, sides:c.damage.sides, bonus:c.damage.bonus + b.dmg + s.dmg + p.dmg + g.dmg}; }
 function effOnHit(c){ if(c.onHit) return c.onHit; const w=c.equip&&ITEMS[c.equip.weapon]; return w&&w.onHit||null; }
+
+// Read equipment at use time; saved base stats never absorb gear properties.
+function effRange(c){return ITEMS[c.equip?.weapon]?.range||c.range;}
+function effSpeed(c){return Math.max(1,c.speed+(ITEMS[c.equip?.armor]?.speedMod||0));}
+function healingPower(c){return ITEMS[c.equip?.weapon]?.healPower||0;}
+function weaponDistanceBonus(att,def){const w=ITEMS[att.equip?.weapon],d=Math.max(Math.abs(att.pos.x-def.pos.x),Math.abs(att.pos.y-def.pos.y));return d>=4?(w?.farDmg||0):d<=1?(w?.nearDmg||0):0;}
+function consumableReason(it,c){
+ if(it.heal&&c.hp>=c.maxHp)return 'Full HP';
+ if(it.cleanse&&!c.statuses?.some(st=>it.cleanse.includes(st.type)))return 'No affliction to cleanse';
+ if(it.buff&&c.statuses?.some(st=>st.type===it.buff.status&&st.duration>=it.buff.duration))return 'Already protected';
+ return '';
+}
 
 
 const PERKS = {
@@ -1552,36 +1580,36 @@ function placeTask(id,tiles,start,exit,doors,loot,encounters,events){
  return {id,start:{...start},sites:sites.map(p=>key(p.x,p.y)),used:[],done:false};
 }
 const WORLD = {
-  entrance:{ id:'entrance', name:'The Upper Crypt', theme:'crypt', gen:{cols:3,rows:3}, tier:0, lockedExit:true, key:true, gold:50, rations:1, items:['fine_sword','leather'], events:3, secrets:1,
+  entrance:{ id:'entrance', name:'The Upper Crypt', theme:'crypt', gen:{cols:3,rows:3}, tier:0, lockedExit:true, key:true, gold:50, rations:1, items:['fine_sword','leather','pilgrim_boots','smoke_phial'], events:3, secrets:1,
     intro:'Cold air, older bone. You descend into the upper crypt; the way down forks somewhere past its keepers.',
     encounters:[ { tactic:'volley', pool:['goblin','archer','skeleton'] } ], next:['warren','gallery'] },
 
-  warren:{ id:'warren', name:'The Flooded Warren', theme:'catacomb', gen:{cols:3,rows:3}, tier:1, lockedExit:true, key:true, gold:75, rations:0, items:['venom_dagger'], events:1, secrets:1,
+  warren:{ id:'warren', name:'The Flooded Warren', theme:'catacomb', gen:{cols:3,rows:3}, tier:1, lockedExit:true, key:true, gold:75, rations:0, items:['venom_dagger','scout_bow'], events:1, secrets:1, secretItems:['dawn_seal'],
     teaser:'Cramped, close, and crawling. More fights and no easy rest, but the take is good.',
     intro:'Water seeps through the stone here, and the dark is thick with skittering.',
     encounters:[ { tactic:'pincer', pool:['spider','goblin','archer','crypt_stalker'] }, { tactic:'hexnet', pool:['spider','skeleton','hexer'] } ], next:['catacombs'] },
-  gallery:{ id:'gallery', name:'The Gallery of Bone', theme:'crypt', gen:{cols:4,rows:3}, tier:1, lockedExit:true, key:true, gold:60, rations:2, items:['chain'], events:4, secrets:2, secretItems:['potion_heal'],
+  gallery:{ id:'gallery', name:'The Gallery of Bone', theme:'crypt', gen:{cols:4,rows:3}, tier:1, lockedExit:true, key:true, gold:60, rations:2, items:['chain','ward_charm'], events:4, secrets:2, secretItems:['dawn_seal','potion_heal'],
     teaser:'A longer, quieter road of old shrines and alcoves. Fewer foes, more to find and forage.',
     intro:'A long gallery of niched dead stretches away, still and watchful.',
     encounters:[ { tactic:'pincer', pool:['goblin','skeleton','shield_sentinel'] } ], next:['catacombs'] },
 
-  catacombs:{ id:'catacombs', name:'The Catacombs', theme:'catacomb', gen:{cols:4,rows:3}, tier:2, lockedExit:true, key:true, gold:90, rations:1, items:['oak_staff','potion_heal'], events:3, secrets:1,
+  catacombs:{ id:'catacombs', name:'The Catacombs', theme:'catacomb', gen:{cols:4,rows:3}, tier:2, lockedExit:true, key:true, gold:90, rations:1, items:['oak_staff','potion_heal','pilgrim_mace','dawn_salt'], events:3, secrets:1,
     intro:'Walls of niched dead stretch away in every direction. Something deeper has felt you coming.',
     encounters:[ { tactic:'warband', pool:['goblin','spider','shaman','hexer','archer','ember_wisp','shield_sentinel'] },
-                 { guard:true,boss:true,lead:'bell_warden',budgetMul:0.55,pool:['skeleton','acolyte'] } ], next:['ossuary','shrine_road'] },
+                 { prize:'bellheart_aegis',guard:true,boss:true,lead:'bell_warden',budgetMul:0.55,pool:['skeleton','acolyte'] } ], next:['ossuary','shrine_road'] },
 
-  ossuary:{ id:'ossuary', name:'The Ossuary', theme:'catacomb', gen:{cols:4,rows:4}, tier:2, lockedExit:true, key:true, gold:130, rations:0, items:['dawnblade','potion_heal'], events:1, secrets:2, secretItems:['venom_dagger'],
+  ossuary:{ id:'ossuary', name:'The Ossuary', theme:'catacomb', gen:{cols:4,rows:4}, tier:2, lockedExit:true, key:true, gold:130, rations:0, items:['dawnblade','potion_heal'], events:1, secrets:2, secretItems:['royal_astrolabe','venom_dagger'],
     teaser:'Vaults packed with grave-goods and the things set to guard them. Richest floor of the descent, and the deadliest short of the tomb.',
     intro:'Bones stacked to the ceiling in their thousands, and gold glinting between them.',
-    encounters:[ { tactic:'procession', pool:['orc','skeleton','bonecaller','grave_leech','chain_warden'] }, { tactic:'hexnet', pool:['skeleton','ogre','necromancer','spellbreaker'] } ], next:['deep_stair'] },
-  shrine_road:{ id:'shrine_road', name:'The Pillared Road', theme:'tomb', gen:{cols:4,rows:3}, tier:2, lockedExit:true, key:true, gold:80, rations:2, items:['starweave','potion_heal'], events:4, secrets:2, secretItems:['potion_heal'],
+    encounters:[ { prize:'mercy_reliquary',tactic:'procession', pool:['orc','skeleton','bonecaller','grave_leech','chain_warden'] }, { tactic:'hexnet', pool:['skeleton','ogre','necromancer','spellbreaker'] } ], next:['deep_stair'] },
+  shrine_road:{ id:'shrine_road', name:'The Pillared Road', theme:'tomb', gen:{cols:4,rows:3}, tier:2, lockedExit:true, key:true, gold:80, rations:2, items:['starweave','potion_heal'], events:4, secrets:2, secretItems:['royal_astrolabe','potion_heal'],
     teaser:'A processional of dead shrines. Safer going, more events and supplies to steady the party for the tomb.',
     intro:'A colonnade of broken pillars marches into the dark, lined with forgotten altars.',
-    encounters:[ { tactic:'volley', pool:['skeleton','acolyte','archer','shield_sentinel','grave_leech'] }, { tactic:'hexnet', pool:['hexer','necromancer','spider','spellbreaker','crypt_stalker'] } ], next:['deep_stair'] },
+    encounters:[ { prize:'mercy_reliquary',tactic:'volley', pool:['skeleton','acolyte','archer','shield_sentinel','grave_leech'] }, { tactic:'hexnet', pool:['hexer','necromancer','spider','spellbreaker','crypt_stalker'] } ], next:['deep_stair'] },
 
   deep_stair:{ id:'deep_stair', name:'The Descent', theme:'tomb', gen:{cols:4,rows:3}, tier:3, lockedExit:true, key:true, gold:100, rations:1, items:['potion_heal'], events:2, secrets:1,
     intro:'The last stair down. The air is wrong, and something below knows you are coming.',
-    encounters:[ { tactic:'procession', pool:['skeleton','ogre','bonecaller','chain_warden','ember_wisp'] }, { guard:true,boss:true,lead:'ash_cantor',budgetMul:0.50,pool:['skeleton','hexer'] } ], next:['sunless_tomb'] },
+    encounters:[ { prize:'nightwarden_bow',tactic:'procession', pool:['skeleton','ogre','bonecaller','chain_warden','ember_wisp'] }, { prize:'ashen_covenant',guard:true,boss:true,lead:'ash_cantor',budgetMul:0.50,pool:['skeleton','hexer'] } ], next:['sunless_tomb'] },
 
   sunless_tomb:{ id:'sunless_tomb', name:'The Sunless Tomb', theme:'tomb', gen:{cols:4,rows:4}, tier:3, lockedExit:true, key:true, relic:true, gold:150, rations:1, items:['nightglass','potion_heal'], events:2,
     intro:'The heart of the tomb. The relic rests on its bier ahead \u2014 and so does whatever was bound here to keep it forever.',
@@ -1674,7 +1702,7 @@ class CombatEngine{
     const spots=[]; for(let x=w-2;x>=w-4;x--) for(let y=2;y<=6;y++) spots.push({x,y});
     this.tactic=PATROL_TACTICS[tactic]?tactic:null;const deployment=this.tactic?patrolPositions(enemies,party,w,h,this.tactic):spots;
     enemies.forEach((e,i)=>{ e.pos={...(deployment[i]||{x:w-1,y:1})}; this.combatants.push(e); });
-    this.combatants.forEach(c=>{ if(c.hp===undefined) c.hp=c.maxHp; c.alive=c.hp>0; if(!c.statuses) c.statuses=[]; c.acted={move:false,action:false}; c.guarding=false; c.guardUsed=false; c.aooUsed=false; c.signatureUsed=false; c.leapUsed=false; });
+    this.combatants.forEach(c=>{ if(c.hp===undefined) c.hp=c.maxHp; c.alive=c.hp>0; if(!c.statuses) c.statuses=[]; c.acted={move:false,action:false}; c.guarding=false; c.guardUsed=false; c.aooUsed=false; c.signatureUsed=false; c.leapUsed=false;const id=ITEMS[c.equip?.weapon]?.relicSpell;c.relicSpell=id?{id,uses:1,max:1}:null; });
     this.order=this.combatants.map(c=>({id:c.id,init:Rules.initiative(c)})).sort((a,b)=>b.init-a.init).map(o=>o.id);
     this.terrain=new Map();this.battlefield=BATTLEFIELDS[battlefield]?battlefield:null;
     if(this.battlefield)for(const type of Object.keys(TERRAIN))for(const [x,y] of BATTLEFIELDS[this.battlefield][type])if(this.inBounds(x,y)&&!this.at(x,y))this.terrain.set(key(x,y),type);
@@ -1702,7 +1730,7 @@ class CombatEngine{
     if(r.strikes>=4&&r.misses>=r.strikes/2)add('Improve attack odds with buffs and weapon upgrades. Sleep or Hold makes weapon hits automatic.');
     if(this.tactic)add(PATROL_TACTICS[this.tactic].counter);
     if(pressure[0]?.[0]==='spell')add('Focus damaging casters. Cover protects against ranged weapons, not spells; leave marked blast tiles before release.');
-    if(this.living('enemy').some(c=>c.range>1))add('Use cover against bows and close into melee to penalize ranged shots.');
+    if(this.living('enemy').some(c=>effRange(c)>1))add('Use cover against bows and close into melee to penalize ranged shots.');
     add('Keep healing in reach and focus one foe at a time. Review enemy roles and remaining spells in Tactics.');
     const remaining=this.living('enemy').length;const facts=['Round '+this.round+' · '+remaining+' '+(remaining===1?'enemy':'enemies')+' standing.','Started with '+r.startHp+'/'+r.maxHp+' party HP.'];
     if(pressure.length)facts.push('HP lost: '+pressure.map(([k,n])=>labels[k]+' '+n).join(' · ')+'.');else facts.push('No damage breakdown was recorded.');
@@ -1733,19 +1761,19 @@ class CombatEngine{
   living(side){ return this.combatants.filter(c=>c.alive&&c.side===side); }
   reachable(c){
     const seen=new Map([[key(c.pos.x,c.pos.y),0]]); let f=[c.pos];
-    while(f.length){ const n=[]; for(const p of f){ const d=seen.get(key(p.x,p.y)); if(d>=c.speed)continue;
+    while(f.length){ const n=[]; for(const p of f){ const d=seen.get(key(p.x,p.y)); if(d>=effSpeed(c))continue;
       for(const [dx,dy] of DIRS8){ const nx=p.x+dx,ny=p.y+dy,k=key(nx,ny); if(!this.passable(nx,ny,c))continue; if(!seen.has(k)){ seen.set(k,d+1); n.push({x:nx,y:ny}); } } } f=n; }
     seen.delete(key(c.pos.x,c.pos.y)); return seen;
   }
   terrainAt(pos){return this.terrain.get(key(pos.x,pos.y))||null;}
   shieldBonus(def){return this.combatants.some(c=>c!==def&&c.alive&&c.side===def.side&&c.shieldAura&&!this.isIncapacitated(c)&&this.cheb(c.pos,def.pos)<=1)?2:0;}
   weaponWard(att,def){return this.coverBonus(att,def)+this.shieldBonus(def);}
-  coverBonus(att,def){return att.range>1&&this.terrainAt(def.pos)==='cover'?2:0;}
-  tileScore(c,pos){const type=this.terrainAt(pos);return (this.dangerAt(pos).length?-30:0)+(type==='ember'?((ITEMS[c.equip?.armor]?.emberGuard||0)>=2?0:-6):type==='sanctum'&&c.hp<c.maxHp?4:type==='cover'&&(c.range>1||(c.spells||[]).length)?2:0);}
+  coverBonus(att,def){return effRange(att)>1&&this.terrainAt(def.pos)==='cover'?2:0;}
+  tileScore(c,pos){const type=this.terrainAt(pos);return (this.dangerAt(pos).length?-30:0)+(type==='ember'?((ITEMS[c.equip?.armor]?.emberGuard||0)>=2?0:-6):type==='sanctum'&&c.hp<c.maxHp?4:type==='cover'&&(effRange(c)>1||(c.spells||[]).length)?2:0);}
   dangerAt(pos){return [...this.echoes,...this.combatants.filter(u=>u.alive&&u.intent&&SPELLS[u.intent.spell].effect.kind==='damage')].filter(u=>this.cheb(pos,u.intent)<=SPELLS[u.intent.spell].aoe);}
   _interrupt(c){if(!c.intent?.interrupt)return;const sp=c.spells.find(s=>s.id===c.intent.spell);c.intent=null;if(sp)sp.uses=Math.max(0,sp.uses-1);this.log.push({t:c.name+' is interrupted! The channel breaks and its spell charge is lost.',k:'magic'});}
   _evade(c){if(c.acted.move||!this.dangerAt(c.pos).length)return;let best=null,score=-Infinity;const foes=this._foes(c);for(const [k,steps]of this.reachable(c)){const [x,y]=k.split(',').map(Number),pos={x,y};if(this.dangerAt(pos).length)continue;const reactions=foes.filter(e=>!this.isIncapacitated(e)&&!e.aooUsed&&this.cheb(e.pos,c.pos)<=1&&this.cheb(e.pos,pos)>1).length;const value=this.tileScore(c,pos)-steps*.1-reactions*20;if(value>score){score=value;best=pos;}}if(best){this.moveTo(c,best.x,best.y);if(c.alive)this._checkGuards(c);if(c.alive)this.log.push({t:c.name+' moves clear of the marked blast.',k:'sys'});}}
-  attackPreview(att,def){const cover=this.coverBonus(att,def),shield=this.shieldBonus(def),penalty=att.range>1&&this.meleeThreatened(att)?RANGED_MELEE_PENALTY:0;
+  attackPreview(att,def){const cover=this.coverBonus(att,def),shield=this.shieldBonus(def),penalty=effRange(att)>1&&this.meleeThreatened(att)?RANGED_MELEE_PENALTY:0;
     const needed=effAc(def)+cover+shield-effAttack(att)+penalty;
     return {chance:this.isIncapacitated(def)?100:Math.max(5,Math.min(95,(21-needed)*5)),cover,shield,penalty};
   }
@@ -1756,20 +1784,20 @@ class CombatEngine{
     if(spells.some(sp=>sp.effect.kind==='heal'))return 'Healer — mends badly wounded allies before attacking.';
     if(spells.some(sp=>['status','debuff'].includes(sp.effect.kind)))return 'Controller — disables or weakens threats, then attacks.';
     if(spells.some(sp=>sp.effect.kind==='damage'))return 'Spellcaster — seeks spell range and avoids hostile area blasts that would hit allies.';
-    if(c.range>1)return 'Archer — retreats from melee and shoots vulnerable targets. Retreat can provoke reactions.';
+    if(effRange(c)>1)return 'Archer — retreats from melee and shoots vulnerable targets. Retreat can provoke reactions.';
     return 'Vanguard — closes into melee and focuses vulnerable or wounded foes.';
   }
   _terrainTick(c){if(!c||!c.alive)return;const type=this.terrainAt(c.pos);
     if(type==='sanctum'&&c.hp<c.maxHp){const n=Math.min(3,c.maxHp-c.hp);c.hp+=n;this.log.push({t:c.name+' recovers '+n+' HP in the sanctum.',k:'magic'});}
-    if(type==='ember'){const damage=Math.max(0,2-(ITEMS[c.equip?.armor]?.emberGuard||0));if(damage){this._recordDamage(c,damage,'ember');c.hp-=damage;this.log.push({t:c.name+' takes '+damage+' damage from the embers.',k:'kill'});if(c.hp<=0)this._drop(c);}else this.log.push({t:c.name+'’s Lantern Mantle wards off the terrain embers.',k:'magic'});}
+    if(type==='ember'){const damage=Math.max(0,2-(ITEMS[c.equip?.armor]?.emberGuard||0));if(damage){this._recordDamage(c,damage,'ember');c.hp-=damage;this.log.push({t:c.name+' takes '+damage+' damage from the embers.',k:'kill'});if(c.hp<=0)this._drop(c);}else this.log.push({t:c.name+'’s '+ITEMS[c.equip.armor].name+' wards off the terrain embers.',k:'magic'});}
   }
-  canAttack(a,d){ if(!a.alive||this.isIncapacitated(a))return false; return d&&d.alive&&d.side!==a.side&&this.cheb(a.pos,d.pos)<=a.range; }
+  canAttack(a,d){ if(!a.alive||this.isIncapacitated(a))return false; return d&&d.alive&&d.side!==a.side&&this.cheb(a.pos,d.pos)<=effRange(a); }
   // True if a living enemy stands in melee reach (one square) of c. A ranged
   // attacker that is melee-threatened shoots at a penalty.
   meleeThreatened(c){ return this.combatants.some(o=>o.alive&&o.side!==c.side&&this.cheb(o.pos,c.pos)<=1); }
   targetsFor(c){ return this.combatants.filter(d=>this.canAttack(c,d)); }
   isSilenced(c){return c.statuses.some(st=>st.type==='silence'&&st.duration>0);}
-  usableSpells(c){ if(this.isSilenced(c))return [];return (c.spells||[]).filter(s=>s.uses>0).map(s=>({slot:s, def:SPELLS[s.id]})); }
+  usableSpells(c){ if(this.isSilenced(c))return [];return [...(c.spells||[]),...(c.relicSpell?[c.relicSpell]:[])].filter(s=>s.uses>0).map(s=>({slot:s, def:SPELLS[s.id]})); }
   spellEnemyTargets(c,sp){ return this.combatants.filter(o=>o.alive&&o.side!==c.side&&this.cheb(c.pos,o.pos)<=sp.range); }
   spellAllyTargets(c,sp){ return this.combatants.filter(o=>o.alive&&o.side===c.side&&this.cheb(c.pos,o.pos)<=sp.range); }
   spellPointTiles(c,sp){ const out=[]; for(let y=0;y<this.h;y++) for(let x=0;x<this.w;x++) if(this.cheb(c.pos,{x,y})<=sp.range) out.push({x,y}); return out; }
@@ -1778,13 +1806,13 @@ class CombatEngine{
     if(att.acted.action||!this.canAttack(att,def))return false;
     att.acted.action=true;
     const helpless=this.isIncapacitated(def);
-    const harried = att.range>1 && this.meleeThreatened(att);   // ranged shot while threatened in melee
+    const harried = effRange(att)>1 && this.meleeThreatened(att);   // ranged shot while threatened in melee
     const pen = harried ? RANGED_MELEE_PENALTY : 0;
     const r = helpless ? {hit:true,crit:false} : Rules.attack(att,def,pen,this.weaponWard(att,def));
-    if(att.range>1)this._visual('arrow',att,def,null,r.hit);
+    if(effRange(att)>1)this._visual('arrow',att,def,null,r.hit);
     this._recordStrike(att,r.hit);
     if(!r.hit){ this.log.push({t:att.name+' attacks '+def.name+' and misses'+(harried?', harried in close quarters.':'.'),k:'miss'}); }
-    else{ const dmg=Rules.damage(att,r.crit) + perkStrikeBonus(att,def);this._recordDamage(def,dmg,'weapon',att); def.hp-=dmg;if(dmg>0)this._interrupt(def);
+    else{ const dmg=this._weaponDamage(att,def,Rules.damage(att,r.crit)+perkStrikeBonus(att,def)+weaponDistanceBonus(att,def));this._recordDamage(def,dmg,'weapon',att); def.hp-=dmg;if(dmg>0)this._interrupt(def);
       const how = helpless ? ' strikes the helpless '+def.name+' for ' : ' hits '+def.name+(r.crit?' (critical) for ':' for ');
       this.log.push({t:att.name+how+dmg+' damage.',k:'hit'});
       if(def.hp<=0){ this._drop(def); if(att.side==='party' && Math.random()<0.18){ const kl=bgLine(att,'kill'); if(kl) this.log.push({t:kl,k:'flavor'}); } }
@@ -1795,18 +1823,19 @@ class CombatEngine{
             this.log.push({t:def.name+' is poisoned.',k:'kill'}); } } } }
     this._checkEnd(); return true;
   }
+  _weaponDamage(att,def,amount){const ward=ITEMS[def.equip?.armor]?.weaponGuard||0,raw=Math.max(1,amount),blocked=Math.min(raw,ward);if(blocked)this.log.push({t:def.name+'’s '+ITEMS[def.equip.armor].name+' absorbs '+blocked+' weapon damage.',k:'magic'});return raw-blocked;}
   _spellDamage(target,amount){const blocked=Math.min(amount,ITEMS[target.equip?.armor]?.spellGuard||0);if(blocked)this.log.push({t:target.name+'’s Eclipsescale absorbs '+blocked+' spell damage.',k:'magic'});return amount-blocked;}
   _controlSave(target,e){
     const ward=ITEMS[target.equip?.armor]?.controlWard||0;
-    if(ward)this.log.push({t:target.name+'’s Starweave grants +'+ward+' to this spell-control save.',k:'magic'});
+    if(ward)this.log.push({t:target.name+'’s '+ITEMS[target.equip.armor].name+' grants +'+ward+' to this spell-control save.',k:'magic'});
     return Rules.save(target,e.dc-ward,e.saveStat);
   }
   castSpell(c, sp, target){
-    const slot=(c.spells||[]).find(s=>s.id===sp.id);
+    const slot=(c.spells||[]).find(s=>s.id===sp.id)||(c.relicSpell?.id===sp.id?c.relicSpell:null);
     if(!c.alive||this.isIncapacitated(c)||this.isSilenced(c)||!slot||slot.uses<=0||c.acted.action) return false;
     slot.uses--; c.acted.action=true; const e=sp.effect;this._visual('spell',c,target,sp.id);
     if(e.kind==='heal'){
-      const amt=Rules.spellAmount(e), before=target.hp; target.hp=Math.min(target.maxHp, target.hp+amt);
+      const amt=Rules.spellAmount(e)+healingPower(c), before=target.hp; target.hp=Math.min(target.maxHp, target.hp+amt);
       this.log.push({t:c.name+' casts '+sp.name+', healing '+target.name+' for '+(target.hp-before)+'.',k:'magic'});
     } else if(e.kind==='damage'){
       const amt=Math.max(1,Rules.spellAmount(e));
@@ -1957,7 +1986,7 @@ class CombatEngine{
   _summonSpells(c){ return this.usableSpells(c).filter(({def})=> def.effect.kind==='summon'); }
   _buffSpells(c){ return this.usableSpells(c).filter(({def})=> def.effect.kind==='buff'); }
   _hasRangedSpell(c){ return this._offensiveSpells(c).length>0; }
-  _isRangedAttacker(c){ return c.range>1; }
+  _isRangedAttacker(c){ return effRange(c)>1; }
   _adjacentEnemy(c, heroes){ return heroes.some(h=>this.cheb(c.pos,h.pos)<=1); }
   // The AI is side-relative so it can drive either side: foes are the opposite
   // side of the actor, allies its own. Heroes on auto-fight run the same brain.
@@ -2032,7 +2061,7 @@ class CombatEngine{
       const r=this.reachable(c); let best=null, bestScore=-Infinity;
       for(const [k] of r){ const [x,y]=k.split(',').map(Number);
         const nearest=Math.min(...heroes.map(h=>this.cheb({x,y},h.pos)));
-        const inRange=heroes.some(h=>this.cheb({x,y},h.pos)<=c.range);
+        const inRange=heroes.some(h=>this.cheb({x,y},h.pos)<=effRange(c));
         if(!inRange || nearest<=1) continue;
         const score=nearest+this.tileScore(c,{x,y});if(score>bestScore){ bestScore=score; best={x,y}; } }
       if(best){ const ox=c.pos.x,oy=c.pos.y; c.pos=best; c.acted.move=true; this.log.push({t:c.name+' backs away and draws.',k:'sys'}); this._provoke(c,ox,oy); if(!c.alive)return; this._checkGuards(c); if(!c.alive) return; }
@@ -2152,7 +2181,7 @@ class CombatEngine{
   _checkGuards(mover){
     if(!mover.alive || mover.side!=='enemy') return;
     const guards=this.combatants.filter(h=> h.alive && h.side==='party' && h.guarding && !h.guardUsed
-      && !this.isIncapacitated(h) && this.cheb(h.pos,mover.pos)<=h.range);
+      && !this.isIncapacitated(h) && this.cheb(h.pos,mover.pos)<=effRange(h));
     for(const h of guards){ h.guardUsed=true; this._reactStrike(h, mover, 'guard'); if(!mover.alive) break; }
   }
   _guardAttack(att, def){ this._reactStrike(att, def, 'guard'); }
@@ -2161,10 +2190,10 @@ class CombatEngine{
   _reactStrike(att, def, kind){
     const helpless=this.isIncapacitated(def);
     const r = helpless ? {hit:true,crit:false} : Rules.attack(att,def,0,this.weaponWard(att,def));
-    if(att.range>1)this._visual('arrow',att,def,null,r.hit);
+    if(effRange(att)>1)this._visual('arrow',att,def,null,r.hit);
     this._recordStrike(att,r.hit);
     if(!r.hit){ this.log.push({t: att.name+(kind==='guard'?' guards but misses ':' lunges at ')+def.name+(kind==='guard'?'.':' but misses.'),k:'miss'}); return; }
-    const dmg=Rules.damage(att, r.crit);this._recordDamage(def,dmg,'weapon',att); def.hp-=dmg;if(dmg>0)this._interrupt(def);
+    const dmg=this._weaponDamage(att,def,Rules.damage(att,r.crit)+weaponDistanceBonus(att,def));this._recordDamage(def,dmg,'weapon',att); def.hp-=dmg;if(dmg>0)this._interrupt(def);
     const phrase = kind==='guard' ? ' guards and strikes ' : ' seizes the opening and strikes ';
     this.log.push({t:att.name+phrase+def.name+' for '+dmg+(r.crit?' (critical)':'')+' damage.',k:'hit'});
     if(def.hp<=0) this._drop(def);
@@ -2406,6 +2435,18 @@ const MONSTER_LORE={
  eclipse_wyrm:['Astrax, the Star-Eater','The king chained a sky-dragon beneath the Observatory of Ash. Each scale imprisons a constellation; each breath burns with a dawn it was forbidden to release.','Optional hunt. Starless Breath marks a 3×3 area, then hits it for 3d6 damage on the dragon’s next active turn, including allies. Leave the amber tiles. Spread out; cover does not block magic. At half HP gains +1 attack, regains one breath charge (capped at its maximum), and calls one skeleton once.']
 };
 const RELIC_LORE={
+ bellheart_aegis:'A shield forged from the bell that commanded the dead. Its broken tongue catches the first force of every blow; the weight of its old orders slows the bearer.',
+ ashen_covenant:'Eren lifts a charred covenant from the Cantor’s brazier. Its last clause burns once in every battle. The fire recognises neither friend nor foe.',
+ mercy_reliquary:'Inside the little sun-shaped shrine lies a hospice bell, wrapped in the names of people who came home. Its bearer learns to mend before striking.',
+ nightwarden_bow:'The watch kept this crescent bow pointed at the horizon for a dawn that never came. Its silver string sings only when given room.',
+ pilgrim_boots:'A thousand names are stitched into these road-worn boots. Each sole has carried someone one step farther than they thought they could go.',
+ ward_charm:'The watchkeeper tied a small unbroken knot around a mirror shard. A hostile name must untie that promise before it reaches the wearer.',
+ pilgrim_mace:'This mace bears the marks of a hospice door, not a battlefield. Its hollow head once rang to call the wounded home.',
+ scout_bow:'A bow of yew cut above the last refugee road. Its pale fletching was made to be seen by the people following its scouts.',
+ smoke_phial:'Cold ash from the Cantor’s first failed hymn. Break the glass and the enemy’s next clean sight of you becomes a memory.',
+ dawn_salt:'Salt gathered from the tears of a shrine that remembered rain. It breaks venom, stolen voices and draining curses without mending flesh.',
+ dawn_seal:'The first refuge stamped bread with this seal so every household received its share. A collector at the waystation pays 60 gold to preserve it.',
+ royal_astrolabe:'The astronomer carved out the king’s name before her exile. The empty orbit still measures the stolen dawn; the trader pays 90 gold for its return.', 
  sunshard:'A fragment of the first sun, carried by the watch that refused to surrender.',lantern_mantle:'Its stitched lanterns remember paths that no longer exist.',dawnblade:'The lost captain planted this sword in the stone and ordered the legion to wait for morning.',nightglass:'A blade made from the night before the first sunrise. A shallow cut remembers its venom.',starweave:'Village gods wove small mercies between the stars. The king could steal the sky, but never find every thread.',eclipsescale:'Astrax’s last unbroken scale. The constellation inside it shines for its bearer instead of its captor.',fine_sword:'A soldier’s honest steel, sharpened for one more watch.',war_axe:'A heavy edge made to end a siege, one shield at a time.',venom_dagger:'The flooded guild sealed its last bargain beneath a drop of green glass.',oak_staff:'A pilgrim’s walking stick, carved with prayers against the dark.',leather:'Patched by generations who could afford courage more easily than mail.',chain:'Links from the last watch, each stamped with a name.',warded_cloak:'A traveller’s cloak lined with patient protective stitches.',potion_heal:'Summer herbs preserved beneath a city that has forgotten summer.',potion_fury:'Bottled battle-courage. Drink carefully; the bottle remembers every war.'
 };
 const GUARDIAN_AFTERMATH={
@@ -2413,7 +2454,8 @@ const GUARDIAN_AFTERMATH={
  AshCantor:'The final note breaks into sparks. Signal fires answer from every stair above you. Ilyra’s survivors reach the seal; Eren opens the last page of his translation. Only the throne remains.',
  CryptLord:'The throne cracks from floor to stolen sky. The crown still holds the dawn. Carry it to the final stairs: the kingdom’s future is now yours to choose.'
 };
-function chapterArrival(id){return (STORY[id]?STORY[id].arrival:'')+' '+(SAGAS[id]||'')+heroQuestEchoes(id)+(id==='sunless_tomb'&&campaign.hunt?' The king looks up at the freed constellations. “Even my oldest chain,” he whispers.':'');}
+const TREASURE_ROADS={entrance:'A pilgrim’s boots and a phial of cold cinders lie along the refugee road.',warren:'Scouts left a yew bow on the dry ledge. Hidden walls may shelter the First Refuge’s seal.',gallery:'Look for a watchkeeper’s charm and the lost refuge seal in hidden niches.',catacombs:'The Bell Warden’s cache holds Bellheart Aegis. Victory leaves it on the fallen guardian’s tile.',ossuary:'The legion’s first patrol guards a sun-shaped healing reliquary. The astronomer’s instrument lies in a hidden cache.',shrine_road:'The first shrine patrol guards a healing reliquary. Hidden offerings may hold the exiled astronomer’s astrolabe.',deep_stair:'A procession guards Nightwarden’s Bow; the Cantor keeps the Ashen Covenant. Claim their caches on the defeated enemies’ tiles.'};
+function chapterArrival(id){return (TREASURE_ROADS[id]||'')+' '+ (STORY[id]?STORY[id].arrival:'')+' '+(SAGAS[id]||'')+heroQuestEchoes(id)+(id==='sunless_tomb'&&campaign.hunt?' The king looks up at the freed constellations. “Even my oldest chain,” he whispers.':'');}
 
 /* ===== CONTROLLER : state machine + DOM ===== */
 const $=s=>document.querySelector(s);
@@ -2467,11 +2509,11 @@ function reviveHero(s){ const tpl=CLASSES[s.cls]; const h=buildHero(tpl, s.name,
   h.equip={ weapon:(s.eq&&s.eq.weapon)||null, armor:(s.eq&&s.eq.armor)||null };
   if(s.su) (h.spells||[]).forEach(sp=>{ if(s.su[sp.id]!==undefined) sp.uses=Math.max(0,Math.min(sp.max,s.su[sp.id])); });
   return h; }
-function saveState(){ return { v:2, nodeId, worldPath:[...worldPath], inTown:$('#townScreen').classList.contains('show'),
+function saveState(){syncDiscoveries(); return { v:2, nodeId, worldPath:[...worldPath], inTown:$('#townScreen').classList.contains('show'),
   bag:{ gold:bag.gold, keys:bag.keys, rations:bag.rations, relic:!!bag.relic, items:[...bag.items] },
   party: party.map(h=>({ id:h.id, name:h.name, cls:h.cls, ab:{...h.abilities}, lvl:h.level, xp:h.xp||0, pending:h.pendingLevels||0, bg:h.bg||null, hp:h.hp,
     eq:{...h.equip}, learned:[...(h.learned||[])], perks:[...(h.perks||[])], su:Object.fromEntries((h.spells||[]).map(sp=>[sp.id,sp.uses])) })),
-  campaign:{...campaign,boons:[...campaign.boons],shrines:[...campaign.shrines],decisions:{...campaign.decisions},heroQuests:Object.fromEntries(Object.entries(campaign.heroQuests).map(([cls,q])=>[cls,{...q}]))}, explore: serializeExplore(explore), feed:(exploreFeed||[]).slice(-25) }; }
+  campaign:{...campaign,discovered:[...campaign.discovered],boons:[...campaign.boons],shrines:[...campaign.shrines],decisions:{...campaign.decisions},heroQuests:Object.fromEntries(Object.entries(campaign.heroQuests).map(([cls,q])=>[cls,{...q}]))}, explore: serializeExplore(explore), feed:(exploreFeed||[]).slice(-25) }; }
 function validHeroQuests(s){
  const quests=s.campaign?.heroQuests;if(quests===undefined)return true;
  if(!quests||typeof quests!=='object'||Array.isArray(quests)||Object.keys(quests).length>4)return false;
@@ -2514,13 +2556,15 @@ function validSave(s){
     const entries=(value,check)=>value===undefined||obj(value)&&Object.keys(value).length<=e.w*e.h&&Object.entries(value).every(([k,v])=>coord(k)&&check(v));
     if(e.task!=null){const q=e.task;if(s.inTown&&!q.done)return false;if(!obj(q)||q.id!==s.nodeId||!own(CHAPTER_TASKS,q.id)||!pos(q.start)||typeof q.done!=='boolean'||!list(q.sites,3,k=>coord(k)&&e.tiles[k.split(',')[1]][k.split(',')[0]]==='.')||q.sites.length!==(q.id==='gallery'||q.id==='shrine_road'?3:1)||new Set(q.sites).size!==q.sites.length||!list(q.used,3,n=>num(n,0,2))||new Set(q.used).size!==q.used.length||q.used.some(n=>n>=(q.id==='gallery'||q.id==='shrine_road'?3:1))||q.id==='gallery'&&(q.used.some((n,i)=>n!==i)||q.done!==(q.used.length===3))||q.id==='shrine_road'&&(q.used.length>2||q.done!==(q.used.length===2))||q.done&&q.used.length!==(q.id==='gallery'?3:q.id==='shrine_road'?2:1))return false;}
     if(e.task){const q=e.task,reach=new Set([key(q.start.x,q.start.y)]),queue=[q.start];if(e.tiles[q.start.y][q.start.x]!=='.')return false;for(let i=0;i<queue.length;i++){const p=queue[i];for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){const x=p.x+dx,y=p.y+dy,k=key(x,y);if(e.tiles[y]?.[x]==='.'&&!reach.has(k)&&!(e.doors||[]).includes(k)){reach.add(k);queue.push({x,y});}}}if(q.sites.some(k=>!reach.has(k)))return false;}
-    if(!entries(e.encounters,enc=>obj(enc)&&(enc.tactic===undefined||own(PATROL_TACTICS,enc.tactic))&&(enc.pool===undefined||list(enc.pool,30,id=>own(BESTIARY,id)))&&(!enc.lead||own(BESTIARY,enc.lead))&&(!enc.budgetMul||typeof enc.budgetMul==='number'&&enc.budgetMul>0&&enc.budgetMul<=5)))return false;
+    if(!entries(e.encounters,enc=>obj(enc)&&(enc.prize===undefined||['bellheart_aegis','ashen_covenant','mercy_reliquary','nightwarden_bow'].includes(enc.prize))&&(enc.tactic===undefined||own(PATROL_TACTICS,enc.tactic))&&(enc.pool===undefined||list(enc.pool,30,id=>own(BESTIARY,id)))&&(!enc.lead||own(BESTIARY,enc.lead))&&(!enc.budgetMul||typeof enc.budgetMul==='number'&&enc.budgetMul>0&&enc.budgetMul<=5)))return false;
     if(!entries(e.loot,v=>obj(v)&&['gold','key','ration','relic','item'].includes(v.type)&&(v.amount===undefined||num(v.amount,1))&&(v.type!=='item'||own(ITEMS,v.item))))return false;
     if(!entries(e.events,id=>own(EVENTS,id))||!entries(e.secrets,v=>obj(v)&&(v.gold===undefined||num(v.gold))&&(!v.item||own(ITEMS,v.item))))return false;
     if(e.tiles[e.pos.y][e.pos.x]==='#'&&!(e.foundSecrets||[]).includes(key(e.pos.x,e.pos.y)))return false;
     if(e.wanderPool!==undefined&&!list(e.wanderPool,30,id=>own(BESTIARY,id)))return false;
     if(s.worldPath!==undefined&&(!list(s.worldPath,16,id=>own(WORLD,id))||!s.worldPath.length))return false;
     if(s.campaign!==undefined){if(!obj(s.campaign)||s.campaign.hunt!==undefined&&typeof s.campaign.hunt!=='boolean')return false;if(s.campaign.decisions!==undefined&&(!obj(s.campaign.decisions)||Object.entries(s.campaign.decisions).some(([id,pick])=>!own(STORY,id)||(pick!=='legacy'&&!STORY[id].plans.some(p=>p.id===pick)))))return false;if(s.campaign.fate!=null&&!own(CROWN_FATES,s.campaign.fate))return false;if(s.campaign.crownBearer!=null&&(typeof s.campaign.crownBearer!=='string'||!ids.has(s.campaign.crownBearer)))return false;for(const k of ['boons','shrines','completedFloors','contracts'])if(s.campaign[k]!==undefined&&!list(s.campaign[k],40,id=>typeof id==='string'))return false;}
+    if(s.campaign?.discovered!==undefined&&(!list(s.campaign.discovered,Object.keys(ITEMS).length+1,id=>own(ITEMS,id)||id==='sunless_crown')||new Set(s.campaign.discovered).size!==s.campaign.discovered.length))return false;
+    if(s.campaign?.lastFind!=null&&(!own(ITEMS,s.campaign.lastFind)&&s.campaign.lastFind!=='sunless_crown'||!s.campaign.discovered?.includes(s.campaign.lastFind)))return false;
     if(!validHeroQuests(s))return false;
     if(s.feed!==undefined&&!list(s.feed,100,entry=>obj(entry)&&typeof entry.t==='string'&&entry.t.length<=2000&&(entry.k===undefined||typeof entry.k==='string'&&entry.k.length<=30)))return false;
     return true;
@@ -2533,6 +2577,7 @@ function applySave(s){
     const heroes=s.party.map(reviveHero),state=restoreCampaign(s.campaign),dungeon=reviveExplore(s.explore);
     if(!s.campaign||!Array.isArray(s.campaign.completedFloors))state.completedFloors=[...new Set([...(s.worldPath||[]).filter(id=>id!==s.nodeId),...(s.inTown?[s.nodeId]:[])])];
     if(!s.campaign||s.campaign.decisions===undefined)for(const id of (s.worldPath||[]).filter(id=>id!==s.nodeId))if(STORY[id])state.decisions[id]='legacy';
+    for(const id of [...s.bag.items,...heroes.flatMap(h=>Object.values(h.equip)),...(s.bag.relic?['sunless_crown']:[])])if(id&&!state.discovered.includes(id))state.discovered.push(id);
     applyBoons(heroes,state);
     dungeon.scoutRadius=partyScoutRadius(heroes);dungeon.searchBonus=partySearchBonus(heroes);dungeon.reveal();
     if(!s.campaign&&s.nodeId==='sunless_tomb')state.bossSlain=Object.entries(dungeon.encounters).some(([k,enc])=>enc.lead==='crypt_lord'&&dungeon.cleared.has(k));
@@ -2630,8 +2675,8 @@ function moveDir(dx,dy){
 }
 function handleEnter(r){
   if(r.type!=='combat')advanceTask();
-  if(r.type==='loot'){ collect(r.item); render(); return; }
-  if(r.type==='secret'){ collectSecret(r.cache); render(); return; }
+  if(r.type==='loot'){ if(collect(r.item)===false)explore.loot[r.at]=r.item;render();return; }
+  if(r.type==='secret'){if(collectSecret(r.cache)===false)explore.secrets[r.at]=r.cache;render();return;}
   if(r.type==='combat'){ exploreFeed.push({t:'Enemies bar the way. Battle!',k:'kill'}); enterCombat(r.spec,r.at); return; }
   if(r.type==='event'){ openEvent(r.ev, r.at); render(); return; }
   if(r.type==='exit'){ descendOrWin(); return; }
@@ -2642,18 +2687,19 @@ function handleEnter(r){
   render();
 }
 function collect(item){
+  if(item.type==='item'&&bag.items.length>=1000){exploreFeed.push({t:'Satchel full. Treasure stays here; sell, equip or use an item before returning.',k:'sys'});return false;}
   if(item.type==='gold'){ bag.gold+=item.amount; exploreFeed.push({t:'You find '+item.amount+' gold.',k:'magic'}); }
   else if(item.type==='key'){ bag.keys++; exploreFeed.push({t:'You find an iron key.',k:'magic'}); }
   else if(item.type==='ration'){ const amount=item.amount||1;bag.rations+=amount; exploreFeed.push({t:'You find '+amount+' camp '+(amount===1?'supply.':'supplies.'),k:'magic'}); }
-  else if(item.type==='relic'){ bag.relic=true; if(explore&&explore.wake) explore.wake(); exploreFeed.push({t:'You lift the relic from its bier \u2014 and the tomb shudders awake. The way out is sealed now; something vast stirs to bar it, and the dead begin to walk.',k:'magic'}); partyBark('relic'); }
-  else if(item.type==='item'){ const it=ITEMS[item.item]; if(it){ bag.items.push(it.id);if(item.item==='dawnblade'&&explore.task?.id==='ossuary'&&!explore.task.used.length)explore.task.used.push(0); exploreFeed.push({t:'You find a '+it.name+'. Open Party to equip it.',k:'magic'}); } }
+  else if(item.type==='relic'){ bag.relic=true;discoverItem('sunless_crown'); if(explore&&explore.wake) explore.wake(); exploreFeed.push({t:'You lift the relic from its bier \u2014 and the tomb shudders awake. The way out is sealed now; something vast stirs to bar it, and the dead begin to walk.',k:'magic'}); partyBark('relic'); }
+  else if(item.type==='item'){ const it=ITEMS[item.item]; if(it){ bag.items.push(it.id);discoverItem(it.id);if(item.item==='dawnblade'&&explore.task?.id==='ossuary'&&!explore.task.used.length)explore.task.used.push(0); exploreFeed.push({t:'You recover '+it.name+'. '+itemRules(it)+'. Open Party for its discovery portrait.',k:'magic'}); } }
 }
 // A discovered cache pays out gold and, sometimes, a bonus item.
 function collectSecret(cache){
-  if(!cache) return;campaign.secrets++;
+  if(!cache)return;if(cache.item&&bag.items.length>=1000){exploreFeed.push({t:'Satchel full. This cache stays sealed until you have room.',k:'sys'});return false;}campaign.secrets++;
   let msg='You break open the hidden cache';
   if(cache.gold){ bag.gold+=cache.gold; msg+=' \u2014 '+cache.gold+' gold'; }
-  if(cache.item && ITEMS[cache.item]){ bag.items.push(cache.item); msg+=(cache.gold?' and ':' \u2014 ')+'a '+ITEMS[cache.item].name; }
+  if(cache.item && ITEMS[cache.item]){ bag.items.push(cache.item);discoverItem(cache.item); msg+=(cache.gold?' and ':' \u2014 ')+'a '+ITEMS[cache.item].name; }
   exploreFeed.push({t:msg+'.',k:'magic'});checkContracts();
 }
 
@@ -2771,8 +2817,8 @@ function closeEvent(){ curEvent=null; $('#eventScreen').classList.remove('show')
 function resumeExplore(){
   if(mode!=='explore'||overlayOpen())return;
   advanceTask();const k=key(explore.pos.x,explore.pos.y);
-  if(explore.loot[k]){const item=explore.loot[k];delete explore.loot[k];collect(item);}
-  if(explore.secrets[k]&&explore.foundSecrets.has(k)){const cache=explore.secrets[k];delete explore.secrets[k];collectSecret(cache);}
+  if(explore.loot[k]){const item=explore.loot[k];delete explore.loot[k];if(collect(item)===false)explore.loot[k]=item;}
+  if(explore.secrets[k]&&explore.foundSecrets.has(k)){const cache=explore.secrets[k];delete explore.secrets[k];if(collectSecret(cache)===false)explore.secrets[k]=cache;}
   const event=explore.eventAt(explore.pos.x,explore.pos.y);if(event){openEvent(event,k);render();return;}
   if(explore.pos.x===explore.exit.x&&explore.pos.y===explore.exit.y){descendOrWin();return;}
   render();
@@ -2824,18 +2870,18 @@ function townRest(){
   party.forEach(p=>{ p.hp=p.maxHp; p.alive=true; p.statuses=[]; if(p.spells) p.spells.forEach(s=>s.uses=s.max); });
   exploreFeed.push({t:'The party rests at the waystation. Fully recovered.',k:'sys'}); renderTown();
 }
-function buyItem(id){ const it=ITEMS[id]; if(!it||bag.gold<it.cost) return; bag.gold-=it.cost; bag.items.push(id);
+function buyItem(id){ const it=ITEMS[id]; if(!it||!SHOP_STOCK.includes(id)||bag.gold<it.cost||bag.items.length>=1000) return; bag.gold-=it.cost; bag.items.push(id);discoverItem(id);
   exploreFeed.push({t:'Bought a '+it.name+' for '+it.cost+' gold.',k:'sys'}); renderTown(); }
-function sellItem(i){ const id=bag.items[i]; const it=ITEMS[id]; if(!it) return; const v=Math.floor((it.cost||0)/2);
+function sellItem(i){ const id=bag.items[i]; const it=ITEMS[id]; if(!it) return; const v=Math.floor((it.cost||0)/2);if(bag.gold>10000000-v)return;
   bag.gold+=v; bag.items.splice(i,1); exploreFeed.push({t:'Sold a '+it.name+' for '+v+' gold.',k:'sys'}); renderTown(); }
 function renderTown(){
   const totHp=party.reduce((a,p)=>a+Math.max(0,p.hp),0), maxHp=party.reduce((a,p)=>a+p.maxHp,0);
   $('#townStatus').innerHTML=`Gold <b>${bag.gold}</b> &nbsp; Party HP <b>${totHp}/${maxHp}</b> &nbsp; Avg level <b>${partyLevelAvg()}</b> &nbsp; Carried items <b>${bag.items.length}</b>`;
   const shop=$('#shopList'); shop.innerHTML='';
   SHOP_STOCK.forEach(id=>{ const it=ITEMS[id]; const row=document.createElement('div'); row.className='shrow';
-    const tag = it.slot==='weapon' ? `+${it.atk||0} atk, +${it.dmg||0} dmg` : it.slot==='armor' ? `+${it.ac} AC${it.spellGuard?', −'+it.spellGuard+' spell damage':''}` : it.heal ? 'heals 2d8+2' : '+2 attack and damage for 3 turns';
+    const tag=itemRules(it);
     row.innerHTML=`<span class="nm">${it.name} <span class="tag">${tag}</span></span><span class="pr">${it.cost}g</span>`;
-    const b=document.createElement('button'); b.textContent='Buy'; b.disabled=bag.gold<it.cost; b.onclick=()=>buyItem(id);
+    const b=document.createElement('button'); b.textContent='Buy'; b.disabled=bag.gold<it.cost||bag.items.length>=1000; b.onclick=()=>buyItem(id);
     row.appendChild(b); shop.appendChild(row); });
   const sell=$('#sellList'); sell.innerHTML='';
   if(!bag.items.length){ sell.innerHTML='<span class="ibag-empty">Nothing to sell.</span>'; }
@@ -2990,7 +3036,7 @@ function renderLevelUp(){
 
 /* ----- Party & equipment screen ----- */
 let pickItem=null;   // index into bag.items awaiting a hero
-function openParty(){ if(mode!=='explore')return; pickItem=null; $('#partyScreen').classList.add('show'); renderParty(); }
+function openParty(){ if(mode!=='explore')return; pickItem=null;$('#treasureFind').innerHTML=''; $('#partyScreen').classList.add('show'); renderParty(); }
 function closeParty(){ $('#partyScreen').classList.remove('show'); render(); }
 function canUse(it, hero){ return !it.classes || it.classes.includes(hero.cls); }
 function selectItem(i){ pickItem=(pickItem===i)?null:i; renderParty(); }
@@ -2998,6 +3044,7 @@ function applyItem(hero){
   if(pickItem===null) return;
   const id=bag.items[pickItem]; const it=ITEMS[id]; if(!it) { pickItem=null; renderParty(); return; }
   if(!canUse(it,hero)){ $('#partySub').textContent=hero.name+' (the '+hero.cls+') cannot use the '+it.name+'.'; return; }
+  if(it.slot==='treasure'){$('#partySub').textContent='Keep this history in your guide, or sell it at a waystation for '+Math.floor(it.cost/2)+' gold.';return;}
   if(it.slot==='potion'){
     if(it.heal&&hero.hp>=hero.maxHp){$('#partySub').textContent=hero.name+' is at full HP. Healing potion kept.';return;}
     if(it.heal){ const before=hero.hp; hero.hp=Math.min(hero.maxHp, hero.hp+Dice.roll(it.heal.n,it.heal.sides)+it.heal.bonus);
@@ -3013,7 +3060,7 @@ function applyItem(hero){
   pickItem=null; autosave();renderParty();
 }
 function unequip(hero, slot){
-  const id=hero.equip[slot]; if(!id) return;
+  const id=hero.equip[slot]; if(!id)return;if(bag.items.length>=1000){$('#partySub').textContent='Satchel full. Make room before removing equipment.';return;}
   hero.equip[slot]=null; bag.items.push(id);
   exploreFeed.push({t:hero.name+' stows the '+ITEMS[id].name+'.',k:'sys'}); autosave();renderParty();
 }
@@ -3024,14 +3071,14 @@ function unequip(hero, slot){
 // dagger and leaving the Mage unarmed when a full fit exists). A small stickiness bonus
 // keeps gear where it already sits when that is just as good, so nothing reshuffles for
 // no reason and no hero ends worse off. Leftovers return to the satchel; potions are never
-// touched. A weapon's worth is its attack+damage, armour's is its AC.
+// touched. Auto Gear scores baseline stats and specialist benefits; it cannot replace manual tactical choices.
 function autoAssignGear(){
   let changed=0;
   for(const slot of ['weapon','armor']){
-    const worth = it => slot==='weapon' ? ((it.atk||0)+(it.dmg||0)) : ((it.ac||0)+(it.spellGuard||0)*.1);
+    const worth = (it,h) => slot==='weapon' ? ((it.atk||0)+(it.dmg||0)+(it.range?1:0)+(it.farDmg||0)*.25+(it.relicSpell?3:0)+(it.healPower||0)*((h.spells||[]).some(sp=>SPELLS[sp.id].effect.kind==='heal')?1:0)) : ((it.ac||0)+(it.spellGuard||0)*.1+(it.weaponGuard||0)*.8+(it.speedMod||0)*.5+(it.controlWard||0)*.05);
     const items=[];
-    party.forEach((h,hi)=>{ const id=h.equip[slot]; if(id&&ITEMS[id]) items.push({id, holder:hi, v:worth(ITEMS[id])}); });
-    bag.items.forEach(id=>{ const it=ITEMS[id]; if(it&&it.slot===slot) items.push({id, holder:null, v:worth(it)}); });
+    party.forEach((h,hi)=>{ const id=h.equip[slot]; if(id&&ITEMS[id]) items.push({id, holder:hi, v:0}); });
+    bag.items.forEach(id=>{ const it=ITEMS[id]; if(it&&it.slot===slot) items.push({id, holder:null, v:0}); });
     if(!items.length) continue;
     const orig=party.map(h=>h.equip[slot]);
     // Lexicographic score: total worth dominates (x10000), then stickiness keeping a piece
@@ -3045,7 +3092,7 @@ function autoAssignGear(){
       for(let k=0;k<items.length;k++){ if(used.has(k)) continue; const item=items[k];
         if(!canUse(ITEMS[item.id], party[i])) continue;
         used.add(k); map[i]=k;
-        rec(i+1, used, score + item.v*10000 + (item.holder===i?100:0) + (rolePri[party[i].cls]||0), map);
+        rec(i+1, used, score + worth(ITEMS[item.id],party[i])*10000 + (item.holder===i?100:0) + (rolePri[party[i].cls]||0), map);
         used.delete(k); delete map[i];
       }
     })(0, new Set(), 0, {});
@@ -3058,15 +3105,16 @@ function autoAssignGear(){
     party.forEach((h,hi)=>{ if(h.equip[slot]!==orig[hi]) changed++; });
   }
   pickItem=null;autosave();
-  if(!changed){ renderParty(); $('#partySub').textContent='Everyone already carries the best gear available \u2014 nothing to reassign.'; return; }
-  exploreFeed.push({t:'You sort the satchel, handing each hero the best weapon and armour they can use.',k:'sys'});
+  if(!changed){ renderParty(); $('#partySub').textContent='Current gear already matches the Auto Gear recommendation \u2014 nothing to reassign.'; return; }
+  exploreFeed.push({t:'You sort the satchel, handing each hero the recommended weapon and armour they can use.',k:'sys'});
   renderParty();
-  $('#partySub').textContent='Gear auto-assigned: each hero now carries the best weapon and armour they can use. Anything left over stays in the satchel.';
+  $('#partySub').textContent='Gear auto-assigned: gear is scored by attack, damage, AC and specialist benefits. Inspect tradeoffs before committing. Anything left over stays in the satchel.';
 }
 function renderParty(){
+  renderTreasureFind();
   const root=$('#partyHeroes'); root.innerHTML='';
   party.forEach((h,hi)=>{
-    const card=document.createElement('div'); card.className='pcard'+(pickItem!==null&&canUse(ITEMS[bag.items[pickItem]],h)?' sel':'');
+    const card=document.createElement('div'); card.className='pcard'+(pickItem!==null&&ITEMS[bag.items[pickItem]].slot!=='treasure'&&canUse(ITEMS[bag.items[pickItem]],h)?' sel':'');
     const wId=h.equip.weapon, aId=h.equip.armor;
     const eb=equipBonuses(h), dmg=effDamage(h);
     let html=`<h3>${h.glyph} ${escapeHTML(h.name)} <span class="cls">${h.cls} L${h.level||1}</span></h3>`;
@@ -3087,7 +3135,7 @@ function renderParty(){
       if(pickItem!==null) applyItem(h);          // equipping
       else unequip(h, slot);                      // tap an equipped slot to remove
     },'.gslot[data-hi="'+hi+'"][data-slot="'+sl.dataset.slot+'"]',h.name+' '+sl.textContent));
-    if(pickItem!==null){const give=document.createElement('button');give.textContent='Give selected item to '+h.name;give.onclick=()=>{applyItem(h);$('#btnAutoGear').focus();};card.appendChild(give);}
+    if(pickItem!==null&&ITEMS[bag.items[pickItem]].slot!=='treasure'){const give=document.createElement('button');give.textContent='Give selected item to '+h.name;give.onclick=()=>{applyItem(h);$('#btnAutoGear').focus();};card.appendChild(give);}
     card.onclick=(e)=>{ if(e.target.closest('.gslot'))return; if(pickItem!==null) applyItem(h); };
     root.appendChild(card);
   });
@@ -3095,11 +3143,11 @@ function renderParty(){
   if(!bag.items.length){ bagEl.innerHTML='<span class="ibag-empty">No carried items. Explore to find gear.</span>'; }
   else bag.items.forEach((id,i)=>{ const it=ITEMS[id]; const chip=document.createElement('span');
     chip.className='ichip'+(it.legendary?' legendary':'')+(pickItem===i?' sel':'');
-    const tag = it.slot==='weapon' ? `+${it.atk||0} atk, +${it.dmg||0} dmg` : it.slot==='armor' ? itemRules(it) : 'potion';
+    const tag=itemRules(it);
     chip.innerHTML=`${it.name} <span class="tag">${tag}</span>`;
     keyboardControl(chip,()=>selectItem(i),'#partyBag .ichip:nth-child('+(i+1)+')','Select '+it.name);bagEl.appendChild(chip); });
   $('#partySub').textContent = pickItem!==null
-    ? 'Tap a hero to give them the '+ITEMS[bag.items[pickItem]].name+'. Class-locked gear only fits some heroes.'
+    ? ITEMS[bag.items[pickItem]].slot==='treasure'?'Trade treasure: sell at a waystation. Its discovery stays in your guide.':'Tap a hero to give them the '+ITEMS[bag.items[pickItem]].name+'. Class-locked gear only fits some heroes.'
     : 'Tap an item, then tap a hero to equip or use it. Tap an equipped item to remove it.';
 }
 function partyGearValue(){ let v=0; for(const h of party){ for(const slot of ['weapon','armor']){ const id=h.equip&&h.equip[slot]; const it=id&&ITEMS[id]; if(it) v+=it.cost||0; } } return v; }
@@ -3115,11 +3163,11 @@ function enterCombat(desc,atKey){ pendingKey=atKey;
   const enemies=composeEncounter(tuned,{floor:floorTier(),partyLevel:partyLevelAvg(),gear:partyGearValue(),difficulty:OATHS[campaign.oath].budget});
   const storyNotes=prepareStoryBattle(enemies,desc);
   if(desc.boss && desc.lead==='crypt_lord'){ exploreFeed.push({t:'The Crypt Lord rises between you and the way out. There is no leaving but through him.',k:'kill'}); }
-  game=new CombatEngine(party,enemies,10,10,GUARDIAN_ARENAS[desc.lead]||explore.theme,deploymentTactic(desc,enemies));applyCouncilArena(game,desc);if(finale&&effects.ward){for(const h of party)if(h.alive)h.statuses.push({type:'dawnward',duration:3,buff:true,ac:effects.ward});storyNotes.push('The remembered names and small gods stand beside you: +2 AC for three turns.');}for(const text of storyNotes)game.log.push({t:text,k:'magic'});game.log.push({t:'Battle begins: '+enemies.map(e=>e.name).join(', ')+'.',k:'sys'});if(game.tactic)game.log.push({t:PATROL_TACTICS[game.tactic].name+' · '+PATROL_TACTICS[game.tactic].counter,k:'sys'}); mode='combat'; mover=null; reachCache=null; selectedSpell=null; autoFight=false; updateAutoBtn(); render(); beginTurnFlow(); }
+  game=new CombatEngine(party,enemies,10,10,GUARDIAN_ARENAS[desc.lead]||explore.theme,deploymentTactic(desc,enemies));applyCouncilArena(game,desc);if(finale&&effects.ward){for(const h of party)if(h.alive)h.statuses.push({type:'dawnward',duration:3,buff:true,ac:effects.ward});storyNotes.push('The remembered names and small gods stand beside you: +2 AC for three turns.');}for(const text of storyNotes)game.log.push({t:text,k:'magic'});game.log.push({t:'Battle begins: '+enemies.map(e=>e.name).join(', ')+'.',k:'sys'});if(desc.prize)game.log.push({t:'Guarded treasure: '+ITEMS[desc.prize].name+'. Victory leaves a cache on the defeated patrol’s tile.',k:'magic'});if(game.tactic)game.log.push({t:PATROL_TACTICS[game.tactic].name+' · '+PATROL_TACTICS[game.tactic].counter,k:'sys'}); mode='combat'; mover=null; reachCache=null; selectedSpell=null; autoFight=false; updateAutoBtn(); render(); beginTurnFlow(); }
 function resolveCombat(){
   cancelTurn();autoFight=false; updateAutoBtn();
   if(game.phase==='won'){
-    const hunted=legendHunt;legendHunt=false;if(hunted){if(!campaign.hunt){campaign.hunt=true;bag.items.push('eclipsescale');bag.rations++;exploreFeed.push({t:'Astrax folds its wings around the broken chain. Stars rise through the mountain. Eren catches one falling scale: Eclipsescale Mantle (+2 AC, −2 damage per spell hit, any class) and one supply. The Observatory falls silent.',k:'magic'});}}else explore.cleared.add(pendingKey);for(const foe of game.combatants)if(GUARDIAN_AFTERMATH[foe.cls])exploreFeed.push({t:GUARDIAN_AFTERMATH[foe.cls],k:'flavor'});campaign.battles++;campaign.foes+=game.combatants.filter(c=>c.side==='enemy'&&!c.alive).length;if(game.combatants.some(c=>c.cls==='CryptLord'))campaign.bossSlain=true;
+    const hunted=legendHunt;legendHunt=false;if(hunted){if(!campaign.hunt){campaign.hunt=true;bag.items.push('eclipsescale');bag.rations++;exploreFeed.push({t:'Astrax folds its wings around the broken chain. Stars rise through the mountain. Eren catches one falling scale: Eclipsescale Mantle (+2 AC, −2 damage per spell hit, any class) and one supply. The Observatory falls silent.',k:'magic'});}}else {const prize=explore.encounters[pendingKey]?.prize;if(prize&&!explore.cleared.has(pendingKey)){explore.loot[pendingKey]={type:'item',item:prize};exploreFeed.push({t:'The guarded cache opens: '+ITEMS[prize].name+'. Claim it on the defeated patrol’s tile.',k:'magic'});}explore.cleared.add(pendingKey);}for(const foe of game.combatants)if(GUARDIAN_AFTERMATH[foe.cls])exploreFeed.push({t:GUARDIAN_AFTERMATH[foe.cls],k:'flavor'});campaign.battles++;campaign.foes+=game.combatants.filter(c=>c.side==='enemy'&&!c.alive).length;if(game.combatants.some(c=>c.cls==='CryptLord'))campaign.bossSlain=true;
     const fallen=game.combatants.find(c=>GUARDIAN_AFTERMATH[c.cls]||c.cls==='EclipseWyrm');
     const gained=game.xpEarned||0;
     // Award XP to the heroes who were still standing at the kill; a downed hero
@@ -3132,7 +3180,7 @@ function resolveCombat(){
     // The party may have engaged while standing on loot (foes engage at one square,
     // before loot underfoot is taken); collect it now so nothing is stranded.
     const ck=key(explore.pos.x, explore.pos.y);
-    if(!hunted&&explore.loot[ck]){ const it=explore.loot[ck]; delete explore.loot[ck]; collect(it); }
+    if(!hunted&&explore.loot[ck]){ const it=explore.loot[ck]; delete explore.loot[ck];if(collect(it)===false)explore.loot[ck]=it; }
     const leveled=[];   // [{hero, by}] for heroes that gained at least one level
     if(gained>0 && survivors.length){
       exploreFeed.push({t:'Each surviving hero gains '+gained+' experience.',k:'magic'});
@@ -3182,13 +3230,14 @@ function combatPotions(){ return bag.items.map((id,idx)=>({idx, item:ITEMS[id]})
 function useItem(idx){if(overlayOpen())return; if(mode!=='combat'||game.phase!=='playing')return; const c=game.current();
   if(c.side!=='party'||!c.alive||game.isIncapacitated(c)||c.acted.action)return;
   const id=bag.items[idx], it=ITEMS[id]; if(!it||it.slot!=='potion')return;
-  if(it.heal&&c.hp>=c.maxHp){game.log.push({t:c.name+' is at full HP. Healing potion and action kept.',k:'sys'});render();return;}
+  const reason=consumableReason(it,c);if(reason){game.log.push({t:reason+'. Item and action kept.',k:'sys'});render();return;}
   if(it.heal){ const before=c.hp; c.hp=Math.min(c.maxHp, c.hp+Dice.roll(it.heal.n,it.heal.sides)+it.heal.bonus);
     game.log.push({t:c.name+' drinks a '+it.name+' (+'+(c.hp-before)+' HP).',k:'magic'}); }
+  else if(it.cleanse){c.statuses=c.statuses.filter(st=>!it.cleanse.includes(st.type));game.log.push({t:c.name+' uses Dawn Salt: poison, silence and draining curses lifted.',k:'magic'});}
   else if(it.buff){ const b=it.buff, cur=c.statuses.find(s=>s.type===b.status);
     if(cur){ cur.duration=Math.max(cur.duration, b.duration); }
     else c.statuses.push({type:b.status, duration:b.duration, buff:true, atk:b.atk||0, ac:b.ac||0, dmg:b.dmg||0});
-    game.log.push({t:c.name+' drinks a '+it.name+' and is seized by battle-fury.',k:'magic'}); }
+    game.log.push({t:c.name+' uses '+it.name+'. '+itemRules(it)+'.',k:'magic'}); }
   bag.items.splice(idx,1); c.acted.action=true; mover=null; selectedSpell=null; render();
 }
 function aoePreview(cx,cy,on){
@@ -3298,6 +3347,7 @@ function renderMinimap(){
     else if(e.found.has(k)&&e.loot[k]) dot='#f0c860';
     else if(x===e.exit.x&&y===e.exit.y) dot='#9fd8a0';
     if(dot) s+='<circle cx="'+(x+0.5)+'" cy="'+(y+0.5)+'" r="0.34" fill="'+dot+'"/>';
+    const prize=e.spotted.has(k)&&e.encounterAt(x,y)?.prize;if(prize)s+='<g data-guarded-prize="'+prize+'"><title>'+escapeHTML('Guarded treasure: '+ITEMS[prize].name)+'</title><rect x="'+(x+.08)+'" y="'+(y+.08)+'" width=".84" height=".84" rx=".1" fill="none" stroke="#ffe08a" stroke-width=".1"/></g>';
   }
   s+='<rect width="'+e.w+'" height="'+e.h+'" fill="url(#map-stone)" pointer-events="none"/>';
   if(e.task&&!e.task.done){const q=e.task,marks=q.sites.map((k,i)=>[k,q.id==='gallery'?String(i+1):q.id==='shrine_road'?'BRM'[i]:q.id==='warren'?'S':'L',q.used.includes(i)]);if(q.id==='ossuary'&&!q.used.length){const blade=Object.entries(e.loot).find(([k,v])=>v.item==='dawnblade');if(blade)marks.push([blade[0],'D',false]);}if(q.id==='warren'||q.id==='ossuary')marks.push([key(q.start.x,q.start.y),'C',false]);for(const [k,label,used]of marks){if(used||q.id==='ossuary'&&label==='L')continue;const [x,y]=k.split(',').map(Number);s+='<g data-task-site="'+label+'"><title>'+escapeHTML(CHAPTER_TASKS[q.id][0]+' · '+label)+'</title><rect x="'+x+'" y="'+y+'" width="1" height="1" fill="#194853" stroke="#9beaf0" stroke-width=".08"/><text x="'+(x+.5)+'" y="'+(y+.8)+'" text-anchor="middle" font-size=".8" fill="#e5ffff">'+label+'</text></g>';}}
@@ -3392,7 +3442,7 @@ function renderCombat(){
   if(restoreGridFocus){const target=cellEls[gridCursor.y*game.w+gridCursor.x];if(target)target.focus({preventScroll:true});}
   roster.innerHTML='';
   game.order.forEach(id=>{ const u=game.byId(id); const row=document.createElement('div'); row.className='row '+u.side+(u===c?' cur':'')+(u.alive?'':' dead');
-    const sp=(u.spells&&u.spells.length)?`<span class="sp">${u.spells.reduce((a,s)=>a+s.uses,0)}sp</span>`:'';
+    const sp=(u.spells&&u.spells.length)?`<span class="sp">${u.spells.reduce((a,s)=>a+s.uses,0)+(u.relicSpell?.uses||0)}sp</span>`:'';
     const inc=game.isIncapacitated(u), psn=u.alive&&u.statuses&&u.statuses.some(s=>s.type==='poison'), bls=u.alive&&u.statuses&&u.statuses.some(s=>s.type==='bless'||s.type==='fury'), dbf=u.alive&&u.statuses&&u.statuses.some(s=>s.debuff);
     const st=(inc?' <span class="sp">held</span>':'')+(psn?' <span class="sp" style="color:var(--heal)">pois</span>':'')+(bls?' <span class="sp" style="color:var(--gold)">buff</span>':'')+(dbf?' <span class="sp" style="color:#c46bff">weak</span>':'')+((u.alive&&u.guarding)?' <span class="sp" style="color:var(--gold)">guard</span>':'');
     const lv=u.side==='party'?(' L'+(u.level||1)):'';
@@ -3411,7 +3461,7 @@ function renderCombat(){
     const counts={}; combatPotions().forEach(p=>{ counts[p.item.id]=counts[p.item.id]||{name:p.item.name, idx:p.idx, n:0}; counts[p.item.id].n++; });
     const groups=Object.values(counts);
     if(!groups.length) sm.innerHTML='<span style="color:var(--dim)">No usable items.</span>';
-    groups.forEach(g=>{ const b=document.createElement('button'); b.className='spellbtn'; b.disabled=!!ITEMS[bag.items[g.idx]].heal&&c.hp>=c.maxHp;b.textContent=g.name+' ('+g.n+')'+(b.disabled?' · Full HP':''); b.onclick=()=>useItem(g.idx); sm.appendChild(b); });
+    groups.forEach(g=>{ const b=document.createElement('button'); b.className='spellbtn'; const reason=consumableReason(ITEMS[bag.items[g.idx]],c);b.disabled=!!reason;b.textContent=g.name+' ('+g.n+')'+(reason?' · '+reason:''); b.onclick=()=>useItem(g.idx); sm.appendChild(b); });
   } else sm.style.display='none';
 
   const sig=SIGNATURES[c.cls];$('#btnSignature').innerHTML='<span class="signature-name">'+(sig?sig.name:'Signature')+'</span><span class="signature-short">Signature</span>';$('#btnSignature').setAttribute('aria-label',sig?sig.name:'Signature');$('#btnSignature').title=sig?sig.desc:'';$('#btnSignature').disabled=!playerTurn||autoFight||c.acted.action||c.signatureUsed||!sig;
@@ -3778,6 +3828,7 @@ function openTactics(){
   if(fighting&&BATTLEFIELDS[game.battlefield]?.desc)section(BATTLEFIELDS[game.battlefield].name,BATTLEFIELDS[game.battlefield].desc);
   if(fighting&&game.arenaShelter?.size)section('Allies on the battlefield',game.arenaAidNotes.join(' ')+' Your council choices protect '+game.arenaShelter.size+' sanctum tile'+(game.arenaShelter.size===1?'':'s')+'. These stay sanctums during the guardian’s phase change.');
   section('Your turn','Each hero can move once and take one action, in either order. Attack, cast, drink a potion, or use a signature. End Turn advances the order. Guard spends the action and ends the turn, preparing one reaction. Wait delays an untouched turn. Moving away from an adjacent foe can provoke a free strike.');
+  section('Guarded treasure','A gold frame around a spotted red patrol marks a treasure guard. Win, then step onto the defeated enemy’s map tile to claim its cache. It stays there if your satchel is full. Party shows a discovery portrait; Treasure & Relics explains sources, tradeoffs and what this run has found.');
   section('Mouse, touch, and keyboard','Choose actions with a click or tap. Explore with arrows or WASD. In combat, Tab to the grid, use arrows to move focus, and press Enter or Space to use the selected action. Area spells still need confirmation. Party & Log opens the roster in smaller windows.');
   section('Aim before you cast','Select an area spell, then tap a tile to preview it. The pink outline shows the blast; the hint counts allies and foes. Tap that tile again or Confirm cast to commit. Fireball and other damage blasts hit friends too; Sleep only affects enemies. Cover protects against ranged weapons, not magic.');
   section('Ground that matters',Object.values(TERRAIN).map(t=>t.glyph+' '+t.name+': '+t.desc).join(' '));
@@ -3786,7 +3837,7 @@ function openTactics(){
   section('Relic choices','Lantern Mantle blocks up to 2 terrain ember damage. Starweave adds +2 saves against spell control and debuffs. Eclipsescale reduces each damaging spell hit by 2. These wards do not replace each other. Select gear in Party to compare its rules with the current item.');
   section('Your company','Fighter rallies the line; Cleric heals standing allies; Thief gains a shadow ward; Mage restores spell uses. Each signature is one action and usable once per battle. Wanderer recovers HP and shares victory XP; the harder oaths award battle XP only to standing heroes.');
   if(fighting){section(game.battlefield?BATTLEFIELDS[game.battlefield].name:'Current opposition','These are the foes still standing. Their remaining resources and positions determine what they can do.');
-    for(const u of game.living('enemy')){const card=document.createElement('div');card.className='tactics-enemy';const spellText=(u.spells||[]).map(sp=>SPELLS[sp.id].name+' '+sp.uses+'/'+sp.max).join(' · ')||'No spells';const status=(u.statuses||[]).map(st=>st.type+' '+st.duration+'t').join(', ')||'No statuses';const c=game.current();const preview=c.side==='party'&&game.canAttack(c,u)?' · Your attack: '+game.attackPreview(c,u).chance+'% hit':'';card.innerHTML='<span class="tactics-portrait" aria-hidden="true">'+(SPRITES[u.sprite]||escapeHTML(u.glyph))+'</span><strong>'+escapeHTML(u.name)+'</strong><small>'+u.hp+'/'+u.maxHp+' HP · AC '+effAc(u)+(game.shieldBonus(u)?' (+2 vs weapons from sentinel)':'')+' · Range '+u.range+preview+'</small><p>'+escapeHTML(game.describeRole(u))+'</p><small>'+escapeHTML(spellText)+'<br>'+escapeHTML(status)+'</small>';root.appendChild(card);}
+    for(const u of game.living('enemy')){const card=document.createElement('div');card.className='tactics-enemy';const spellText=(u.spells||[]).map(sp=>SPELLS[sp.id].name+' '+sp.uses+'/'+sp.max).join(' · ')||'No spells';const status=(u.statuses||[]).map(st=>st.type+' '+st.duration+'t').join(', ')||'No statuses';const c=game.current();const preview=c.side==='party'&&game.canAttack(c,u)?' · Your attack: '+game.attackPreview(c,u).chance+'% hit':'';card.innerHTML='<span class="tactics-portrait" aria-hidden="true">'+(SPRITES[u.sprite]||escapeHTML(u.glyph))+'</span><strong>'+escapeHTML(u.name)+'</strong><small>'+u.hp+'/'+u.maxHp+' HP · AC '+effAc(u)+(game.shieldBonus(u)?' (+2 vs weapons from sentinel)':'')+' · Range '+effRange(u)+preview+'</small><p>'+escapeHTML(game.describeRole(u))+'</p><small>'+escapeHTML(spellText)+'<br>'+escapeHTML(status)+'</small>';root.appendChild(card);}
   }
   $('#tacticsScreen').classList.add('show');$('#btnTacticsClose').focus({preventScroll:true});$('#tacticsScreen').scrollTop=0;
 }
@@ -3804,18 +3855,36 @@ function closeCodex(){
  if(mode==='combat'&&game&&game.phase==='playing'){const c=game.current();if(c.side==='party'&&!autoFight&&!game.isIncapacitated(c))render();else beginTurnFlow();}
 }
 function itemSources(id){
- const from=[];for(const w of Object.values(WORLD)){if((w.items||[]).includes(id))from.push(w.name);if((w.secretItems||[]).includes(id))from.push(w.name+' hidden caches');}
+ const from=[];for(const w of Object.values(WORLD)){if((w.items||[]).includes(id))from.push(w.name);if((w.secretItems||[]).includes(id))from.push(w.name+' hidden caches');if((w.encounters||[]).some(e=>e.prize===id))from.push(w.name+' · defeat the '+((w.encounters||[]).find(e=>e.prize===id).lead?BESTIARY[(w.encounters||[]).find(e=>e.prize===id).lead].name:'guarded patrol')+' and claim its cache');}
  for(const q of Object.values(CONTRACTS))if(q.reward.item===id)from.push('Promise: '+q.name);
  if(SHOP_STOCK.includes(id))from.push('Waystation trader');if(id==='eclipsescale')from.push('Defeat Astrax in the optional Observatory hunt');
  
  for(const ev of Object.values(EVENTS))if(ev.options.some(o=>o.success?.item===id||o.failure?.item===id))from.push('Event: '+ev.name);if(!from.length)from.push('No current campaign source');return from.join(' · ');
 }
 function itemRules(it){
- let s=it.slot==='weapon'?'Weapon · +'+(it.atk||0)+' attack · +'+(it.dmg||0)+' weapon damage':it.slot==='armor'?'Armour · +'+it.ac+' AC':it.heal?'Consumable · heals '+it.heal.n+'d'+it.heal.sides+'+'+it.heal.bonus:'Consumable · +'+it.buff.atk+' attack / +'+it.buff.dmg+' damage for '+it.buff.duration+' turns';
- if(it.emberGuard)s+=' · ignores up to '+it.emberGuard+' terrain ember damage';if(it.controlWard)s+=' · +'+it.controlWard+' saves against spell control and debuffs';
- if(it.spellGuard)s+=' · '+it.spellGuard+' less damage per spell hit';if(it.onHit)s+=' · '+Math.round(it.onHit.chance*100)+'% poison: '+it.onHit.dmg+' damage/turn for '+it.onHit.duration+' turns';return s;
+ let text=it.slot==='weapon'?'Weapon · +'+(it.atk||0)+' attack · +'+(it.dmg||0)+' weapon damage':it.slot==='armor'?'Armour slot · +'+it.ac+' AC':it.slot==='treasure'?'Trade treasure · sells for '+Math.floor(it.cost/2)+' gold':it.heal?'Consumable · heals '+it.heal.n+'d'+it.heal.sides+'+'+it.heal.bonus:it.cleanse?'Combat consumable · clears own poison, silence, Hex and Enfeeble':'Combat consumable · '+(it.buff.ac?'+'+it.buff.ac+' AC':'+'+it.buff.atk+' attack / +'+it.buff.dmg+' damage')+' for '+it.buff.duration+' active turns';
+ if(it.range)text+=' · weapon range '+it.range+' · −4 attack while threatened in melee';
+ if(it.farDmg)text+=' · +'+it.farDmg+' damage at distance ≥4 · '+it.nearDmg+' damage adjacent';
+ if(it.speedMod)text+=' · '+(it.speedMod>0?'+':'')+it.speedMod+' movement';
+ if(it.weaponGuard)text+=' · '+it.weaponGuard+' less damage per weapon hit';
+ if(it.healPower)text+=' · +'+it.healPower+' HP per healing spell (not potions/signatures)';
+ if(it.relicSpell)text+=' · Covenant Flare once/battle: 2d6, range 4, 3×3, friendly fire';
+ if(it.emberGuard)text+=' · ignores up to '+it.emberGuard+' terrain ember damage';if(it.controlWard)text+=' · +'+it.controlWard+' saves against spell control and debuffs';
+ if(it.spellGuard)text+=' · '+it.spellGuard+' less damage per spell hit';if(it.onHit)text+=' · '+Math.round(it.onHit.chance*100)+'% poison: '+it.onHit.dmg+' damage/turn for '+it.onHit.duration+' turns';return text;
 }
 const ITEM_TACTICS={
+ bellheart_aegis:'Fighter bulwark: +3 AC and −1 damage per weapon hit, but −1 move. Pair with Dawnblade for a slow front line; spells and terrain bypass this ward.',
+ ashen_covenant:'Mage artillery: Covenant Flare once per battle (2d6 damage, range four, 3×3, hits allies). Trades away weapon bonuses. Lantern Mantle blocks terrain embers, not your own spell blast.',
+ mercy_reliquary:'Cleric support: +2 HP per healing spell, including self-heals; no bonus to potions or Dawn’s Mercy. Pair with Starweave to protect the healer’s casting; Sunshard/Dawnblade strike harder.',
+ nightwarden_bow:'Thief marksman: range six, +2 weapon damage at distance four or more, −2 damage when adjacent. Adjacent enemies also impose the normal −4 ranged attack penalty. Road Boots improve repositioning; Nightglass favours close poison strikes.',
+ pilgrim_boots:'Mobile armour: +1 movement, no AC. Replaces mail or a protective mantle; pair with a bow to find distance rather than absorb blows.',
+ ward_charm:'Light protection: +1 AC and +1 spell-control saves. Starweave is stronger late armour; Boots trade protection for mobility.',
+ pilgrim_mace:'Early healer: +1 HP per healing spell, with less weapon power than Fine Sword or Oak Staff. Its bonus does not stack with the Reliquary: both occupy the weapon slot.',
+ scout_bow:'Early ranged option: range four, +1 weapon damage and no attack bonus. Melee pressure imposes −4 attack; Fine Sword gives better accuracy for a close Fighter.',
+ smoke_phial:'Spend your action for +3 AC for two active turns. It does not stack with itself, hide the party or cancel movement reactions.',
+ dawn_salt:'Spend your action to clear your own poison, silence, Hex and Enfeeble. It cannot be used while asleep/held, revive a hero or heal HP. With nothing to cleanse, keep the item and action.',
+ dawn_seal:'History with a purpose: sell from the satchel at a waystation for 60 gold. Discovery remains in the guide after sale; no hidden stat bonus.',
+ royal_astrolabe:'A rare trade treasure: sell at a waystation for 90 gold toward equipment or consumables. It is not wearable and grants no passive bonus.', 
  lantern_mantle:'For ember aisles: its ward blocks terrain fire, not damaging spells or poison.',
  starweave:'For controllers: its ward improves saves against Sleep, Hold, Hex and Enfeeble, not weapon poison or damage spells.',
  eclipsescale:'For spell volleys: reduces every damaging spell hit, including friendly fire; does not stop terrain fire or poison.',
@@ -3825,9 +3894,10 @@ const ITEM_TACTICS={
 };
 function gearComparison(hero,it){
  if(!canUse(it,hero))return hero.cls+' cannot use '+it.name+'.';
+ if(it.slot==='treasure')return itemRules(it)+' · Sell at a waystation; cannot equip.';
  if(it.slot==='potion')return itemRules(it)+(it.heal&&hero.hp>=hero.maxHp?' · Already at full HP.':'');
  const old=ITEMS[hero.equip[it.slot]]||{},signed=n=>(n>=0?'+':'')+n;
- return 'Compared with '+(old.name||'an empty slot')+': '+(it.slot==='weapon'?signed((it.atk||0)-(old.atk||0))+' attack / '+signed((it.dmg||0)-(old.dmg||0))+' weapon damage':signed((it.ac||0)-(old.ac||0))+' AC')+'. '+itemRules(it)+(old.id&&old.id!==it.id?' · Replaces: '+itemRules(old):'')+(ITEM_TACTICS[it.id]?' · '+ITEM_TACTICS[it.id]:'');
+ return 'Compared with '+(old.name||'an empty slot')+': '+(it.slot==='weapon'?signed((it.atk||0)-(old.atk||0))+' attack / '+signed((it.dmg||0)-(old.dmg||0))+' weapon damage':signed((it.ac||0)-(old.ac||0))+' AC')+' · Movement '+effSpeed(hero)+' → '+Math.max(1,hero.speed+(it.slot==='armor'?(it.speedMod||0):(ITEMS[hero.equip.armor]?.speedMod||0)))+' · Range '+effRange(hero)+' → '+(it.slot==='weapon'?(it.range||hero.range):effRange(hero))+'. '+itemRules(it)+(old.id&&old.id!==it.id?' · Replaces: '+itemRules(old):'')+(ITEM_TACTICS[it.id]?' · '+ITEM_TACTICS[it.id]:'');
 }
 function guardianDefeated(id){if(!party||!explore||!['explore','combat'].includes(mode))return false;if(id==='eclipse_wyrm')return campaign.hunt;if(id==='crypt_lord')return campaign.bossSlain;
  return Object.values(WORLD).some(w=>(w.encounters||[]).some(enc=>enc.lead===id)&&(campaign.completedFloors.includes(w.id)||(nodeId===w.id&&Object.entries(explore.encounters).some(([k,e])=>e.lead===id&&explore.cleared.has(k)))));
@@ -3840,11 +3910,12 @@ function beginLegendHunt(){
  enterCombat({boss:true,lead:'eclipse_wyrm',pool:['skeleton'],budgetMul:.45},null);return true;
 }
 function renderCodex(){
+ if(['explore','combat'].includes(mode))syncDiscoveries();
  const activeRun=['explore','combat'].includes(mode),state=activeRun?campaign:freshCampaign('delver');
- const select=$('#codexFilter');if(select.dataset.page!==codexTab){select.innerHTML='<option value="all">All entries</option>'+(codexTab==='bestiary'?'<option value="guardians">Guardians</option>':'<option value="relics">Relics</option><option value="potions">Potions</option>');select.dataset.page=codexTab;select.value='all';}const root=$('#codexContent'),query=($('#codexSearch').value||'').trim().toLowerCase(),filter=$('#codexFilter').value;root.innerHTML='';
+ const select=$('#codexFilter');if(select.dataset.page!==codexTab){select.innerHTML='<option value="all">All entries</option>'+(codexTab==='bestiary'?'<option value="guardians">Guardians</option>':'<option value="relics">Relics</option><option value="potions">Consumables</option><option value="valuables">Trade treasures</option><option value="discovered">Discovered this run</option><option value="unseen">Unseen this run</option><option value="carried">Carried now</option><option value="equipped">Equipped now</option>');select.dataset.page=codexTab;select.value='all';}const root=$('#codexContent'),query=($('#codexSearch').value||'').trim().toLowerCase(),filter=$('#codexFilter').value;root.innerHTML='';
  for(const [id,tab]of [['codexBeasts','bestiary'],['codexTreasure','treasures'],['codexLegends','legends']])$('#'+id).setAttribute('aria-pressed',codexTab===tab?'true':'false');
  $('#codexTitle').textContent=codexTab==='bestiary'?'The Bestiary':codexTab==='treasures'?'Treasure & Relics':'Legends of the Last Dawn';$('#codexTools').hidden=codexTab==='legends';
- $('#codexNote').textContent=codexTab==='bestiary'?'Complete field guide · base statistics. Elites, guardian phases and council effects can change a live foe.':'treasures'===codexTab?'Exact item rules and known sources. Ownership means currently carried or equipped, not a permanent collection.':'Campaign spoilers · the road, its guardians, and an optional legend beyond the throne’s chains.';
+ $('#codexNote').textContent=codexTab==='bestiary'?'Complete field guide · base statistics. Elites, guardian phases and council effects can change a live foe.':'treasures'===codexTab?'Complete spoiler guide · discoveries remember this run’s finds, including sold or consumed treasures. Carried and equipped show current ownership.':'Campaign spoilers · the road, its guardians, and an optional legend beyond the throne’s chains.';
  let count=0;
  const add=(title,body,art,kind,artId)=>{const card=document.createElement('article');card.className='atlas-card'+(artId&&(ITEMS[artId]?.legendary||artId==='sunless_crown')?' relic-card':'');card.innerHTML=(art?'<div class="atlas-art" aria-hidden="true">'+art+'</div>':'')+'<div class="atlas-kind">'+escapeHTML(kind)+'</div><h3>'+escapeHTML(title)+'</h3>'+body;root.appendChild(card);count++;};
  if(codexTab==='bestiary')for(const [id,m]of Object.entries(BESTIARY)){
@@ -3856,22 +3927,36 @@ function renderCodex(){
   add(m.name,'<p class="atlas-stats">'+escapeHTML(stats)+'</p><p>'+escapeHTML(lore[1])+'</p><p><b>Counterplay</b> '+escapeHTML(lore[2])+'</p><p class="tag">'+escapeHTML(spells)+'</p><p class="tag">'+escapeHTML(regions.join(' · '))+'</p>'+(boss?'<p class="atlas-state">'+(guardianDefeated(id)?'Defeated in this run':'Guardian legend · not yet defeated in this run')+'</p>':''),SPRITES[m.sprite],(boss?'Guardian · ':'')+lore[0]);
  }else if(codexTab==='treasures'){
   for(const [id,it]of Object.entries(ITEMS)){
-   if(filter==='relics'&&!it.legendary||filter==='potions'&&it.slot!=='potion'||filter==='guardians')continue;
+   if(filter==='relics'&&!it.legendary||filter==='potions'&&it.slot!=='potion'||filter==='valuables'&&it.slot!=='treasure'||filter==='guardians')continue;
    const source=itemSources(id),lore=RELIC_LORE[id],rules=itemRules(it);if(query&&!(it.name+' '+source+' '+lore+' '+rules).toLowerCase().includes(query))continue;
    const carried=activeRun&&bag?bag.items.filter(x=>x===id).length:0,wearers=(activeRun?party||[]:[]).filter(h=>Object.values(h.equip||{}).includes(id)).map(h=>h.name);
-   add(it.name,'<p class="atlas-stats">'+escapeHTML(rules)+'</p>'+(ITEM_TACTICS[id]?'<p class="atlas-build"><b>Build choice</b> '+escapeHTML(ITEM_TACTICS[id])+'</p>':'')+'<p>'+escapeHTML(lore)+'</p><p><b>Source</b> '+escapeHTML(source)+'</p><p class="tag">Usable by '+escapeHTML((it.classes||Object.keys(CLASSES)).join(', '))+' · '+it.cost+' gold value</p><p class="atlas-state">'+(activeRun&&bag?'Carried: '+carried+(wearers.length?' · Equipped: '+escapeHTML(wearers.join(', ')):' · Not equipped'):'Start a run to track carried equipment.')+'</p>',relicArtwork(id),it.legendary?'Legendary relic':it.slot==='potion'?'Consumable':'Equipment',id);
+   const discovered=state.discovered.includes(id);if(filter==='discovered'&&!discovered||filter==='unseen'&&discovered||filter==='carried'&&!carried||filter==='equipped'&&!wearers.length)continue;
+   add(it.name,'<p class="atlas-stats">'+escapeHTML(rules)+'</p>'+(ITEM_TACTICS[id]?'<p class="atlas-build"><b>Build choice</b> '+escapeHTML(ITEM_TACTICS[id])+'</p>':'')+'<p>'+escapeHTML(lore)+'</p><p><b>Source</b> '+escapeHTML(source)+'</p><p class="tag">For '+escapeHTML(it.slot==='treasure'?'Company trade treasure · cannot equip':(it.classes||Object.keys(CLASSES)).join(', '))+' · '+it.cost+' gold value</p><p class="atlas-state">'+(activeRun&&bag?(discovered?'Discovered this run':'Unseen this run')+' · Carried: '+carried+(wearers.length?' · Equipped: '+escapeHTML(wearers.join(', ')):' · Not equipped'):'Start a run to track carried equipment.')+'</p>',relicArtwork(id),it.legendary?'Legendary relic':it.slot==='potion'?'Consumable':it.slot==='treasure'?'Trade treasure':'Equipment',id);
   }
-  if(filter==='all'||filter==='relics')if(!query||'sunless crown relic king final tomb'.includes(query))add('The Sunless Crown','<p>Every stolen sunrise is locked inside this circlet. It is a story relic, not equipment: no passive stat bonus.</p><p>Recover it in the Sunless Tomb, defeat the king, and reach the final stairs to choose Break, Bind or Wear.</p><p class="atlas-state">'+(activeRun&&bag&&bag.relic?'Carried by the company':'Not yet carried')+'</p>',relicArtwork('sunless_crown'),'Campaign relic','sunless_crown');
+  if(['all','relics','discovered','unseen','carried'].includes(filter)&&!(filter==='discovered'&&!state.discovered.includes('sunless_crown')||filter==='unseen'&&state.discovered.includes('sunless_crown')||filter==='carried'&&!bag?.relic))if(!query||'sunless crown relic king final tomb'.includes(query))add('The Sunless Crown','<p>Every stolen sunrise is locked inside this circlet. It is a story relic, not equipment: no passive stat bonus.</p><p>Recover it in the Sunless Tomb, defeat the king, and reach the final stairs to choose Break, Bind or Wear.</p><p class="atlas-state">'+(activeRun&&bag&&bag.relic?'Discovered this run · Carried by the company':state.discovered.includes('sunless_crown')?'Discovered this run · Not carried':'Unseen this run · Not yet carried')+'</p>',relicArtwork('sunless_crown'),'Campaign relic','sunless_crown');
  }else{
   add('Astrax, the Star-Eater','<p>Eren’s forbidden map marks the Observatory of Ash. The king chained a dragon there to swallow the stars that escaped his crown. Freeing the sky means defeating its oldest prisoner.</p><p><b>Optional, dangerous hunt.</b> Opens at a waystation after four chapters and its council decision. Rest and equip first. The guardian marks its breath area one active turn before release. Move off the amber tiles. Its once-only second phase restores one breath and summons a skeleton. Defeat ends the run. Returning to title with Restart abandons the battle and keeps your pre-hunt town Continue when browser storage is available.</p><p><b>Reward:</b> Eclipsescale Mantle (+2 AC, −2 damage per spell hit, any class), one supply and battle XP. The mantle is granted once; the ending remembers the freed stars.</p><p class="atlas-state">'+(state.hunt?'Astrax is free. The constellations have returned.':huntReady()?'The Observatory is within reach. Your company can accept the hunt.':'The Observatory awaits four completed chapters and a chosen council at a waystation.')+'</p>',SPRITES.eclipse_wyrm,'Optional legendary hunt');
   const b=document.createElement('button');b.id='btnBeginHunt';b.className='big';b.textContent=state.hunt?'Legend fulfilled':'Accept hunt · enter battle';b.disabled=!huntReady();b.onclick=beginLegendHunt;root.lastElementChild.appendChild(b);
   for(const [id,chapter]of Object.entries(STORY))add(chapter.title,'<p>'+escapeHTML(SAGAS[id])+'</p><p class="tag">'+escapeHTML(chapter.objective)+'</p><p class="atlas-state">'+(state.completedFloors.includes(id)?'Chapter completed':nodeId===id&&activeRun&&party?'Current chapter':'A road still told in legend')+'</p>',null,WORLD[id].name);
  }
- $('#codexCount').textContent=count+' '+(codexTab==='bestiary'?(count===1?'creature':'creatures'):codexTab==='treasures'?'treasures':'legends');if(!count){const p=document.createElement('p');p.textContent='No entries match. Try another search or show all categories.';root.appendChild(p);}
+ $('#codexCount').textContent=count+' '+(codexTab==='bestiary'?(count===1?'creature':'creatures'):codexTab==='treasures'?(count===1?'treasure':'treasures'):'legends');if(!count){const p=document.createElement('p');p.textContent='No entries match. Try another search or show all categories.';root.appendChild(p);}
 }
 /* ===== TREASURE ART ===== */
 function rp(d,f,s,w){return '<path d="'+d+'"'+(f?' fill="'+f+'"':'')+(s?' stroke="'+s+'"':'')+(w?' stroke-width="'+w+'"':'')+'/>';}
 const TREASURE_ART={
+ bellheart_aegis:["#f7c567",rp("M12 15L32 5L52 15V35Q48 50 32 60Q16 50 12 35Z","#284052","#edc47a")+rp("M17 19L32 11L47 19V35Q43 47 32 54Q21 47 17 35Z","#536f83","#abc7d6")+rp("M20 21H27V41L32 48L37 41V21H44L39 37H25Z","#203044")+rp("M27 20Q32 15 37 20V31L41 35H23L27 31Z","#c18a3c","#ffe6a2")+rp("M31 23H33V31H31Z M29 38H35V42H29Z","#ffe9ad")+rp("M22 16L20 25M43 40L36 48M14 17L18 19M47 17L51 15","none","#e6f0ee","2")],
+ ashen_covenant:["#ffac69",rp("M12 18L28 13L36 16L51 11L54 48L37 54L28 50L13 55Z","#322239","#d5a06b")+rp("M17 21L28 18L32 21V46L28 44L18 48Z M35 21L47 17L49 44L36 49Z","#b58b65","#eed6a7")+rp("M22 26L29 24M21 32L28 30M22 39L28 37M39 29L46 27M39 35L46 33","none","#6e483d","2")+rp("M34 42C18 35 41 24 29 5C49 12 36 24 48 29C54 37 43 42 34 42Z","#db663c","#f9b364")+rp("M35 36C30 29 43 22 36 15C47 25 37 28 41 34L37 39Z","#fff0ab")+rp("M11 15L17 12M48 52L54 49M28 49V54","none","#e4b460","2")],
+ mercy_reliquary:["#ffdf8f",rp("M27 39H37L38 56H26Z","#805443","#dbbc81")+rp("M22 57H42L38 61H26Z","#c39653")+'<circle cx="32" cy="25" r="20" fill="#755438" stroke="#edcc80"/>'+rp("M32 3L35 10L43 6L42 14L51 14L46 21L54 25L46 30L50 38L41 37L40 45L33 40L27 46L25 37L16 40L18 31L10 26L18 22L14 15L23 15L22 7L29 11Z","#d5a553","#ffe9b6")+rp("M23 17H41V34L32 40L23 34Z","#f2dca0","#8b6645")+rp("M29 21H35V26H40V31H35V36H29V31H24V26H29Z","#75bdb8")+rp("M32 23V33M27 28H37","none","#defff0","2")+rp("M28 48H36M28 52H36","none","#eac785")],
+ nightwarden_bow:["#99d6e6",rp("M24 5C55 10 56 25 38 32C56 42 51 56 24 61L35 50L38 38L32 32L38 25L35 15Z","#30415e","#a5cae1")+rp("M27 7L34 16L36 24L31 32L36 39L34 50L27 58","none","#9d8fcc","2")+rp("M24 6L16 32L24 60","none","#e6efdc")+rp("M30 26L35 29L35 35L30 38L27 35L27 29Z","#cab478","#f9e4a1")+rp("M5 32H56L50 28L58 32L50 36","none","#c7f5ed","2")+rp("M7 27L12 32L7 37M11 27L16 32L11 37","none","#9caad0","2")+rp("M39 12L43 16L41 20M42 45L44 49L39 53","none","#f2d597")],
+ pilgrim_boots:["#e1ba86",rp("M10 10L26 13L23 34L30 42L27 50H8L6 44L12 32Z","#936642","#d9b17d")+rp("M35 8L50 11L46 34L56 43L53 54H31L29 48L35 31Z","#6e4a38","#c49464")+rp("M8 44H28V50H8Z M31 48H54V55H31Z","#343642","#c1a27e")+rp("M12 20L23 23M12 26L22 29M37 18L47 21M36 25L46 28M35 32L43 35","none","#e4bf84","2")+rp("M17 13L15 33M42 11L39 33","none","#b98755")+rp("M16 34L19 35L18 38L15 37Z M38 35L41 36L40 39L37 38Z","#f2d080")],
+ ward_charm:["#8febdc",rp("M17 5Q32 17 47 5L43 19L36 29H28L21 19Z","none","#859faa","3")+rp("M29 25L32 21L35 25L37 31L45 37L42 53L32 60L22 53L19 37L27 31Z","#657a8b","#d3e5d9")+rp("M32 30L39 39L37 49L32 54L27 49L25 39Z","#183b48","#7fe9d2")+rp("M25 39L39 49M39 39L25 49M32 33V52","none","#86aeac")+rp("M28 42L32 38L36 42L32 46Z","#dcfff1")+rp("M12 24L14 20L16 24L14 28Z M48 25L50 21L52 25L50 29Z","#c1dbc6")],
+ pilgrim_mace:["#efcf96",rp("M28 29H35L34 58H27Z","#8b5c3e","#d4ae78")+rp("M28 39H34M28 45H34M28 51H34","none","#d5bd91","2")+rp("M21 8L31 4L43 9L46 23L38 33H25L17 24Z","#a58a55","#e9d1a0")+rp("M21 12L29 10V27L25 29L21 22Z M35 10L41 13L42 22L36 29Z","#e3c98c")+rp("M29 12H34V27H29Z M25 17H38V22H25Z","#709d9c")+rp("M23 8L21 14M41 11L44 20","none","#fff0ba","2")+rp("M26 57H35V61H26Z","#c8a36d")],
+ scout_bow:["#b7cc87",rp("M17 5C43 9 50 19 37 31C50 44 43 56 17 60L26 50L31 39L32 32L29 23L25 14Z","#865c38","#d7b67e")+rp("M20 8L28 18L33 30L32 39L25 53L20 57","none","#b68b51","2")+rp("M17 5L12 32L17 60","none","#d4ddd0")+rp("M31 26H37V37H31Z","#4e5943")+rp("M32 28L36 31M32 33L36 36","none","#b7c58c")+rp("M4 32H54L50 28L59 32L50 36Z","#c4d3cb")+rp("M6 28L12 32L6 36M10 28L16 32L10 36","none","#759883","2")],
+ smoke_phial:["#baacdd",rp("M25 8H38V21L47 32L46 51L38 59H24L16 51L15 32L25 21Z","#344254","#a5b8d4")+rp("M20 35Q31 27 43 35V48L36 54H26L20 48Z","#66567c")+rp("M22 41Q24 33 31 38Q37 29 41 39Q32 40 39 47Q28 51 26 44Q20 48 22 41Z","#b7a4cb")+rp("M26 7H37V14H26Z","#8a6a59","#d9bb8d")+rp("M29 18H34V24H29Z","#b4c3c5")+rp("M22 28L19 34V40","none","#d9e6e9","2")+rp("M6 20Q9 14 15 18M44 14Q48 6 55 12M45 22Q52 17 57 22","none","#9688b3","2")],
+ dawn_salt:["#f3e4c0",rp("M20 8L31 12L43 8L45 19L40 27L49 47L44 58H18L13 47L23 27L18 19Z","#537a82","#c3dfd8")+rp("M21 36L31 31L42 36L44 46L40 52H22L18 46Z","#d8cfaf")+rp("M21 43L27 38L31 43L36 37L42 45L38 50H24Z","#fff0cc")+rp("M19 17L31 22L44 17M23 26H40","none","#d7b878","2")+rp("M29 11L30 19M34 11L33 19","none","#c7b899")+rp("M31 26L34 30L31 34L28 30Z","#ffdc81")+rp("M9 28L11 31L9 34L7 31Z M51 26L54 30L51 34L48 30Z","#fff0c5")],
+ dawn_seal:["#eac97e",rp("M26 5H38L41 11L38 24H26L23 11Z","#86684f","#cfb88c")+rp("M27 10H37M28 15H36M28 20H36","none","#ddbc77","2")+rp("M22 23H42L45 33L39 38H25L19 33Z","#b0915e","#f3d799")+rp("M16 37L32 32L49 37V51L33 60L16 52Z","#bb8d3e","#ffe0a0")+rp("M20 40L32 36L44 40V48L32 55L20 49Z","#67543b","#e9c47c")+rp("M32 39L34 43L39 44L35 47L35 52L32 49L28 52L29 47L25 44L30 43Z","#f2ce77")+rp("M20 52L17 55M44 51L47 54","none","#fff0c0")],
+ royal_astrolabe:["#9ecfd5",'<circle cx="32" cy="32" r="23" fill="#193140" stroke="#c5a96b" stroke-width="2"/>'+'<circle cx="32" cy="32" r="16" fill="none" stroke="#7eacb3"/>'+rp("M29 7V3H35V7M17 11L13 6M47 11L51 6M9 32H14M50 32H55M17 50L13 55M47 50L51 55M32 50V57","none","#dbc58f","2")+rp("M30 12L35 27L52 31L35 35L30 51L27 35L13 31L27 27Z","#b9a36d","#e9d8a7")+rp("M30 22L38 32L30 41L23 32Z","#326277","#a5dfda")+rp("M18 42L47 18L49 21L20 45Z","#d4c09a")+'<circle cx="32" cy="32" r="3" fill="#fff2bb"/>'+rp("M9 32Q7 53 32 57Q51 55 55 39","none","#816f49")],
+
  sunshard:["#ffd565",rp("M29 32H35L33 59H28Z","#94602c")+rp("M29 36L34 38M29 43L33 45M28 51L33 53","","#f1c277")+"<circle cx=\"31\" cy=\"22\" r=\"19\" fill=\"none\" stroke=\"#a66c33\"/>"+rp("M18 23L29 4L40 16L35 34L28 39Z","#ea9b32","#ffe8a3")+rp("M29 4L28 28L18 23M28 28L35 34L40 16Z","#fff0b6")+rp("M12 13L18 11L16 19Z M44 22L50 18L48 29Z","#ffdc7b")+rp("M28 29L31 18L32 25L36 21","none","#af5b20")],
  dawnblade:["#ffd17d","<circle cx=\"38\" cy=\"21\" r=\"15\" fill=\"#ba6c2633\" stroke=\"#a8793c\"/>"+rp("M38 2V9M55 6L50 12M60 21H53M53 35L49 31M22 7L27 12","","#dfab54")+rp("M24 41L39 8L48 4L47 14L29 44Z","#fff0bf","#d5a352")+rp("M39 8L27 42L32 37L47 14Z","#d79038")+rp("M16 36L23 38L28 44L37 44L33 49L24 46L17 42Z","#e4b34e","#fff1bc")+rp("M24 46L17 58L12 55L19 43Z","#79333e")+rp("M14 50L20 53M12 55L16 58","","#efc36d")+"<circle cx=\"26\" cy=\"43\" r=\"3\" fill=\"#ffedb4\"/>"],
  nightglass:["#7bcfe8",rp("M20 46C17 26 25 12 49 5C35 19 49 30 35 39L29 45Z","#18283e","#9bc6ec")+rp("M49 5C29 19 39 26 28 40L25 39L26 23Z","#426285")+rp("M32 19L27 31L31 28L28 38","none","#9cf1df")+rp("M15 39Q27 49 38 40L36 48L28 50L22 46L14 45Z","#8998b6")+rp("M22 47L25 50L20 58L15 56Z","#332946","#c0a9d4")+rp("M15 56L20 58L16 61L12 59Z","#58caa8")+rp("M47 39Q54 47 48 50Q42 47 47 39","#60dfa9")],
@@ -3891,6 +3976,13 @@ const TREASURE_ART={
 };
 function relicArtwork(id){const [tone,art]=TREASURE_ART[id];return '<svg viewBox="0 0 64 64" data-item-art="'+id+'" aria-hidden="true" focusable="false"><ellipse cx="32" cy="58" rx="20" ry="3" fill="#070c16"/><circle cx="32" cy="30" r="26" fill="'+tone+'" opacity=".08"/><g stroke="#152033" stroke-linejoin="round" stroke-linecap="round" stroke-width="1.2">'+art+'</g></svg>';}
 /* ===== END TREASURE ART ===== */
+function discoverItem(id){if(!ITEMS[id]&&id!=='sunless_crown')return;if(!campaign.discovered.includes(id))campaign.discovered.push(id);campaign.lastFind=id;}
+function syncDiscoveries(){if(!bag||!party)return;for(const id of [...bag.items,...party.flatMap(h=>Object.values(h.equip||{})),...(bag.relic?['sunless_crown']:[])])if(id&&!campaign.discovered.includes(id))discoverItem(id);}
+function renderTreasureFind(){
+ syncDiscoveries();const root=$('#treasureFind'),id=pickItem!==null?bag.items[pickItem]:campaign.lastFind;root.hidden=!id;if(!id)return;
+ const it=ITEMS[id],name=it?.name||'The Sunless Crown',opened=root.querySelector?.('details')?.open;
+ root.innerHTML='<details'+(opened?' open':'')+'><summary><span class="atlas-art" aria-hidden="true">'+relicArtwork(id)+'</span><span class="eyebrow">Treasure discovered</span><h3 id="treasureFindTitle">'+escapeHTML(name)+'</h3><span class="tag">Inspect history, rules and build choices</span></summary><div class="treasure-story"><p>'+escapeHTML(RELIC_LORE[id]||'You carry the kingdom’s stolen dawn. The final stairs await your choice.')+'</p><p class="gear-detail">'+escapeHTML(it?itemRules(it):'Story relic · defeat the king and reach the final stairs.')+'</p>'+(ITEM_TACTICS[id]?'<p>'+escapeHTML(ITEM_TACTICS[id])+'</p>':'')+'</div></details>';
+}
 for(const [id,tab]of [['btnTitleBestiary','bestiary'],['btnTitleTreasures','treasures'],['btnBestiary','bestiary'],['btnTreasures','treasures'],['btnTownBestiary','bestiary'],['btnTownTreasures','treasures'],['btnHuntDetails','legends']])$('#'+id).onclick=event=>{if(openCodex(tab))codexOpener=event.currentTarget;};
 for(const [id,tab]of [['codexBeasts','bestiary'],['codexTreasure','treasures'],['codexLegends','legends']])$('#'+id).onclick=()=>{codexTab=tab;$('#codexSearch').value='';$('#codexFilter').value='all';renderCodex();$('#codexScreen .sbox').scrollTop=0;};
 $('#btnCodexClose').onclick=closeCodex;$('#codexSearch').oninput=renderCodex;$('#codexFilter').onchange=renderCodex;
@@ -3951,7 +4043,7 @@ function campaignArtwork(theme,chapter,ending){
 function inspectTile(x,y){
   if(mode!=='combat'||!game||overlayOpen())return;
   const unit=game.at(x,y),terrain=game.terrainAt({x,y}),actor=game.current();
-  let text=unit?unit.name+' · '+unit.hp+'/'+unit.maxHp+' HP · AC '+effAc(unit)+' · Range '+unit.range:'Tile '+(x+1)+', '+(y+1)+' · '+(terrain?TERRAIN[terrain].name:'Plain ground');
+  let text=unit?unit.name+' · '+unit.hp+'/'+unit.maxHp+' HP · AC '+effAc(unit)+' · Range '+effRange(unit):'Tile '+(x+1)+', '+(y+1)+' · '+(terrain?TERRAIN[terrain].name:'Plain ground');
   if(unit)text+=' '+intentText(unit);else if(game.dangerAt({x,y}).length)text+=' · Leave this marked tile before the blast.';
   if(!unit&&mover==='move'&&reachCache?.has(key(x,y)))text+=' · '+(movementRiskText(actor,{x,y})||'No unprotected movement risk detected.');
   if(game.arenaShelter?.has(key(x,y)))text+=' · Council sanctuary: protected during the phase change.';
@@ -3964,7 +4056,7 @@ function clearProjectiles(){for(const timer of projectileTimers)clearTimeout(tim
 function projectileStyle(event){
   if(event.kind==='arrow')return {family:'arrow',colour:'#ffe0a0'};
   const sp=SPELLS[event.spell];
-  const family=/fire|cinder|breath/.test(event.spell)?'fire':/frost|ice/.test(event.spell)?'ice':sp.effect.pull?'chain':sp.effect.kind==='heal'?'heal':['status','debuff'].includes(sp.effect.kind)?'control':sp.effect.kind==='buff'||sp.effect.kind==='summon'?'ward':'arcane';
+  const family=/fire|cinder|breath|ashen/.test(event.spell)?'fire':/frost|ice/.test(event.spell)?'ice':sp.effect.pull?'chain':sp.effect.kind==='heal'?'heal':['status','debuff'].includes(sp.effect.kind)?'control':sp.effect.kind==='buff'||sp.effect.kind==='summon'?'ward':'arcane';
   return {family,colour:{fire:'#ff9d50',ice:'#b0f0ff',chain:'#e5d2a7',heal:'#a4ffbb',control:'#dfb3ff',ward:'#ffe49a',arcane:'#9de7ff'}[family]};
 }
 function renderProjectiles(first=false){

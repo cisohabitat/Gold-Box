@@ -1,3 +1,32 @@
+# Treasure art and acquisition review — 0.20.0
+
+The game now has **28 individual treasure illustrations**: 27 items and the story crown. All twelve additions have unique identity-keyed geometry, not colour swaps or generic slot icons. Overall game assessment remains B+; this art pass does not certify AAA quality or physical-device recognition.
+
+| Addition | Visual identity |
+| --- | --- |
+| Bellheart Aegis | Pointed steel shield, gold bell tongue, layered plate and worn highlights |
+| Ashen Covenant | Split open manuscript, scorched pages, rising flame and bound spine |
+| Returning Dawn | Sunburst reliquary, turquoise mercy cross, raised shrine and stepped base |
+| Nightwarden’s Bow | Narrow crescent limbs, cold metal arrow, silver string and gilded grip |
+| Road Boots | Unequal worn boots, stitched laces, buckles and thick soles |
+| Watchkeeper’s Charm | Knotted necklace, hanging mirror shard and reflected light |
+| Hospice Mace | Hollow bell head, mercy inlay, long wrapped haft |
+| Scout Bow | Broad yew limbs, leaf fletching, dark grip and pale bowstring |
+| Veil of Cinders | Tall stoppered glass, curling ash cloud and escaping wisps |
+| Dawn Salt | Faceted tied pouch, pale mineral crystals and shrine seal |
+| Refuge Seal | Weighted stamp handle, sun impression, octagonal brass foot |
+| Astronomer’s Astrolabe | Concentric star circles, rotating diagonal rule and compass needle |
+
+![All 28 individual treasure illustrations, with the twelve additions first](Treasure-Art-0.20.png)
+
+Reviewed the contact sheet plus real phone discovery/guide views. The discovery portrait is expandable inside Party so a long story does not bury equipment controls. The complete spoiler guide offers larger legendary displays and exact source/rule/build text. Distinctive pictures supplement names and comparisons; they do not replace readable rules. No runtime image download, SVG reference/ID, animation loop or gameplay RNG is involved.
+
+Automated checks cover full/unique identity mappings and bounded SVG, real guarded victory → ground loot → pickup → keyboard equipment → Continue, collection history versus sales/consumption, filters, named sources, Covenant aim/charges/friendly-fire rules, consumable no-ops, four device layouts and existing game flows. Source audits measure opportunities; treasure-directed campaigns check actual acquisition under a privileged map-reading policy. Physical iPhone/iPad Safari and human recognition studies remain unverified. Full exact-head Chromium/Firefox/WebKit and publication evidence are recorded in the release PR.
+
+Runtime: 425,367 bytes (415.4 KiB), +22,174 bytes over 0.19.0. Standalone/offline behavior and the soft 350 KiB target remain unchanged.
+
+## Historical 0.10.1 correction
+
 # Treasure artwork correction — 0.10.1
 
 The 0.10.0 treasure page used one shared picture per equipment slot. That made named relics appear interchangeable, despite their different stories and rules. This release replaces those placeholders with 16 individual illustrations keyed by item identity.
