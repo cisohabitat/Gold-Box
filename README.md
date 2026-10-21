@@ -8,7 +8,7 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 ## Play
 
-**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.11.0**
+**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.12.0**
 
 Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a fitted board/control shell on every device, with a live sidebar in wide windows and a separate Party & Log panel in smaller windows. **How to Play** on the title screen explains the rules.
 
@@ -68,6 +68,19 @@ The Ash Cantor’s supporting force has a slightly smaller encounter budget (0.5
 Guardian victories now pause on an illustrated aftermath before the journey resumes. Pending level choices appear first; then read the aftermath and choose **Carry the story onward**, or press Escape. Stairs resume automatically after acknowledgement. The Chronicle preserves guardian aftermaths after Continue/import using existing campaign progress. No new save version is required.
 
 Eclipsescale reduces each damaging spell hit by 2, down to zero, including friendly fire. It does not block weapons, poison, terrain damage, or spell statuses. Its +2 AC trades raw armour against Starweave’s +3 AC; Auto Gear prefers its protection when AC is equal, and manual equipment remains available.
+
+### Different goals along each route
+
+Build 0.12.0 gives the four branching chapters their own map objectives. Each run encounters two of them:
+
+- **Warren:** find the blue **S** beacon, then escort the scouts back to **C**, the entrance camp. Scouts travel with the company; there is no separate unit to manage.
+- **Gallery:** read the three blue name stones in order **1 → 2 → 3**. A later stone waits until the preceding name is recovered; it never resets your progress.
+- **Ossuary:** recover Dawnblade at **D**, then carry it to the legion’s standard at **C**. Raising the standard keeps the sword in your equipment or satchel.
+- **Pillared Road:** step onto any two shrine beacons to restore them. **B** gives one camp supply; **R** restores up to 4 HP per hero; **M** restores one spent spell charge per hero. Stepping onto a shrine commits that choice. Each pays once; after two, the remaining shrine stays dark.
+
+Eren’s map marks the blue beacons through fog without exposing enemies or corridors. Use the movement controls to reach them. The main objective shows progress; **Chronicle** holds the full briefing. Finish the chapter objective before using its exit, then make the existing waystation council choice. Camps and targets are reachable before unlocking the vault. Completing an objective gives its story outcome, not additional XP; the existing chapter XP still pays once.
+
+Progress, shrine choices and completion survive Continue and portable codes. Old v2 saves keep their current generated floor without a new objective; subsequent route floors use the new goals. No extra enemies or timers are added. The unused first-person drawing code has been removed to keep space for gameplay within 350 KiB; the overhead map and movement controls remain.
 
 ### Relic artwork
 

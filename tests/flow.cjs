@@ -6,7 +6,7 @@ const browserName=process.env.GOLD_BOX_BROWSER||'chromium';const chromium=requir
  await page.click('#btnHowToPlay');assert.equal(await page.locator('#tacticsScreen').isVisible(),true);await page.locator('#btnTacticsClose').scrollIntoViewIfNeeded();await page.click('#btnTacticsClose');assert.equal(await page.locator('#startScreen').isVisible(),true);
  await page.click('#btnDefault');await page.click('#btnJournal');assert.equal(await page.locator('#journalContracts .route-stop').count(),3);await page.click('#btnJournalClose');
  await page.evaluate(()=>descendOrWin());assert.equal(await page.locator('#levelScreen').isVisible(),true);await page.click('#btnLevelAuto');await page.locator('.boon-card').first().click();await page.locator('#councilPlans button').first().click();await page.locator('#forkBox button').first().click();
- await page.evaluate(()=>descendOrWin());if(await page.locator('#levelScreen').isVisible())await page.click('#btnLevelAuto');await page.locator('#councilPlans button').first().click();await page.locator('#forkBox button').click();
+ await page.evaluate(()=>{if(explore.task){explore.task.used=[0];explore.task.done=true;}descendOrWin();});if(await page.locator('#levelScreen').isVisible())await page.click('#btnLevelAuto');await page.locator('#councilPlans button').first().click();await page.locator('#forkBox button').click();
  assert.equal(await page.evaluate(()=>campaign.completedFloors.length),2);
  await page.evaluate(()=>{enterCombat({boss:true,lead:'bell_warden',pool:['skeleton'],budgetMul:.55},'2,2');cancelTurn();game.order=['p4',...game.order.filter(id=>id!=='p4')];game.turnIndex=0;game._begin();render();});
  assert((await page.locator('.terrain-mark').count())>0);const actor=await page.evaluate(()=>game.current().id);

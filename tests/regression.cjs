@@ -452,3 +452,38 @@ test('RELIC-04: Eclipsescale reduces spell hits only, clamps at zero, and follow
  run("foe.pos={x:4,y:5};Rules.attack=()=>({hit:true,crit:false});Rules.damage=()=>5;battle.doAttack(foe,wearer);");assert.equal(run('wearer.hp'),84);
  assert.match(run("itemRules(ITEMS.eclipsescale)"),/2 less damage per spell hit/);
 });
+
+test('OBJ-01: generated objectives remain reachable before the vault, including fallback floors',()=>{
+ const {run}=harness();assert.equal(run(`(()=>{for(const id of Object.keys(CHAPTER_TASKS))for(let n=0;n<64;n++){const cfg=n===0?Object.assign(_fallbackLevel(WORLD[id],26,20),{chapter:id}):generateLevel(WORLD[id]);const e=new ExploreEngine(buildDungeon(cfg)),q=e.task;if(!q||q.id!==id)throw Error('missing task');const reach=new Set([key(q.start.x,q.start.y)]),queue=[q.start];for(let i=0;i<queue.length;i++)for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){const p={x:queue[i].x+dx,y:queue[i].y+dy},k=key(p.x,p.y);if(!e.isWall(p.x,p.y)&&!e.locked(p.x,p.y)&&!reach.has(k)){reach.add(k);queue.push(p);}}if(q.sites.some(k=>!reach.has(k)||e.loot[k]))throw Error('unreachable task');if(id==='shrine_road'){const safe=new Set([key(q.start.x,q.start.y)]),open=[q.start];for(let j=0;j<open.length;j++)for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){const p={x:open[j].x+dx,y:open[j].y+dy},k=key(p.x,p.y);if(!e.isWall(p.x,p.y)&&!e.locked(p.x,p.y)&&!q.sites.includes(k)&&!safe.has(k)){safe.add(k);open.push(p);}}if(q.sites.some(k=>{const [x,y]=k.split(',').map(Number);return ![[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>safe.has(key(x+dx,y+dy)));}))throw Error('shrine choice forced by path');}}return true;})()`),true);
+});
+
+test('OBJ-02: scouts must reach camp; Gallery stones require order; Dawnblade is kept',()=>{
+ const {run}=harness();
+ for(const id of ['warren','gallery','ossuary']){
+  run(`nodeId='${id}';worldPath=['entrance',nodeId];explore=new ExploreEngine(buildDungeon(generateLevel(WORLD[nodeId])));`);
+  run('descendOrWin();');assert.equal(run("$('#townScreen').classList.contains('show')"),false);
+  if(id==='gallery'){
+   run("const last=explore.task.sites[2].split(',').map(Number);explore.pos={x:last[0],y:last[1]};advanceTask();");assert.equal(run('explore.task.used.length'),0);
+   run("for(const k of explore.task.sites){const [x,y]=k.split(',').map(Number);explore.pos={x,y};advanceTask();}");
+  }else{
+   if(id==='warren')run("const [x,y]=explore.task.sites[0].split(',').map(Number);explore.pos={x,y};advanceTask();");
+   else run("collect({type:'item',item:'dawnblade'});");
+   assert.equal(run('explore.task.done'),false);run('explore.pos={...explore.task.start};advanceTask();');
+  }
+  assert.equal(run('explore.task.done'),true);if(id==='ossuary')assert.equal(run("bag.items.includes('dawnblade')"),true);
+ }
+});
+
+test('OBJ-03: shrine choices pay only once and recovery is capped',()=>{
+ const {run}=harness();run("nodeId='shrine_road';worldPath=['entrance','gallery','catacombs',nodeId];explore=new ExploreEngine(buildDungeon(generateLevel(WORLD[nodeId])));const q=explore.task;const supplies=bag.rations;function visit(i){const [x,y]=q.sites[i].split(',').map(Number);explore.pos={x,y};advanceTask();}visit(0);visit(0);party.forEach(h=>h.hp=h.maxHp-1);visit(1);visit(2);");
+ assert.equal(run('bag.rations'),run('supplies+1'));assert.equal(run('q.used.join()'),'0,1');assert.equal(run('q.done'),true);assert.equal(run('party.every(h=>h.hp===h.maxHp)'),true);
+ run("explore.task=placeTask('shrine_road',explore.tiles,explore.task.start,explore.exit,explore.doors,explore.loot,explore.encounters,explore.events);party[3].spells[0].uses=0;const max=party[3].spells[0].max;const k=explore.task.sites[2].split(',').map(Number);explore.pos={x:k[0],y:k[1]};advanceTask();advanceTask();");assert.equal(run('party[3].spells[0].uses'),1);assert.equal(run('party[3].spells[0].uses<=max'),true);
+});
+
+test('OBJ-04: partial objective saves reload; malformed imports are atomic; legacy floors stay ungated',()=>{
+ const {run}=harness();run("nodeId='gallery';worldPath=['entrance','gallery'];explore=new ExploreEngine(buildDungeon(generateLevel(WORLD.gallery)));const [x,y]=explore.task.sites[0].split(',').map(Number);explore.pos={x,y};advanceTask();const saved=saveState();");
+ assert.equal(run('applySave(decodeSave(encodeSave(saved)))'),true);assert.equal(run('explore.task.used.join()'),'0');
+ run("const intact=JSON.stringify(saveState());const bad=JSON.parse(JSON.stringify(saved));bad.explore.task.used=[1];");assert.equal(run('applySave(bad)'),false);assert.equal(run('JSON.stringify(saveState())===intact'),true);
+ run("bad.explore.task.used=[0];bad.explore.task.sites[0]='0,0';");assert.equal(run('applySave(bad)'),false);
+ run('delete saved.explore.task;');assert.equal(run('applySave(saved)'),true);assert.equal(run('explore.task'),null);run('descendOrWin();');assert.equal(run("$('#townScreen').classList.contains('show')"),true);
+});

@@ -674,14 +674,14 @@
 </div>
 
 <div class="screen" id="aftermathScreen" aria-labelledby="aftermathTitle"><div class="sbox"><div class="eyebrow">A legend falls</div><h2 class="ctitle" id="aftermathTitle"></h2><div id="aftermathArt" class="atlas-art" aria-hidden="true"></div><p id="aftermathStory"></p><button id="btnAftermathClose" class="big">Carry the story onward</button></div></div>
-<div class="screen" id="journalScreen"><div class="sbox wide"><div class="eyebrow">The story so far</div><h2 class="ctitle">The Company’s Chronicle</h2><p class="tag" id="journalOath"></p><div class="journal-grid" id="journalStats"></div><div id="journalRoute"></div><h3>The Last Dawn</h3><div id="journalStory"></div><h3>Promises to the kingdom</h3><div id="journalContracts"></div><h3>Carried embers</h3><p id="journalBoons" class="tag"></p><div class="crow"><button id="btnJournalClose" class="big">Return to the journey</button></div></div></div>
+<div class="screen" id="journalScreen"><div class="sbox wide"><div class="eyebrow">The story so far</div><h2 class="ctitle">The Company’s Chronicle</h2><p class="story-copy" id="journalTask" hidden></p><p class="tag" id="journalOath"></p><div class="journal-grid" id="journalStats"></div><div id="journalRoute"></div><h3>The Last Dawn</h3><div id="journalStory"></div><h3>Promises to the kingdom</h3><div id="journalContracts"></div><h3>Carried embers</h3><p id="journalBoons" class="tag"></p><div class="crow"><button id="btnJournalClose" class="big">Return to the journey</button></div></div></div>
 <div class="screen" id="tacticsScreen" role="dialog" aria-modal="true" aria-labelledby="tacticsTitle"><div class="sbox wide"><h2 class="ctitle" id="tacticsTitle">The Delver’s Field Guide</h2><p class="tag" id="tacticsSubtitle"></p><div id="tacticsContent" class="tactics-copy"></div><div class="crow"><button id="btnTacticsClose" class="big">Return</button></div></div></div>
 <div class="screen" id="fateScreen" role="dialog" aria-modal="true" aria-labelledby="fateTitle"><div class="sbox wide"><div class="eyebrow">The Last Dawn · Final Choice</div><h2 id="fateTitle" class="ctitle">What will you do with the crown?</h2><p id="fateStory" class="story-copy"></p><label class="story-copy" for="crownBearer">If the crown needs a bearer, whose oath will hold it?</label><select id="crownBearer" style="display:block;width:100%;min-height:44px;font-size:18px;margin:12px 0;padding:8px"></select><div id="fateChoices" class="council-plans"></div><p class="tag">The king is defeated. The choice is yours; each path ends this campaign.</p></div></div>
 <div class="screen" id="restartScreen" role="dialog" aria-modal="true" aria-labelledby="restartTitle" aria-describedby="restartMessage"><div class="sbox"><h2 id="restartTitle" class="ctitle">Return to the title screen?</h2><p id="restartMessage" class="story-copy"></p><div class="restart-actions"><button id="btnKeepPlaying" class="big">Keep Playing</button><button id="btnConfirmRestart">Return to Title</button></div></div></div>
 <div class="screen" id="settingsScreen" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="sbox"><h2 id="settingsTitle" class="ctitle">Sound &amp; Display</h2><p class="tag">Make the journey your own. Combat pauses while this sheet is open.</p><div class="settings-list"><label><input id="prefSound" type="checkbox"> Synthesized sound effects</label><label><input id="prefMusic" type="checkbox"> Quiet ambient tones (requires sound)</label><label for="prefVolume">Volume <output id="volumeValue">35%</output><input id="prefVolume" type="range" min="0" max="100" step="5" value="35"></label><label><input id="prefEffects" type="checkbox" checked> Visual effects (respects reduced motion)</label><label><input id="prefContrast" type="checkbox"> High contrast / clean display</label><label for="prefPace">Auto pace<select id="prefPace"><option value="normal">Deliberate · normal speed</option><option value="quick">Quick · shorter Auto turns</option></select></label></div><p id="audioStatus" class="tag" role="status">Sound is off by default. No downloads are needed.</p><p id="preferenceStatus" class="tag" role="status"></p><button id="btnSettingsClose" class="big">Back to Game</button></div></div>
 <div class="screen" id="codexScreen" role="dialog" aria-modal="true" aria-labelledby="codexTitle"><div class="sbox wide"><div class="eyebrow">Eren’s field atlas</div><h2 id="codexTitle" class="ctitle">The Bestiary</h2><div class="atlas-nav" role="group" aria-label="Atlas pages"><button id="codexBeasts" aria-pressed="true">Bestiary</button><button id="codexTreasure" aria-pressed="false">Treasure &amp; Relics</button><button id="codexLegends" aria-pressed="false">Legends &amp; Hunt</button><button id="btnCodexClose">Back</button></div><p class="tag" id="codexNote"></p><div id="codexTools" class="atlas-tools"><label for="codexSearch">Search<input id="codexSearch" type="search" maxlength="80" placeholder="Name, spell, source or lore"></label><label for="codexFilter">Show<select id="codexFilter"><option value="all">All entries</option><option value="guardians">Guardians</option><option value="relics">Relics</option><option value="potions">Potions</option></select></label></div><p id="codexCount" class="tag" role="status"></p><div id="codexContent" class="atlas-grid"></div></div></div>
 <script>
-const GAME_BUILD='0.11.0';
+const GAME_BUILD='0.12.0';
 document.querySelectorAll('[data-build]').forEach(el=>el.textContent='Build '+GAME_BUILD);
 /* ===== CROWN CAMPAIGN : data, with controller helpers below ===== */
 const OATHS={wanderer:{name:'Wanderer',budget:0.65,recovery:0.25,desc:'Gentler battles; all heroes earn victory XP and recover 25% HP after a win.'},delver:{name:'Delver',budget:1,desc:'Fortune favours the prepared. Only standing heroes earn victory XP.'},ironbound:{name:'Ironbound',budget:1.25,desc:'Stronger enemy forces. Only standing heroes earn victory XP.'}};
@@ -1223,7 +1223,7 @@ function buildDungeon(cfg){
   // The dungeon's roaming dead (used once the relic wakes the tomb): the set of
   // ordinary foes this floor fields, so wanderers match the place.
   const wanderPool=[...new Set((cfg.encounters||[]).flatMap(e=> e&&!e.boss && e.pool ? e.pool : []))];
-  return { name:cfg.name, theme:cfg.theme, w, h, tiles, start, exit, doors, loot, secrets, encounters, events, wanderPool };
+  return { name:cfg.name, theme:cfg.theme, w, h, tiles, start, exit, doors, loot, secrets, encounters, events, wanderPool, task:placeTask(cfg.chapter,tiles,start,exit,doors,loot,encounters,events) };
 }
 // Scatter encounter descriptors onto random tiles reachable from the start
 // (doors count as passable). A descriptor with an `at:[x,y]` is pinned to that
@@ -1454,11 +1454,26 @@ function generateLevel(spec){
   // CELL is the tile footprint per room cell; capped so the overhead map stays legible.
   const g=spec.gen||{cols:3,rows:2}, CELL=6;
   const W=Math.min(31, 2 + g.cols*CELL), H=Math.min(27, 2 + g.rows*CELL);
-  for(let attempt=0; attempt<60; attempt++){ const r=_tryGen(spec,W,H); if(r) return r; }
-  return _fallbackLevel(spec,W,H);
+  for(let attempt=0; attempt<60; attempt++){ const r=_tryGen(spec,W,H); if(r){r.chapter=spec.id;return r;} }
+  const r=_fallbackLevel(spec,W,H);r.chapter=spec.id;return r;
 }
 
 
+const CHAPTER_TASKS={
+ warren:['Escort the scouts','Find S, then escort the scouts back to camp C.'],
+ gallery:['The register of names','Read the three blue name stones in order: 1, 2, 3.'],
+ ossuary:['The legion’s standard','Recover Dawnblade at D, then carry it to camp C to raise the standard.'],
+ shrine_road:['The small gods','Step onto any two shrines to choose: B bread (+1 supply), R rain (+4 party HP), M mercy (one spent spell charge per hero).']
+};
+function placeTask(id,tiles,start,exit,doors,loot,encounters,events){
+ if(!CHAPTER_TASKS[id])return null;
+ const reach=new Set([key(start.x,start.y)]),queue=[start],candidates=[];
+ for(let i=0;i<queue.length;i++){const p=queue[i];for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){const x=p.x+dx,y=p.y+dy,k=key(x,y);if(!reach.has(k)&&tiles[y]?.[x]==='.'&&!doors.has(k)){reach.add(k);queue.push({x,y});}}}
+ for(const p of queue){const k=key(p.x,p.y);if(k===key(start.x,start.y)||k===key(exit.x,exit.y)||loot[k]||events[k]||encounters[k])continue;candidates.push(p);}
+ for(const p of queue){const k=key(p.x,p.y);if(candidates.length>=3)break;if(k!==key(start.x,start.y)&&k!==key(exit.x,exit.y)&&!loot[k]&&!candidates.includes(p))candidates.push(p);}
+ const sites=[];for(let i=0;i<(id==='gallery'||id==='shrine_road'?3:1);i++){candidates.sort((a,b)=>{const score=p=>Math.min(...[start,...sites].map(v=>Math.abs(p.x-v.x)+Math.abs(p.y-v.y)));return score(b)-score(a)||a.y-b.y||a.x-b.x;});const p=candidates.shift();if(!p)throw Error('No reachable objective site');sites.push(p);}
+ return {id,start:{...start},sites:sites.map(p=>key(p.x,p.y)),used:[],done:false};
+}
 const WORLD = {
   entrance:{ id:'entrance', name:'The Upper Crypt', theme:'crypt', gen:{cols:3,rows:3}, tier:0, lockedExit:true, key:true, gold:50, rations:1, items:['fine_sword','leather'], events:3, secrets:1,
     intro:'Cold air, older bone. You descend into the upper crypt; the way down forks somewhere past its keepers.',
@@ -2019,7 +2034,7 @@ const TURN_R = { N:'E', E:'S', S:'W', W:'N' };
 // adjacent steps while a weak party misses some, making perception a real exploration stat.
 const SECRET_DC=13;
 class ExploreEngine{
-  constructor(d){ this.name=d.name; this.theme=d.theme||'crypt'; this.w=d.w; this.h=d.h; this.tiles=d.tiles; this.exit=d.exit;
+  constructor(d){ this.task=d.task||null;this.name=d.name; this.theme=d.theme||'crypt'; this.w=d.w; this.h=d.h; this.tiles=d.tiles; this.exit=d.exit;
     this.encounters=d.encounters; this.doors=d.doors||new Set(); this.loot=d.loot||{}; this.events=d.events||{};
     this.secrets=d.secrets||{}; this.foundSecrets=new Set();
     this.cleared=new Set(); this.eventsDone=new Set(); this.seen=new Set(); this.found=new Set(); this.spotted=new Set(); this.scoutRadius=2; this.searchBonus=0; this.pos={...d.start};
@@ -2270,12 +2285,12 @@ function b64dec(b64){ return new TextDecoder().decode(Uint8Array.from(atob(b64),
 function encodeSave(obj){ return SAVE_MAGIC + b64enc(JSON.stringify(obj)); }
 function decodeSave(code){ if(typeof code!=='string' || code.length>500000 || !code.startsWith(SAVE_MAGIC)) return null;
   try{ const o=JSON.parse(b64dec(code.slice(SAVE_MAGIC.length))); return (o&&o.v===2)?o:null; }catch(e){ return null; } }
-function serializeExplore(e){ return { name:e.name, w:e.w, h:e.h, tiles:e.tiles, exit:e.exit, pos:e.pos, facing:e.facing||'E',
+function serializeExplore(e){ return { task:e.task,name:e.name, w:e.w, h:e.h, tiles:e.tiles, exit:e.exit, pos:e.pos, facing:e.facing||'E',
   doors:[...e.doors], loot:e.loot, encounters:e.encounters, cleared:[...e.cleared], seen:[...e.seen], found:[...(e.found||[])], spotted:[...(e.spotted||[])], theme:e.theme,
   events:e.events||{}, eventsDone:[...(e.eventsDone||[])], secrets:e.secrets||{}, foundSecrets:[...(e.foundSecrets||[])],
   woken:!!e.woken, wokenSteps:e.wokenSteps|0, wanderers:e.wanderers|0, wanderPool:e.wanderPool||[] }; }
 function reviveExplore(s){ const e=Object.create(ExploreEngine.prototype);
-  e.name=s.name; e.theme=s.theme||'crypt'; e.w=s.w; e.h=s.h; e.tiles=s.tiles; e.exit=s.exit; e.encounters=s.encounters||{}; e.loot=s.loot||{};
+  e.task=s.task||null;e.name=s.name; e.theme=s.theme||'crypt'; e.w=s.w; e.h=s.h; e.tiles=s.tiles; e.exit=s.exit; e.encounters=s.encounters||{}; e.loot=s.loot||{};
   e.events=s.events||{}; e.eventsDone=new Set(s.eventsDone||[]); e.facing=s.facing||'E';
   e.secrets=s.secrets||{}; e.foundSecrets=new Set(s.foundSecrets||[]);
   e.doors=new Set(s.doors||[]); e.cleared=new Set(s.cleared||[]); e.seen=new Set(s.seen||[]); e.found=new Set(s.found||s.seen||[]);
@@ -2323,6 +2338,8 @@ function validSave(s){
     for(const k of ['doors','cleared','seen','found','spotted','eventsDone','foundSecrets'])if(e[k]!==undefined&&!list(e[k],e.w*e.h,coord))return false;
     if(e.facing!==undefined&&!own(FACING,e.facing)||e.theme!==undefined&&!['crypt','catacomb','tomb'].includes(e.theme))return false;
     const entries=(value,check)=>value===undefined||obj(value)&&Object.keys(value).length<=e.w*e.h&&Object.entries(value).every(([k,v])=>coord(k)&&check(v));
+    if(e.task!=null){const q=e.task;if(s.inTown&&!q.done)return false;if(!obj(q)||q.id!==s.nodeId||!own(CHAPTER_TASKS,q.id)||!pos(q.start)||typeof q.done!=='boolean'||!list(q.sites,3,k=>coord(k)&&e.tiles[k.split(',')[1]][k.split(',')[0]]==='.')||q.sites.length!==(q.id==='gallery'||q.id==='shrine_road'?3:1)||new Set(q.sites).size!==q.sites.length||!list(q.used,3,n=>num(n,0,2))||new Set(q.used).size!==q.used.length||q.used.some(n=>n>=(q.id==='gallery'||q.id==='shrine_road'?3:1))||q.id==='gallery'&&(q.used.some((n,i)=>n!==i)||q.done!==(q.used.length===3))||q.id==='shrine_road'&&(q.used.length>2||q.done!==(q.used.length===2))||q.done&&q.used.length!==(q.id==='gallery'?3:q.id==='shrine_road'?2:1))return false;}
+    if(e.task){const q=e.task,reach=new Set([key(q.start.x,q.start.y)]),queue=[q.start];if(e.tiles[q.start.y][q.start.x]!=='.')return false;for(let i=0;i<queue.length;i++){const p=queue[i];for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){const x=p.x+dx,y=p.y+dy,k=key(x,y);if(e.tiles[y]?.[x]==='.'&&!reach.has(k)&&!(e.doors||[]).includes(k)){reach.add(k);queue.push({x,y});}}}if(q.sites.some(k=>!reach.has(k)))return false;}
     if(!entries(e.encounters,enc=>obj(enc)&&(enc.pool===undefined||list(enc.pool,30,id=>own(BESTIARY,id)))&&(!enc.lead||own(BESTIARY,enc.lead))&&(!enc.budgetMul||typeof enc.budgetMul==='number'&&enc.budgetMul>0&&enc.budgetMul<=5)))return false;
     if(!entries(e.loot,v=>obj(v)&&['gold','key','ration','relic','item'].includes(v.type)&&(v.amount===undefined||num(v.amount,1))&&(v.type!=='item'||own(ITEMS,v.item))))return false;
     if(!entries(e.events,id=>own(EVENTS,id))||!entries(e.secrets,v=>obj(v)&&(v.gold===undefined||num(v.gold))&&(!v.item||own(ITEMS,v.item))))return false;
@@ -2430,13 +2447,14 @@ function fpAct(action){
 }
 // Top-down map movement: step in an absolute compass direction and face that way, so the
 // map arrow stays in sync (and the retained first-person view would too, if re-enabled).
-// renderFP / fpAct are kept in the file but unused while exploration is the overhead map.
+// fpAct remains a movement helper; exploration uses the overhead map.
 function moveDir(dx,dy){
   if(mode!=='explore'||overlayOpen()||!explore) return;
   for(const f in FACING){ if(FACING[f].dx===dx && FACING[f].dy===dy){ explore.facing=f; break; } }
   tryMove(dx,dy);
 }
 function handleEnter(r){
+  if(r.type!=='combat')advanceTask();
   if(r.type==='loot'){ collect(r.item); render(); return; }
   if(r.type==='secret'){ collectSecret(r.cache); render(); return; }
   if(r.type==='combat'){ exploreFeed.push({t:'Enemies bar the way. Battle!',k:'kill'}); enterCombat(r.spec,r.at); return; }
@@ -2453,7 +2471,7 @@ function collect(item){
   else if(item.type==='key'){ bag.keys++; exploreFeed.push({t:'You find an iron key.',k:'magic'}); }
   else if(item.type==='ration'){ const amount=item.amount||1;bag.rations+=amount; exploreFeed.push({t:'You find '+amount+' camp '+(amount===1?'supply.':'supplies.'),k:'magic'}); }
   else if(item.type==='relic'){ bag.relic=true; if(explore&&explore.wake) explore.wake(); exploreFeed.push({t:'You lift the relic from its bier \u2014 and the tomb shudders awake. The way out is sealed now; something vast stirs to bar it, and the dead begin to walk.',k:'magic'}); partyBark('relic'); }
-  else if(item.type==='item'){ const it=ITEMS[item.item]; if(it){ bag.items.push(it.id); exploreFeed.push({t:'You find a '+it.name+'. Open Party to equip it.',k:'magic'}); } }
+  else if(item.type==='item'){ const it=ITEMS[item.item]; if(it){ bag.items.push(it.id);if(item.item==='dawnblade'&&explore.task?.id==='ossuary'&&!explore.task.used.length)explore.task.used.push(0); exploreFeed.push({t:'You find a '+it.name+'. Open Party to equip it.',k:'magic'}); } }
 }
 // A discovered cache pays out gold and, sometimes, a bonus item.
 function collectSecret(cache){
@@ -2577,15 +2595,28 @@ function closeEvent(){ curEvent=null; $('#eventScreen').classList.remove('show')
   if(lv && lv.length) openLevelUp(lv); else resumeExplore(); }
 function resumeExplore(){
   if(mode!=='explore'||overlayOpen())return;
-  const k=key(explore.pos.x,explore.pos.y);
+  advanceTask();const k=key(explore.pos.x,explore.pos.y);
   if(explore.loot[k]){const item=explore.loot[k];delete explore.loot[k];collect(item);}
   if(explore.secrets[k]&&explore.foundSecrets.has(k)){const cache=explore.secrets[k];delete explore.secrets[k];collectSecret(cache);}
   const event=explore.eventAt(explore.pos.x,explore.pos.y);if(event){openEvent(event,k);render();return;}
   if(explore.pos.x===explore.exit.x&&explore.pos.y===explore.exit.y){descendOrWin();return;}
   render();
 }
+function taskText(){const q=explore&&explore.task;if(!q)return '';return CHAPTER_TASKS[q.id][0]+(q.done?' · Complete':q.id==='gallery'?' · '+q.used.length+'/3 names':q.id==='shrine_road'?' · '+q.used.length+'/2 shrines':q.used.length?' · Return to C':' · '+(q.id==='warren'?'Find S':'Recover Dawnblade'));}
+function advanceTask(){
+ const q=explore.task;if(!q||q.done)return;const k=key(explore.pos.x,explore.pos.y),i=q.sites.indexOf(k),home=k===key(q.start.x,q.start.y);let line='';
+ if(q.id==='warren'){if(i===0&&!q.used.length){q.used.push(0);line='Ilyra’s scouts join you. Escort them to the blue C beacon; cleared roads stay safe.';}if(home&&q.used.length)q.done=true;}
+ else if(q.id==='ossuary'){if(home&&q.used.length)q.done=true;}
+ else if(i>=0&&!q.used.includes(i)){
+  if(q.id==='gallery'&&i!==q.used.length){line='The stone is silent. Read name '+(q.used.length+1)+' first.';}
+  else {q.used.push(i);if(q.id==='gallery'){line=['The first name is Ilyra’s ancestor. His family has not forgotten.','The second name belongs to the legion’s captain. The shields below stir.','The third is the king’s first victim. Eren closes the restored register.'][i];q.done=q.used.length===3;}
+   else {if(i===0)bag.rations++;if(i===1)party.forEach(h=>h.hp=Math.min(h.maxHp,h.hp+4));if(i===2)party.forEach(h=>{const sp=h.spells.find(s=>s.uses<s.max);if(sp)sp.uses++;});line=['Bread’s shrine kindles: one supply.','Rain’s shrine kindles: up to 4 HP restored to each hero.','Mercy’s shrine kindles: one spent spell charge restored per hero.'][i];q.done=q.used.length===2;}}
+ }
+ if(line)exploreFeed.push({t:line,k:'flavor'});if(q.done)exploreFeed.push({t:CHAPTER_TASKS[q.id][0]+' complete. '+(q.id==='warren'?'The scouts reach the refugee camp.':q.id==='ossuary'?'Dawnblade lifts above the legion. You keep the sword.':'The waystation council awaits.'),k:'magic'});
+}
 function descendOrWin(){
-  const node=WORLD[nodeId];
+  const node=WORLD[nodeId];advanceTask();
+  if(explore.task&&!explore.task.done){exploreFeed.push({t:taskText()+' Follow the blue beacons before leaving.',k:'sys'});render();return;}
   if(node.next && node.next.length){
     const leveled=[];
     if(!campaign.completedFloors.includes(nodeId)){campaign.completedFloors.push(nodeId);const xp=100+50*floorTier();exploreFeed.push({t:'Chapter complete: every hero gains '+xp+' XP for the road ahead.',k:'magic'});grantXp(party,xp,leveled);}
@@ -2598,7 +2629,7 @@ function descendOrWin(){
 function openTown(){ $('#townScreen').classList.add('show'); renderTown(); autosave(); }
 // Descend into a chosen successor node (the fork pick, or the only way on).
 function enterDungeon(nextId){
-  if(mode!=='explore'||!$('#townScreen').classList.contains('show')||['levelScreen','partyScreen','saveScreen','eventScreen','fateScreen','aftermathScreen','journalScreen','tacticsScreen','codexScreen'].some(id=>$('#'+id).classList.contains('show'))||!campaign.decisions[nodeId]||!WORLD[nextId]||!(WORLD[nodeId].next||[]).includes(nextId))return;
+  if(mode!=='explore'||!$('#townScreen').classList.contains('show')||['levelScreen','partyScreen','saveScreen','eventScreen','fateScreen','aftermathScreen','journalScreen','tacticsScreen','codexScreen'].some(id=>$('#'+id).classList.contains('show'))||explore.task&&!explore.task.done||!campaign.decisions[nodeId]||!WORLD[nextId]||!(WORLD[nodeId].next||[]).includes(nextId))return;
   nodeId=nextId; worldPath.push(nextId);
   explore=new ExploreEngine(buildDungeon(generateLevel(WORLD[nodeId]))); applyScout();
   $('#townScreen').classList.remove('show');
@@ -3055,7 +3086,7 @@ function toggleAuto(){if(overlayOpen())return;
 
 function render(){if(mode==='combat')renderCombat();else{renderExplore();autosave();}renderCampaign();updatePresentation();}
 
-// ---- First-person view: a stylized grid projection (Dungeon Master style) ----
+// ---- Shared overhead map palettes ----
 // Theme palettes for the projected surfaces, picked off the floor's `theme`. `glow`
 // is the floor's light colour: warm torchlight in the crypt, a cold phosphor in the
 // catacombs, an arcane violet in the tomb, used for the light pool and wall torches.
@@ -3065,207 +3096,6 @@ const FP_THEME = {
   tomb:    { wall:[156,128,176], floor:[74,62,88],  ceil:[34,28,44], glow:[200,150,235] }
 };
 function _shade(rgb, f){ return 'rgb('+rgb.map(v=>Math.max(0,Math.round(v*f))).join(',')+')'; }
-function _poly(pts, fill, extra){ return '<polygon points="'+pts.map(p=>p[0].toFixed(2)+','+p[1].toFixed(2)).join(' ')+'" fill="'+fill+'"'+(extra||'')+'/>'; }
-function _hash(x,y){ let h=(x*374761393 + y*668265263) ^ 0x5bd1e995; h^=h>>>13; return (h>>>0); }
-// Masonry on an axis-aligned wall face: mortar courses with staggered vertical
-// joints, so a flat face reads as stacked stone. Cheap thin lines, clipped to the
-// rect by construction.
-function _brick(L,T,Rr,B,mortar,seed){
-  const w=Rr-L, h=B-T; if(w<2.2||h<2.2) return '';
-  const nC=4, ch=h/nC, sw=(w<16?0.3:0.45); let s='';
-  for(let k=1;k<nC;k++){ const y=T+k*ch; s+='<line x1="'+L.toFixed(2)+'" y1="'+y.toFixed(2)+'" x2="'+Rr.toFixed(2)+'" y2="'+y.toFixed(2)+'" stroke="'+mortar+'" stroke-width="'+sw+'"/>'; }
-  for(let k=0;k<nC;k++){ const y0=T+k*ch, y1=T+(k+1)*ch, off=((k+seed)&1)? w/3*0.5 : 0;
-    for(let jx=off+ w/3*0.001; jx<w-0.5; jx+=w/3){ const x=L+jx; s+='<line x1="'+x.toFixed(2)+'" y1="'+y0.toFixed(2)+'" x2="'+x.toFixed(2)+'" y2="'+y1.toFixed(2)+'" stroke="'+mortar+'" stroke-width="'+sw+'"/>'; } }
-  return s;
-}
-// A wall sconce: it casts a soft pool of light on the surrounding stone, holds a
-// bracket, and a flame in the floor's glow colour. The pool and flame flicker (the
-// `fpflame` class), set out of phase per torch by `seed` so they do not pulse in
-// lockstep. The glow pool actually washes the nearby wall and floor warm, so a torch
-// reads as a real light source rather than flat distance shading.
-function _torch(cxp,topY,sz,glow,seed){
-  const g='rgb('+glow.join(',')+')';
-  const d=(-(((seed||0)%1500)/1000)).toFixed(2)+'s', st='style="animation-delay:'+d+'"';
-  return '<ellipse class="fpflame" '+st+' cx="'+cxp.toFixed(2)+'" cy="'+(topY+sz*0.3).toFixed(2)+'" rx="'+(sz*3.0).toFixed(2)+'" ry="'+(sz*2.6).toFixed(2)+'" fill="url(#fpTorchGlow)"/>'
-   +'<rect x="'+(cxp-sz*0.07).toFixed(2)+'" y="'+topY.toFixed(2)+'" width="'+(sz*0.14).toFixed(2)+'" height="'+(sz*0.85).toFixed(2)+'" fill="#241c14"/>'
-   +'<g class="fpflame" '+st+'>'
-   +'<ellipse cx="'+cxp.toFixed(2)+'" cy="'+(topY-sz*0.12).toFixed(2)+'" rx="'+(sz*0.2).toFixed(2)+'" ry="'+(sz*0.42).toFixed(2)+'" fill="'+g+'"/>'
-   +'<ellipse cx="'+cxp.toFixed(2)+'" cy="'+(topY-sz*0.14).toFixed(2)+'" rx="'+(sz*0.09).toFixed(2)+'" ry="'+(sz*0.22).toFixed(2)+'" fill="#fff6d8"/>'
-   +'</g>';
-}
-// Per-floor architecture drawn sparsely on a wall face, so each descent reads as its
-// own place: the Catacombs get a recessed bone niche, the Tomb a carved arch framed by
-// pilasters, the Crypt an iron-banded buttress. Pure decoration keyed off the theme.
-function _feature(theme, fL, fT, fR, fB, seed, Lf, pal){
-  const w=fR-fL, h=fB-fT, mx=(fL+fR)/2, dark=_shade(pal.wall, Lf*0.45), groove=_shade(pal.wall, Lf*0.6), edge=_shade(pal.wall, Math.min(1,Lf*0.92));
-  if(theme==='catacomb'){
-    const nx=fL+w*0.28, nw=w*0.44, ny=fT+h*0.18, nh=h*0.56;
-    let s=_poly([[nx,ny],[nx+nw,ny],[nx+nw,ny+nh],[nx,ny+nh]], dark);            // recessed alcove
-    s+='<line x1="'+nx.toFixed(2)+'" y1="'+ny.toFixed(2)+'" x2="'+(nx+nw).toFixed(2)+'" y2="'+ny.toFixed(2)+'" stroke="'+groove+'" stroke-width="0.5"/>';
-    if((seed%2)===0){ const sx=mx, sy=ny+nh*0.42, r=nw*0.2;                       // a pale skull set in the niche
-      s+='<ellipse cx="'+sx.toFixed(2)+'" cy="'+sy.toFixed(2)+'" rx="'+r.toFixed(2)+'" ry="'+(r*1.15).toFixed(2)+'" fill="'+_shade(pal.wall, Math.min(1,Lf*1.0))+'"/>';
-      s+='<circle cx="'+(sx-r*0.4).toFixed(2)+'" cy="'+(sy-r*0.1).toFixed(2)+'" r="'+(r*0.22).toFixed(2)+'" fill="'+dark+'"/><circle cx="'+(sx+r*0.4).toFixed(2)+'" cy="'+(sy-r*0.1).toFixed(2)+'" r="'+(r*0.22).toFixed(2)+'" fill="'+dark+'"/>'; }
-    return s;
-  }
-  if(theme==='tomb'){
-    const pw=w*0.13;
-    let s=_poly([[fL,fT],[fL+pw,fT],[fL+pw,fB],[fL,fB]], groove)+_poly([[fR-pw,fT],[fR,fT],[fR,fB],[fR-pw,fB]], groove);   // pilasters
-    s+='<line x1="'+(fL+pw).toFixed(2)+'" y1="'+fT.toFixed(2)+'" x2="'+(fL+pw).toFixed(2)+'" y2="'+fB.toFixed(2)+'" stroke="'+edge+'" stroke-width="0.4"/>';
-    s+='<line x1="'+(fR-pw).toFixed(2)+'" y1="'+fT.toFixed(2)+'" x2="'+(fR-pw).toFixed(2)+'" y2="'+fB.toFixed(2)+'" stroke="'+edge+'" stroke-width="0.4"/>';
-    const ay=fT+h*0.28;                                                            // a carved arch springing from the pilasters
-    s+='<path d="M '+(fL+pw).toFixed(2)+' '+ay.toFixed(2)+' Q '+mx.toFixed(2)+' '+(fT-h*0.04).toFixed(2)+' '+(fR-pw).toFixed(2)+' '+ay.toFixed(2)+'" fill="none" stroke="'+groove+'" stroke-width="0.7"/>';
-    if((seed%2)===0) s+='<circle cx="'+mx.toFixed(2)+'" cy="'+(fT+h*0.5).toFixed(2)+'" r="'+(w*0.05).toFixed(2)+'" fill="rgb('+pal.glow.join(',')+')" opacity="0.5"/>';   // a faint carved sigil
-    return s;
-  }
-  // crypt: an iron-banded buttress
-  const bw=w*0.14, bx=mx-bw/2;
-  let s=_poly([[bx,fT],[bx+bw,fT],[bx+bw,fB],[bx,fB]], _shade(pal.wall, Lf*0.55));
-  s+='<line x1="'+bx.toFixed(2)+'" y1="'+fT.toFixed(2)+'" x2="'+bx.toFixed(2)+'" y2="'+fB.toFixed(2)+'" stroke="'+dark+'" stroke-width="0.4"/><line x1="'+(bx+bw).toFixed(2)+'" y1="'+fT.toFixed(2)+'" x2="'+(bx+bw).toFixed(2)+'" y2="'+fB.toFixed(2)+'" stroke="'+dark+'" stroke-width="0.4"/>';
-  for(let r=0;r<3;r++){ const ry=fT+h*(0.2+r*0.3); s+='<circle cx="'+mx.toFixed(2)+'" cy="'+ry.toFixed(2)+'" r="'+(bw*0.16).toFixed(2)+'" fill="'+edge+'"/>'; }
-  return s;
-}
-function renderFP(){
-  const e=explore, f=e.facing, fwd=FACING[f], rt=FACING[TURN_R[f]];
-  const pal=FP_THEME[e.theme]||FP_THEME.crypt;
-  // Full grid projection: for each visible cell we project its floor, ceiling and
-  // wall faces at the cell's true lateral offset, painted far-to-near. A wide room
-  // therefore reads wide and a one-tile corridor reads narrow, matching the minimap.
-  const W=100, H=72, cx=50, cy=36, CW=72, HH=36, R=0.62, D=5, LAT=4;
-  const sc=j=>Math.pow(R,j);
-  const xL=(s,j)=>cx+(s-0.5)*CW*sc(j), xR=(s,j)=>cx+(s+0.5)*CW*sc(j);
-  const yC=j=>cy-HH*sc(j), yF=j=>cy+HH*sc(j);
-  const at=(i,s)=>({x:e.pos.x+fwd.dx*i+rt.dx*s, y:e.pos.y+fwd.dy*i+rt.dy*s});
-  const seen=c=>e.seen.has(key(c.x,c.y)), wall=c=>e.isWall(c.x,c.y);
-  // True line of sight from the party to a cell: every cell strictly between must be
-  // open. A wall or closed door blocks it, so cells behind one are not drawn at all and
-  // their floor can no longer leak through. The target itself may be a wall (you see its
-  // face) — only the cells in front of it are tested.
-  const losOpen=(tx,ty)=>{ let x0=e.pos.x,y0=e.pos.y,dx=Math.abs(tx-x0),dy=Math.abs(ty-y0),sx=x0<tx?1:-1,sy=y0<ty?1:-1,err=dx-dy,x=x0,y=y0;
-    for(let g=0;g<48;g++){ if(x===tx&&y===ty) return true; const e2=2*err; if(e2>-dy){err-=dy;x+=sx;} if(e2<dx){err+=dx;y+=sy;}
-      if(x===tx&&y===ty) return true; if(e.isWall(x,y)||e.locked(x,y)) return false; } return true; };
-  // Torchlit falloff: surfaces darken with distance and a little toward the sides,
-  // so the held light reveals what is near and the dark swallows the rest.
-  const df=i=>Math.max(0.24, 1-0.13*i);
-  const lit=(i,s)=>Math.max(0.18, df(i)*(1-0.045*Math.abs(s)));
-  const gl=pal.glow.join(',');
-  let svg='<rect x="0" y="0" width="100" height="72" fill="#06060a"/>';
-  svg+='<defs><radialGradient id="fpShadow" cx="50%" cy="50%" r="50%">'
-     +'<stop offset="0%" stop-color="#000" stop-opacity="0.95"/><stop offset="55%" stop-color="#000" stop-opacity="0.6"/><stop offset="100%" stop-color="#000" stop-opacity="0"/></radialGradient>'
-     +'<radialGradient id="fpTorchGlow" cx="50%" cy="50%" r="50%">'
-     +'<stop offset="0%" stop-color="rgb('+gl+')" stop-opacity="0.42"/><stop offset="45%" stop-color="rgb('+gl+')" stop-opacity="0.16"/><stop offset="100%" stop-color="rgb('+gl+')" stop-opacity="0"/></radialGradient>'
-     +'<radialGradient id="fpGlow" gradientUnits="userSpaceOnUse" cx="'+cx+'" cy="'+(cy+6)+'" r="58">'
-     +'<stop offset="0%" stop-color="rgb('+gl+')" stop-opacity="0.22"/><stop offset="55%" stop-color="rgb('+gl+')" stop-opacity="0.07"/><stop offset="100%" stop-color="rgb('+gl+')" stop-opacity="0"/></radialGradient>'
-     +'<radialGradient id="fpVig" gradientUnits="userSpaceOnUse" cx="'+cx+'" cy="'+cy+'" r="62">'
-     +'<stop offset="0%" stop-color="#000" stop-opacity="0"/><stop offset="60%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#040306" stop-opacity="0.72"/></radialGradient></defs>';
-  for(let i=D;i>=0;i--){
-    for(let s=-LAT;s<=LAT;s++){
-      const c=at(i,s); if(!seen(c)) continue;
-      // cull cells whose whole quad is off either side of the screen
-      if(Math.min(xL(s,i),xL(s,i+1))>100 || Math.max(xR(s,i),xR(s,i+1))<0) continue;
-      const isDoor=e.locked(c.x,c.y);
-      const blocked=wall(c)||isDoor;   // a locked door is a floor tile, but it blocks sight and passage
-      // Open floor/ceiling only draws when in direct line of sight, so a hidden floor can
-      // never leak through a wall. Walls and doors are solid surfaces and always draw once
-      // explored, so corners and opening edges never gap to black.
-      if(!blocked && !losOpen(c.x,c.y)) continue;
-      const Lf=lit(i,s);
-      if(!blocked){
-        const ck=((c.x+c.y)&1)?1:0.9;     // faint floor checker for depth read
-        svg+=_poly([[xL(s,i),yF(i)],[xR(s,i),yF(i)],[xR(s,i+1),yF(i+1)],[xL(s,i+1),yF(i+1)]], _shade(pal.floor, Lf*ck));
-        svg+=_poly([[xL(s,i),yC(i)],[xR(s,i),yC(i)],[xR(s,i+1),yC(i+1)],[xL(s,i+1),yC(i+1)]], _shade(pal.ceil, Lf));
-        // a receding seam at the near floor edge helps read depth
-        svg+='<line x1="'+xL(s,i).toFixed(2)+'" y1="'+yF(i).toFixed(2)+'" x2="'+xR(s,i).toFixed(2)+'" y2="'+yF(i).toFixed(2)+'" stroke="'+_shade(pal.floor, Lf*0.6)+'" stroke-width="0.4"/>';
-        // an object on this open cell, drawn in the same far-to-near pass so a
-        // nearer wall (drawn later) correctly hides it
-        if(!(i===0&&s===0)){ const ob=fpObject(c);
-          if(ob){ const t=(sc(i)+sc(i+1))/2, ox=cx+s*CW*t, baseY=cy+HH*t*0.98, sz=CW*t*0.7;
-            if(ox>-sz && ox<100+sz){
-              // a soft contact shadow for things that rest on the floor, faded by the
-              // cell's light (little or none in the dark) and cast away from the held
-              // light: it leans outward from screen-centre and tucks behind the feet
-              if(ob.shadow){ const a=Math.min(0.45, 0.55*lit(i,s));
-                const shx=ox+(ox-cx)*0.10, shy=baseY-sz*0.04;
-                svg+='<ellipse cx="'+shx.toFixed(2)+'" cy="'+shy.toFixed(2)+'" rx="'+(sz*0.34).toFixed(2)+'" ry="'+(sz*0.11).toFixed(2)+'" fill="url(#fpShadow)" opacity="'+a.toFixed(2)+'"/>'; }
-              if(ob.svg){ svg+='<svg x="'+(ox-sz/2).toFixed(2)+'" y="'+(baseY-sz).toFixed(2)+'" width="'+sz.toFixed(2)+'" height="'+sz.toFixed(2)+'">'+ob.svg+'</svg>'; }
-              else { svg+='<text x="'+ox.toFixed(2)+'" y="'+(baseY-sz*0.18).toFixed(2)+'" font-size="'+(sz*0.72).toFixed(2)+'" text-anchor="middle" fill="'+ob.color+'" stroke="#140d06" stroke-width="'+(sz*0.03).toFixed(2)+'" paint-order="stroke" font-weight="bold">'+ob.glyph+'</text>'; }
-            } }
-        }
-      } else {
-        const side=_shade(pal.wall, Lf*0.78);
-        const face=_shade(pal.wall, Lf);
-        const mortar=_shade(pal.wall, Lf*0.42), seed=_hash(c.x,c.y);
-        // inner (corridor-facing) side face, so a wall beside you reads as a long wall
-        if(s>0){ svg+=_poly([[xL(s,i),yC(i)],[xL(s,i+1),yC(i+1)],[xL(s,i+1),yF(i+1)],[xL(s,i),yF(i)]], side);
-          svg+='<line x1="'+xL(s,i).toFixed(2)+'" y1="'+yF(i).toFixed(2)+'" x2="'+xL(s,i+1).toFixed(2)+'" y2="'+yF(i+1).toFixed(2)+'" stroke="'+_shade(pal.wall, Lf*0.22)+'" stroke-width="0.6"/>';
-          if(!isDoor){ // near vertical seam + a receding course line articulate the stone
-            svg+='<line x1="'+xL(s,i).toFixed(2)+'" y1="'+yC(i).toFixed(2)+'" x2="'+xL(s,i).toFixed(2)+'" y2="'+yF(i).toFixed(2)+'" stroke="'+mortar+'" stroke-width="0.5"/>';
-            svg+='<line x1="'+xL(s,i).toFixed(2)+'" y1="'+cy.toFixed(2)+'" x2="'+xL(s,i+1).toFixed(2)+'" y2="'+cy.toFixed(2)+'" stroke="'+mortar+'" stroke-width="0.4"/>';
-            if(i>=1 && i<=3 && (seed%5)===0) svg+=_torch((xL(s,i)+xL(s,i+1))/2, cy-HH*sc(i)*0.28, CW*sc(i)*0.12, pal.glow, seed); } }
-        else if(s<0){ svg+=_poly([[xR(s,i),yC(i)],[xR(s,i+1),yC(i+1)],[xR(s,i+1),yF(i+1)],[xR(s,i),yF(i)]], side);
-          svg+='<line x1="'+xR(s,i).toFixed(2)+'" y1="'+yF(i).toFixed(2)+'" x2="'+xR(s,i+1).toFixed(2)+'" y2="'+yF(i+1).toFixed(2)+'" stroke="'+_shade(pal.wall, Lf*0.22)+'" stroke-width="0.6"/>';
-          if(!isDoor){ svg+='<line x1="'+xR(s,i).toFixed(2)+'" y1="'+yC(i).toFixed(2)+'" x2="'+xR(s,i).toFixed(2)+'" y2="'+yF(i).toFixed(2)+'" stroke="'+mortar+'" stroke-width="0.5"/>';
-            svg+='<line x1="'+xR(s,i).toFixed(2)+'" y1="'+cy.toFixed(2)+'" x2="'+xR(s,i+1).toFixed(2)+'" y2="'+cy.toFixed(2)+'" stroke="'+mortar+'" stroke-width="0.4"/>';
-            if(i>=1 && i<=3 && (seed%5)===0) svg+=_torch((xR(s,i)+xR(s,i+1))/2, cy-HH*sc(i)*0.28, CW*sc(i)*0.12, pal.glow, seed); } }
-        // front face (the cap you walk toward)
-        const fL=xL(s,i), fR=xR(s,i), fT=yC(i), fB=yF(i);
-        // A cap is a real viewer-facing surface only when the cell in front of it is open.
-        // A wall running alongside you has a wall in front, so its "cap" is a perpendicular
-        // end-face that should not be seen — its long side face (already drawn) is the wall.
-        // Drawing it anyway made a lit panel jut into the corridor at corners.
-        const fc=at(i-1,s), facing = i>=1 && !wall(fc) && !e.locked(fc.x,fc.y);
-        // A cap is a genuine head-on wall face only when the cell toward screen-centre is
-        // also solid — the wall continues across your view (a dead-end). If that inward cell
-        // is open, this is the back wall of a side recess/opening, whose frontal cap was
-        // jutting into the corridor as a lit panel; show only its long side face instead.
-        const inward = s>0 ? at(i,s-1) : s<0 ? at(i,s+1) : null;
-        const capFaces = facing && (s===0 || (inward && (wall(inward) || e.locked(inward.x,inward.y))));
-        if(capFaces){
-          svg+=_poly([[fL,fT],[fR,fT],[fR,fB],[fL,fB]], face);
-          // a crisp contact line where the wall meets the floor, so a flat head-on wall reads
-          // as standing on the floor instead of blending into the floor's converging perspective
-          svg+='<line x1="'+fL.toFixed(2)+'" y1="'+fB.toFixed(2)+'" x2="'+fR.toFixed(2)+'" y2="'+fB.toFixed(2)+'" stroke="'+_shade(pal.wall, Lf*0.22)+'" stroke-width="0.7"/>';
-          if(isDoor){ // a doorway SET INTO the back wall: wall-coloured cap, door inset with a
-                    // lintel above and jambs at the sides, so it fits inside the opening rectangle
-          const dw=(fR-fL), dh=(fB-fT);
-          const L=fL+dw*0.18, Rr=fR-dw*0.18, T=fT+dh*0.20, B=fB;   // 20% lintel of wall above; door meets the floor
-          svg+=_poly([[L,T],[Rr,T],[Rr,B],[L,B]], _shade(pal.wall, Lf*0.45));   // recessed frame shadow
-          const il=L+dw*0.05, ir=Rr-dw*0.05, it=T+dh*0.04, wood=_shade([134,94,44], Math.max(0.5, Lf));
-          svg+=_poly([[il,it],[ir,it],[ir,B],[il,B]], wood);                    // the door leaf
-          svg+='<line x1="'+((il+ir)/2).toFixed(2)+'" y1="'+it.toFixed(2)+'" x2="'+((il+ir)/2).toFixed(2)+'" y2="'+B.toFixed(2)+'" stroke="'+_shade([70,48,22], Math.max(0.5, Lf))+'" stroke-width="0.5"/>';
-          svg+='<circle cx="'+(ir-dw*0.07).toFixed(2)+'" cy="'+((it+B)/2).toFixed(2)+'" r="'+(dw*0.045).toFixed(2)+'" fill="#e8c24b"/>';
-        } else {
-          svg+=_brick(fL,fT,fR,fB,mortar,seed);
-          // a crack on some faces you're facing, ages the stone
-          if((seed%6)===0 && (fB-fT)>6){ const mx=fL+(fR-fL)*(0.3+(seed%3)*0.18);
-            svg+='<polyline points="'+mx.toFixed(2)+','+fT.toFixed(2)+' '+(mx+ (fR-fL)*0.06).toFixed(2)+','+(fT+(fB-fT)*0.4).toFixed(2)+' '+(mx-(fR-fL)*0.05).toFixed(2)+','+(fT+(fB-fT)*0.72).toFixed(2)+' '+mx.toFixed(2)+','+fB.toFixed(2)+'" fill="none" stroke="'+_shade(pal.wall, Lf*0.3)+'" stroke-width="0.5"/>'; }
-          // a wall torch on roughly a quarter of nearby faces you're facing, lighting the way
-          if(i>=1 && i<=3 && (seed%4)===0){ svg+=_torch((fL+fR)/2, fT+(fB-fT)*0.30, (fR-fL)*0.16, pal.glow, seed); }
-          else if(i<=2 && (seed%5)===2 && (fB-fT)>10){ svg+=_feature(e.theme, fL, fT, fR, fB, seed, Lf, pal); }   // else the floor's own architecture
-        }
-        }
-      }
-    }
-  }
-  // Atmosphere: a warm pool of light around the viewer in the floor's glow colour,
-  // then a vignette so the edges and distance fall into the dark (gradients defined up top).
-  svg+='<rect x="0" y="0" width="100" height="72" fill="url(#fpGlow)"/>';
-  svg+='<rect x="0" y="0" width="100" height="72" fill="url(#fpVig)"/>';
-  return '<svg viewBox="0 0 '+W+' '+H+'" class="fpview" preserveAspectRatio="xMidYMid slice">'+svg+'</svg>';
-}
-// What stands on a cell, subject to the discovery rules (foes at scout range,
-// loot/events at adjacency). Foes show a silhouette of a representative monster.
-function fpObject(c){
-  const e=explore, k=key(c.x,c.y);
-  if(e.spotted.has(k)){ const enc=e.encounterAt(c.x,c.y); if(enc){ const type=enc.lead||(enc.pool&&enc.pool[0])||'goblin'; const t=BESTIARY[type];
-    return { svg:(t&&SPRITES[t.sprite])||'', color:'#e0584d', shadow:true }; } }      // a foe stands on the floor
-  if(e.secrets&&e.secrets[k]&&e.foundSecrets&&e.foundSecrets.has(k)) return { glyph:'\u2756', color:'#ffe08a', shadow:true };   // a cracked-open cache in the wall
-  if(e.found.has(k)){ const ev=e.eventAt&&e.eventAt(c.x,c.y); if(ev) return { glyph:(EVENTS[ev]&&EVENTS[ev].glyph)||'?', color:'#7fd3ff' };   // abstract sigil, no ground shadow
-    const lt=e.loot[k]; if(lt){ const g={gold:'$',key:'K',ration:'R',relic:'\u2605'}[lt.type]||'?'; return { glyph:g, color:'#f0c860', shadow:true }; } }   // loot rests on the floor
-  if(c.x===e.exit.x && c.y===e.exit.y) return { glyph:'\u25BC', color:'#9fd8a0' };   // stairs leading down, no raised shadow
-  return null;
-}
-// Top-down minimap inset: explored ground as memory, with discovery-gated markers
-// and a heading arrow for the party.
 function renderMinimap(){
   const e=explore, pal=FP_THEME[e.theme]||FP_THEME.crypt;let s='<defs><pattern id="map-stone" width="2" height="2" patternUnits="userSpaceOnUse"><path d="M0 0H2M0 1H2M1 0V1M.5 1V2" fill="none" stroke="#d2b675" stroke-opacity=".15" stroke-width=".06"/></pattern></defs>';
   s+='<rect x="0" y="0" width="'+e.w+'" height="'+e.h+'" fill="#07070b"/>';
@@ -3286,6 +3116,7 @@ function renderMinimap(){
     if(dot) s+='<circle cx="'+(x+0.5)+'" cy="'+(y+0.5)+'" r="0.34" fill="'+dot+'"/>';
   }
   s+='<rect width="'+e.w+'" height="'+e.h+'" fill="url(#map-stone)" pointer-events="none"/>';
+  if(e.task&&!e.task.done){const q=e.task,marks=q.sites.map((k,i)=>[k,q.id==='gallery'?String(i+1):q.id==='shrine_road'?'BRM'[i]:q.id==='warren'?'S':'L',q.used.includes(i)]);if(q.id==='ossuary'&&!q.used.length){const blade=Object.entries(e.loot).find(([k,v])=>v.item==='dawnblade');if(blade)marks.push([blade[0],'D',false]);}if(q.id==='warren'||q.id==='ossuary')marks.push([key(q.start.x,q.start.y),'C',false]);for(const [k,label,used]of marks){if(used||q.id==='ossuary'&&label==='L')continue;const [x,y]=k.split(',').map(Number);s+='<g data-task-site="'+label+'"><title>'+escapeHTML(CHAPTER_TASKS[q.id][0]+' · '+label)+'</title><rect x="'+x+'" y="'+y+'" width="1" height="1" fill="#194853" stroke="#9beaf0" stroke-width=".08"/><text x="'+(x+.5)+'" y="'+(y+.8)+'" text-anchor="middle" font-size=".8" fill="#e5ffff">'+label+'</text></g>';}}
   const v=FACING[e.facing], rt=FACING[TURN_R[e.facing]], px=e.pos.x+0.5, py=e.pos.y+0.5, r=0.5;
   const tip=[px+v.dx*r, py+v.dy*r], bl=[px-v.dx*r*0.6+rt.dx*r*0.55, py-v.dy*r*0.6+rt.dy*r*0.55], br=[px-v.dx*r*0.6-rt.dx*r*0.55, py-v.dy*r*0.6-rt.dy*r*0.55];
   s+='<circle class="party-beacon" cx="'+px+'" cy="'+py+'" r=".7" fill="none" stroke="#ffd877" stroke-width=".08"/>';
@@ -3302,7 +3133,7 @@ function renderExplore(){
   board.setAttribute('data-theme', explore.theme||'crypt');
   board.removeAttribute('style'); board.classList.remove('fpboard'); board.classList.add('mapboard');
   board.style.setProperty('--mmar', explore.w+'/'+explore.h);
-  board.innerHTML = renderMinimap();   // the overhead map is now the main view (3D renderFP kept but unused)
+  board.innerHTML = renderMinimap();   // overhead exploration map
   roster.innerHTML='';
   party.forEach(u=>{ const row=document.createElement('div'); row.className='row party'+(u.hp<=0?' dead':'');
     const sp=(u.spells&&u.spells.length)?`<span class="sp">${u.spells.reduce((a,s)=>a+s.uses,0)}sp</span>`:'';
@@ -3311,7 +3142,8 @@ function renderExplore(){
     roster.appendChild(row); });
   drawLog(exploreFeed);
   $('#btnRest').textContent='Camp ('+bag.rations+')'; $('#btnRest').disabled=bag.rations<1;
-  const goal = bag.relic ? 'Relic in hand, and the dead are walking. Cut your way to the stairs '+'\u25BC'+' before the tomb fills.' : 'Find the relic '+'\u2605'+' in the depths.';
+  let goal = bag.relic ? 'Relic in hand, and the dead are walking. Cut your way to the stairs '+'\u25BC'+' before the tomb fills.' : 'Find the relic '+'\u2605'+' in the depths.';
+  if(explore.task)goal=explore.task.done?'Objective complete. Find the key and take the stairs.':CHAPTER_TASKS[explore.task.id][1]+' Step onto a blue beacon to act; Chronicle has the full briefing.';
   $('#hint').textContent='Move with the arrows \u25B2\u25BC\u25C0\u25B6 (N/S/W/E). '+goal;
 }
 
@@ -3609,7 +3441,7 @@ function renderCampaign(){
   if(!party||!explore)return;
   $('#btnJournal').disabled=!['explore','combat'].includes(mode);$('#btnJournal').textContent=mode==='combat'?'Tactics':'Chronicle';
   $('#chapterLabel').textContent=(STORY[nodeId]?STORY[nodeId].title:'CHAPTER '+floorDepth())+' · '+OATHS[campaign.oath].name.toUpperCase();$('#chapterLabel').title=$('#chapterLabel').textContent;
-  $('#objective').textContent=bag.relic?(campaign.bossSlain?'Carry the crown to the final stairs.':'The crown is yours. Defeat the king and reach the stairs.'):(STORY[nodeId]?STORY[nodeId].objective:'Find the key and descend.');
+  $('#objective').textContent=explore.task?taskText():bag.relic?(campaign.bossSlain?'Carry the crown to the final stairs.':'The crown is yours. Defeat the king and reach the stairs.'):(STORY[nodeId]?STORY[nodeId].objective:'Find the key and descend.');
   const boss=mode==='combat'&&game&&game.combatants.find(c=>c.bossTitle&&c.alive);
   $('#bossPanel').hidden=!boss;
   if(boss){$('#bossName').textContent=(boss.intent?'⚠ BREATH NEXT TURN · ':boss.awakened?'II · WRATH · ':'I · GUARDIAN · ')+boss.bossTitle+' · '+boss.hp+' / '+boss.maxHp+' HP';$('#bossHealth i').style.width=(boss.hp/boss.maxHp*100)+'%';}
@@ -3665,6 +3497,7 @@ function campaignEpilogue(id){
 function openJournal(){
   if(mode!=='explore'||overlayOpen())return;
   $('#journalScreen').classList.add('show');
+  $('#journalTask').hidden=!explore.task;$('#journalTask').textContent=explore.task?taskText()+': '+CHAPTER_TASKS[explore.task.id][1]:'';
   $('#journalOath').textContent=OATHS[campaign.oath].name+' — '+OATHS[campaign.oath].desc;
   $('#journalStats').innerHTML=[['Battles won',campaign.battles],['Foes vanquished',campaign.foes],['Steps taken',campaign.steps],['Secrets found',campaign.secrets],['Events resolved',campaign.events],['Embers carried',campaign.boons.length],['Chapters crossed',campaign.completedFloors.length+'/'+(WORLD_MAXDEPTH-1)],['Successful checks',campaign.successes]].map(([label,n])=>'<div class="journal-stat"><b>'+n+'</b>'+label+'</div>').join('');
   const root=$('#journalRoute');root.innerHTML='';

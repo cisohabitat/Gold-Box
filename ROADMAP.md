@@ -116,3 +116,11 @@ Replace the three generic slot illustrations with 16 identity-specific designs; 
 5. Verify on all three CI browsers and publish automatically after the exact head passes.
 
 Steps 1–3 are implemented; current validation and balance evidence are recorded in CAMPAIGN_REVIEW.md and BALANCE.md. Human playtesting and physical Safari remain follow-up validation.
+
+## Distinct route play (0.12.0)
+
+1. Implement escort-return, ordered discovery, relic-to-standard and two-of-three shrine goals through one small map-task seam.
+2. Surface labelled beacons, progress and readable briefings; preserve key/door solvability and existing guardian/council/finale flow.
+3. Persist task progress with safe legacy defaults and atomic validation; keep all rewards bounded and once-only.
+4. Verify real movement/Continue/import and all device/browser gates; make full campaign diagnostics complete both route tasks and record balance.
+5. Publish automatically after all exact-head jobs pass. Tactical guardian expansion and physical-device/human testing remain later work.
