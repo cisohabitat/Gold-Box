@@ -106,3 +106,13 @@ Stages 1–4 are implemented. Local stage-5 evidence and scope limits appear in 
 ## Treasure identity correction (0.10.1)
 
 Replace the three generic slot illustrations with 16 identity-specific designs; give every legendary item a story motif and larger framed display. Preserve exact item rules and inventory state. Review all silhouettes together and on a phone, verify complete/unique artwork mappings and unclipped responsive SVG, then pass existing cross-browser/balance gates before automatic publication. Implemented designs and evidence are recorded in TREASURE_ART_REVIEW.md.
+
+## Campaign payoff (0.11.0)
+
+1. Preserve guardian victory prose in a dedicated illustrated acknowledgement, with pending levels first and reliable stairs/focus recovery.
+2. Recall every later council in the ending; retain legacy defaults and derive guardian history in Chronicle from saved progress.
+3. Give Eclipsescale a bounded spell-protection identity and truthful equipment/atlas descriptions.
+4. Expand seeded campaign diagnostics, inspect the Ash Cantor/finale curve, and document limits before changing difficulty.
+5. Verify on all three CI browsers and publish automatically after the exact head passes.
+
+Steps 1–3 are implemented; current validation and balance evidence are recorded in CAMPAIGN_REVIEW.md and BALANCE.md. Human playtesting and physical Safari remain follow-up validation.
