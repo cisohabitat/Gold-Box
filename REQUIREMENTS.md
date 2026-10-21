@@ -339,3 +339,19 @@ Additional companion integration gate: `node tests/companion-campaign.cjs` runs 
 ### Treasure acceptance record
 
 LOOT-01–13 are implemented. `tests/treasure-rules.cjs` adds twelve real engine/controller checks; `tests/treasure-audit.cjs` audits 192 generated floors and fallback prize descriptors; `tests/treasures.cjs` covers real guarded victory, map pickup, discovery artwork, keyboard/touch equipment, Continue, sold/consumed history, filters, actual Covenant damage/projectile, Salt/Smoke and four device layouts. `tests/treasure-campaign.cjs` runs eight additional acquisition-directed campaigns. All twelve additions were acquired by every company (7 victories/1 defeat), no stalls. The separate unchanged 96-run canary yields 25/32 Wanderer, 14/32 Delver and 13/32 Ironbound; see BALANCE.md for policy limitations and interpretation. Exact-head Chromium/Firefox/WebKit and Pages/live evidence follow in the release PR.
+
+
+## Six-slot equipment — GEAR-01…08 (0.21.0)
+
+1. Six named slots per hero, one item each, with class locks and explicit two-hand occupancy. No extra rings/gloves/belts.
+2. Atomic swaps preserve item multisets, stow conflicts, reject capacity overflow and expose complete comparisons.
+3. Legacy v2 saves locally migrate Aegis/Boots/Charm; full-satchel hand conflicts preserve displaced shields and portable/Continue recovery. Preserve pending levels, base stats and generated floors.
+4. Validate versions, slot identities, class locks and hand conflicts before changing active state or callbacks.
+5. Auto Gear conserves physical copies, handles up to1000 carried items with bounded DP and respects hands/classes. Explain recommendation limits.
+6. AuxiliaryAC≤1, movement−1…+1, strongest-source wards/healing, healing≤2; damage/reactive/control/terrain rules and RNG/base-stat isolation remain consistent.
+7. Auxiliary encounter value is cost×25%, ≤40 per hero, with unchanged core formula/canary thresholds.
+8. Twelve sourced additions (six ordinary/six relics), uniqueart/lore/tactics, all-route relic opportunities and early ordinary stock; 44px six-slot UI, keyboard/touch swaps, save reload and all release gates.
+
+Executable acceptance: tests/loadout-rules.cjs GEAR-01…08 and tests/loadouts.cjs at four device sizes; integration extends treasure-directed acquisition to 24 additions.
+
+Build 0.21.0 local acceptance: 134 engine/controller checks, four sprite/art checks, four policy checks, 192-floor sources, 288 guardian probes and 18 Chromium browser suites pass. The unchanged 96-run canary gives wanderer 29/32, delver 20/32, ironbound 18/32 victories, zero stalls. Eight extra companion campaigns win 8/8 and fulfill every plan four times; eight treasure-directed campaigns win 7/8 and each acquire all 24 recent additions. These directed policies are separate from difficulty estimates. Exact-head CI/Pages/live evidence is recorded in the release PR.

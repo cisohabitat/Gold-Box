@@ -210,3 +210,8 @@ Detailed acceptance rules follow in REQUIREMENTS.md. Human taste, human campaign
 
 
 Treasure expansion delivery: stages 1–5 are implemented, with the local acceptance evidence in REQUIREMENTS.md and BALANCE.md. The publication gate remains exact-head CI followed by merged-file and live Pages verification. No additional floor, slot, runtime dependency, set bonus or save-version migration was introduced.
+
+
+## Six-slot loadouts — 0.21.0
+
+Implemented the accepted next step: weapon/offhand/armour/head/feet/accessory; rebalanced migrated gear; strongest-source wards and bounded auxiliary stats; two-handed swaps; legacy migration; bounded Auto Gear; discounted auxiliary encounter scaling. Six ordinary additions arrive early, six new relics arrive in the three shared later chapters. Complete artwork/lore/guide and portable/device acceptance accompany the feature. Retain the next priorities of human campaign playtesting and physical Safari checks before raising the overall B+ grade.

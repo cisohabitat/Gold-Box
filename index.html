@@ -211,6 +211,7 @@
   .pcard .bgtrait{color:var(--dim);font-size:14px;margin:0 0 7px;}
   .pcard .bgtrait b{color:var(--gold);}
   .gslot{display:flex;justify-content:space-between;align-items:center;background:#1b140b;border:1px solid #3a2c18;padding:3px 8px;margin:3px 0;cursor:pointer;font-size:17px;}
+  .loadout-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;}.loadout-grid .gslot{min-height:44px;min-width:0;flex-direction:column;align-items:flex-start;justify-content:center;margin:0;overflow-wrap:anywhere;line-height:1.15;}.loadout-grid .lab{font-size:14px;}
   .gslot:hover{border-color:var(--frame-hi);}
   .gslot .lab{color:var(--dim);}
   .gslot .it{color:var(--parch);}
@@ -697,7 +698,7 @@
 <div class="screen" id="settingsScreen" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="sbox"><h2 id="settingsTitle" class="ctitle">Sound &amp; Display</h2><p class="tag">Make the journey your own. Combat pauses while this sheet is open.</p><div class="settings-list"><label><input id="prefSound" type="checkbox"> Synthesized sound effects</label><label><input id="prefMusic" type="checkbox"> Quiet ambient tones (requires sound)</label><label for="prefVolume">Volume <output id="volumeValue">35%</output><input id="prefVolume" type="range" min="0" max="100" step="5" value="35"></label><label><input id="prefEffects" type="checkbox" checked> Visual effects (respects reduced motion)</label><label><input id="prefContrast" type="checkbox"> High contrast / clean display</label><label for="prefPace">Auto pace<select id="prefPace"><option value="normal">Deliberate · normal speed</option><option value="quick">Quick · shorter Auto turns</option></select></label></div><p id="audioStatus" class="tag" role="status">Sound is off by default. No downloads are needed.</p><p id="preferenceStatus" class="tag" role="status"></p><button id="btnSettingsClose" class="big">Back to Game</button></div></div>
 <div class="screen" id="codexScreen" role="dialog" aria-modal="true" aria-labelledby="codexTitle"><div class="sbox wide"><div class="eyebrow">Eren’s field atlas</div><h2 id="codexTitle" class="ctitle">The Bestiary</h2><div class="atlas-nav" role="group" aria-label="Atlas pages"><button id="codexBeasts" aria-pressed="true">Bestiary</button><button id="codexTreasure" aria-pressed="false">Treasure &amp; Relics</button><button id="codexLegends" aria-pressed="false">Legends &amp; Hunt</button><button id="btnCodexClose">Back</button></div><p class="tag" id="codexNote"></p><div id="codexTools" class="atlas-tools"><label for="codexSearch">Search<input id="codexSearch" type="search" maxlength="80" placeholder="Name, spell, source or lore"></label><label for="codexFilter">Show<select id="codexFilter"><option value="all">All entries</option><option value="guardians">Guardians</option><option value="relics">Relics</option><option value="potions">Potions</option></select></label></div><p id="codexCount" class="tag" role="status"></p><div id="codexContent" class="atlas-grid"></div></div></div>
 <script>
-const GAME_BUILD='0.20.0';
+const GAME_BUILD='0.21.0';
 document.querySelectorAll('[data-build]').forEach(el=>el.textContent='Build '+GAME_BUILD);
 /* ===== CROWN CAMPAIGN : data, with controller helpers below ===== */
 const OATHS={wanderer:{name:'Wanderer',budget:0.65,recovery:0.25,desc:'Gentler battles; all heroes earn victory XP and recover 25% HP after a win.'},delver:{name:'Delver',budget:1,desc:'Fortune favours the prepared. Only standing heroes earn victory XP.'},ironbound:{name:'Ironbound',budget:1.25,desc:'Stronger enemy forces. Only standing heroes earn victory XP.'}};
@@ -824,15 +825,29 @@ const SPELLS = {
 };
 
 
+const GEAR_SLOTS={weapon:'Weapon',offhand:'Off-hand',armor:'Armour',head:'Head',feet:'Feet',accessory:'Accessory'};
+const LEGACY_GEAR={bellheart_aegis:'offhand',pilgrim_boots:'feet',ward_charm:'accessory'};
 const ITEMS = {
-  bellheart_aegis:{id:'bellheart_aegis',name:'Bellheart Aegis',slot:'armor',ac:3,weaponGuard:1,speedMod:-1,cost:180,classes:['Fighter'],legendary:true},
+  round_shield:{"id":"round_shield","name":"Roadwarden’s Shield","slot":"offhand","ac":1,"cost":55,"classes":["Fighter","Cleric"]},
+  ember_focus:{"id":"ember_focus","name":"Coalglass Focus","slot":"offhand","emberGuard":1,"cost":55,"classes":["Mage","Cleric"]},
+  iron_helm:{"id":"iron_helm","name":"Vigil Helm","slot":"head","controlWard":1,"cost":45,"classes":["Fighter","Cleric","Thief"]},
+  sage_circlet:{"id":"sage_circlet","name":"Apprentice’s Diadem","slot":"head","controlWard":1,"cost":45,"classes":["Mage","Cleric"]},
+  trail_boots:{"id":"trail_boots","name":"Gravepath Greaves","slot":"feet","controlWard":1,"cost":45},
+  copper_ring:{"id":"copper_ring","name":"Rainward Ring","slot":"accessory","spellGuard":1,"cost":65},
+  dawnwarden_helm:{"id":"dawnwarden_helm","name":"Helm of the Unbowed Dawn","slot":"head","controlWard":2,"cost":150,"classes":["Fighter","Cleric"],"legendary":true},
+  starseer_circlet:{"id":"starseer_circlet","name":"Starseer’s Broken Halo","slot":"head","controlWard":1,"spellGuard":1,"cost":150,"classes":["Mage","Thief"],"legendary":true},
+  ashwalker_boots:{"id":"ashwalker_boots","name":"Ashwalker’s Sabatons","slot":"feet","emberGuard":2,"cost":140,"legendary":true},
+  windstep_boots:{"id":"windstep_boots","name":"Steps of the Last Courier","slot":"feet","speedMod":1,"controlWard":1,"cost":155,"classes":["Thief","Mage"],"legendary":true},
+  oathkeeper_ring:{"id":"oathkeeper_ring","name":"Oathkeeper’s Signet","slot":"accessory","weaponGuard":1,"cost":155,"classes":["Fighter","Thief"],"legendary":true},
+  moonwell_pendant:{"id":"moonwell_pendant","name":"Tear of the Moonwell","slot":"accessory","healPower":1,"controlWard":1,"cost":150,"classes":["Cleric","Mage"],"legendary":true},
+  bellheart_aegis:{id:'bellheart_aegis',name:'Bellheart Aegis',slot:'offhand',ac:1,weaponGuard:1,speedMod:-1,cost:180,classes:['Fighter'],legendary:true},
   ashen_covenant:{id:'ashen_covenant',name:'Ashen Covenant',slot:'weapon',atk:0,dmg:0,relicSpell:'ashen_flare',cost:140,classes:['Mage'],legendary:true},
   mercy_reliquary:{id:'mercy_reliquary',name:'Reliquary of Returning Dawn',slot:'weapon',atk:1,dmg:0,healPower:2,cost:150,classes:['Cleric'],legendary:true},
-  nightwarden_bow:{id:'nightwarden_bow',name:'Nightwarden’s Bow',slot:'weapon',atk:1,dmg:1,range:6,farDmg:2,nearDmg:-2,cost:150,classes:['Thief'],legendary:true},
-  pilgrim_boots:{id:'pilgrim_boots',name:'Pilgrim’s Road Boots',slot:'armor',ac:0,speedMod:1,cost:70},
-  ward_charm:{id:'ward_charm',name:'Watchkeeper’s Charm',slot:'armor',ac:1,controlWard:1,cost:85},
+  nightwarden_bow:{id:'nightwarden_bow',name:'Nightwarden’s Bow',slot:'weapon',hands:2,atk:1,dmg:1,range:6,farDmg:2,nearDmg:-2,cost:150,classes:['Thief'],legendary:true},
+  pilgrim_boots:{id:'pilgrim_boots',name:'Pilgrim’s Road Boots',slot:'feet',ac:0,speedMod:1,cost:70},
+  ward_charm:{id:'ward_charm',name:'Watchkeeper’s Charm',slot:'accessory',ac:0,controlWard:1,cost:85},
   pilgrim_mace:{id:'pilgrim_mace',name:'Hospice Mace',slot:'weapon',atk:1,dmg:0,healPower:1,cost:75,classes:['Cleric']},
-  scout_bow:{id:'scout_bow',name:'Yew Scout Bow',slot:'weapon',atk:0,dmg:1,range:4,cost:90,classes:['Fighter','Thief']},
+  scout_bow:{id:'scout_bow',name:'Yew Scout Bow',slot:'weapon',hands:2,atk:0,dmg:1,range:4,cost:90,classes:['Fighter','Thief']},
   smoke_phial:{id:'smoke_phial',name:'Veil of Cinders',slot:'potion',buff:{status:'smokeveil',duration:2,ac:3},cost:45},
   dawn_salt:{id:'dawn_salt',name:'Dawn Salt',slot:'potion',cleanse:['poison','silence','hex','weaken'],cost:35},
   dawn_seal:{id:'dawn_seal',name:'Seal of the First Refuge',slot:'treasure',cost:120},
@@ -844,24 +859,27 @@ const ITEMS = {
   nightglass:{id:'nightglass',name:'Nightglass',slot:'weapon',atk:2,dmg:3,cost:260,classes:['Thief','Mage'],legendary:true,onHit:{status:'poison',duration:3,dmg:2,chance:0.6}},
   starweave:{id:'starweave',name:'Starweave Mantle',slot:'armor',ac:3,controlWard:2,cost:240,legendary:true},
   fine_sword:{ id:'fine_sword', name:'Fine Sword', slot:'weapon', atk:1, dmg:1, cost:80, classes:['Fighter','Cleric','Thief'] },
-  war_axe:{ id:'war_axe', name:'War Axe', slot:'weapon', atk:0, dmg:3, cost:160, classes:['Fighter'] },
+  war_axe:{ id:'war_axe', name:'War Axe', slot:'weapon',hands:2, atk:0, dmg:3, cost:160, classes:['Fighter'] },
   venom_dagger:{ id:'venom_dagger', name:'Venom Dagger', slot:'weapon', atk:1, dmg:1, cost:200, classes:['Thief','Mage'], onHit:{status:'poison',duration:3,dmg:2,chance:0.5} },
-  oak_staff:{ id:'oak_staff', name:'Oak Staff', slot:'weapon', atk:2, dmg:0, cost:90, classes:['Mage','Cleric'] },
+  oak_staff:{ id:'oak_staff', name:'Oak Staff', slot:'weapon',hands:2, atk:2, dmg:0, cost:90, classes:['Mage','Cleric'] },
   leather:{ id:'leather', name:'Leather Armour', slot:'armor', ac:1, cost:60, classes:['Fighter','Cleric','Thief'] },
   chain:{ id:'chain', name:'Chain Mail', slot:'armor', ac:2, cost:130, classes:['Fighter','Cleric'] },
   warded_cloak:{ id:'warded_cloak', name:'Warded Cloak', slot:'armor', ac:1, cost:70 },
   potion_heal:{ id:'potion_heal', name:'Healing Potion', slot:'potion', heal:{n:2,sides:8,bonus:2}, cost:35 },
   potion_fury:{ id:'potion_fury', name:'Draught of Fury', slot:'potion', buff:{status:'fury', duration:3, atk:2, dmg:2}, cost:45 }
 };
-const SHOP_STOCK = ['pilgrim_boots','ward_charm','pilgrim_mace','scout_bow','smoke_phial','dawn_salt','war_axe','potion_heal','potion_fury','leather','fine_sword','oak_staff','chain','warded_cloak'];
+const SHOP_STOCK = ['round_shield','ember_focus','iron_helm','sage_circlet','trail_boots','copper_ring','pilgrim_boots','ward_charm','pilgrim_mace','scout_bow','smoke_phial','dawn_salt','war_axe','potion_heal','potion_fury','leather','fine_sword','oak_staff','chain','warded_cloak'];
 // Gear is a modifier layer applied at use-time, never baked into stored stats,
 // so levelling (which re-derives base stats) can never erase equipment.
+// Auxiliary AC is capped at +1. Wards/healing use their strongest source, never sum.
+function equippedItems(c){return Object.keys(GEAR_SLOTS).map(slot=>ITEMS[c.equip?.[slot]]).filter(Boolean);}
+function gearPower(c,key){return Math.max(0,...equippedItems(c).map(it=>it[key]||0));}
+function gearSource(c,key){return equippedItems(c).find(it=>it[key]===gearPower(c,key))?.name||'Equipment';}
 function equipBonuses(c){
-  let atk=0, ac=0, dmg=0;
-  if(c.equip){ const w=ITEMS[c.equip.weapon], a=ITEMS[c.equip.armor];
-    if(w){ atk+=w.atk||0; dmg+=w.dmg||0; } if(a){ ac+=a.ac||0; } }
-  if(c.campaignBonus){atk+=c.campaignBonus.atk||0;ac+=c.campaignBonus.ac||0;dmg+=c.campaignBonus.dmg||0;}
-  return {atk,ac,dmg};
+ const w=ITEMS[c.equip?.weapon],a=ITEMS[c.equip?.armor];
+ const atk=(w?.atk||0)+(c.campaignBonus?.atk||0),dmg=(w?.dmg||0)+(c.campaignBonus?.dmg||0);
+ const ac=(a?.ac||0)+Math.min(1,equippedItems(c).filter(it=>it.slot!=='armor').reduce((n,it)=>n+(it.ac||0),0))+(c.campaignBonus?.ac||0);
+ return {atk,ac,dmg};
 }
 // Temporary buffs live in the statuses array (so _tick expires them) and are
 // read at use-time too, exactly like gear, so they never touch stored stats.
@@ -880,8 +898,8 @@ function effOnHit(c){ if(c.onHit) return c.onHit; const w=c.equip&&ITEMS[c.equip
 
 // Read equipment at use time; saved base stats never absorb gear properties.
 function effRange(c){return ITEMS[c.equip?.weapon]?.range||c.range;}
-function effSpeed(c){return Math.max(1,c.speed+(ITEMS[c.equip?.armor]?.speedMod||0));}
-function healingPower(c){return ITEMS[c.equip?.weapon]?.healPower||0;}
+function effSpeed(c){return Math.max(1,c.speed+Math.max(-1,Math.min(1,equippedItems(c).reduce((n,it)=>n+(it.speedMod||0),0))));}
+function healingPower(c){return Math.min(2,gearPower(c,'healPower'));}
 function weaponDistanceBonus(att,def){const w=ITEMS[att.equip?.weapon],d=Math.max(Math.abs(att.pos.x-def.pos.x),Math.abs(att.pos.y-def.pos.y));return d>=4?(w?.farDmg||0):d<=1?(w?.nearDmg||0):0;}
 function consumableReason(it,c){
  if(it.heal&&c.hp>=c.maxHp)return 'Full HP';
@@ -1154,7 +1172,7 @@ function buildHero(tpl, name, ab, id, level=1, bg=null){
   const h={ id, name, cls:tpl.cls, glyph:tpl.glyph, sprite:tpl.sprite, side:'party', level, xp:XP_TABLE[level]||0,
     bg: bgId,
     abilities:{...ab}, maxHp:d.maxHp, hp:d.maxHp, ac:d.ac, attackBonus:d.attackBonus,
-    damage:d.damage, speed:tpl.speed + (boon.speed||0), range:tpl.range, spells:d.spells, learned:[], perks:[], equip:{weapon:null, armor:null} };
+    damage:d.damage, speed:tpl.speed + (boon.speed||0), range:tpl.range, spells:d.spells, learned:[], perks:[], equip:Object.fromEntries(Object.keys(GEAR_SLOTS).map(slot=>[slot,null])) };
   return h;
 }
 // Re-derive a hero at a new level, in place. Heals the HP gained and raises
@@ -1580,7 +1598,7 @@ function placeTask(id,tiles,start,exit,doors,loot,encounters,events){
  return {id,start:{...start},sites:sites.map(p=>key(p.x,p.y)),used:[],done:false};
 }
 const WORLD = {
-  entrance:{ id:'entrance', name:'The Upper Crypt', theme:'crypt', gen:{cols:3,rows:3}, tier:0, lockedExit:true, key:true, gold:50, rations:1, items:['fine_sword','leather','pilgrim_boots','smoke_phial'], events:3, secrets:1,
+  entrance:{ id:'entrance', name:'The Upper Crypt', theme:'crypt', gen:{cols:3,rows:3}, tier:0, lockedExit:true, key:true, gold:50, rations:1, items:['fine_sword','leather','pilgrim_boots','smoke_phial','round_shield','iron_helm'], events:3, secrets:1,
     intro:'Cold air, older bone. You descend into the upper crypt; the way down forks somewhere past its keepers.',
     encounters:[ { tactic:'volley', pool:['goblin','archer','skeleton'] } ], next:['warren','gallery'] },
 
@@ -1593,7 +1611,7 @@ const WORLD = {
     intro:'A long gallery of niched dead stretches away, still and watchful.',
     encounters:[ { tactic:'pincer', pool:['goblin','skeleton','shield_sentinel'] } ], next:['catacombs'] },
 
-  catacombs:{ id:'catacombs', name:'The Catacombs', theme:'catacomb', gen:{cols:4,rows:3}, tier:2, lockedExit:true, key:true, gold:90, rations:1, items:['oak_staff','potion_heal','pilgrim_mace','dawn_salt'], events:3, secrets:1,
+  catacombs:{ id:'catacombs', name:'The Catacombs', theme:'catacomb', gen:{cols:4,rows:3}, tier:2, lockedExit:true, key:true, gold:90, rations:1, items:['oak_staff','potion_heal','pilgrim_mace','dawn_salt','dawnwarden_helm','starseer_circlet'], events:3, secrets:1,
     intro:'Walls of niched dead stretch away in every direction. Something deeper has felt you coming.',
     encounters:[ { tactic:'warband', pool:['goblin','spider','shaman','hexer','archer','ember_wisp','shield_sentinel'] },
                  { prize:'bellheart_aegis',guard:true,boss:true,lead:'bell_warden',budgetMul:0.55,pool:['skeleton','acolyte'] } ], next:['ossuary','shrine_road'] },
@@ -1607,11 +1625,11 @@ const WORLD = {
     intro:'A colonnade of broken pillars marches into the dark, lined with forgotten altars.',
     encounters:[ { prize:'mercy_reliquary',tactic:'volley', pool:['skeleton','acolyte','archer','shield_sentinel','grave_leech'] }, { tactic:'hexnet', pool:['hexer','necromancer','spider','spellbreaker','crypt_stalker'] } ], next:['deep_stair'] },
 
-  deep_stair:{ id:'deep_stair', name:'The Descent', theme:'tomb', gen:{cols:4,rows:3}, tier:3, lockedExit:true, key:true, gold:100, rations:1, items:['potion_heal'], events:2, secrets:1,
+  deep_stair:{ id:'deep_stair', name:'The Descent', theme:'tomb', gen:{cols:4,rows:3}, tier:3, lockedExit:true, key:true, gold:100, rations:1, items:['potion_heal','ashwalker_boots','windstep_boots'], events:2, secrets:1,
     intro:'The last stair down. The air is wrong, and something below knows you are coming.',
     encounters:[ { prize:'nightwarden_bow',tactic:'procession', pool:['skeleton','ogre','bonecaller','chain_warden','ember_wisp'] }, { prize:'ashen_covenant',guard:true,boss:true,lead:'ash_cantor',budgetMul:0.50,pool:['skeleton','hexer'] } ], next:['sunless_tomb'] },
 
-  sunless_tomb:{ id:'sunless_tomb', name:'The Sunless Tomb', theme:'tomb', gen:{cols:4,rows:4}, tier:3, lockedExit:true, key:true, relic:true, gold:150, rations:1, items:['nightglass','potion_heal'], events:2,
+  sunless_tomb:{ id:'sunless_tomb', name:'The Sunless Tomb', theme:'tomb', gen:{cols:4,rows:4}, tier:3, lockedExit:true, key:true, relic:true, gold:150, rations:1, items:['nightglass','potion_heal','oathkeeper_ring','moonwell_pendant'], events:2,
     intro:'The heart of the tomb. The relic rests on its bier ahead \u2014 and so does whatever was bound here to keep it forever.',
     encounters:[ { guard:true, boss:true, lead:'crypt_lord', pool:['skeleton','necromancer','acolyte','bonecaller'] },
                  { tactic:'pincer', pool:['skeleton','spider','ogre','hexer','archer','spellbreaker','crypt_stalker','grave_leech'] } ], next:[] }
@@ -1756,7 +1774,7 @@ class CombatEngine{
   }
   movementRisk(c,pos,from=c.pos){
     const opportunity=this.combatants.filter(o=>o.alive&&o.side!==c.side&&!this.isIncapacitated(o)&&!o.aooUsed&&this.cheb(o.pos,from)<=1&&this.cheb(o.pos,pos)>1);
-    return {opportunity,blast:this.dangerAt(pos),ember:this.terrainAt(pos)==='ember'&&(ITEMS[c.equip?.armor]?.emberGuard||0)<2};
+    return {opportunity,blast:this.dangerAt(pos),ember:this.terrainAt(pos)==='ember'&&(gearPower(c,'emberGuard'))<2};
   }
   living(side){ return this.combatants.filter(c=>c.alive&&c.side===side); }
   reachable(c){
@@ -1769,7 +1787,7 @@ class CombatEngine{
   shieldBonus(def){return this.combatants.some(c=>c!==def&&c.alive&&c.side===def.side&&c.shieldAura&&!this.isIncapacitated(c)&&this.cheb(c.pos,def.pos)<=1)?2:0;}
   weaponWard(att,def){return this.coverBonus(att,def)+this.shieldBonus(def);}
   coverBonus(att,def){return effRange(att)>1&&this.terrainAt(def.pos)==='cover'?2:0;}
-  tileScore(c,pos){const type=this.terrainAt(pos);return (this.dangerAt(pos).length?-30:0)+(type==='ember'?((ITEMS[c.equip?.armor]?.emberGuard||0)>=2?0:-6):type==='sanctum'&&c.hp<c.maxHp?4:type==='cover'&&(effRange(c)>1||(c.spells||[]).length)?2:0);}
+  tileScore(c,pos){const type=this.terrainAt(pos);return (this.dangerAt(pos).length?-30:0)+(type==='ember'?((gearPower(c,'emberGuard'))>=2?0:-6):type==='sanctum'&&c.hp<c.maxHp?4:type==='cover'&&(effRange(c)>1||(c.spells||[]).length)?2:0);}
   dangerAt(pos){return [...this.echoes,...this.combatants.filter(u=>u.alive&&u.intent&&SPELLS[u.intent.spell].effect.kind==='damage')].filter(u=>this.cheb(pos,u.intent)<=SPELLS[u.intent.spell].aoe);}
   _interrupt(c){if(!c.intent?.interrupt)return;const sp=c.spells.find(s=>s.id===c.intent.spell);c.intent=null;if(sp)sp.uses=Math.max(0,sp.uses-1);this.log.push({t:c.name+' is interrupted! The channel breaks and its spell charge is lost.',k:'magic'});}
   _evade(c){if(c.acted.move||!this.dangerAt(c.pos).length)return;let best=null,score=-Infinity;const foes=this._foes(c);for(const [k,steps]of this.reachable(c)){const [x,y]=k.split(',').map(Number),pos={x,y};if(this.dangerAt(pos).length)continue;const reactions=foes.filter(e=>!this.isIncapacitated(e)&&!e.aooUsed&&this.cheb(e.pos,c.pos)<=1&&this.cheb(e.pos,pos)>1).length;const value=this.tileScore(c,pos)-steps*.1-reactions*20;if(value>score){score=value;best=pos;}}if(best){this.moveTo(c,best.x,best.y);if(c.alive)this._checkGuards(c);if(c.alive)this.log.push({t:c.name+' moves clear of the marked blast.',k:'sys'});}}
@@ -1789,7 +1807,7 @@ class CombatEngine{
   }
   _terrainTick(c){if(!c||!c.alive)return;const type=this.terrainAt(c.pos);
     if(type==='sanctum'&&c.hp<c.maxHp){const n=Math.min(3,c.maxHp-c.hp);c.hp+=n;this.log.push({t:c.name+' recovers '+n+' HP in the sanctum.',k:'magic'});}
-    if(type==='ember'){const damage=Math.max(0,2-(ITEMS[c.equip?.armor]?.emberGuard||0));if(damage){this._recordDamage(c,damage,'ember');c.hp-=damage;this.log.push({t:c.name+' takes '+damage+' damage from the embers.',k:'kill'});if(c.hp<=0)this._drop(c);}else this.log.push({t:c.name+'’s '+ITEMS[c.equip.armor].name+' wards off the terrain embers.',k:'magic'});}
+    if(type==='ember'){const damage=Math.max(0,2-(gearPower(c,'emberGuard')));if(damage){this._recordDamage(c,damage,'ember');c.hp-=damage;this.log.push({t:c.name+' takes '+damage+' damage from the embers.',k:'kill'});if(c.hp<=0)this._drop(c);}else this.log.push({t:c.name+'’s '+gearSource(c,'emberGuard')+' wards off the terrain embers.',k:'magic'});}
   }
   canAttack(a,d){ if(!a.alive||this.isIncapacitated(a))return false; return d&&d.alive&&d.side!==a.side&&this.cheb(a.pos,d.pos)<=effRange(a); }
   // True if a living enemy stands in melee reach (one square) of c. A ranged
@@ -1823,11 +1841,11 @@ class CombatEngine{
             this.log.push({t:def.name+' is poisoned.',k:'kill'}); } } } }
     this._checkEnd(); return true;
   }
-  _weaponDamage(att,def,amount){const ward=ITEMS[def.equip?.armor]?.weaponGuard||0,raw=Math.max(1,amount),blocked=Math.min(raw,ward);if(blocked)this.log.push({t:def.name+'’s '+ITEMS[def.equip.armor].name+' absorbs '+blocked+' weapon damage.',k:'magic'});return raw-blocked;}
-  _spellDamage(target,amount){const blocked=Math.min(amount,ITEMS[target.equip?.armor]?.spellGuard||0);if(blocked)this.log.push({t:target.name+'’s Eclipsescale absorbs '+blocked+' spell damage.',k:'magic'});return amount-blocked;}
+  _weaponDamage(att,def,amount){const ward=gearPower(def,'weaponGuard'),raw=Math.max(1,amount),blocked=Math.min(raw,ward);if(blocked)this.log.push({t:def.name+'’s '+gearSource(def,'weaponGuard')+' absorbs '+blocked+' weapon damage.',k:'magic'});return raw-blocked;}
+  _spellDamage(target,amount){const blocked=Math.min(amount,gearPower(target,'spellGuard'));if(blocked)this.log.push({t:target.name+'’s '+gearSource(target,'spellGuard')+' absorbs '+blocked+' spell damage.',k:'magic'});return amount-blocked;}
   _controlSave(target,e){
-    const ward=ITEMS[target.equip?.armor]?.controlWard||0;
-    if(ward)this.log.push({t:target.name+'’s '+ITEMS[target.equip.armor].name+' grants +'+ward+' to this spell-control save.',k:'magic'});
+    const ward=gearPower(target,'controlWard');
+    if(ward)this.log.push({t:target.name+'’s '+gearSource(target,'controlWard')+' grants +'+ward+' to this spell-control save.',k:'magic'});
     return Rules.save(target,e.dc-ward,e.saveStat);
   }
   castSpell(c, sp, target){
@@ -2435,6 +2453,19 @@ const MONSTER_LORE={
  eclipse_wyrm:['Astrax, the Star-Eater','The king chained a sky-dragon beneath the Observatory of Ash. Each scale imprisons a constellation; each breath burns with a dawn it was forbidden to release.','Optional hunt. Starless Breath marks a 3×3 area, then hits it for 3d6 damage on the dragon’s next active turn, including allies. Leave the amber tiles. Spread out; cover does not block magic. At half HP gains +1 attack, regains one breath charge (capped at its maximum), and calls one skeleton once.']
 };
 const RELIC_LORE={
+ round_shield:"Its battered rim carries the refugee road’s mile marks. Every dent is a place where someone else kept walking.",
+ ember_focus:"A last coal turns in a cage of black glass. Apprentices carry it through the cold ash below the hospice.",
+ iron_helm:"The watch hammered this brow from a fallen gate. Its unbroken bridge reminds its wearer to stand through whispered commands.",
+ sage_circlet:"Seven copper leaves hold a single clear stone. Eren taught the first apprentices to count the leaves when the dead spoke their names.",
+ trail_boots:"Grave dust cannot settle in these deeply scored greaves. Each buckle carries the name of a guide who returned from below.",
+ copper_ring:"A rain-blue bead rests above an open copper circle. The river priests made these for travellers crossing under hostile stars.",
+ dawnwarden_helm:"The helm’s sunrise crest was buried with a captain who refused the king’s final order. Her closed visor still faces the throne.",
+ starseer_circlet:"A broken orbit circles an empty eye. Its lost third arc was offered to a falling star so the last astronomer could remember her own name.",
+ ashwalker_boots:"The Cantor’s furnace could not consume these black sabatons. Small lanterns burn behind their heels, fed by the steps of the lost procession.",
+ windstep_boots:"Silver wings clasp the last courier’s boots. She crossed the dying kingdom without waiting for the dawn, carrying four names to the gate.",
+ oathkeeper_ring:"A miniature shield seals the signet, split by a single living root. Its bearer promises that another will see the morning.",
+ moonwell_pendant:"A silver tear hangs beneath a crescent cage. In the well where the moon drowned, the hospice found one drop still warm with life.",
+
  bellheart_aegis:'A shield forged from the bell that commanded the dead. Its broken tongue catches the first force of every blow; the weight of its old orders slows the bearer.',
  ashen_covenant:'Eren lifts a charred covenant from the Cantor’s brazier. Its last clause burns once in every battle. The fire recognises neither friend nor foe.',
  mercy_reliquary:'Inside the little sun-shaped shrine lies a hospice bell, wrapped in the names of people who came home. Its bearer learns to mend before striking.',
@@ -2506,10 +2537,10 @@ function reviveHero(s){ const tpl=CLASSES[s.cls]; const h=buildHero(tpl, s.name,
   h.learned=Array.isArray(s.learned)?s.learned.filter(id=>SPELLS[id]):[]; applyLearned(h);
   h.perks=Array.isArray(s.perks)?s.perks.filter(id=>PERKS[id]):[];
   h.hp=Math.max(0, Math.min(h.maxHp, s.hp)); h.alive=h.hp>0; h.statuses=[];
-  h.equip={ weapon:(s.eq&&s.eq.weapon)||null, armor:(s.eq&&s.eq.armor)||null };
+  h.equip=Object.fromEntries(Object.keys(GEAR_SLOTS).map(slot=>[slot,s.eq?.[slot]||null]));
   if(s.su) (h.spells||[]).forEach(sp=>{ if(s.su[sp.id]!==undefined) sp.uses=Math.max(0,Math.min(sp.max,s.su[sp.id])); });
   return h; }
-function saveState(){syncDiscoveries(); return { v:2, nodeId, worldPath:[...worldPath], inTown:$('#townScreen').classList.contains('show'),
+function saveState(){syncDiscoveries(); return { v:2, gearVersion:1, nodeId, worldPath:[...worldPath], inTown:$('#townScreen').classList.contains('show'),
   bag:{ gold:bag.gold, keys:bag.keys, rations:bag.rations, relic:!!bag.relic, items:[...bag.items] },
   party: party.map(h=>({ id:h.id, name:h.name, cls:h.cls, ab:{...h.abilities}, lvl:h.level, xp:h.xp||0, pending:h.pendingLevels||0, bg:h.bg||null, hp:h.hp,
     eq:{...h.equip}, learned:[...(h.learned||[])], perks:[...(h.perks||[])], su:Object.fromEntries((h.spells||[]).map(sp=>[sp.id,sp.uses])) })),
@@ -2532,8 +2563,8 @@ function validSave(s){
     const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k), obj=o=>o&&typeof o==='object'&&!Array.isArray(o);
     const num=(v,min=0,max=10000000)=>Number.isFinite(v)&&Number.isInteger(v)&&v>=min&&v<=max;
     const list=(v,max,check)=>Array.isArray(v)&&v.length<=max&&v.every(check);
-    if(!obj(s)||s.v!==2||!own(WORLD,s.nodeId)||!obj(s.bag)||!obj(s.explore))return false;
-    if(!['gold','keys','rations'].every(k=>num(s.bag[k]))||!list(s.bag.items,1000,id=>own(ITEMS,id)))return false;
+    if(!obj(s)||(s.gearVersion!==undefined&&s.gearVersion!==1)||s.v!==2||!own(WORLD,s.nodeId)||!obj(s.bag)||!obj(s.explore))return false;
+    if(!['gold','keys','rations'].every(k=>num(s.bag[k]))||!list(s.bag.items,s.gearVersion===1?1004:1000,id=>own(ITEMS,id)))return false;
     const ids=new Set();
     if(!list(s.party,4,h=>{
       if(!obj(h)||!own(CLASSES,h.cls)||typeof h.id!=='string'||!h.id||h.id.length>40||ids.has(h.id)||typeof h.name!=='string'||h.name.length>80)return false;
@@ -2541,7 +2572,9 @@ function validSave(s){
       if(!obj(h.ab)||!['str','dex','con','int','wis','cha'].every(k=>num(h.ab[k],1,30))||!num(h.hp)||!num(h.lvl||1,1,MAX_LEVEL))return false;
       if(h.xp!==undefined&&!num(h.xp)||h.pending!==undefined&&!num(h.pending,0,MAX_LEVEL-1))return false;
       if(h.eq!==undefined&&!obj(h.eq))return false;
-      for(const slot of ['weapon','armor']){const id=h.eq&&h.eq[slot];if(id&&(!own(ITEMS,id)||ITEMS[id].slot!==slot||!canUse(ITEMS[id],{cls:h.cls})))return false;}
+      if(h.eq&&Object.keys(h.eq).some(slot=>!Object.hasOwn(GEAR_SLOTS,slot)||(s.gearVersion!==1&&!['weapon','armor'].includes(slot))))return false;
+      for(const slot of Object.keys(GEAR_SLOTS)){const id=h.eq?.[slot];if(id!==undefined&&id!==null&&(typeof id!=='string'||!own(ITEMS,id)||(ITEMS[id].slot!==slot&&!(s.gearVersion!==1&&slot==='armor'&&LEGACY_GEAR[id]))||!canUse(ITEMS[id],{cls:h.cls})))return false;}
+      if(s.gearVersion===1&&ITEMS[h.eq?.weapon]?.hands===2&&h.eq?.offhand)return false;
       if(h.learned!==undefined&&!list(h.learned,30,id=>own(SPELLS,id))||h.perks!==undefined&&!list(h.perks,30,id=>own(PERKS,id)))return false;
       if(h.su!==undefined&&(!obj(h.su)||Object.entries(h.su).some(([id,n])=>!own(SPELLS,id)||!num(n,0,999))))return false;
       return true;
@@ -2574,14 +2607,18 @@ function applySave(s){
   let next;
   try{
     if(!validSave(s))return false;
-    const heroes=s.party.map(reviveHero),state=restoreCampaign(s.campaign),dungeon=reviveExplore(s.explore);
+    const heroes=s.party.map(reviveHero),state=restoreCampaign(s.campaign),dungeon=reviveExplore(s.explore),migratedItems=s.bag.items.slice();
+    if(s.gearVersion!==1)for(const h of heroes){const id=h.equip.armor;if(LEGACY_GEAR[id]){h.equip.armor=null;h.equip[LEGACY_GEAR[id]]=id;}if(ITEMS[h.equip.weapon]?.hands===2&&h.equip.offhand){migratedItems.push(h.equip.offhand);h.equip.offhand=null;}}
+    // Up to four displaced legacy shields may exceed the 1000-item pickup limit.
+    // Keep them recoverable in Continue/export; collection waits until space is freed.
+    if(migratedItems.length>1004)return false;
     if(!s.campaign||!Array.isArray(s.campaign.completedFloors))state.completedFloors=[...new Set([...(s.worldPath||[]).filter(id=>id!==s.nodeId),...(s.inTown?[s.nodeId]:[])])];
     if(!s.campaign||s.campaign.decisions===undefined)for(const id of (s.worldPath||[]).filter(id=>id!==s.nodeId))if(STORY[id])state.decisions[id]='legacy';
-    for(const id of [...s.bag.items,...heroes.flatMap(h=>Object.values(h.equip)),...(s.bag.relic?['sunless_crown']:[])])if(id&&!state.discovered.includes(id))state.discovered.push(id);
+    for(const id of [...migratedItems,...heroes.flatMap(h=>Object.values(h.equip)),...(s.bag.relic?['sunless_crown']:[])])if(id&&!state.discovered.includes(id))state.discovered.push(id);
     applyBoons(heroes,state);
     dungeon.scoutRadius=partyScoutRadius(heroes);dungeon.searchBonus=partySearchBonus(heroes);dungeon.reveal();
     if(!s.campaign&&s.nodeId==='sunless_tomb')state.bossSlain=Object.entries(dungeon.encounters).some(([k,enc])=>enc.lead==='crypt_lord'&&dungeon.cleared.has(k));
-    next={heroes,state,dungeon,path:Array.isArray(s.worldPath)&&s.worldPath.length?s.worldPath.slice():[s.nodeId],bag:{gold:s.bag.gold,keys:s.bag.keys,rations:s.bag.rations,relic:!!s.bag.relic,items:s.bag.items.slice()},feed:s.feed&&s.feed.length?s.feed.slice():[{t:'You press on through '+dungeon.name+'.',k:'sys'}]};
+    next={heroes,state,dungeon,path:Array.isArray(s.worldPath)&&s.worldPath.length?s.worldPath.slice():[s.nodeId],bag:{gold:s.bag.gold,keys:s.bag.keys,rations:s.bag.rations,relic:!!s.bag.relic,items:migratedItems},feed:s.feed&&s.feed.length?s.feed.slice():[{t:'You press on through '+dungeon.name+'.',k:'sys'}]};
   }catch(_){return false;}
   clearPresentation();clearRestartArm();closeFieldNotes(false);cancelTurn();autoFight=false;levelUp=null;eventLevelUp=null;curEvent=null;
   for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','aftermathScreen','journalScreen','saveScreen','tacticsScreen','fateScreen','restartScreen','settingsScreen','codexScreen'])$('#'+id).classList.remove('show');
@@ -2632,7 +2669,7 @@ function newGame(chosenParty){renderDefeatReview(null);
   party.forEach(h=>{ const b=h.bg&&BACKGROUNDS[h.bg]&&BACKGROUNDS[h.bg].boon; if(!b) return;
     if(b.gold) bag.gold += b.gold;
     if(b.item && ITEMS[b.item]){ const it=ITEMS[b.item];
-      if((it.slot==='weapon'||it.slot==='armor') && !h.equip[it.slot] && (!it.classes||it.classes.includes(h.cls))) h.equip[it.slot]=it.id;
+      if(Object.hasOwn(GEAR_SLOTS,it.slot) && !h.equip[it.slot] && !(it.slot==='offhand'&&ITEMS[h.equip.weapon]?.hands===2) && (!it.classes||it.classes.includes(h.cls))) h.equip[it.slot]=it.id;
       else bag.items.push(it.id); } });
   applyBoons();
   game=null; mode='explore'; exploreFeed=[]; mover=null; reachCache=null; pendingKey=null; selectedSpell=null;
@@ -3040,6 +3077,14 @@ function openParty(){ if(mode!=='explore')return; pickItem=null;$('#treasureFind
 function closeParty(){ $('#partyScreen').classList.remove('show'); render(); }
 function canUse(it, hero){ return !it.classes || it.classes.includes(hero.cls); }
 function selectItem(i){ pickItem=(pickItem===i)?null:i; renderParty(); }
+function equipmentPlan(hero,it){
+ const equip={...hero.equip},removed=[];
+ const clear=slot=>{if(equip[slot])removed.push(equip[slot]);equip[slot]=null;};
+ clear(it.slot);
+ if(it.slot==='weapon'&&it.hands===2)clear('offhand');
+ if(it.slot==='offhand'&&ITEMS[equip.weapon]?.hands===2)clear('weapon');
+ equip[it.slot]=it.id;return {equip,removed};
+}
 function applyItem(hero){
   if(pickItem===null) return;
   const id=bag.items[pickItem]; const it=ITEMS[id]; if(!it) { pickItem=null; renderParty(); return; }
@@ -3051,10 +3096,9 @@ function applyItem(hero){
       exploreFeed.push({t:hero.name+' drinks a '+it.name+' (+'+(hero.hp-before)+' HP).',k:'magic'}); bag.items.splice(pickItem,1); }
     else { $('#partySub').textContent='The '+it.name+' is best saved for battle (Use Item in a fight).'; return; }
   } else {
-    const slot=it.slot;                       // 'weapon' | 'armor'
-    const prev=hero.equip[slot];
-    hero.equip[slot]=id; bag.items.splice(pickItem,1);
-    if(prev) bag.items.push(prev);            // old gear returns to the satchel
+    const plan=equipmentPlan(hero,it);
+    if(bag.items.length-1+plan.removed.length>Math.max(1000,bag.items.length)){$('#partySub').textContent='Satchel full. Make room for displaced hand equipment.';return;}
+    hero.equip=plan.equip;bag.items.splice(pickItem,1);bag.items.push(...plan.removed);            // old gear returns to the satchel
     exploreFeed.push({t:hero.name+' equips the '+it.name+'.',k:'sys'});
   }
   pickItem=null; autosave();renderParty();
@@ -3064,51 +3108,37 @@ function unequip(hero, slot){
   hero.equip[slot]=null; bag.items.push(id);
   exploreFeed.push({t:hero.name+' stows the '+ITEMS[id].name+'.',k:'sys'}); autosave();renderParty();
 }
-// Auto-assign equippable gear: pool every weapon (or armour) the party holds plus the
-// satchel, then choose the assignment that maximises the party's total worth from that
-// slot, respecting class locks and one piece per hero. Because it optimises the whole
-// party at once it never strands a hero a greedy pass would (e.g. handing the Thief the
-// dagger and leaving the Mage unarmed when a full fit exists). A small stickiness bonus
-// keeps gear where it already sits when that is just as good, so nothing reshuffles for
-// no reason and no hero ends worse off. Leftovers return to the satchel; potions are never
-// touched. Auto Gear scores baseline stats and specialist benefits; it cannot replace manual tactical choices.
+// A bounded dynamic program allocates each slot across the company. Hands are
+// planned first; specialist preferences are recommendations, not a global build optimum.
+function gearWorth(it,h){return (it.atk||0)+(it.dmg||0)+(it.ac||0)+(it.range?1:0)+(it.farDmg||0)*.25+(it.relicSpell?3:0)+(it.healPower||0)*((h.spells||[]).some(sp=>SPELLS[sp.id].effect.kind==='heal')?1:0)+(it.spellGuard||0)*.3+(it.weaponGuard||0)*.8+(it.speedMod||0)*.5+(it.controlWard||0)*.2+(it.emberGuard||0)*.2;}
 function autoAssignGear(){
-  let changed=0;
-  for(const slot of ['weapon','armor']){
-    const worth = (it,h) => slot==='weapon' ? ((it.atk||0)+(it.dmg||0)+(it.range?1:0)+(it.farDmg||0)*.25+(it.relicSpell?3:0)+(it.healPower||0)*((h.spells||[]).some(sp=>SPELLS[sp.id].effect.kind==='heal')?1:0)) : ((it.ac||0)+(it.spellGuard||0)*.1+(it.weaponGuard||0)*.8+(it.speedMod||0)*.5+(it.controlWard||0)*.05);
-    const items=[];
-    party.forEach((h,hi)=>{ const id=h.equip[slot]; if(id&&ITEMS[id]) items.push({id, holder:hi, v:0}); });
-    bag.items.forEach(id=>{ const it=ITEMS[id]; if(it&&it.slot===slot) items.push({id, holder:null, v:0}); });
-    if(!items.length) continue;
-    const orig=party.map(h=>h.equip[slot]);
-    // Lexicographic score: total worth dominates (x10000), then stickiness keeping a piece
-    // with its holder (x100), then a small role nudge so front-liners get armour and
-    // strikers get weapons when a tie must be broken (e.g. fewer pieces than heroes).
-    const rolePri = slot==='weapon' ? {Fighter:4,Thief:3,Cleric:2,Mage:1} : {Fighter:4,Cleric:3,Thief:2,Mage:1};
-    let best={score:-1, map:null};
-    (function rec(i, used, score, map){
-      if(i===party.length){ if(score>best.score) best={score, map:{...map}}; return; }
-      rec(i+1, used, score, map);                                   // this hero takes nothing
-      for(let k=0;k<items.length;k++){ if(used.has(k)) continue; const item=items[k];
-        if(!canUse(ITEMS[item.id], party[i])) continue;
-        used.add(k); map[i]=k;
-        rec(i+1, used, score + worth(ITEMS[item.id],party[i])*10000 + (item.holder===i?100:0) + (rolePri[party[i].cls]||0), map);
-        used.delete(k); delete map[i];
-      }
-    })(0, new Set(), 0, {});
-    party.forEach(h=>{ h.equip[slot]=null; });
-    const usedK=new Set();
-    if(best.map) for(const hi in best.map){ const k=best.map[hi]; party[hi].equip[slot]=items[k].id; usedK.add(k); }
-    const leftover=items.filter((_,k)=>!usedK.has(k)).map(o=>o.id);
-    bag.items=bag.items.filter(id=> !(ITEMS[id]&&ITEMS[id].slot===slot));
-    leftover.forEach(id=>bag.items.push(id));
-    party.forEach((h,hi)=>{ if(h.equip[slot]!==orig[hi]) changed++; });
+ const plans=party.map(h=>({...h.equip}));let remaining=bag.items.slice(),changed=0;
+ const offhandPool=[...bag.items,...party.map(h=>h.equip.offhand)].filter(Boolean).map(id=>ITEMS[id]).filter(it=>it.slot==='offhand');
+ const offhandWorth=party.map(h=>Math.max(0,...offhandPool.filter(it=>canUse(it,h)).map(it=>gearWorth(it,h))));
+ for(const slot of Object.keys(GEAR_SLOTS)){
+  const items=[];party.forEach((h,hi)=>{const id=h.equip[slot];if(id)items.push({id,holder:hi});});
+  remaining.forEach(id=>{if(ITEMS[id]?.slot===slot)items.push({id,holder:null});});
+  // Each physical copy is considered once; 2^party-size states avoid N^4 search.
+  let states=new Map([[0,{score:0,map:{}}]]);
+  for(let k=0;k<items.length;k++){
+   const next=new Map(states),entry=items[k],it=ITEMS[entry.id];
+   for(const [mask,state] of states)for(let hi=0;hi<party.length;hi++){
+    if(mask&(1<<hi)||!canUse(it,party[hi])||(slot==='offhand'&&ITEMS[plans[hi].weapon]?.hands===2))continue;
+    let worth=gearWorth(it,party[hi]);
+    if(slot==='weapon'&&it.hands===2)worth-=offhandWorth[hi];
+    const score=state.score+worth*10000+(entry.holder===hi?100:0)+(party.length-hi),m=mask|(1<<hi);
+    if(!next.has(m)||score>next.get(m).score)next.set(m,{score,map:{...state.map,[hi]:k}});
+   }
+   states=next;
   }
-  pickItem=null;autosave();
-  if(!changed){ renderParty(); $('#partySub').textContent='Current gear already matches the Auto Gear recommendation \u2014 nothing to reassign.'; return; }
-  exploreFeed.push({t:'You sort the satchel, handing each hero the recommended weapon and armour they can use.',k:'sys'});
-  renderParty();
-  $('#partySub').textContent='Gear auto-assigned: gear is scored by attack, damage, AC and specialist benefits. Inspect tradeoffs before committing. Anything left over stays in the satchel.';
+  const best=[...states.values()].reduce((a,b)=>b.score>a.score?b:a),used=new Set(Object.values(best.map));
+  plans.forEach((eq,hi)=>{eq[slot]=best.map[hi]===undefined?null:items[best.map[hi]].id;});
+  remaining=remaining.filter(id=>ITEMS[id]?.slot!==slot).concat(items.filter((_,k)=>!used.has(k)).map(e=>e.id));
+ }
+ if(remaining.length>Math.max(1000,bag.items.length)){$('#partySub').textContent='Satchel full. Make room before Auto Gear can stow replaced equipment.';return;}
+ party.forEach((h,i)=>{for(const slot of Object.keys(GEAR_SLOTS))if(h.equip[slot]!==plans[i][slot])changed++;h.equip=plans[i];});bag.items=remaining;pickItem=null;autosave();renderParty();
+ if(changed)exploreFeed.push({t:'The company sorts six-slot loadouts, respecting classes and occupied hands.',k:'sys'});
+ $('#partySub').textContent=changed?'Auto Gear assigned equipment. Inspect tradeoffs: wards use their strongest source; two-handed weapons occupy the off-hand.':'Current loadouts match the Auto Gear recommendation.';
 }
 function renderParty(){
   renderTreasureFind();
@@ -3122,10 +3152,9 @@ function renderParty(){
     if(bg){ html+=`<p class="bgline"><b>${bg.name}</b> &mdash; <i>${escapeHTML(bgFill(bg.drive,h.name))}</i></p>`;
       html+=`<p class="bgbio">${escapeHTML(bgFill(bg.bio,h.name))}</p>`;
       const bl=boonLabel(h.bg); if(bl) html+=`<p class="bgtrait">Trait: <b>${bl}</b></p>`; }
-    html+=`<div class="gslot" data-hi="${hi}" data-slot="weapon"><span class="lab">Weapon</span><span class="it${wId?(ITEMS[wId].legendary?' legendary':''):' none'}">${wId?ITEMS[wId].name:'\u2014'}</span></div>`;
-    html+=`<div class="gslot" data-hi="${hi}" data-slot="armor"><span class="lab">Armour</span><span class="it${aId?(ITEMS[aId].legendary?' legendary':''):' none'}">${aId?ITEMS[aId].name:'\u2014'}</span></div>`;
+    html+='<div class="loadout-grid">'+Object.entries(GEAR_SLOTS).map(([slot,label])=>{const id=h.equip[slot],blocked=slot==='offhand'&&ITEMS[h.equip.weapon]?.hands===2;return `<div class="gslot" data-hi="${hi}" data-slot="${slot}"><span class="lab">${label}</span><span class="it${id?(ITEMS[id].legendary?' legendary':''):' none'}">${id?ITEMS[id].name:blocked?'Both hands occupied':'—'}</span></div>`;}).join('')+'</div>';
     if(pickItem!==null&&ITEMS[bag.items[pickItem]])html+='<p class="gear-compare">'+escapeHTML(gearComparison(h,ITEMS[bag.items[pickItem]]))+'</p>';
-    for(const id of [wId,aId])if(ITEMS[id]?.legendary)html+='<p class="gear-detail">'+escapeHTML(itemRules(ITEMS[id]))+'</p>';
+    for(const id of Object.values(h.equip))if(ITEMS[id]?.legendary)html+='<p class="gear-detail">'+escapeHTML(itemRules(ITEMS[id]))+'</p>';
     html+=`<div class="eff">HP <b>${h.hp}/${h.maxHp}</b> &nbsp; AC <b>${effAc(h)}</b> &nbsp; Atk <b>+${effAttack(h)}</b> &nbsp; Dmg <b>${dmg.n}d${dmg.sides}+${dmg.bonus}</b></div>`;
     if(h.perks&&h.perks.length){ html+=`<div class="eff">Perks: <b>${h.perks.map(id=>PERKS[id]?PERKS[id].name:id).join(', ')}</b></div>`; }
     if(h.learned&&h.learned.length){ html+=`<div class="eff">Learned: <b>${h.learned.map(id=>SPELLS[id]?SPELLS[id].name:id).join(', ')}</b></div>`; }
@@ -3150,7 +3179,7 @@ function renderParty(){
     ? ITEMS[bag.items[pickItem]].slot==='treasure'?'Trade treasure: sell at a waystation. Its discovery stays in your guide.':'Tap a hero to give them the '+ITEMS[bag.items[pickItem]].name+'. Class-locked gear only fits some heroes.'
     : 'Tap an item, then tap a hero to equip or use it. Tap an equipped item to remove it.';
 }
-function partyGearValue(){ let v=0; for(const h of party){ for(const slot of ['weapon','armor']){ const id=h.equip&&h.equip[slot]; const it=id&&ITEMS[id]; if(it) v+=it.cost||0; } } return v; }
+function partyGearValue(){ let v=0; for(const h of party){ for(const slot of ['weapon','armor']){const it=ITEMS[h.equip?.[slot]];if(it)v+=it.cost||0;}v+=Math.min(40,Object.keys(GEAR_SLOTS).filter(slot=>!['weapon','armor'].includes(slot)).reduce((n,slot)=>n+(ITEMS[h.equip?.[slot]]?.cost||0)*.25,0)); } return v; }
 // The party scouts foes one tile further when it has a keen eye (a living hero
 // with a strong Dexterity), so a sharp scout sees danger sooner. Base range 2.
 function partyScoutRadius(heroes=party){ const best=Math.max(0, ...(heroes||[]).filter(h=>h.alive!==false).map(h=>abilityMod(h.abilities.dex))); return best>=3 ? 3 : 2; }
@@ -3406,7 +3435,7 @@ function renderCombat(){
     if(spellAim&&game.cheb({x,y},spellAim)<=selectedSpell.aoe)cell.classList.add('aimed');
     const danger=game.dangerAt({x,y}).length>0;
     const details=(danger?'Danger: '+game.dangerAt({x,y}).map(u=>dangerText(u)).join('; ')+'. ':'')+(here?here.name+' '+here.hp+'/'+here.maxHp+' HP. '+(game.shieldBonus(here)?'Shielded: +2 weapon AC. ':'')+intentText(here):'')+(terrain?TERRAIN[terrain].name+': '+TERRAIN[terrain].desc:'Plain ground');
-    const support=(game.arenaShelter?.has(k)?' Council sanctuary: remains lit through the phase change.':'')+(terrain==='ember'&&(ITEMS[(here||c).equip?.armor]?.emberGuard||0)>=2?' Lantern Mantle prevents this unit’s terrain ember damage.':'');
+    const support=(game.arenaShelter?.has(k)?' Council sanctuary: remains lit through the phase change.':'')+(terrain==='ember'&&(gearPower(here||c,'emberGuard'))>=2?' '+gearSource(here||c,'emberGuard')+' prevents this unit’s terrain ember damage.':'');
     cell.setAttribute('role','gridcell');cell.setAttribute('aria-label','Column '+(x+1)+', row '+(y+1)+'. '+details+support);cell.title=details+support;
     cell.tabIndex=x===gridCursor.x&&y===gridCursor.y?0:-1;
     cell.onfocus=()=>{gridCursor={x,y};for(const el of cellEls)el.tabIndex=el===cell?0:-1;};
@@ -3834,6 +3863,7 @@ function openTactics(){
   section('Ground that matters',Object.values(TERRAIN).map(t=>t.glyph+' '+t.name+': '+t.desc).join(' '));
   section('The Last Dawn','At each waystation, choose one war-council plan before descending. Ilyra and Eren remember your decisions. Supplies and permanent party bonuses help on the road; other plans change the king’s final battle. The Chronicle records your choices. After the king falls and the crown reaches the final stairs, decide whether to break, bind, or wear it.');
   section('The road below','Find keys and stairs. Camp supplies restore HP and spells; waystation rests are free. Each completed chapter grants XP once. Claim a free ember before descending. Chronicle tracks optional promises: win battles, find caches, and succeed at events. Each completed promise grants one reward.');
+  section('Six-slot loadouts','Equip weapon, off-hand, armour, head, feet and one accessory in Party. Bows, War Axe and Oak Staff use both hands; equipping either hand stows conflicting items. Auxiliary AC caps at +1; movement modifiers total −1 to +1; each ward/healing uses the strongest source, not a sum. Auto Gear is a recommendation.');
   section('Relic choices','Lantern Mantle blocks up to 2 terrain ember damage. Starweave adds +2 saves against spell control and debuffs. Eclipsescale reduces each damaging spell hit by 2. These wards do not replace each other. Select gear in Party to compare its rules with the current item.');
   section('Your company','Fighter rallies the line; Cleric heals standing allies; Thief gains a shadow ward; Mage restores spell uses. Each signature is one action and usable once per battle. Wanderer recovers HP and shares victory XP; the harder oaths award battle XP only to standing heroes.');
   if(fighting){section(game.battlefield?BATTLEFIELDS[game.battlefield].name:'Current opposition','These are the foes still standing. Their remaining resources and positions determine what they can do.');
@@ -3862,7 +3892,8 @@ function itemSources(id){
  for(const ev of Object.values(EVENTS))if(ev.options.some(o=>o.success?.item===id||o.failure?.item===id))from.push('Event: '+ev.name);if(!from.length)from.push('No current campaign source');return from.join(' · ');
 }
 function itemRules(it){
- let text=it.slot==='weapon'?'Weapon · +'+(it.atk||0)+' attack · +'+(it.dmg||0)+' weapon damage':it.slot==='armor'?'Armour slot · +'+it.ac+' AC':it.slot==='treasure'?'Trade treasure · sells for '+Math.floor(it.cost/2)+' gold':it.heal?'Consumable · heals '+it.heal.n+'d'+it.heal.sides+'+'+it.heal.bonus:it.cleanse?'Combat consumable · clears own poison, silence, Hex and Enfeeble':'Combat consumable · '+(it.buff.ac?'+'+it.buff.ac+' AC':'+'+it.buff.atk+' attack / +'+it.buff.dmg+' damage')+' for '+it.buff.duration+' active turns';
+ let text=it.slot==='weapon'?'Weapon · +'+(it.atk||0)+' attack · +'+(it.dmg||0)+' weapon damage':Object.hasOwn(GEAR_SLOTS,it.slot)?GEAR_SLOTS[it.slot]+' slot'+(it.ac?' · +'+it.ac+' AC':''):it.slot==='treasure'?'Trade treasure · sells for '+Math.floor(it.cost/2)+' gold':it.heal?'Consumable · heals '+it.heal.n+'d'+it.heal.sides+'+'+it.heal.bonus:it.cleanse?'Combat consumable · clears own poison, silence, Hex and Enfeeble':'Combat consumable · '+(it.buff.ac?'+'+it.buff.ac+' AC':'+'+it.buff.atk+' attack / +'+it.buff.dmg+' damage')+' for '+it.buff.duration+' active turns';
+ if(it.hands===2)text+=' · two-handed (off-hand must be empty)';
  if(it.range)text+=' · weapon range '+it.range+' · −4 attack while threatened in melee';
  if(it.farDmg)text+=' · +'+it.farDmg+' damage at distance ≥4 · '+it.nearDmg+' damage adjacent';
  if(it.speedMod)text+=' · '+(it.speedMod>0?'+':'')+it.speedMod+' movement';
@@ -3873,12 +3904,25 @@ function itemRules(it){
  if(it.spellGuard)text+=' · '+it.spellGuard+' less damage per spell hit';if(it.onHit)text+=' · '+Math.round(it.onHit.chance*100)+'% poison: '+it.onHit.dmg+' damage/turn for '+it.onHit.duration+' turns';return text;
 }
 const ITEM_TACTICS={
- bellheart_aegis:'Fighter bulwark: +3 AC and −1 damage per weapon hit, but −1 move. Pair with Dawnblade for a slow front line; spells and terrain bypass this ward.',
+ round_shield:"One-handed defence: +1 AC alongside armour. Bows, War Axe and Oak Staff stow it. Bellheart adds weapon protection with a movement cost.",
+ ember_focus:"One free hand protects against one terrain ember damage. Ashwalker or Lantern’s two-point ward replaces this benefit; they do not stack.",
+ iron_helm:"Early protection against hostile spell control. Stronger two-point wards replace this bonus; no extra AC.",
+ sage_circlet:"A caster’s early control ward. Does not improve spell damage, charges or weapon accuracy.",
+ trail_boots:"Choose a one-point control ward instead of Road Boots’ movement. Wards use the strongest equipped source.",
+ copper_ring:"Reduce each spell hit by one, including allied blasts. Eclipsescale’s stronger ward replaces it; weapons and poison bypass it.",
+ dawnwarden_helm:"Two-point spell-control ward with no armour AC. Frees your armour choice for terrain or spell damage protection; does not stack with Starweave.",
+ starseer_circlet:"One point of spell-damage protection and one control save. Stronger wards replace each independently. No extra spell damage.",
+ ashwalker_boots:"Ignore up to two terrain ember damage. Choose these instead of movement footwear; spell blasts still hurt. Frees the armour slot from Lantern Mantle.",
+ windstep_boots:"One extra movement and one control save for a Thief or Mage. Movement from all gear totals at most +1; stronger control wards replace this ward.",
+ oathkeeper_ring:"Reduce each weapon hit by one, possibly to zero. Bellheart’s ward does not stack. Spells, poison and terrain bypass this signet.",
+ moonwell_pendant:"One extra HP per healing spell and one control save. Healing uses the strongest source: Returning Dawn remains +2 total, not +3. Potions and signatures get no bonus.",
+
+ bellheart_aegis:'Fighter off-hand bulwark: +1 AC and −1 damage per weapon hit, but −1 move. Pair with Dawnblade for a slow front line; spells and terrain bypass this ward.',
  ashen_covenant:'Mage artillery: Covenant Flare once per battle (2d6 damage, range four, 3×3, hits allies). Trades away weapon bonuses. Lantern Mantle blocks terrain embers, not your own spell blast.',
  mercy_reliquary:'Cleric support: +2 HP per healing spell, including self-heals; no bonus to potions or Dawn’s Mercy. Pair with Starweave to protect the healer’s casting; Sunshard/Dawnblade strike harder.',
  nightwarden_bow:'Thief marksman: range six, +2 weapon damage at distance four or more, −2 damage when adjacent. Adjacent enemies also impose the normal −4 ranged attack penalty. Road Boots improve repositioning; Nightglass favours close poison strikes.',
- pilgrim_boots:'Mobile armour: +1 movement, no AC. Replaces mail or a protective mantle; pair with a bow to find distance rather than absorb blows.',
- ward_charm:'Light protection: +1 AC and +1 spell-control saves. Starweave is stronger late armour; Boots trade protection for mobility.',
+ pilgrim_boots:'Footwear: +1 movement, no AC. Wear alongside armour; movement gear totals at most +1. Pair with a bow to reposition.',
+ ward_charm:'Accessory: +1 spell-control saves, no AC. Stronger control wards replace its benefit rather than stacking.',
  pilgrim_mace:'Early healer: +1 HP per healing spell, with less weapon power than Fine Sword or Oak Staff. Its bonus does not stack with the Reliquary: both occupy the weapon slot.',
  scout_bow:'Early ranged option: range four, +1 weapon damage and no attack bonus. Melee pressure imposes −4 attack; Fine Sword gives better accuracy for a close Fighter.',
  smoke_phial:'Spend your action for +3 AC for two active turns. It does not stack with itself, hide the party or cancel movement reactions.',
@@ -3896,8 +3940,9 @@ function gearComparison(hero,it){
  if(!canUse(it,hero))return hero.cls+' cannot use '+it.name+'.';
  if(it.slot==='treasure')return itemRules(it)+' · Sell at a waystation; cannot equip.';
  if(it.slot==='potion')return itemRules(it)+(it.heal&&hero.hp>=hero.maxHp?' · Already at full HP.':'');
- const old=ITEMS[hero.equip[it.slot]]||{},signed=n=>(n>=0?'+':'')+n;
- return 'Compared with '+(old.name||'an empty slot')+': '+(it.slot==='weapon'?signed((it.atk||0)-(old.atk||0))+' attack / '+signed((it.dmg||0)-(old.dmg||0))+' weapon damage':signed((it.ac||0)-(old.ac||0))+' AC')+' · Movement '+effSpeed(hero)+' → '+Math.max(1,hero.speed+(it.slot==='armor'?(it.speedMod||0):(ITEMS[hero.equip.armor]?.speedMod||0)))+' · Range '+effRange(hero)+' → '+(it.slot==='weapon'?(it.range||hero.range):effRange(hero))+'. '+itemRules(it)+(old.id&&old.id!==it.id?' · Replaces: '+itemRules(old):'')+(ITEM_TACTICS[it.id]?' · '+ITEM_TACTICS[it.id]:'');
+ const plan=equipmentPlan(hero,it),candidate={...hero,equip:plan.equip},signed=n=>(n>=0?'+':'')+n;
+ const before=equipBonuses(hero),after=equipBonuses(candidate);
+ return 'Loadout change: '+signed(after.atk-before.atk)+' attack / '+signed(after.dmg-before.dmg)+' weapon damage / '+signed(after.ac-before.ac)+' AC · Movement '+effSpeed(hero)+' → '+effSpeed(candidate)+' · Range '+effRange(hero)+' → '+effRange(candidate)+'. '+itemRules(it)+(plan.removed.length?' · Stows: '+plan.removed.map(id=>ITEMS[id].name+' ('+itemRules(ITEMS[id])+')').join(', '):'')+' · Wards and healing use strongest source; auxiliary AC ≤1, movement change −1…+1.'+(ITEM_TACTICS[it.id]?' · '+ITEM_TACTICS[it.id]:'');
 }
 function guardianDefeated(id){if(!party||!explore||!['explore','combat'].includes(mode))return false;if(id==='eclipse_wyrm')return campaign.hunt;if(id==='crypt_lord')return campaign.bossSlain;
  return Object.values(WORLD).some(w=>(w.encounters||[]).some(enc=>enc.lead===id)&&(campaign.completedFloors.includes(w.id)||(nodeId===w.id&&Object.entries(explore.encounters).some(([k,e])=>e.lead===id&&explore.cleared.has(k)))));
@@ -3944,6 +3989,19 @@ function renderCodex(){
 /* ===== TREASURE ART ===== */
 function rp(d,f,s,w){return '<path d="'+d+'"'+(f?' fill="'+f+'"':'')+(s?' stroke="'+s+'"':'')+(w?' stroke-width="'+w+'"':'')+'/>';}
 const TREASURE_ART={
+ round_shield:["#d5b37b", "<circle cx=\"32\" cy=\"30\" r=\"24\" fill=\"#514b46\" stroke=\"#bd9661\" stroke-width=\"3\"/><circle cx=\"32\" cy=\"30\" r=\"18\" fill=\"#765741\" stroke=\"#d5b37b\"/><path d=\"M12 29H52M31 11V49\" stroke=\"#273039\" stroke-width=\"4\"/><circle cx=\"32\" cy=\"30\" r=\"7\" fill=\"#aebbc1\" stroke=\"#e6d6a9\"/><path d=\"M20 14L24 18M45 40L48 44M14 20L17 18L19 20L17 22ZM45 18L47 16L49 18L47 20ZM14 42L16 40L18 42L16 44Z\" stroke=\"#eee0bc\" stroke-width=\"2\"/>"],
+ ember_focus:["#ffab68", "<path d=\"M24 44H40L44 52H20ZM29 45V57H35V45\" fill=\"#9b7652\" stroke=\"#e7c385\"/><circle cx=\"32\" cy=\"25\" r=\"20\" fill=\"#182e3c\" stroke=\"#7ea9b7\" stroke-width=\"2\"/><path d=\"M32 8Q12 25 27 40M32 8Q51 24 37 40M14 25H50\" fill=\"none\" stroke=\"#9fa7ae\" stroke-width=\"2\"/><path d=\"M31 12C42 24 23 22 38 31Q39 40 26 36Q17 30 31 12Z\" fill=\"#dc6a3e\" stroke=\"#ffc57c\"/><path d=\"M30 25L35 33L28 33Z\" fill=\"#fff0b7\"/>"],
+ iron_helm:["#b6c8cd", "<path d=\"M12 43V28Q14 8 32 8Q50 8 52 28V43L42 52V34H22V52Z\" fill=\"#536573\" stroke=\"#b4c0c6\" stroke-width=\"2\"/><path d=\"M29 9H35V42L32 49L29 42Z\" fill=\"#c1a475\"/><path d=\"M17 28H27V32H17ZM37 28H47V32H37Z\" fill=\"#142432\"/><path d=\"M15 40L20 37M44 37L49 40\" stroke=\"#d3e4e5\" stroke-width=\"2\"/>"],
+ sage_circlet:["#b1d7be", "<path d=\"M8 28Q32 45 56 28L52 38Q32 52 12 38Z\" fill=\"#9c754f\" stroke=\"#e0c88d\"/><path d=\"M12 30L8 17L21 24L23 12L32 24L42 12L43 24L56 17L52 31\" fill=\"none\" stroke=\"#b2c8a4\" stroke-width=\"3\"/><path d=\"M32 21L39 30L32 39L25 30Z\" fill=\"#8dc5b8\" stroke=\"#e4ffdb\"/><path d=\"M30 28L32 25L34 29\" fill=\"none\" stroke=\"#fff0cd\"/>"],
+ trail_boots:["#bcac89", "<path d=\"M10 9H27L25 34L29 45L25 55H7L6 47L12 32ZM37 8H54L50 34L57 46L53 56H34L32 48L38 31Z\" fill=\"#595959\" stroke=\"#c3b38e\"/><path d=\"M12 17H25V28H12ZM38 16H51V27H38Z\" fill=\"#88765b\" stroke=\"#d7c794\"/><path d=\"M9 48H28M35 49H55M16 20H21M42 19H47\" stroke=\"#e0cc9d\" stroke-width=\"2\"/>"],
+ copper_ring:["#85c5d9", "<ellipse cx=\"32\" cy=\"37\" rx=\"17\" ry=\"20\" fill=\"none\" stroke=\"#a16e4c\" stroke-width=\"7\"/><path d=\"M20 25Q14 44 28 51\" fill=\"none\" stroke=\"#f5c794\" stroke-width=\"2\"/><path d=\"M23 15L32 6L41 15L37 26H27Z\" fill=\"#407f9b\" stroke=\"#bce7ed\" stroke-width=\"2\"/><path d=\"M26 15L32 10L35 15L30 21Z\" fill=\"#d0f3ea\"/>"],
+ dawnwarden_helm:["#f4ce7e", "<path d=\"M16 21L12 8L23 15L26 4L32 14L40 4L41 15L53 8L48 23Z\" fill=\"#c79943\" stroke=\"#ffe6a6\"/><path d=\"M10 43L13 23Q32 12 51 23L54 43L43 57L37 45H27L21 57Z\" fill=\"#465d71\" stroke=\"#d2b16c\" stroke-width=\"2\"/><path d=\"M16 28L29 32L27 36L15 33ZM48 28L35 32L37 36L49 33Z\" fill=\"#0e2030\"/><path d=\"M29 20H35V42L32 49L29 42Z\" fill=\"#f0d38e\"/><path d=\"M16 43L21 48M43 48L48 43\" stroke=\"#92b7c8\" stroke-width=\"2\"/>"],
+ starseer_circlet:["#c1acff", "<path d=\"M9 26Q27 47 53 24L48 39Q29 54 12 39Z\" fill=\"#53447b\" stroke=\"#bda6e7\" stroke-width=\"2\"/><path d=\"M10 21Q15 6 31 7M39 9Q52 15 55 26\" fill=\"none\" stroke=\"#b1cad5\" stroke-width=\"3\"/><path d=\"M20 19L23 9L27 21L32 17L38 24L43 13L46 29\" fill=\"none\" stroke=\"#d2b67f\" stroke-width=\"2\"/><path d=\"M32 22L38 30L32 39L26 30Z\" fill=\"#8b7cc4\" stroke=\"#e9d5ff\"/><path d=\"M29 29L32 25L33 30\" stroke=\"#fff3d1\"/>"],
+ ashwalker_boots:["#ffa972", "<path d=\"M9 9L27 7L25 35L32 45L28 55H6V46L12 32ZM37 9L53 6L50 35L59 44L55 56H34V47L39 31Z\" fill=\"#333b4a\" stroke=\"#d59c64\" stroke-width=\"2\"/><path d=\"M13 14L24 12L22 23L12 26ZM40 14L50 11L47 23L38 27Z\" fill=\"#8e644a\"/><path d=\"M8 41H17V49H8ZM35 41H44V50H35Z\" fill=\"#a65332\" stroke=\"#efc276\"/><path d=\"M12 43L14 47H10ZM39 43L41 48H37Z\" fill=\"#ffe69d\"/><path d=\"M17 30L23 29M42 30L48 28M8 53H28M35 54H55\" stroke=\"#bec0bc\" stroke-width=\"2\"/>"],
+ windstep_boots:["#a8e4e2", "<path d=\"M13 15L27 17L24 36L30 47L26 55H9L7 48L14 33ZM37 12L51 15L48 35L56 46L52 55H34L32 48L38 30Z\" fill=\"#476a7d\" stroke=\"#b1e3da\"/><path d=\"M14 31L4 14L17 19L12 5L25 22L23 33ZM39 29L29 11L40 16L38 3L50 21L47 31Z\" fill=\"#d0c9ac\" stroke=\"#f5e4b7\"/><path d=\"M11 49H28M35 49H54M18 39L24 40M40 38L47 40\" stroke=\"#8bc7d4\" stroke-width=\"2\"/>"],
+ oathkeeper_ring:["#e8c78c", "<ellipse cx=\"32\" cy=\"39\" rx=\"17\" ry=\"19\" fill=\"none\" stroke=\"#b39458\" stroke-width=\"7\"/><path d=\"M18 40Q19 53 29 55\" fill=\"none\" stroke=\"#ffe1a1\" stroke-width=\"2\"/><path d=\"M18 9L32 5L46 9V25L32 36L18 25Z\" fill=\"#385e62\" stroke=\"#edd294\" stroke-width=\"2\"/><path d=\"M31 30V12M31 22L24 16M31 25L38 18M31 15L36 10\" fill=\"none\" stroke=\"#b8d6a2\" stroke-width=\"2\"/><path d=\"M22 11L27 9\" stroke=\"#fff0bc\" stroke-width=\"2\"/>"],
+ moonwell_pendant:["#a4def0", "<path d=\"M17 5Q4 21 20 33M47 5Q60 21 44 33\" fill=\"none\" stroke=\"#a3b9c5\" stroke-width=\"3\"/><path d=\"M22 22Q16 45 39 54Q17 58 12 40Q7 25 22 22Z\" fill=\"#a5c5ce\" stroke=\"#e1e7d5\"/><path d=\"M33 18Q53 40 43 51Q32 61 24 49Q17 39 33 18Z\" fill=\"#355e82\" stroke=\"#9cdded\" stroke-width=\"2\"/><path d=\"M33 24Q26 39 28 45Q33 52 36 44Q40 36 33 24Z\" fill=\"#7bc1d1\"/><path d=\"M31 32L33 29L34 37\" stroke=\"#f1fff4\" stroke-width=\"2\"/><path d=\"M23 21L33 13L43 21\" fill=\"none\" stroke=\"#e4d7ac\" stroke-width=\"2\"/>"],
+
  bellheart_aegis:["#f7c567",rp("M12 15L32 5L52 15V35Q48 50 32 60Q16 50 12 35Z","#284052","#edc47a")+rp("M17 19L32 11L47 19V35Q43 47 32 54Q21 47 17 35Z","#536f83","#abc7d6")+rp("M20 21H27V41L32 48L37 41V21H44L39 37H25Z","#203044")+rp("M27 20Q32 15 37 20V31L41 35H23L27 31Z","#c18a3c","#ffe6a2")+rp("M31 23H33V31H31Z M29 38H35V42H29Z","#ffe9ad")+rp("M22 16L20 25M43 40L36 48M14 17L18 19M47 17L51 15","none","#e6f0ee","2")],
  ashen_covenant:["#ffac69",rp("M12 18L28 13L36 16L51 11L54 48L37 54L28 50L13 55Z","#322239","#d5a06b")+rp("M17 21L28 18L32 21V46L28 44L18 48Z M35 21L47 17L49 44L36 49Z","#b58b65","#eed6a7")+rp("M22 26L29 24M21 32L28 30M22 39L28 37M39 29L46 27M39 35L46 33","none","#6e483d","2")+rp("M34 42C18 35 41 24 29 5C49 12 36 24 48 29C54 37 43 42 34 42Z","#db663c","#f9b364")+rp("M35 36C30 29 43 22 36 15C47 25 37 28 41 34L37 39Z","#fff0ab")+rp("M11 15L17 12M48 52L54 49M28 49V54","none","#e4b460","2")],
  mercy_reliquary:["#ffdf8f",rp("M27 39H37L38 56H26Z","#805443","#dbbc81")+rp("M22 57H42L38 61H26Z","#c39653")+'<circle cx="32" cy="25" r="20" fill="#755438" stroke="#edcc80"/>'+rp("M32 3L35 10L43 6L42 14L51 14L46 21L54 25L46 30L50 38L41 37L40 45L33 40L27 46L25 37L16 40L18 31L10 26L18 22L14 15L23 15L22 7L29 11Z","#d5a553","#ffe9b6")+rp("M23 17H41V34L32 40L23 34Z","#f2dca0","#8b6645")+rp("M29 21H35V26H40V31H35V36H29V31H24V26H29Z","#75bdb8")+rp("M32 23V33M27 28H37","none","#defff0","2")+rp("M28 48H36M28 52H36","none","#eac785")],
@@ -4047,7 +4105,7 @@ function inspectTile(x,y){
   if(unit)text+=' '+intentText(unit);else if(game.dangerAt({x,y}).length)text+=' · Leave this marked tile before the blast.';
   if(!unit&&mover==='move'&&reachCache?.has(key(x,y)))text+=' · '+(movementRiskText(actor,{x,y})||'No unprotected movement risk detected.');
   if(game.arenaShelter?.has(key(x,y)))text+=' · Council sanctuary: protected during the phase change.';
-  if(terrain==='ember'&&(ITEMS[(unit||actor).equip?.armor]?.emberGuard||0)>=2)text+=' · Lantern Mantle prevents terrain ember damage.';
+  if(terrain==='ember'&&(gearPower(unit||actor,'emberGuard'))>=2)text+=' · '+gearSource(unit||actor,'emberGuard')+' prevents terrain ember damage.';
   if(unit&&actor.side==='party'&&game.canAttack(actor,unit))text+=' · '+game.attackPreview(actor,unit).chance+'% hit';
   const label=$('#tileInspect');label.textContent=text;label.hidden=false;
 }

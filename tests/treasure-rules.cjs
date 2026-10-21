@@ -2,16 +2,16 @@ const {test}=require('node:test'),assert=require('node:assert/strict');
 const {harness}=require('./harness.cjs');
 function setup(){const h=harness();h.run("newGame(DEFAULT_BLOCKS.map((b,i)=>buildHero(CLASSES[b.cls],b.name,b.ab,'p'+(i+1),3,b.bg)));$('#startScreen').classList.remove('show');");return h;}
 test('LOOT-01: twelve additions have class coverage, art, lore, exact rules and genuine sources',()=>{
- const {run}=setup();assert.equal(run('Object.keys(ITEMS).length'),27);assert.equal(run('Object.values(ITEMS).filter(it=>it.legendary).length'),10);
+ const {run}=setup();assert.equal(run('Object.keys(ITEMS).length'),39);assert.equal(run('Object.values(ITEMS).filter(it=>it.legendary).length'),16);
  assert.equal(run("Object.values(ITEMS).every(it=>TREASURE_ART[it.id]&&RELIC_LORE[it.id]&&itemRules(it)&&!itemSources(it.id).includes('No current'))"),true);
  assert.equal(run("['Fighter','Mage','Cleric','Thief'].every(cls=>Object.values(ITEMS).some(it=>it.legendary&&it.classes?.length===1&&it.classes[0]===cls))"),true);
 });
 test('LOOT-02: Bellheart applies weapon ward and movement loss to normal/reaction hits, never spell damage',()=>{
- const {run}=setup();run("const f=party.find(h=>h.cls==='Fighter');f.equip.armor='bellheart_aegis';const e=spawnMonster('goblin',0,false);game=new CombatEngine(party,[e],10,10);f.pos={x:3,y:3};e.pos={x:4,y:3};Rules.attack=()=>({hit:true,crit:false});Rules.damage=()=>5;windowDummy=0;");
+ const {run}=setup();run("const f=party.find(h=>h.cls==='Fighter');f.equip.offhand='bellheart_aegis';const e=spawnMonster('goblin',0,false);game=new CombatEngine(party,[e],10,10);f.pos={x:3,y:3};e.pos={x:4,y:3};Rules.attack=()=>({hit:true,crit:false});Rules.damage=()=>5;windowDummy=0;");
  assert.equal(run('effSpeed(f)'),3);assert.equal(run('game.reachable(f).has(key(0,2))'),true);assert.equal(run('game.reachable(f).has(key(7,3))'),false);
  run("const start=f.hp;e.acted.action=false;game.doAttack(e,f);normalLost=start-f.hp;const next=f.hp;game._reactStrike(e,f,'aoo');reactionLost=next-f.hp;");assert.equal(run('normalLost'),4);assert.equal(run('reactionLost'),4);assert.equal(run('game._spellDamage(f,5)'),5);
- run("e.intent={spell:'war_chant',interrupt:true,x:e.pos.x,y:e.pos.y};e.equip={armor:'bellheart_aegis'};Rules.damage=()=>1;f.acted.action=false;game.doAttack(f,e);");assert.equal(run('!!e.intent'),true);
- run("f.equip.armor=null;");assert.equal(run('effSpeed(f)'),4);
+ run("e.intent={spell:'war_chant',interrupt:true,x:e.pos.x,y:e.pos.y};e.equip={offhand:'bellheart_aegis'};Rules.damage=()=>1;f.acted.action=false;game.doAttack(f,e);");assert.equal(run('!!e.intent'),true);
+ run("f.equip.offhand=null;");assert.equal(run('effSpeed(f)'),4);
 });
 test('LOOT-03: bows share range, cover, melee pressure, distance damage, reactions and arrows',()=>{
  const {run}=setup();run("const t=party.find(h=>h.cls==='Thief');t.equip.weapon='nightwarden_bow';const e=spawnMonster('ogre',0,false);e.maxHp=500;game=new CombatEngine(party,[e],10,10);t.pos={x:2,y:2};e.pos={x:6,y:2};Rules.attack=()=>({hit:true,crit:false});Rules.damage=()=>5;const start=e.hp;game.doAttack(t,e);farLoss=start-e.hp;");assert.equal(run('effRange(t)'),6);assert.equal(run('farLoss'),7);assert.equal(run('game.visualEvents.at(-1).kind'),'arrow');
@@ -32,10 +32,10 @@ test('LOOT-05: Covenant has one separate charge per battle, respects silence, fr
  run("game=new CombatEngine(party,[spawnMonster('ogre',0,false)],10,10);m.statuses.push({type:'silence',duration:2});");assert.equal(run('m.relicSpell.uses'),1);assert.equal(run("game.castSpell(m,SPELLS.ashen_flare,{x:5,y:3})"),false);assert.equal(run('m.relicSpell.uses'),1);
  run("m.statuses=[];party.forEach((h,i)=>h.pos={x:3+i%2,y:3+Math.floor(i/2)});game.living('enemy')[0].pos={x:3,y:3};");assert.equal(run('game._bestPointTile(m,SPELLS.ashen_flare)'),null);
 });
-test('LOOT-06: practical armour replaces protection and does not bake movement or wards into saves',()=>{
- const {run}=setup();run("const f=party[0];f.equip.armor='chain';const oldAC=effAc(f);bag.items.push('pilgrim_boots');pickItem=bag.items.length-1;applyItem(f);");assert.equal(run('effSpeed(f)'),5);assert.equal(run('effAc(f)'),run('oldAC-2'));assert.match(run('gearComparison(f,ITEMS.bellheart_aegis)'),/Movement 5 → 3/);
+test('LOOT-06: footwear accompanies armour and does not bake movement or wards into saves',()=>{
+ const {run}=setup();run("const f=party[0];f.equip.armor='chain';const oldAC=effAc(f);bag.items.push('pilgrim_boots');pickItem=bag.items.length-1;applyItem(f);");assert.equal(run('effSpeed(f)'),5);assert.equal(run('effAc(f)'),run('oldAC'));assert.match(run('gearComparison(f,ITEMS.bellheart_aegis)'),/Movement 5 → 4/);
  run("applySave(decodeSave(encodeSave(saveState())));");assert.equal(run('effSpeed(party[0])'),5);assert.equal(run('party[0].speed'),4);
- run("party[0].equip.armor='ward_charm';game=new CombatEngine(party,[spawnMonster('hexer',0,false)],10,10);Rules.save=(c,dc)=>dc===12;");assert.equal(run("game._controlSave(party[0],{dc:13,saveStat:'wis'})"),true);
+ run("party[0].equip.accessory='ward_charm';game=new CombatEngine(party,[spawnMonster('hexer',0,false)],10,10);Rules.save=(c,dc)=>dc===12;");assert.equal(run("game._controlSave(party[0],{dc:13,saveStat:'wis'})"),true);
 });
 test('LOOT-07: tactical consumables preserve no-op items/actions, cleanse during silence, and cannot bypass incapacitation',()=>{
  const {run}=setup();run("game=new CombatEngine(party,[spawnMonster('ogre',0,false)],10,10);mode='combat';game.order=party.map(h=>h.id).concat('e0');game.turnIndex=0;game._begin();bag.items=['dawn_salt','smoke_phial'];useItem(0);");assert.equal(run('bag.items.length'),2);assert.equal(run('party[0].acted.action'),false);

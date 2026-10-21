@@ -1,0 +1,39 @@
+const {test}=require('node:test'),assert=require('node:assert/strict'),{harness}=require('./harness.cjs');
+function setup(){const h=harness();h.run("newGame(DEFAULT_BLOCKS.map((b,i)=>buildHero(CLASSES[b.cls],b.name,b.ab,'p'+(i+1),3,b.bg)));$('#startScreen').classList.remove('show');");return h;}
+test('GEAR-01: six slots, twelve sourced additions, unique complete artwork and bounded modifiers',()=>{
+ const {run}=setup();assert.equal(run('Object.keys(GEAR_SLOTS).length'),6);assert.equal(run('Object.keys(ITEMS).length'),39);assert.equal(run('Object.keys(TREASURE_ART).length'),40);
+ assert(run("Object.values(ITEMS).every(it=>RELIC_LORE[it.id]&&TREASURE_ART[it.id]&&!itemSources(it.id).includes('No current'))"));assert.equal(run('new Set(Object.values(TREASURE_ART).map(a=>a[1])).size'),40);
+ run("const f=party[0];f.equip={weapon:'fine_sword',armor:'eclipsescale',offhand:'bellheart_aegis',head:'dawnwarden_helm',feet:'pilgrim_boots',accessory:'oathkeeper_ring'};game=new CombatEngine(party,[spawnMonster('ogre',0,false)],10,10);");
+ assert.equal(run('equipBonuses(f).ac'),3);assert.equal(run('effSpeed(f)'),4);assert.equal(run("gearPower(f,'weaponGuard')"),1);assert.equal(run('game._weaponDamage(game.living(\'enemy\')[0],f,1)'),0);assert.equal(run('game._spellDamage(f,5)'),3);
+ run("f.equip.armor='starweave';f.equip.accessory='ward_charm';");assert.equal(run("gearPower(f,'controlWard')"),2);
+});
+test('GEAR-02: equipment hand swaps preserve physical items and reject a full-bag double displacement atomically',()=>{
+ const {run}=setup();run("const f=party[0];f.equip={weapon:'fine_sword',offhand:'round_shield',armor:'chain'};bag.items=['scout_bow'];pickItem=0;applyItem(f);");assert.equal(run('f.equip.weapon'),'scout_bow');assert.equal(run('f.equip.offhand'),null);assert.equal(run("bag.items.slice().sort().join(',')"),'fine_sword,round_shield');
+ run("pickItem=bag.items.indexOf('round_shield');applyItem(f);");assert.equal(run('f.equip.weapon'),null);assert.equal(run('f.equip.offhand'),'round_shield');assert(run("bag.items.includes('scout_bow')"));
+ run("f.equip.weapon='fine_sword';bag.items=Array(999).fill('potion_heal').concat('scout_bow');pickItem=999;const before=JSON.stringify([bag,f.equip]);applyItem(f);");assert(run('JSON.stringify([bag,f.equip])===before'));assert.equal(run('pickItem'),999);
+});
+test('GEAR-03: legacy equipment migrates locally, conflicts stow safely, and Continue accepts capacity-edge recovery',()=>{
+ const {run}=setup();run("const s=saveState();delete s.gearVersion;for(const h of s.party)h.eq={weapon:null,armor:null};s.party[0].eq={weapon:'scout_bow',armor:'bellheart_aegis'};s.party[1].eq.armor='pilgrim_boots';s.party[2].eq.armor='ward_charm';s.bag.items=Array(1000).fill('potion_heal');const old=JSON.stringify(s);");
+ assert(run('applySave(s)'));assert.equal(run('JSON.stringify(s)'),run('old'));assert.equal(run('party[0].equip.weapon'),'scout_bow');assert.equal(run('party[0].equip.offhand'),null);assert.equal(run('party[1].equip.feet'),'pilgrim_boots');assert.equal(run('party[2].equip.accessory'),'ward_charm');assert.equal(run('bag.items.length'),1001);assert.equal(run('bag.items.at(-1)'),'bellheart_aegis');assert(run("campaign.discovered.includes('bellheart_aegis')"));assert(run('applySave(decodeSave(encodeSave(saveState())))'));assert.equal(run('bag.items.length'),1001);
+ run("const size=bag.items.length;collect({type:'item',item:'round_shield'});");assert.equal(run('bag.items.length'),run('size'));
+ run("const edge=JSON.parse(JSON.stringify(s));edge.party.forEach(h=>{h.cls='Fighter';h.eq={weapon:'scout_bow',armor:'bellheart_aegis'};});");assert(run('applySave(edge)'));assert.equal(run('bag.items.length'),1004);assert(run('applySave(decodeSave(encodeSave(saveState())))'));assert.equal(run('bag.items.length'),1004);
+});
+test('GEAR-04: malformed slots, class locks, versions and occupied hands leave active combat and queued callbacks unchanged',()=>{
+ const {run}=setup();run("enterCombat({pool:['skeleton']},'2,2');const current=game,timer=turnTimer,snapshot=saveState();");
+ for(const change of ["s.party[0].eq.feet='fine_sword'","s.party[0].eq.head='starseer_circlet'","s.party[0].eq.offhand='round_shield';s.party[0].eq.weapon='scout_bow'","s.party[0].eq.neck='ward_charm'","s.gearVersion=2","s.bag.items=Array(1005).fill('potion_heal')","s.party[0].eq.head=0","s.party[0].eq.head='__proto__'"]){assert.equal(run(`(()=>{const s=JSON.parse(JSON.stringify(snapshot));${change};return applySave(s);})()`),false);assert(run('game===current&&turnTimer===timer'));}
+});
+test('GEAR-05: Auto Gear conserves every item, obeys classes and hands, and runs a bounded inventory-size search',()=>{
+ const {run}=setup();run("for(const h of party)h.equip=Object.fromEntries(Object.keys(GEAR_SLOTS).map(k=>[k,null]));bag.items=Object.values(ITEMS).filter(it=>Object.hasOwn(GEAR_SLOTS,it.slot)).map(it=>it.id);bag.items.push(...Array(900).fill('scout_bow'));const before=JSON.stringify(bag.items.slice().sort());autoAssignGear();");
+ assert(run("party.every(h=>Object.entries(h.equip).every(([slot,id])=>!id||(ITEMS[id].slot===slot&&canUse(ITEMS[id],h)))&&!(ITEMS[h.equip.weapon]?.hands===2&&h.equip.offhand))"));assert.equal(run("JSON.stringify([...bag.items,...party.flatMap(h=>Object.values(h.equip).filter(Boolean))].sort())"),run('before'));
+ assert(run("party.every(h=>h.equip.head&&h.equip.feet&&h.equip.accessory)"));run('const once=JSON.stringify([party.map(h=>h.equip),bag.items]);autoAssignGear();');assert.equal(run('JSON.stringify([party.map(h=>h.equip),bag.items])'),run('once'));
+});
+test('GEAR-06: healer accessories use the strongest spell bonus and no source mutates saved base stats or consumes RNG',()=>{
+ const {run}=setup();run("const c=party.find(h=>h.cls==='Cleric');c.equip.weapon='mercy_reliquary';c.equip.accessory='moonwell_pendant';const bases=JSON.stringify(party.map(h=>[h.speed,h.range,h.ac,h.attackBonus,h.damage]));");assert.equal(run('healingPower(c)'),2);run("c.equip.weapon=null;");assert.equal(run('healingPower(c)'),1);
+ run("Math.random=()=>{throw Error('equipment presentation RNG');};for(const it of Object.values(ITEMS)){itemRules(it);itemSources(it.id);relicArtwork(it.id);for(const h of party)gearComparison(h,it);}renderParty();");assert.equal(run('JSON.stringify(party.map(h=>[h.speed,h.range,h.ac,h.attackBonus,h.damage]))'),run('bases'));
+});
+test('GEAR-07: auxiliary encounter contribution is discounted and capped without changing existing core scaling',()=>{
+ const {run}=setup();run("for(const h of party)h.equip={weapon:'fine_sword',armor:'chain'};const core=partyGearValue();for(const h of party){h.equip.offhand='bellheart_aegis';h.equip.head='dawnwarden_helm';h.equip.feet='ashwalker_boots';h.equip.accessory='oathkeeper_ring';}");assert.equal(run('core'),840);assert.equal(run('partyGearValue()-core'),160);assert.equal(run('DIFFICULTY.perGear'),.12);
+});
+test('GEAR-08: every generated route offers all six supporting relics and all six ordinary additions are purchasable',()=>{
+ const {run}=setup();run("const ids=['dawnwarden_helm','starseer_circlet','ashwalker_boots','windstep_boots','oathkeeper_ring','moonwell_pendant'];let checked=0;for(let seed=0;seed<8;seed++)for(const branch of [['warren','ossuary'],['warren','shrine_road'],['gallery','ossuary'],['gallery','shrine_road']]){let rng=seed+300;Math.random=()=>{rng=(Math.imul(rng,1664525)+1013904223)>>>0;return rng/4294967296;};const nodes=['entrance',branch[0],'catacombs',branch[1],'deep_stair','sunless_tomb'];const opportunities=nodes.flatMap(id=>Object.values(buildDungeon(generateLevel(WORLD[id])).loot)).filter(it=>it.type==='item').map(it=>it.item);if(!ids.every(id=>opportunities.includes(id)))throw Error('missing route relic');checked++;}");assert.equal(run('checked'),32);assert(run("['round_shield','ember_focus','iron_helm','sage_circlet','trail_boots','copper_ring'].every(id=>SHOP_STOCK.includes(id))"));
+});

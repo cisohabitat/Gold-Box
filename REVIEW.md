@@ -162,3 +162,16 @@ Final local evidence: 114 engine checks, four sprite/art and four policy checks,
 Twelve additions, unique identity art, guarded-cache acquisition, route finds, two tactical consumables, saleable historical treasures, discovery/ownership filters and equipment tradeoffs are implemented. Existing slots, world graph, guardian rules and v2 saves are preserved. Detailed acceptance and audit evidence are in REQUIREMENTS.md and BALANCE.md.
 
 The 96-run Auto canary passes with 25/32 Wanderer, 14/32 Delver and 13/32 Ironbound victories, zero stalls; Delver is lower than 0.19.0 and is not evidence of unchanged balance. Eight acquisition-directed runs collect every addition (7 wins/1 defeat), while eight companion-directed runs fulfill all plans (7 wins/1 defeat). Those planners use map metadata and do not estimate human choices or win rates. Auto Gear favours existing offensive caster weapons in this sample; the new healing/artillery relics are manual tactical alternatives, not certified universal improvements. Physical Safari and human pacing/recognition remain outstanding; the overall assessment remains B+. Exact-head three-browser/publication evidence is in the release PR.
+
+
+## Six-slot review — 0.21.0
+
+The two-slot model forced boots, charms and shields to replace armour. The expanded loadout addresses that cost while avoiding unrestricted stacking: auxiliaryAC≤1, movement−1…+1, each ward/healing uses the strongest source. Aegis moves to off-hand and drops AC 3→1; Charm losesAC. Bows/axe/staff use both hands; swaps and Auto Gear preserve physical copies/capacity. Legacy migration is locally prepared and validated before active state/timers change, including full-bag bow/Aegis recovery.
+
+Twelve new equipment identities support the slots: six early ordinary options and six relics at shared chapter sources. Each has unique art/lore/tactics. The two-column loadout stays inside the existing Party screen with 44px controls. Extra slot value receives discounted, capped encounter scaling rather than fullprice scaling.
+
+New source/regression/browser checks cover migration, malformed imports, full-bag conservation, hand conflicts, nonstacking effects, bounded allocation and every-route acquisition. Exact-head cross-browser/publication evidence belongs in the release PR; measured campaign results are recorded in BALANCE.md. Overall grade remains B+ pending physical Safari and human full campaigns.
+
+Build 0.21.0 runtime: **438,595 bytes (428.3 KiB)**, +13,215 bytes over 0.20.0; one offline HTML file, no added runtime dependencies. The 350 KiB target remains soft. CI job timeout is 30 minutes for the expanded UI/campaign work; test counts, per-run limits and balance thresholds remain unchanged.
+
+Build 0.21.0 local acceptance: 134 engine/controller checks, four sprite/art checks, four policy checks, 192-floor sources, 288 guardian probes and 18 Chromium browser suites pass. The unchanged 96-run canary gives wanderer 29/32, delver 20/32, ironbound 18/32 victories, zero stalls. Eight extra companion campaigns win 8/8 and fulfill every plan four times; eight treasure-directed campaigns win 7/8 and each acquire all 24 recent additions. These directed policies are separate from difficulty estimates. Exact-head CI/Pages/live evidence is recorded in the release PR.
