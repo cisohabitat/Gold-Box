@@ -186,3 +186,14 @@ Implemented. The following requirements document the acceptance boundaries. Huma
 4. Verify real manual spell confirmation, arrow flight, both redraw and cleanup paths, full balance, cross-browser CI and live publication.
 
 Implemented. Animation is presentation only; battle-ending results can immediately replace it. Human full campaigns and physical Safari remain follow-up evidence.
+
+
+## Personal stakes and consequences (0.18.0)
+
+1. Author four class spotlight quests with two plans each and eight background voices. Tie goals to existing company actions and chapter completion.
+2. Offer and resolve vows through existing waystations; cap resources, ownership and once-only rewards. Keep them optional for every party composition.
+3. Persist owner/choice/baseline/fulfillment in compatible v2 state with atomic validation and legacy defaults.
+4. Carry promises into chapter arrivals, Chronicle and all endings, including a companion’s response to a crowned owner.
+5. Verify actual controller progress, UI/save/level recovery and the full campaign/cross-browser/publication gates, with varied quest choices included in the balance policy.
+
+Implemented. Authored combat set pieces and observed human/physical Safari playtests remain separate follow-up work. This release does not add combat allies, floors or a higher grade by assertion.

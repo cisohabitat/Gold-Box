@@ -8,7 +8,7 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 ## Play
 
-**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.17.0**
+**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.18.0**
 
 Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a fitted board/control shell on every device, with a live sidebar in wide windows and a separate Party & Log panel in smaller windows. **How to Play** on the title screen explains the rules.
 
@@ -204,7 +204,7 @@ Casters also advance to spell range instead of charging into melee, and incapaci
 
 ## Validation
 
-The current dependency-free suite has **106 engine/controller checks** against the real inline script with DOM stubs. It covers save recovery, pending levels, atomic imports, turn scheduling, friendly fire, guardians, campaign gates, route goals, movement-risk forecasts and immediate inventory persistence. Generator checks include 96 exit/key layouts, 160 all-cache-open vault layouts and 256 objective/fallback layouts.
+The current dependency-free suite has **114 engine/controller checks** against the real inline script with DOM stubs. It covers save recovery, pending levels, atomic imports, turn scheduling, friendly fire, guardians, campaign gates, route goals, movement-risk forecasts and immediate inventory persistence. Generator checks include 96 exit/key layouts, 160 all-cache-open vault layouts and 256 objective/fallback layouts.
 
 Browser suites exercise real touch/keyboard controls, save/Continue, offline interaction, clipboard failure, paused menus, all endings, atlas/hunt recovery and 25 viewport sizes. The confidence suite reloads before closing Party after equip, unequip, Auto Gear and healing; it also checks full-HP potion safeguards and movement/turn previews on phone, short landscape, iPad-sized and desktop windows. Automated WebKit is compatibility evidence; physical iPhone/iPad Safari and human campaign difficulty remain unverified.
 
@@ -257,7 +257,9 @@ node tests/arenas.cjs
 node tests/patrols.cjs
 node tests/enemies.cjs
 node tests/projectiles.cjs
+node tests/companions.cjs
 node tests/balance.cjs
+node tests/companion-campaign.cjs
 ```
 
 These suites cover input safety, storage recovery, campaign choices, route objectives, guardian counterplay, illustrated content and tactical feedback. The release balance gate drives 96 fresh campaigns across all oaths/routes using real controllers and Auto combat; `tests/campaign.cjs` offers a shorter 36-run diagnostic. Read current results in the repository's BALANCE.md; previous release samples are historical evidence, not current win rates.
@@ -345,3 +347,29 @@ Effects survive normal board/turn redraws without replaying. They are decorative
 Phone screenshots were visually reviewed. Browser checks cover actual arrow misses, real Fireball aim/confirmation, intermediate flight position, target snapshots, distinct spell shapes, self pulses, rerender persistence, cleanup/caps and accessibility preferences at phone portrait, short landscape, tablet and desktop sizes. Physical Safari remains unverified. Runtime: 384,016 bytes (375.0 KiB), +6,454 bytes over 0.16.0, under the existing soft-size policy with no new dependency or downloaded asset.
 
 Build 0.17.0 local evidence: 106 engine checks, four sprite/art and four policy checks, 288 guardian scenarios and all fifteen Chromium browser suites pass. Full 96-campaign Auto outcomes remain 25/32 Wanderer, 20/32 Delver, 13/32 Ironbound, with zero stalls and unchanged canaries. Runtime 384,016 bytes (375.0 KiB). Exact-head three-browser CI and Pages/live evidence are recorded in the release PR.
+
+
+### Companion vows — 0.18.0
+
+Four optional personal quests give the company a stake beyond the crown. Each has two choices, a task completed through existing dungeon play, a return to a later waystation, and a once-only reward. The first hero of each class owns that class’s vow; duplicate classes do not duplicate rewards. Eight background voices change the opening and fulfillment prose. Parties with missing classes continue normally.
+
+| Hero | First offered | Vow choices and tasks | Reward on fulfillment |
+| --- | --- | --- | --- |
+| Fighter · The Banner Without a Lord | First waystation | Teach Tamsin to protect refugees, or recover the abandoned company’s honour. Lead two further company victories. | One healing potion / 20 gold |
+| Thief · The Last Debt of the Guild | Second waystation | Free Vey’s debtors by resolving two further events, or return grave-goods by finding one further hidden cache. Any resolved event choice counts. | 20 gold / one healing potion |
+| Cleric · A Bell for Those Who Return | Third waystation | Build Mother Alis’s refuge through two further resolved events, or give the unburied their names through two further victories. | One camp supply |
+| Mage · The Dawn That Cannot Be Owned | Fourth waystation | Share Eren’s theorem, or destroy the king’s binding. Complete the Descent of Ash, including its guardian. | One healing potion |
+
+At a waystation, read **Companion vows** and commit to one path. Previous victories/events/caches do not count: progress starts with the promise. Return after a later completed chapter and select **Keep the promise** to claim its reward. No extra XP, permanent stat bonus or new map is added. Claims wait safely if the reward would overflow the satchel or resource limits. Offers remain available through the fourth waystation; the fifth can resolve existing vows. Quests are optional and never block a council, route or ending.
+
+Later chapter arrivals and Chronicle remember the named hero’s road and the NPC helped. All three endings distinguish kept promises from unfinished ones. If a fulfilled hero wears the crown, the companion challenges the new ruler to honour the vow; if that hero binds the crown, the company carries the promise beyond the Warden’s watch. These are narrative allies; the only mechanical rewards are those listed above.
+
+Vows, owner, choice, progress baseline and fulfillment save with existing v2 codes and browser Continue. Older saves start with no invented vows; eligible current waystations can still offer them. No backdated task credit or reward is granted. Existing hero IDs, pending level choices, crown gates, campaign graph, visible log and device controls are preserved.
+
+Phone choice cards were visually reviewed. New browser coverage uses controlled battle/chapter fixtures (existing route objectives precompleted), actual event/cache handlers, keyboard/touch choices, level-up recovery, all eight paths, saved rewards, later echoes, Chronicle, crown endings, escaped names and rejected-import atomicity at four device sizes. The full campaign diagnostic performs actual exploration and route objectives, takes varied vows and claims ready rewards. These remain scripted/emulated checks; human pacing and physical Safari remain unverified.
+
+Runtime: 403,219 bytes (393.8 KiB), +19,203 bytes over 0.17.0. The 350 KiB target remains soft; the game stays one offline HTML file without new dependencies or downloaded assets.
+
+Eight additional quest-directed Wanderer campaigns seek the encounters, events and cache approaches needed for vows before taking the stairs. This privileged scripted planner reads map metadata; it is separate from the 96-run loot-first canary and does not estimate human behavior. Every authored plan must be fulfilled in this additional sample. Complete records are uploaded as CI artifacts.
+
+Build 0.18.0 local evidence: 114 engine checks, four sprite/art and four policy checks, 288 guardian scenarios and all sixteen Chromium browser suites pass. The 96-run varied-vow canary gives 25/32 Wanderer, 20/32 Delver, 13/32 Ironbound with zero stalls and unchanged criteria. Eight extra quest-directed campaigns fulfill every plan four times (6 victories/2 defeats, zero stalls). Runtime 403,219 bytes (393.8 KiB). Exact-head cross-browser and Pages/live evidence is recorded in the release PR.

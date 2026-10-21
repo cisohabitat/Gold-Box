@@ -144,3 +144,14 @@ Review confirmed that ranged attacks/spells produced damage, flashes and logs bu
 The layer never controls turns or game state. Effects/preferences, reduced motion, cleanup caps, menus, resize, visibility and new/load/title transitions are covered. A deterministic enabled/disabled combat check verifies identical outcomes and random streams; real browser checks verify intermediate flight and manual confirmation. Phone arrow and Fireball frames were visually inspected. The overall assessment remains B+; this addresses a concrete presentation gap, without claiming human or physical Safari validation.
 
 Build 0.17.0 local evidence: 106 engine checks, four sprite/art and four policy checks, 288 guardian scenarios and all fifteen Chromium browser suites pass. Full 96-campaign Auto outcomes remain 25/32 Wanderer, 20/32 Delver, 13/32 Ironbound, with zero stalls and unchanged canaries. Runtime 384,016 bytes (375.0 KiB). Exact-head three-browser CI and Pages/live evidence are recorded in the release PR.
+
+
+## Personal stakes for the company — 0.18.0
+
+The campaign’s public councils had consequences, but hero backgrounds mostly supplied passive edges and brief barks. Four optional companion vows now give a named owner two authored paths, existing-play goals, a later return and a once-only bounded reward. Eight background openings/closures connect those choices to the company’s origins. Tamsin, Vey, Mother Alis and Eren carry the outcomes forward through chapter arrivals, Chronicle and crown endings; a crowned quest owner is held to the promise.
+
+Review/testing corrected two integration defects before release: waystation claim controls remained disabled after level allocation, and town/Chronicle quest cards reused IDs. Controls now refresh on confirmation and each view has its own IDs. Phone review prompted left-aligned, sentence-case choice prose with readable spacing. Save validation rejects impossible ownership, plan/baseline/status/payoff records before cancelling an active battle timer; legacy codes gain no invented vows. Overflow rewards leave the pledge intact.
+
+The full campaign diagnostic now takes varied vows and claims ready rewards, so its policy differs from 0.17.0’s no-vow sample. Report that distinction with outcomes in BALANCE.md. Controlled browser fixtures complement the actual exploration/campaign runs. Overall assessment remains B+; human campaign pacing and physical Safari are unverified. Authored combat set pieces are separate follow-up work.
+
+Final local evidence: 114 engine checks, four sprite/art and four policy checks, 288 guardian probes, sixteen Chromium browser suites and unchanged 96-run canary outcomes 25/32, 20/32, 13/32. Eight extra directed campaigns complete every vow plan four times (6 wins/2 defeats), with zero stalls. Source 403,219 bytes (393.8 KiB); exact-head CI/publication evidence belongs to the release PR.
