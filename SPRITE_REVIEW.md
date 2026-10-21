@@ -1,32 +1,30 @@
-# Sprite review — build 0.9.0
+# Sprite review — build 0.19.0
 
-Visual assessment: **C+ → A− for the pixel-art set within this standalone game's scope**. The overall game remains A−; an art pass alone does not establish AAA quality or replace human playtesting.
+All **26 sprites** have been redrawn: four heroes, 21 monsters (including four guardians), and the company standard. The overall game assessment remains **B+**. This is an editorial art improvement within a small standalone game, not a AAA certification. Earlier 0.9.0 grades did not establish the quality of the present game.
 
-## Findings and changes
+## Review findings and changes
 
-| Before | Implemented |
+| Finding in 0.18.0 | Implemented in 0.19.0 |
 | --- | --- |
-| Nine rows used unsupported palette symbols: seven space-bearing rows and two `a` entries. The compiler silently dropped those pixels. | All 19 sprites use validated 24×24 square grids and explicit palette symbols. The compiler rejects malformed dimensions and unknown symbols. |
-| Patchy outlines and inconsistent anatomy, including a partly open skull. | Shared one-pixel keylines, consistent lighting, separated limbs and readable skull/ribcage anatomy. |
-| Cleric and dark acolyte shared pale, cross-like robes. | Armored sun cleric with mace versus hooded acolyte with red stole, book and candle. |
-| Several casters were similar purple columns. | Mage's star hat/crystal staff; necromancer's skull staff; horned hex mask/orb; bone caller's skeletal mantle. |
-| Bell Warden reused the ogre; Ash Cantor reused the necromancer. | Dedicated bell-and-steel Warden, flame-crowned Cantor and crowned, sword-bearing Sunless King. |
-| Bright team backplates competed with figure colours. | Dark medallions, round hero frames and square enemy frames, guardian diamonds and a distinct awakened frame. Side identity uses shape and colour. |
-| Roster used letters and Tactics lacked visual identification. | Matching decorative portraits beside existing names and statistics; larger Tactics portraits make tiny-board figures inspectable. |
+| Heads often occupied a third of the figure; bodies and robes were rectangular columns. | Smaller heads, tapered torsos, bent limbs, asymmetric stances and broken cloak hems. |
+| Casters shared long vertical staffs and similar robe shapes. | Mage casts from an open hand; Hexer carries an eye-like orb; Shaman wears antlers; Acolyte reads a book; Bone Caller wears a skull mantle; Spellbreaker carries a fork beside a split mitre. |
+| New specialist enemies used flat rectangular props and faces. | Sentinel has a pointed tower shield; Stalker crouches with hooked blades; Wisp hangs in a tapered lantern; Leech coils around exposed ribs; Chain Warden carries linked metal and an anchor. |
+| Guardian bodies resembled enlarged ordinary troops. | Bell Warden has cathedral plate and a suspended bell; Ash Cantor has a flame crown and split burning robes; Sunless King has a broad royal mantle and cold chest light; Astrax spreads skeletal wings above a coiled tail. |
+| Large pale areas and muted equipment competed with small details. | Steel, gold, eyes and spell-light are concentrated focal points, with dark keylines and shadowed undersides. |
+| Company standard was an unmarked rectangle. | Forked sun banner, folded cloth, finial and weighted base. |
 
-All four heroes, fourteen enemies/guardians, and the party standard have authored art. Art stays inline and offline; no external images, runtime dependencies, animation loop, RNG consumption or combat-rule changes. Existing sprite IDs remain valid; only the two guardian templates point to their new identities. Battle saves are not persisted, so legacy campaign saves rebuild guardian enemies from current templates.
+## Reviewed contact sheet
 
-## Validation and limits
+Each figure appears enlarged and at **24px / 16px** beneath it. Pixel details inevitably disappear on the smallest combat tiles. Names, HP, inspection labels and larger Tactics/Bestiary portraits remain authoritative.
 
-Reviewed enlarged and 32px contact sheets plus actual 440px-wide combat and Tactics captures. Browser checks cover four representative screen classes for unique guardian art, party/enemy frame shapes, bounded non-interactive SVG, awakened styling and named roster/Tactics portraits. The existing 25-size layout matrix and game-flow checks remain release gates, together with 51 engine checks, sprite integrity checks, balance-policy checks and the 96-run balance gate. CI runs Chromium, Firefox and WebKit before merge.
+![All 26 revised hero, monster and company sprites, with enlarged and 24px/16px previews](Sprite-Art-0.19.png)
 
-Runtime HTML: **324,527 bytes**, below **358,400 bytes (350 KiB)**. The 24×24 grid improves silhouettes and prop identity; it cannot preserve every detail on a 16px tile. Names, HP, focus labels, tile inspection and 56px Tactics portraits remain the readable reference. No physical iPhone/iPad or human art-recognition study was performed. The grade is an editorial assessment, not a measured accessibility certification.
+## Scope and verification
 
-Run `node tests/sprites.cjs` without dependencies. With the local server and optional Playwright tooling, run `node tests/sprite-browser.cjs`; the standard workflow runs both. Keep all sprites unique, correctly mapped, within bounds, and composed only of palette symbols and `.` transparency.
+Existing sprite IDs and registry references are unchanged. All art is authored 24×24 palette grids compiled into inline, decorative, pointer-transparent SVG. The game downloads no sprite files; the contact sheet above is repository documentation only. Heroes retain round frames, enemies square frames, and guardians their diamond/awakened indicators. Art does not alter combat rules, saves, rewards, RNG or timing.
 
+Static checks validate geometry, palette symbols, unique artwork, registry resolution and bounded SVG. Browser checks render every monster identity on the real combat board and inspect hero/enemy shapes, HP rails, awakened guardians, matching roster/Tactics/Bestiary portraits, Effects Off and high contrast across phone portrait, short landscape, tablet and desktop. Reviewed screenshots supplement those mechanical checks; assertions do not measure aesthetic quality. Exact-head Chromium/Firefox/WebKit CI and publication evidence are recorded in the release PR.
 
-## Six enemy silhouettes — 0.16.0
+Runtime: **403,193 bytes (393.7 KiB)**, 26 bytes smaller than 0.18.0. No runtime dependency or save-schema change. The target remains a soft 350 KiB. Physical iPhone/iPad Safari, human art-recognition studies and human campaign pacing remain unverified.
 
-Six additional authored 24×24 grids bring SPX to 26 entries. Shield Sentinel carries a broad sun-cross tower shield and spear; Crypt Stalker has a low lunging cloak and twin hooks; Ember Wisp is a floating ribbed funeral lantern with detached sparks; Spellbreaker has a split mitre, sealed mask and tuning fork; Grave Leech curls around a pale rib reservoir; Chain Warden wears a brass diving helm and trailing anchor-chain. All are distinct geometry using the existing palette/compiler, with bounded decorative SVG and no downloaded assets.
-
-The six were inspected in a contact sheet; geometry, palette, uniqueness, registry resolution and device rendering are checked automatically. Readability on physical hardware remains unverified; this is small pixel-art scope, not a commercial AAA art claim.
+Run `node tests/sprites.cjs` and, against a local server, `node tests/sprite-browser.cjs`. The full release workflow remains mandatory.

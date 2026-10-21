@@ -8,7 +8,7 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 ## Play
 
-**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.18.0**
+**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.19.0**
 
 Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a fitted board/control shell on every device, with a live sidebar in wide windows and a separate Party & Log panel in smaller windows. **How to Play** on the title screen explains the rules.
 
@@ -18,7 +18,7 @@ The live version is served from GitHub Pages: the repo’s **Settings → Pages*
 
 ### Sprite art
 
-Build 0.9.0 rebuilds all 19 pixel sprites with consistent outlines, clearer weapons and class silhouettes, and unique Bell Warden, Ash Cantor and Sunless King designs. Round hero frames and square enemy frames distinguish sides by shape as well as colour. The roster and Tactics show matching portraits; use Tactics for a larger view on small screens. [Sprite review and scope-limited grading](SPRITE_REVIEW.md) documents the changes and remaining limits.
+Build 0.19.0 redraws all 26 pixel sprites: four heroes, 21 monsters and the company standard. Smaller heads, varied stances, shaded equipment and brighter focal details replace the old block-shaped figures. Guardians have a cathedral-armoured bell knight, a flame-crowned cantor, an eclipsed king and a spread-wing star dragon. Round hero frames, square enemy frames, HP rails and guardian warnings remain visible. Matching art appears on the board, roster, Tactics and Bestiary; Tactics provides a larger view on phones. [Sprite review and contact sheet](SPRITE_REVIEW.md) document the designs and remaining limits.
 
 ### Presentation and player options
 
@@ -373,3 +373,10 @@ Runtime: 403,219 bytes (393.8 KiB), +19,203 bytes over 0.17.0. The 350 KiB targe
 Eight additional quest-directed Wanderer campaigns seek the encounters, events and cache approaches needed for vows before taking the stairs. This privileged scripted planner reads map metadata; it is separate from the 96-run loot-first canary and does not estimate human behavior. Every authored plan must be fulfilled in this additional sample. Complete records are uploaded as CI artifacts.
 
 Build 0.18.0 local evidence: 114 engine checks, four sprite/art and four policy checks, 288 guardian scenarios and all sixteen Chromium browser suites pass. The 96-run varied-vow canary gives 25/32 Wanderer, 20/32 Delver, 13/32 Ironbound with zero stalls and unchanged criteria. Eight extra quest-directed campaigns fulfill every plan four times (6 victories/2 defeats, zero stalls). Runtime 403,219 bytes (393.8 KiB). Exact-head cross-browser and Pages/live evidence is recorded in the release PR.
+
+
+### Epic sprite redraw — 0.19.0
+
+All 26 existing sprite identities have new authored 24×24 art and a shared palette with brighter steel, gold, spell-light and skin highlights. Heroes have distinct weapons and poses; enemies carry role-specific silhouettes, including a crouching Stalker, hanging funeral lantern, fork-bearing Spellbreaker, coiled Grave Leech and anchor-chain gaoler. Guardian silhouettes emphasize their signature equipment and crowns. The company standard now bears a sun emblem.
+
+This changes presentation only: no stats, encounter pools, rewards, saves, timing, gameplay randomness or controls change. All art remains inline and offline, with no new downloaded asset or dependency. Runtime is **403,193 bytes (393.7 KiB)**, 26 bytes smaller than 0.18.0; the 350 KiB target remains soft. Enlarged, 24px and 16px contact sheets and actual device-sized combat/guide views were visually reviewed. Physical iPhone/iPad recognition and human playtesting remain unverified; the overall grade remains B+.

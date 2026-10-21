@@ -1,4 +1,6 @@
-# Game balance — build 0.18.0
+# Game balance — build 0.19.0
+
+0.19.0 changes sprite grids/palette and the build label only. All remaining runtime source is byte-for-byte identical to 0.18.0. The exact-head release gate reruns the same campaign policies and canaries; final results and publication evidence are recorded in the release PR.
 
 Default party; real Auto combat; loot-first exploration; complete route objectives and accept the first two shrine beacons encountered; camp below 70% HP; first offered boon; varied councils; varied companion vows with ready rewards claimed at waystations; no shop purchases.
 
