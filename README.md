@@ -413,4 +413,4 @@ No-effect healing, cleansing or already-active full-duration item buffs keep the
 
 Validation includes twelve new engine checks, a 192-floor source audit, the expanded artwork checks, seventeen browser suites, 288 guardian probes, the unchanged 96-run difficulty canaries, eight companion-directed campaigns and eight additional treasure-directed campaigns. The latter deliberately seek guards/caches and buy unseen additions using map metadata; they do not estimate human behavior. Final measured outcomes and exact-head three-browser/Pages evidence are recorded in BALANCE.md and the release PR. Human campaign pacing and physical Safari remain unverified; overall grade remains B+.
 
-Runtime: **425,367 bytes (415.4 KiB), +22,174 bytes over 0.19.0**. The 350 KiB target stays soft; the game remains one offline HTML file without new runtime dependencies or downloaded artwork.
+Runtime: **425,380 bytes (415.4 KiB), +22,187 bytes over 0.19.0**. The 350 KiB target stays soft; the game remains one offline HTML file without new runtime dependencies or downloaded artwork.

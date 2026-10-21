@@ -23,7 +23,7 @@ Reviewed the contact sheet plus real phone discovery/guide views. The discovery 
 
 Automated checks cover full/unique identity mappings and bounded SVG, real guarded victory → ground loot → pickup → keyboard equipment → Continue, collection history versus sales/consumption, filters, named sources, Covenant aim/charges/friendly-fire rules, consumable no-ops, four device layouts and existing game flows. Source audits measure opportunities; treasure-directed campaigns check actual acquisition under a privileged map-reading policy. Physical iPhone/iPad Safari and human recognition studies remain unverified. Full exact-head Chromium/Firefox/WebKit and publication evidence are recorded in the release PR.
 
-Runtime: 425,367 bytes (415.4 KiB), +22,174 bytes over 0.19.0. Standalone/offline behavior and the soft 350 KiB target remain unchanged.
+Runtime: 425,380 bytes (415.4 KiB), +22,187 bytes over 0.19.0. Standalone/offline behavior and the soft 350 KiB target remain unchanged.
 
 ## Historical 0.10.1 correction
 
