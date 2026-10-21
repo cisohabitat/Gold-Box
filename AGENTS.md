@@ -115,7 +115,16 @@ Keep this history accurate when behavior changes. Prefer function names to line 
 
 ## Sprite art maintenance (0.9.0)
 
-- `SPX` contains 19 authored 24×24 grids. Only `.` is transparent; all other symbols must exist in `PX`. `px` rejects invalid geometry/palette data. Keep keylines, lighting, and silhouettes consistent, and art within the square.
+- `SPX` contains 20 authored 24×24 grids. Only `.` is transparent; all other symbols must exist in `PX`. `px` rejects invalid geometry/palette data. Keep keylines, lighting, and silhouettes consistent, and art within the square.
 - Preserve sprite IDs used in hero saves. Every class and bestiary reference must resolve. Guardians have unique `bell_warden`, `ash_cantor`, and `crypt_lord` art; never alias them to ordinary enemies. Art remains independent of engine rules and RNG.
 - Hero frames are round, enemy frames square; guardians have a diamond and awakened state frame. Preserve active/elite/HP/status indicators and pointer-transparent SVG. Existing names/labels remain authoritative; portraits are decorative. Keep larger Tactics portraits for tiny-board inspection.
 - Run `node tests/sprites.cjs` for palette/geometry/reference/identity checks and `node tests/sprite-browser.cjs` for actual board/roster/Tactics rendering. Both are part of the three-browser gate. See SPRITE_REVIEW.md for review evidence, grading, and physical-device limits.
+
+## Field Atlas and optional legend (0.10.0)
+
+- Keep all monster lore in MONSTER_LORE, relic lore in RELIC_LORE and chapter set pieces in SAGAS. Bestiary and treasure rules/sources must derive from the actual registries. The atlas is a complete spoiler-bearing guide, not a discovery archive; ownership means current carried/equipped gear. Do not show abandoned-run ownership on the title.
+- `codexScreen` participates in overlay guards, cleanup, input/focus isolation and combat pause/resume. Closing preserves manual aim and starts one appropriate loop. Restore opener focus after inert branches clear; mobile notes return to Party & Log. Keep internal navigation and 44px controls on all devices.
+- Astrax is optional, unlocked at a waystation after four completed chapters and its council decision. Save the town before starting; `legendHunt` is transient combat state. Victory sets `campaign.hunt` and grants one Eclipsescale Mantle and one supply atomically, then reopens the same town before level choices. Never add null/non-coordinate hunt markers to explore.cleared. New games/import/title clear transient hunt state. Legacy saves default hunt=false; malformed nonboolean values reject before mutation.
+- Starless Breath uses a pure-engine intent: one action marks a fixed area, next active turn releases it and consumes one charge. Death removes the displayed warning; incapacitation delays release. Preserve friendly-fire semantics and accessible danger labels. Bloodied spell recharge is capped at the existing max and occurs once, alongside at most one wyrm skeleton. Existing guardian counts remain capped at two.
+- Keep dragon art unique and the core eight-node graph/crown gates intact. Hunt completion affects its reward and story acknowledgement, never bypasses the king. Item sources must be truthful; War Axe now belongs to SHOP_STOCK.
+- Run tests/atlas.cjs in all three browsers, plus the expanded 58 regression checks and existing gates. The 96-campaign policy skips the optional hunt; report hunt samples separately. See CAMPAIGN_REVIEW.md for assumptions and unverified physical-device/human difficulty limits.

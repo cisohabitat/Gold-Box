@@ -496,13 +496,18 @@
   html[data-contrast=high] .token.enemy{background:#30141a;border-color:#ffbba2;}
 
   .roster-portrait{width:28px;height:32px;flex:none;display:inline-flex;align-items:center;justify-content:center;}.roster-portrait svg{width:100%;height:100%;image-rendering:pixelated;}.tactics-portrait{float:right;width:56px;height:56px;margin:0 0 6px 10px;background:#172631;border:1px solid var(--frame);}.tactics-portrait svg{width:100%;height:100%;image-rendering:pixelated;}
+
+ #codexScreen{z-index:106;}#codexScreen .sbox{text-align:left;}#codexScreen h2{text-align:center;}.atlas-launch,.atlas-nav,.atlas-tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;}.atlas-launch button{min-height:44px;flex:1;min-width:0;white-space:normal;}.atlas-nav{position:sticky;top:0;z-index:2;background:var(--panel);padding:8px 0;border-bottom:1px solid var(--frame);}.atlas-nav button{min-height:44px;flex:1;min-width:100px;}.atlas-nav button[aria-pressed=true]{background:#574124;border-color:var(--gold);color:#fff3cd;}.atlas-tools label{display:flex;flex-direction:column;gap:5px;flex:1;min-width:120px;}.atlas-tools input,.atlas-tools select{font:inherit;background:#101b20;color:var(--parch);border:1px solid var(--frame);min-height:44px;padding:8px;width:100%;min-width:0;}.atlas-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:14px;}.atlas-card{padding:16px;border:1px solid var(--frame);background:linear-gradient(145deg,#1b2b30,#151a21);overflow-wrap:anywhere;}.atlas-card h3{color:var(--gold);font-family:'IM Fell English SC',serif;font-size:24px;margin:7px 0;}.atlas-card p{font-size:18px;line-height:1.35;margin:10px 0;}.atlas-kind{font-size:14px;color:#b9d3d5;text-transform:uppercase;letter-spacing:1px;}.atlas-art{width:96px;height:96px;float:right;margin:0 0 10px 12px;background:#101822;border:1px solid #64716e;padding:5px;}.atlas-art svg{width:100%;height:100%;image-rendering:pixelated;}.atlas-stats{color:#b9ebf5;}.atlas-state{color:#f6dca0;border-top:1px solid #50605a;padding-top:9px;clear:both;}#codexTools[hidden]{display:none;}#codexNote,#codexCount{margin:12px 0;}#btnBeginHunt{min-height:48px;width:100%;white-space:normal;}#fieldNotes>.atlas-launch{flex:none;}@media(max-width:700px){.atlas-grid{grid-template-columns:1fr;}.atlas-card{padding:12px;}.atlas-art{width:80px;height:80px;}.atlas-nav button{font-size:16px;min-width:100px;min-height:44px;}}
+
+  .cell.breath-zone::before{content:'!';position:absolute;inset:1px;border:2px dashed #ffc276;background:repeating-linear-gradient(135deg,#d7793633 0 3px,transparent 3px 6px);font:bold 12px monospace;color:#fff2ae;text-align:right;pointer-events:none;z-index:3;}
+ #btnTownBestiary,#btnTownTreasures,#btnHuntDetails{min-height:44px;}
 </style>
 </head>
 <body>
 <div class="cabinet">
   <header class="title">
     <h1 id="titleLabel">The Crypt</h1>
-    <div class="header-meta"><span class="round" id="roundLabel"></span><small class="build-stamp" data-build>Build 0.9.1</small></div>
+    <div class="header-meta"><span class="round" id="roundLabel"></span><small class="build-stamp" data-build>Build 0.10.0</small></div>
   </header>
   <div class="campaign-strip"><div><div id="chapterLabel">A descent in six chapters</div><p id="objective">The crown waits below.</p></div><button id="btnJournal">Chronicle</button></div>
   <div id="bossPanel" hidden><span id="bossName"></span><div id="bossHealth"><i></i></div></div>
@@ -544,7 +549,7 @@
       </div>
     </div>
     <div class="side" id="fieldNotes" role="region" aria-label="Party and battle log">
-      <button id="btnDetailsClose">Back to Game</button><button id="btnGameSettings">Sound &amp; Display</button>
+      <button id="btnDetailsClose">Back to Game</button><button id="btnGameSettings">Sound &amp; Display</button><div class="atlas-launch"><button id="btnBestiary">Bestiary</button><button id="btnTreasures">Treasure &amp; Relics</button></div>
       <div class="pane"><h2 id="rosterTitle">The Party</h2><div class="roster" id="roster"></div></div>
       <div class="pane"><h2>Log</h2><div id="log"></div></div>
     </div>
@@ -558,7 +563,7 @@
   <div class="sbox">
     <div class="eyebrow">A tactical dungeon saga</div>
     <h1 class="game-title">Gold Box</h1>
-    <div class="release-info"><p class="build-stamp title-build" data-build>Build 0.9.1</p></div>
+    <div class="release-info"><p class="build-stamp title-build" data-build>Build 0.10.0</p></div>
     <p class="subtitle">Crown of the Sunless King</p>
     <svg class="cover-art" viewBox="0 0 600 150" role="img" aria-label="A golden crown above a moonlit crypt"><defs><radialGradient id="moon"><stop stop-color="#bbd1b1"/><stop offset="1" stop-color="#718e7c"/></radialGradient></defs><circle cx="300" cy="68" r="57" fill="url(#moon)" opacity=".45"/><path d="M0 140L0 106 38 106 38 85 57 85 57 107 98 107 98 64 118 44 138 64 138 111 194 111 194 75 214 75 214 130 250 130 250 90Q300 20 350 90L350 130 387 130 387 75 407 75 407 111 462 111 462 64 482 44 502 64 502 107 543 107 543 85 562 85 562 106 600 106 600 150 0 150Z" fill="#0b1518"/><path d="M270 60L263 36 284 48 300 25 316 48 337 36 330 60Z" fill="#e8b84b"/><path d="M277 150V104Q300 68 323 104V150" fill="#03090c"/><path d="M294 148L300 114 306 148" fill="#d8ad5f" opacity=".7"/></svg>
     <p class="intro-copy">The Last Dawn. Six chapters. A kingdom waiting for sunrise. Rally the living, confront the dead, and decide what should replace the Sunless King.</p>
@@ -568,7 +573,7 @@
       <button id="btnContinue" class="big" style="display:none">Continue Saved Run</button>
       <button id="btnDefault" class="big">Play the Default Party</button>
       <button id="btnCreate" class="big">Create Your Party</button>
-      <button id="btnHowToPlay" class="big">How to Play</button><button id="btnTitleSettings" class="big">Sound &amp; Display</button>
+      <button id="btnHowToPlay" class="big">How to Play</button><button id="btnTitleSettings" class="big">Sound &amp; Display</button><div class="atlas-launch"><button id="btnTitleBestiary">Bestiary</button><button id="btnTitleTreasures">Treasure &amp; Relics</button></div>
     </div>
     <div class="loadwrap">
       <button id="btnLoadToggle" class="linkbtn">Have a save code?</button>
@@ -624,7 +629,7 @@
     <div class="crow">
       <button id="btnTownRest">Rest (free)</button>
       <button id="btnTownParty">Manage Equipment</button>
-      <button id="btnTownSave">Save</button>
+      <button id="btnTownSave">Save</button><button id="btnTownBestiary">Bestiary</button><button id="btnTownTreasures">Treasure &amp; Relics</button><button id="btnHuntDetails">Legendary Hunt</button>
     </div>
   </div>
 </div>
@@ -672,8 +677,9 @@
 <div class="screen" id="fateScreen" role="dialog" aria-modal="true" aria-labelledby="fateTitle"><div class="sbox wide"><div class="eyebrow">The Last Dawn · Final Choice</div><h2 id="fateTitle" class="ctitle">What will you do with the crown?</h2><p id="fateStory" class="story-copy"></p><label class="story-copy" for="crownBearer">If the crown needs a bearer, whose oath will hold it?</label><select id="crownBearer" style="display:block;width:100%;min-height:44px;font-size:18px;margin:12px 0;padding:8px"></select><div id="fateChoices" class="council-plans"></div><p class="tag">The king is defeated. The choice is yours; each path ends this campaign.</p></div></div>
 <div class="screen" id="restartScreen" role="dialog" aria-modal="true" aria-labelledby="restartTitle" aria-describedby="restartMessage"><div class="sbox"><h2 id="restartTitle" class="ctitle">Return to the title screen?</h2><p id="restartMessage" class="story-copy"></p><div class="restart-actions"><button id="btnKeepPlaying" class="big">Keep Playing</button><button id="btnConfirmRestart">Return to Title</button></div></div></div>
 <div class="screen" id="settingsScreen" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="sbox"><h2 id="settingsTitle" class="ctitle">Sound &amp; Display</h2><p class="tag">Make the journey your own. Combat pauses while this sheet is open.</p><div class="settings-list"><label><input id="prefSound" type="checkbox"> Synthesized sound effects</label><label><input id="prefMusic" type="checkbox"> Quiet ambient tones (requires sound)</label><label for="prefVolume">Volume <output id="volumeValue">35%</output><input id="prefVolume" type="range" min="0" max="100" step="5" value="35"></label><label><input id="prefEffects" type="checkbox" checked> Visual effects (respects reduced motion)</label><label><input id="prefContrast" type="checkbox"> High contrast / clean display</label><label for="prefPace">Auto pace<select id="prefPace"><option value="normal">Deliberate · normal speed</option><option value="quick">Quick · shorter Auto turns</option></select></label></div><p id="audioStatus" class="tag" role="status">Sound is off by default. No downloads are needed.</p><p id="preferenceStatus" class="tag" role="status"></p><button id="btnSettingsClose" class="big">Back to Game</button></div></div>
+<div class="screen" id="codexScreen" role="dialog" aria-modal="true" aria-labelledby="codexTitle"><div class="sbox wide"><div class="eyebrow">Eren’s field atlas</div><h2 id="codexTitle" class="ctitle">The Bestiary</h2><div class="atlas-nav" role="group" aria-label="Atlas pages"><button id="codexBeasts" aria-pressed="true">Bestiary</button><button id="codexTreasure" aria-pressed="false">Treasure &amp; Relics</button><button id="codexLegends" aria-pressed="false">Legends &amp; Hunt</button><button id="btnCodexClose">Back</button></div><p class="tag" id="codexNote"></p><div id="codexTools" class="atlas-tools"><label for="codexSearch">Search<input id="codexSearch" type="search" maxlength="80" placeholder="Name, spell, source or lore"></label><label for="codexFilter">Show<select id="codexFilter"><option value="all">All entries</option><option value="guardians">Guardians</option><option value="relics">Relics</option><option value="potions">Potions</option></select></label></div><p id="codexCount" class="tag" role="status"></p><div id="codexContent" class="atlas-grid"></div></div></div>
 <script>
-const GAME_BUILD='0.9.1';
+const GAME_BUILD='0.10.0';
 document.querySelectorAll('[data-build]').forEach(el=>el.textContent='Build '+GAME_BUILD);
 /* ===== CROWN CAMPAIGN : data, with controller helpers below ===== */
 const OATHS={wanderer:{name:'Wanderer',budget:0.65,recovery:0.25,desc:'Gentler battles; all heroes earn victory XP and recover 25% HP after a win.'},delver:{name:'Delver',budget:1,desc:'Fortune favours the prepared. Only standing heroes earn victory XP.'},ironbound:{name:'Ironbound',budget:1.25,desc:'Stronger enemy forces. Only standing heroes earn victory XP.'}};
@@ -691,14 +697,14 @@ const SIGNATURES={
   Thief:{name:'Cloak of Shadows',desc:'Gain +4 AC and +4 weapon damage for 3 turns. Once per battle.',kind:'shadow'},
   Mage:{name:'Arcane Wellspring',desc:'Restore one use to each spell and gain +2 AC for 2 turns. Once per battle.',kind:'recharge'}
 };
-let campaign={oath:'delver',boons:[],shrines:[],battles:0,foes:0,steps:0,secrets:0,events:0,bossSlain:false};
-function freshCampaign(oath){return {oath:OATHS[oath]?oath:'delver',boons:[],shrines:[],battles:0,foes:0,steps:0,secrets:0,events:0,successes:0,contracts:[],completedFloors:[],decisions:{},fate:null,crownBearer:null,bossSlain:false};}
+let campaign=freshCampaign('delver');
+function freshCampaign(oath){return {oath:OATHS[oath]?oath:'delver',boons:[],shrines:[],battles:0,foes:0,steps:0,secrets:0,events:0,successes:0,contracts:[],completedFloors:[],decisions:{},fate:null,crownBearer:null,bossSlain:false,hunt:false};}
 function restoreCampaign(s){const c=freshCampaign(s&&s.oath);if(!s)return c;
   for(const k of ['battles','foes','steps','secrets','events','successes'])c[k]=Math.max(0,Math.min(10000000,Math.floor(Number(s[k])||0)));
   for(const [field,registry] of [['boons',BOONS],['shrines',WORLD],['contracts',CONTRACTS],['completedFloors',WORLD]])c[field]=[...new Set((Array.isArray(s[field])?s[field]:[]).filter(id=>Object.prototype.hasOwnProperty.call(registry,id)))];
   if(s.decisions&&typeof s.decisions==='object'&&!Array.isArray(s.decisions))for(const [id,pick] of Object.entries(s.decisions))if(Object.prototype.hasOwnProperty.call(STORY,id)&&(pick==='legacy'||STORY[id].plans.some(p=>p.id===pick)))c.decisions[id]=pick;
   c.fate=Object.prototype.hasOwnProperty.call(CROWN_FATES,s.fate)?s.fate:null;c.crownBearer=typeof s.crownBearer==='string'?s.crownBearer:null;
-  c.bossSlain=!!s.bossSlain;return c;}
+  c.bossSlain=!!s.bossSlain;c.hunt=s.hunt===true;return c;}
 function applyBoons(heroes=party,state=campaign){const bonus={atk:0,ac:0,dmg:0};state.boons.forEach(id=>{const b=BOONS[id];for(const k of ['atk','ac','dmg'])bonus[k]+=b[k]||0;});const story=storyEffects(state);for(const k of ['atk','ac','dmg'])bonus[k]+=story[k];heroes.forEach(h=>h.campaignBonus={...bonus});}
 function escapeHTML(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
@@ -743,6 +749,7 @@ const key=(x,y)=>x+','+y;
    target: 'enemy' | 'ally' | 'point' | 'self'   aoe: blast radius in tiles
    ===== */
 const SPELLS = {
+  starless_breath:{id:'starless_breath',name:'Starless Breath',telegraph:true,target:'point',range:5,aoe:1,effect:{kind:'damage',dice:{n:2,sides:6,bonus:0}}},
   magic_missile:{ id:'magic_missile', name:'Magic Missile', target:'enemy', range:6, aoe:0,
     effect:{kind:'damage', dice:{n:3,sides:4,bonus:3}} },
   fireball:{ id:'fireball', name:'Fireball', target:'point', range:6, aoe:1,
@@ -792,6 +799,7 @@ const SPELLS = {
    An optional classes list restricts who may equip it. New gear is an entry
    here, not engine code. ===== */
 const ITEMS = {
+  eclipsescale:{id:'eclipsescale',name:'Eclipsescale Mantle',slot:'armor',ac:2,cost:130,legendary:true},
   sunshard:{id:'sunshard',name:'Sunshard',slot:'weapon',atk:2,dmg:2,cost:140,classes:['Mage','Cleric'],legendary:true},
   lantern_mantle:{id:'lantern_mantle',name:'Lantern Mantle',slot:'armor',ac:2,cost:120,legendary:true},
   dawnblade:{id:'dawnblade',name:'Dawnblade',slot:'weapon',atk:2,dmg:4,cost:280,classes:['Fighter','Cleric'],legendary:true},
@@ -807,7 +815,7 @@ const ITEMS = {
   potion_heal:{ id:'potion_heal', name:'Healing Potion', slot:'potion', heal:{n:2,sides:8,bonus:2}, cost:35 },
   potion_fury:{ id:'potion_fury', name:'Draught of Fury', slot:'potion', buff:{status:'fury', duration:3, atk:2, dmg:2}, cost:45 }
 };
-const SHOP_STOCK = ['potion_heal','potion_fury','leather','fine_sword','oak_staff','chain','warded_cloak'];
+const SHOP_STOCK = ['war_axe','potion_heal','potion_fury','leather','fine_sword','oak_staff','chain','warded_cloak'];
 // Gear is a modifier layer applied at use-time, never baked into stored stats,
 // so levelling (which re-derives base stats) can never erase equipment.
 function equipBonuses(c){
@@ -1151,6 +1159,7 @@ const DEFAULT_BLOCKS = [
 ];
 function makeParty(){ return DEFAULT_BLOCKS.map((b,i)=> buildHero(CLASSES[b.cls], b.name, b.ab, 'p'+(i+1), 1, b.bg)); }
 const BESTIARY = {
+  eclipse_wyrm:{name:'Astrax, the Star-Eater',cls:'EclipseWyrm',bossTitle:'ASTRAX · STAR-EATER',role:'Sky-dragon — telegraphed 3×3 breath punishes clusters; move off the amber tiles before its next active turn. At half health it gains +1 attack and calls one skeleton once.',glyph:'D',sprite:'eclipse_wyrm',side:'enemy',xp:180,threat:50,abilities:{str:17,dex:10,con:16,int:14,wis:13,cha:16},maxHp:38,ac:14,attackBonus:4,damage:{n:1,sides:8,bonus:1},speed:4,range:1,spells:[{id:'starless_breath',uses:2,max:2}],bloodied:{id:'star_wrath',recharge:'starless_breath',atk:1,count:1,summon:'skeleton',text:'ASTRAX BREAKS ITS LAST CHAIN. The dragon gains +1 attack and regains one breath; one star-bound watchman rises for a final defence.'}},
   bell_warden:{name:'The Bell Warden',cls:'BellWarden',bossTitle:'BELL WARDEN',role:'Sentinel — holds the line and rallies its allies. At half health it calls one skeleton and gains +1 attack.',glyph:'W',sprite:'bell_warden',side:'enemy',xp:100,threat:31,abilities:{str:16,dex:10,con:15,int:10,wis:12,cha:12},maxHp:22,ac:14,attackBonus:4,damage:{n:1,sides:8,bonus:2},speed:4,range:1,spells:[{id:'war_chant',uses:1,max:1}],bloodied:{id:'bell_wrath',atk:1,count:1,summon:'skeleton',text:'The cracked bell tolls. Its Warden calls one last watchman and gains +1 attack!'}},
   ash_cantor:{name:'The Ash Cantor',cls:'AshCantor',bossTitle:'ASH CANTOR',role:'Hex singer — weakens heroes and burns clusters. At half health it calls one skeleton and gains +1 attack and damage.',glyph:'A',sprite:'ash_cantor',side:'enemy',xp:130,threat:35,abilities:{str:10,dex:12,con:13,int:16,wis:14,cha:15},maxHp:24,ac:14,attackBonus:4,damage:{n:1,sides:6,bonus:1},speed:4,range:1,spells:[{id:'hex',uses:2,max:2},{id:'cinder',uses:1,max:1},{id:'spirit_bolt',uses:3,max:3}],bloodied:{id:'ash_wrath',atk:1,dmg:1,count:1,summon:'skeleton',text:'The Cantor burns its final hymn. One skeleton rises; the singer gains +1 attack and damage!'}},
   goblin:{ name:'Goblin', cls:'Goblin', glyph:'g', sprite:'goblin', side:'enemy', xp:25, abilities:{str:11,dex:13,con:12,int:8,wis:9,cha:7}, maxHp:8, ac:13, attackBonus:2, damage:{n:1,sides:6,bonus:0}, speed:4, range:1, spells:[] },
@@ -1801,7 +1810,7 @@ class CombatEngine{
   _bossPhase(){
     for(const boss of this.living('enemy'))if(boss.bloodied&&!boss.awakened&&boss.hp<=boss.maxHp/2){
       const phase=boss.bloodied;boss.awakened=true;boss.statuses.push({type:phase.id,duration:99,buff:true,atk:phase.atk||0,dmg:phase.dmg||0});
-      this.log.push({t:phase.text,k:'kill'});if(phase.summon)this._summon(boss,phase.summon,Math.min(2,phase.count||0));
+      if(phase.recharge){const spell=(boss.spells||[]).find(s=>s.id===phase.recharge);if(spell)spell.uses=Math.min(spell.max,spell.uses+1);}this.log.push({t:phase.text,k:'kill'});if(phase.summon)this._summon(boss,phase.summon,Math.min(2,phase.count||0));
     }
   }
   _checkEnd(){ this._bossPhase(); if(!this.living('enemy').length) this.phase='won'; else if(!this.living('party').length) this.phase='lost'; }
@@ -1857,6 +1866,7 @@ class CombatEngine{
 
   actAuto(c){
     if(!c.alive||this.isIncapacitated(c))return;
+    if(c.intent){if(c.acted.action)return;const intent=c.intent;c.intent=null;this.castSpell(c,SPELLS[intent.spell],intent);return;}
     if(c.side==='party'&&!c.signatureUsed&&!c.acted.action){
       const kind=SIGNATURES[c.cls]&&SIGNATURES[c.cls].kind;
       const needed=kind==='rally'||kind==='shadow'||(kind==='heal'&&this._allies(c).some(h=>h.hp<h.maxHp*.6))||(kind==='recharge'&&(c.spells||[]).some(sp=>sp.uses===0));
@@ -1939,6 +1949,7 @@ class CombatEngine{
     this._stepToward(c, goal.pos);
     if(c.alive && this.canAttack(c,goal)) this.doAttack(c,goal);
   }
+  _castPoint(c,sp,tile){if(sp.telegraph){if(c.acted.action)return false;c.intent={spell:sp.id,x:tile.x,y:tile.y};c.acted.action=true;this.log.push({t:c.name+' draws in the stolen sky. Starless Breath marks a 3×3 area around tile '+(tile.x+1)+','+(tile.y+1)+': it erupts on the dragon’s next active turn. Move out of the marked tiles!',k:'kill'});return true;}return this.castSpell(c,sp,{x:tile.x,y:tile.y});}
   _casterTurn(c, heroes){
     const offensive=this._offensiveSpells(c);
     const damage=offensive.filter(s=>s.def.effect.kind==='damage' && s.def.target==='enemy').sort((a,b)=>b.def.range-a.def.range);
@@ -1960,10 +1971,10 @@ class CombatEngine{
     // 1) Area control: drop a blast (Sleep) on the biggest cluster of still-awake foes.
     //    Only worth the area spell if it catches two or more; one foe is the single-control case.
     for(const s of pointControl){ const tile=this._bestPointTile(c, s.def);
-      if(tile && tile.count>=2){ this.castSpell(c, s.def, {x:tile.x,y:tile.y}); return; } }
+      if(tile && tile.count>=2){ this._castPoint(c,s.def,tile); return; } }
     // 2) Area damage: drop a blast (Fireball, Ice Storm) on the biggest cluster (two or more).
     for(const s of pointDamage){ const tile=this._bestPointTile(c, s.def);
-      if(tile && tile.count>=2){ this.castSpell(c, s.def, {x:tile.x,y:tile.y}); return; } }
+      if(tile && tile.count>=2){ this._castPoint(c,s.def,tile); return; } }
     // 3) Single control (Hold): lock the most dangerous un-incapacitated foe in range, casters first.
     const ctlScore=h=> this._priority(h) + ((h.spells&&h.spells.length)?20:0);
     for(const s of control){
@@ -1978,13 +1989,13 @@ class CombatEngine{
     }
     // 5) Area control on a lone target if that is all that is available.
     for(const s of pointControl){ const tile=this._bestPointTile(c, s.def);
-      if(tile){ this.castSpell(c, s.def, {x:tile.x,y:tile.y}); return; } }
+      if(tile){ this._castPoint(c,s.def,tile); return; } }
     // 6) Single-target damage on the highest-priority foe in range (Magic Missile, Smite, bolts).
     if(damage.length){ const s=damage[0]; const foes=this.spellEnemyTargets(c, s.def);
       if(foes.length){ const tgt=foes.reduce((a,b)=> this._priority(a)>=this._priority(b)?a:b); this.castSpell(c, s.def, tgt); return; } }
     // 7) Lone area damage (Fireball on a single foe) when nothing else is castable.
     for(const s of pointDamage){ const tile=this._bestPointTile(c, s.def);
-      if(tile){ this.castSpell(c, s.def, {x:tile.x,y:tile.y}); return; } }
+      if(tile){ this._castPoint(c,s.def,tile); return; } }
     // 8) Approach spell range without charging a fragile caster into melee.
     const goal=heroes.reduce((a,b)=> this.cheb(c.pos,a.pos)<=this.cheb(c.pos,b.pos)?a:b);
     if(this.canAttack(c,goal)){ this.doAttack(c,goal); return; }
@@ -2224,6 +2235,7 @@ class ExploreEngine{
 const PX = {'B':'#315986', 'D':'#242a38', 'E':'#4c7232', 'G':'#b48f2a', 'N':'#583821', 'O':'#b0a585', 'P':'#46306e', 'S':'#a9784e', 'W':'#9aa4b2', 'b':'#4f86c6', 'c':'#8fe0ff', 'd':'#465166', 'e':'#74a24e', 'g':'#ecc64f', 'k':'#10131d', 'l':'#f2efe6', 'm':'#c46bff', 'n':'#8a5a32', 'o':'#ece4d0', 'p':'#7256a8', 'r':'#a33242', 's':'#d8a878', 'w':'#cdd6df', 'x':'#5f6a78', 'R':'#f27a57', 'y':'#ffd24a'};
 function px(rows){const size=rows.length;let svg='';if(size!==24||rows.some(row=>row.length!==size||[...row].some(ch=>ch!=='.'&&!PX[ch])))throw Error('Invalid sprite grid');for(let y=0;y<size;y++){const row=rows[y];let x=0;while(x<size){const ch=row[x];if(ch==='.'){x++;continue;}let width=1;while(x+width<size&&row[x+width]===ch)width++;svg+='<rect x="'+x+'" y="'+y+'" width="'+width+'" height="1" fill="'+PX[ch]+'"/>';x+=width;}}return '<svg viewBox="0 0 '+size+' '+size+'" shape-rendering="crispEdges" aria-hidden="true" focusable="false">'+svg+'</svg>';}
 const SPX = {
+  eclipse_wyrm:[".......k.........k......",".k....kgk.......kgk...k.","kPk....kgkkkkkkkgk...kPk","kPPk...kgppppppgk...kPPk","kPpPk..kpppppppppk.kPpPk","kPPpPkkppyypppyypkkPpPPk","kPPPpPkpppppppppppkPpPPk","kPPPpPPkppOlOOlppkPpPPPk","kPPPPpPPppplpplppPpPPPPk",".kPPPPpPPpppppppPPpPPPPk",".kPPPPPpppppppppppPPPPk.",".kPPPPmmppBBcBpppmPPPPk.",".kPPmmPPppBBcBpppPmmmPk.",".kmmPPPPppBlllpppPPPPmk.",".kPPPkkpppBBcBppppkkPPk.",".kPkk.kpppBBcBppppkkPPpk","..k...kpppBBcBppppk.kPpk",".......kppBlllpppkkkkpk.",".......kppBBBBppppppppk.","........kpppppppkkkkkk..","......kkppppppppppkk....",".....kooookkkkkkooook...","......kkkk......kkkk....","........................"],
   fighter:["..........kkk...........",".........kRrrk..........","........kkkrrkkk....k...",".......kwwwwwwwWk..klk..",".......kWWWWWWWWk.kwlk..",".......kWWWWWWWWk.kwlk..","........kxxxxxxk..kwlk..","........kssssssk..kwlk..","........kssssssk..kwlk..",".......kkkkkkkkkk.kwlk..","....kkkBwwwwwwwwBkkwlk..","...klllWwwwwwwwwBkkwlk..","...kWBBWBbbggbbBBkkwlk..","...kWBgWBbbggbbBBkkwlk..","...kWBgWBbbggbbBBkkwkkk.","...kWBgWBbbggbbBBggggggk","...kWBBWBBBBBBBBBkkNkkk.","...kWWWWWWWWWWWWk.kNk...","....kkkkWWWWWWWWk.kNk...",".......kNNNkkNNNk.kNk...",".......kNNNkkNNNk..k....","......knnnnkknnnnk......",".......kkkk..kkkk.......","........................"],
   cleric:["........................","..........kkkk..........","........kkwwwwkk........",".......kWWWWWWWWk.kkk...",".......kWWWWWWWWkkgggk..","........kSssssskkGglgGk.","........kSksskskkGglgGk.","........ksssssskkGgggGk.","........ksssssskkGgggGk.","........kkkkkkkk.kgggk..","....kkkkoooggoook.kNk...","...kWWWkOggggggok.kNk...","...kWwWkOggggggookkNk...","...kWwWoOOlggolookkNk...","...kWwWOGGGggGGGokkNk...","...kWwWOOOloooolokkNk...","...kWWWOOOloooolookNk...","....kkkOOOloooolookNk...","......kOOOlooooolokNk...",".....kOOOOlooooolokNk...",".....kOOOOoooooolooNk...",".....kOOOOoooooooook....","......kkkkkkkkkkkkk.....","........................"],
   thief:["........................","...........kk...........","..........kddk..........",".........kddddkk........","........kdddddddk.......",".......kdSllllsdk.......",".......kdSsssssdk.......",".......kdSkDDDDddk......",".......kdssDDDDddk......",".......kcssssssdck...k..","...k...kccccdcccck..klk.","..klkk.kccccccccck.klwk.","..kwllkkDcccccccckklwk..","...kwkldDccccdxddkkwk...","....kwkDGGGggGGGdkwk....",".....kwDNNNggNNNdwk.....","......kwNNNggNNNddk.....","......kDDDxddddxddk.....","......kDDDxdddddxdk.....",".....kDDDDxdddddxdk.....",".....kDDDDddddddxddk....",".....kDDDDdddddddddk....","......kkkkkkkkkkkkk.....","........................"],
@@ -2246,6 +2258,44 @@ const SPX = {
 };
 const SPRITES={};for(const id in SPX)SPRITES[id]=px(SPX[id]);
 
+/* Field Atlas: authored context around registry-backed rules. */
+const SAGAS={
+ entrance:'Ilyra ties a strip of the last royal banner to your pack. Above the gate, something vast crosses the starless sky. Eren calls it an old wound, and refuses to say more.',
+ warren:'Nessa shows you boats built from coffin wood. Each carries a family toward Ilyra’s lanterns. Every passage you clear becomes another crossing before the flood returns.',
+ gallery:'Eren finds four empty niches reserved for your names. You leave them empty. Somewhere behind the wall, a child begins reciting the names the king ordered forgotten.',
+ catacombs:'The bell is not sounding an alarm. It is counting the living. Break its keeper, and the kingdom will have one night when the dead cannot answer the census.',
+ ossuary:'Dawnblade points toward a crack in the mountain. Beyond it lies the Observatory of Ash. Eren admits the shadow above the gate was a dragon, chained to swallow every escaping star.',
+ shrine_road:'At the last shrine, a child has drawn a dragon eating the moon. Eren recognises the Observatory of Ash. The king’s oldest prisoner is still feeding on the sky.',
+ deep_stair:'Ilyra’s signal fires climb the stair behind you. For the first time, the living are advancing. The Cantor’s voice can still turn that courage to ash; silence it before the last watch arrives.',
+ sunless_tomb:'Beyond the throne, the stolen sun beats like a second heart. The king offers you every life you could not save. Your companions answer by standing beside you.'
+};
+const MONSTER_LORE={
+ goblin:['Crypt scavenger','Its clan lived beneath the city before there was a throne. The king pays in grave-gold; hunger keeps the bargain.','A fragile melee foe. Clear nearby enemies before approaching an archer.'],
+ archer:['Warren outrider','A string plucked from funeral silk never rots. These hunters count arrows, then count the living.','Close the distance or use cover. Firing while threatened in melee incurs a −4 attack penalty.'],
+ orc:['Ossuary oathbreaker','The old legion hired these mercenaries to guard its dead. No one has returned to dismiss them.','Heavy melee damage. Guard a narrow approach and weaken its attack.'],
+ shaman:['Bell-touched chanter','Small bells hang inside its mask. Their sound keeps its ancestors awake, though none remember why.','War Chant strengthens nearby allies. Interrupt the support before fighting its whole retinue.'],
+ skeleton:['Bound watchman','A name was chiselled from its grave and locked inside a bell. The body has forgotten how to stop obeying.','Armoured melee pressure. Separate the watch from its healers and summoners.'],
+ spider:['Warren brood','The brood nests in the warm spaces between worlds. The flood carries its eggs into every royal tomb.','Its bite can poison for 2 damage per turn for 3 turns. Avoid unsupported wounded heroes.'],
+ necromancer:['Throne gaoler','Every spell is signed with a prisoner’s name. The gaoler believes obedience is a form of mercy.','Hold disables a hero. Focus the controller while its limited spell charges last.'],
+ hexer:['Mask of unmaking','No face survives beneath the gilded mask. It speaks the faults of everyone who looks at it.','Sleep and Hex punish exposed heroes. Spread out and remove the caster before its curses compound.'],
+ acolyte:['Keeper of false dawns','The candle burns with a morning stolen from someone who never lived to see it. Its keeper calls that faith.','Mends wounded allies. Pressure the healer before committing damage to its companions.'],
+ bonecaller:['Marshal of the nameless','A cloak of finger bones records every soldier it has raised. There is room for four more names.','Raise Dead has limited charges. Engage the caller and prevent it from fighting behind an untouched screen.'],
+ ogre:['Vault breaker','Once it hauled the city’s bells. Now it breaks the doors of those who will not answer them.','Slow, durable melee force with a heavy club. Control it while dealing with lighter threats.'],
+ bell_warden:['The census of the dead','Ilyra’s ancestor carries the names of his children in a bell he cannot stop ringing. He is a jailer and a prisoner.','At half HP, gains +1 attack and calls one skeleton once. Save resources for the second phase.'],
+ ash_cantor:['The king’s discarded voice','When the king abandoned his mortal body, his last hymn kept singing. It has been trying to finish ever since.','Hex and Cinderburst punish clusters. At half HP, gains +1 attack/damage and calls one skeleton once.'],
+ crypt_lord:['Sovereign of stolen mornings','He sealed the first sunrise to save a dying kingdom. A thousand years later, he can no longer distinguish saving it from owning it.','Spirit Bolt, Hold and Raise Dead. At half HP gains +2 attack/damage and calls two guards once; council choices can deny one.'],
+ eclipse_wyrm:['Astrax, the Star-Eater','The king chained a sky-dragon beneath the Observatory of Ash. Each scale imprisons a constellation; each breath burns with a dawn it was forbidden to release.','Optional hunt. Starless Breath marks a 3×3 area, then hits it for 2d6 damage on the dragon’s next active turn, including allies. Leave the amber tiles. Spread out; cover does not block magic. At half HP gains +1 attack, regains one breath charge (capped at its maximum), and calls one skeleton once.']
+};
+const RELIC_LORE={
+ sunshard:'A fragment of the first sun, carried by the watch that refused to surrender.',lantern_mantle:'Its stitched lanterns remember paths that no longer exist.',dawnblade:'The lost captain planted this sword in the stone and ordered the legion to wait for morning.',nightglass:'A blade made from the night before the first sunrise. A shallow cut remembers its venom.',starweave:'Village gods wove small mercies between the stars. The king could steal the sky, but never find every thread.',eclipsescale:'Astrax’s last unbroken scale. The constellation inside it shines for its bearer instead of its captor.',fine_sword:'A soldier’s honest steel, sharpened for one more watch.',war_axe:'A heavy edge made to end a siege, one shield at a time.',venom_dagger:'The flooded guild sealed its last bargain beneath a drop of green glass.',oak_staff:'A pilgrim’s walking stick, carved with prayers against the dark.',leather:'Patched by generations who could afford courage more easily than mail.',chain:'Links from the last watch, each stamped with a name.',warded_cloak:'A traveller’s cloak lined with patient protective stitches.',potion_heal:'Summer herbs preserved beneath a city that has forgotten summer.',potion_fury:'Bottled battle-courage. Drink carefully; the bottle remembers every war.'
+};
+const GUARDIAN_AFTERMATH={
+ BellWarden:'The bell splits. Across the kingdom, the dead lower their weapons for a single breath. Ilyra hears her ancestor speak her name. The road to the lost legion and the small gods lies open.',
+ AshCantor:'The final note breaks into sparks. Signal fires answer from every stair above you. Ilyra’s survivors reach the seal; Eren opens the last page of his translation. Only the throne remains.',
+ CryptLord:'The throne cracks from floor to stolen sky. The crown still holds the dawn. Carry it to the final stairs: the kingdom’s future is now yours to choose.'
+};
+function chapterArrival(id){return (STORY[id]?STORY[id].arrival:'')+' '+(SAGAS[id]||'')+(id==='sunless_tomb'&&campaign.hunt?' The king looks up at the freed constellations. “Even my oldest chain,” he whispers.':'');}
+
 /* ===== CONTROLLER : state machine + DOM ===== */
 const $=s=>document.querySelector(s);
 const board=$('#board'), roster=$('#roster'), logEl=$('#log');
@@ -2257,7 +2307,7 @@ function queueTurn(fn,delay){
   cancelTurn();const epoch=turnEpoch,combat=game,actor=game.current();
   turnTimer=setTimeout(()=>{turnTimer=null;if(epoch!==turnEpoch||mode!=='combat'||game!==combat||game.current()!==actor||game.phase!=='playing')return;fn();},Math.round(delay*(preferences.pace==='quick'?.6:1)));
 }
-let spellAim=null,tacticsOpener=null;
+let spellAim=null,tacticsOpener=null,legendHunt=false;
 let autoFight=false;   // when on, heroes take their own turns until the fight ends
 let nodeId=WORLD_START, worldPath=[], bag=null;
 // The party's effective level (for the difficulty budget and display) is the
@@ -2338,7 +2388,7 @@ function validSave(s){
     if(e.tiles[e.pos.y][e.pos.x]==='#'&&!(e.foundSecrets||[]).includes(key(e.pos.x,e.pos.y)))return false;
     if(e.wanderPool!==undefined&&!list(e.wanderPool,30,id=>own(BESTIARY,id)))return false;
     if(s.worldPath!==undefined&&(!list(s.worldPath,16,id=>own(WORLD,id))||!s.worldPath.length))return false;
-    if(s.campaign!==undefined){if(!obj(s.campaign))return false;if(s.campaign.decisions!==undefined&&(!obj(s.campaign.decisions)||Object.entries(s.campaign.decisions).some(([id,pick])=>!own(STORY,id)||(pick!=='legacy'&&!STORY[id].plans.some(p=>p.id===pick)))))return false;if(s.campaign.fate!=null&&!own(CROWN_FATES,s.campaign.fate))return false;if(s.campaign.crownBearer!=null&&(typeof s.campaign.crownBearer!=='string'||!ids.has(s.campaign.crownBearer)))return false;for(const k of ['boons','shrines','completedFloors','contracts'])if(s.campaign[k]!==undefined&&!list(s.campaign[k],40,id=>typeof id==='string'))return false;}
+    if(s.campaign!==undefined){if(!obj(s.campaign)||s.campaign.hunt!==undefined&&typeof s.campaign.hunt!=='boolean')return false;if(s.campaign.decisions!==undefined&&(!obj(s.campaign.decisions)||Object.entries(s.campaign.decisions).some(([id,pick])=>!own(STORY,id)||(pick!=='legacy'&&!STORY[id].plans.some(p=>p.id===pick)))))return false;if(s.campaign.fate!=null&&!own(CROWN_FATES,s.campaign.fate))return false;if(s.campaign.crownBearer!=null&&(typeof s.campaign.crownBearer!=='string'||!ids.has(s.campaign.crownBearer)))return false;for(const k of ['boons','shrines','completedFloors','contracts'])if(s.campaign[k]!==undefined&&!list(s.campaign[k],40,id=>typeof id==='string'))return false;}
     if(s.feed!==undefined&&!list(s.feed,100,entry=>obj(entry)&&typeof entry.t==='string'&&entry.t.length<=2000&&(entry.k===undefined||typeof entry.k==='string'&&entry.k.length<=30)))return false;
     return true;
   }catch(_){return false;}
@@ -2356,7 +2406,7 @@ function applySave(s){
     next={heroes,state,dungeon,path:Array.isArray(s.worldPath)&&s.worldPath.length?s.worldPath.slice():[s.nodeId],bag:{gold:s.bag.gold,keys:s.bag.keys,rations:s.bag.rations,relic:!!s.bag.relic,items:s.bag.items.slice()},feed:s.feed&&s.feed.length?s.feed.slice():[{t:'You press on through '+dungeon.name+'.',k:'sys'}]};
   }catch(_){return false;}
   clearPresentation();clearRestartArm();closeFieldNotes(false);cancelTurn();autoFight=false;levelUp=null;eventLevelUp=null;curEvent=null;
-  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','saveScreen','tacticsScreen','fateScreen','restartScreen','settingsScreen'])$('#'+id).classList.remove('show');
+  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','saveScreen','tacticsScreen','fateScreen','restartScreen','settingsScreen','codexScreen'])$('#'+id).classList.remove('show');
   party=next.heroes;campaign=next.state;explore=next.dungeon;nodeId=s.nodeId;worldPath=next.path;bag=next.bag;exploreFeed=next.feed;
   game=null;mode='explore';mover=null;reachCache=null;pendingKey=null;selectedSpell=null;
   if(s.inTown&&(WORLD[nodeId].next||[]).length)openTown();
@@ -2394,7 +2444,7 @@ function newGame(chosenParty){
   clearRestartArm();
   closeFieldNotes(false);
   cancelTurn();autoFight=false;levelUp=null;eventLevelUp=null;curEvent=null;
-  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','saveScreen','tacticsScreen','fateScreen','restartScreen','settingsScreen'])$('#'+id).classList.remove('show');
+  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','saveScreen','tacticsScreen','fateScreen','restartScreen','settingsScreen','codexScreen'])$('#'+id).classList.remove('show');
   campaign=freshCampaign($('#oathChoice').value);
   party=chosenParty||makeParty(); nodeId=WORLD_START; worldPath=[WORLD_START]; explore=new ExploreEngine(buildDungeon(generateLevel(WORLD[WORLD_START]))); applyScout();
   bag={ gold:40, keys:0, rations:2, relic:false, items:[] };
@@ -2410,10 +2460,10 @@ function newGame(chosenParty){
   game=null; mode='explore'; exploreFeed=[]; mover=null; reachCache=null; pendingKey=null; selectedSpell=null;
   exploreFeed.push({t: WORLD[WORLD_START].intro || ('You enter '+explore.name+'.'), k:'sys'});
   partyBark('floor');
-  exploreFeed.push({t:STORY.entrance.arrival,k:'flavor'});
+  exploreFeed.push({t:chapterArrival('entrance'),k:'flavor'});
   $('#banner').classList.remove('show'); render(); autosave();
 }
-function overlayOpen(){ return $('#settingsScreen').classList.contains('show') || $('#restartScreen').classList.contains('show') || $('#fateScreen').classList.contains('show') || $('#tacticsScreen').classList.contains('show') || $('#fieldNotes').classList.contains('open') || $('#townScreen').classList.contains('show') || $('#partyScreen').classList.contains('show') || $('#levelScreen').classList.contains('show') || $('#saveScreen').classList.contains('show') || $('#eventScreen').classList.contains('show') || $('#journalScreen').classList.contains('show') || $('#startScreen').classList.contains('show') || $('#banner').classList.contains('show'); }
+function overlayOpen(){ return $('#codexScreen').classList.contains('show') || $('#settingsScreen').classList.contains('show') || $('#restartScreen').classList.contains('show') || $('#fateScreen').classList.contains('show') || $('#tacticsScreen').classList.contains('show') || $('#fieldNotes').classList.contains('open') || $('#townScreen').classList.contains('show') || $('#partyScreen').classList.contains('show') || $('#levelScreen').classList.contains('show') || $('#saveScreen').classList.contains('show') || $('#eventScreen').classList.contains('show') || $('#journalScreen').classList.contains('show') || $('#startScreen').classList.contains('show') || $('#banner').classList.contains('show'); }
 function tryMove(dx,dy){
   if(mode!=='explore'||overlayOpen())return; const r=explore.move(dx,dy);
   if(r.type==='blocked') return;
@@ -2610,12 +2660,12 @@ function descendOrWin(){
 function openTown(){ $('#townScreen').classList.add('show'); renderTown(); autosave(); }
 // Descend into a chosen successor node (the fork pick, or the only way on).
 function enterDungeon(nextId){
-  if(mode!=='explore'||!$('#townScreen').classList.contains('show')||['levelScreen','partyScreen','saveScreen','eventScreen','fateScreen','journalScreen','tacticsScreen'].some(id=>$('#'+id).classList.contains('show'))||!campaign.decisions[nodeId]||!WORLD[nextId]||!(WORLD[nodeId].next||[]).includes(nextId))return;
+  if(mode!=='explore'||!$('#townScreen').classList.contains('show')||['levelScreen','partyScreen','saveScreen','eventScreen','fateScreen','journalScreen','tacticsScreen','codexScreen'].some(id=>$('#'+id).classList.contains('show'))||!campaign.decisions[nodeId]||!WORLD[nextId]||!(WORLD[nodeId].next||[]).includes(nextId))return;
   nodeId=nextId; worldPath.push(nextId);
   explore=new ExploreEngine(buildDungeon(generateLevel(WORLD[nodeId]))); applyScout();
   $('#townScreen').classList.remove('show');
   exploreFeed.push({t:'You descend to '+explore.name+'.',k:'sys'});
-  if(STORY[nodeId])exploreFeed.push({t:STORY[nodeId].arrival,k:'flavor'});
+  if(STORY[nodeId])exploreFeed.push({t:chapterArrival(nodeId),k:'flavor'});
   partyBark('floor');
   mode='explore'; render(); autosave();
 }
@@ -2922,7 +2972,7 @@ function enterCombat(desc,atKey){ pendingKey=atKey;
 function resolveCombat(){
   cancelTurn();autoFight=false; updateAutoBtn();
   if(game.phase==='won'){
-    explore.cleared.add(pendingKey);campaign.battles++;campaign.foes+=game.combatants.filter(c=>c.side==='enemy'&&!c.alive).length;if(game.combatants.some(c=>c.cls==='CryptLord'))campaign.bossSlain=true;
+    const hunted=legendHunt;legendHunt=false;if(hunted){if(!campaign.hunt){campaign.hunt=true;bag.items.push('eclipsescale');bag.rations++;exploreFeed.push({t:'Astrax folds its wings around the broken chain. Stars rise through the mountain. Eren catches one falling scale: Eclipsescale Mantle (+2 AC, any class) and one supply. The Observatory falls silent.',k:'magic'});}}else explore.cleared.add(pendingKey);for(const foe of game.combatants)if(GUARDIAN_AFTERMATH[foe.cls])exploreFeed.push({t:GUARDIAN_AFTERMATH[foe.cls],k:'flavor'});campaign.battles++;campaign.foes+=game.combatants.filter(c=>c.side==='enemy'&&!c.alive).length;if(game.combatants.some(c=>c.cls==='CryptLord'))campaign.bossSlain=true;
     const gained=game.xpEarned||0;
     // Award XP to the heroes who were still standing at the kill; a downed hero
     // misses it and falls behind, which is the point of individual progression.
@@ -2934,14 +2984,14 @@ function resolveCombat(){
     // The party may have engaged while standing on loot (foes engage at one square,
     // before loot underfoot is taken); collect it now so nothing is stranded.
     const ck=key(explore.pos.x, explore.pos.y);
-    if(explore.loot[ck]){ const it=explore.loot[ck]; delete explore.loot[ck]; collect(it); }
+    if(!hunted&&explore.loot[ck]){ const it=explore.loot[ck]; delete explore.loot[ck]; collect(it); }
     const leveled=[];   // [{hero, by}] for heroes that gained at least one level
     if(gained>0 && survivors.length){
       exploreFeed.push({t:'Each surviving hero gains '+gained+' experience.',k:'magic'});
       grantXp(survivors, gained, leveled);
     }
     checkContracts();mode='explore'; game=null; mover=null; selectedSpell=null; render();
-    if(leveled.length)openLevelUp(leveled);else resumeExplore();showBattleCue('VICTORY · +'+gained+' XP');audioCue('victory');
+    if(hunted)openTown();if(leveled.length)openLevelUp(leveled);else resumeExplore();showBattleCue('VICTORY · +'+gained+' XP');audioCue('victory');
   } else if(game.phase==='lost'){ render(); endRun('lose'); }
 }
 // Award XP to a set of heroes, level them up against XP_TABLE, and push the
@@ -3016,7 +3066,7 @@ function waitTurn(){if(overlayOpen())return; if(mode!=='combat'||game.phase!=='p
   game.log.push({t:c.name+' waits, moving to the back of the line.',k:'sys'});
   mover=null; reachCache=null; selectedSpell=null; game.delay(); render(); beginTurnFlow(); }
 function beginTurnFlow(){
-  if(mode!=='combat'||$('#settingsScreen').classList.contains('show')||$('#restartScreen').classList.contains('show')||$('#tacticsScreen').classList.contains('show'))return;
+  if(mode!=='combat'||$('#codexScreen').classList.contains('show')||$('#settingsScreen').classList.contains('show')||$('#restartScreen').classList.contains('show')||$('#tacticsScreen').classList.contains('show'))return;
   spellAim=null;
   if(game.phase!=='playing'){ resolveCombat(); return; }
   const c=game.current();
@@ -3347,9 +3397,10 @@ function renderCombat(){
   }
   for(let y=0;y<game.h;y++){ for(let x=0;x<game.w;x++){
     const cell=document.createElement('div'); cell.className='cell'+(((x+y)%2)?' alt':''); const k=key(x,y); const here=game.at(x,y);
-    const terrain=game.terrainAt({x,y});if(terrain){cell.classList.add('field-'+terrain);const mark=document.createElement('span');mark.className='terrain-mark';mark.textContent=TERRAIN[terrain].glyph;cell.appendChild(mark);}
+    const terrain=game.terrainAt({x,y});if(game.living('enemy').some(u=>u.intent&&game.cheb({x,y},u.intent)<=SPELLS[u.intent.spell].aoe))cell.classList.add('breath-zone');if(terrain){cell.classList.add('field-'+terrain);const mark=document.createElement('span');mark.className='terrain-mark';mark.textContent=TERRAIN[terrain].glyph;cell.appendChild(mark);}
     if(spellAim&&game.cheb({x,y},spellAim)<=selectedSpell.aoe)cell.classList.add('aimed');
-    const details=(here?here.name+' '+here.hp+'/'+here.maxHp+' HP. ':'')+(terrain?TERRAIN[terrain].name+': '+TERRAIN[terrain].desc:'Plain ground');
+    const danger=game.living('enemy').some(u=>u.intent&&game.cheb({x,y},u.intent)<=SPELLS[u.intent.spell].aoe);
+    const details=(danger?'Danger: Starless Breath on the dragon’s next active turn. ':'')+(here?here.name+' '+here.hp+'/'+here.maxHp+' HP. ':'')+(terrain?TERRAIN[terrain].name+': '+TERRAIN[terrain].desc:'Plain ground');
     cell.setAttribute('role','gridcell');cell.setAttribute('aria-label','Column '+(x+1)+', row '+(y+1)+'. '+details);cell.title=details;
     cell.tabIndex=x===gridCursor.x&&y===gridCursor.y?0:-1;
     cell.onfocus=()=>{gridCursor={x,y};for(const el of cellEls)el.tabIndex=el===cell?0:-1;};
@@ -3482,7 +3533,7 @@ function showStart(){
   clearRestartArm();
   closeFieldNotes(false);
   cancelTurn();autoFight=false;mode='start';
-  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','tacticsScreen','fateScreen','restartScreen','settingsScreen'])$('#'+id).classList.remove('show');
+  for(const id of ['townScreen','partyScreen','levelScreen','eventScreen','journalScreen','tacticsScreen','fateScreen','restartScreen','settingsScreen','codexScreen'])$('#'+id).classList.remove('show');
   $('#banner').classList.remove('show');
   $('#createScreen').classList.remove('show');
   $('#saveScreen').classList.remove('show');
@@ -3622,7 +3673,7 @@ function renderCampaign(){
   $('#objective').textContent=bag.relic?(campaign.bossSlain?'Carry the crown to the final stairs.':'The crown is yours. Defeat the king and reach the stairs.'):(STORY[nodeId]?STORY[nodeId].objective:'Find the key and descend.');
   const boss=mode==='combat'&&game&&game.combatants.find(c=>c.bossTitle&&c.alive);
   $('#bossPanel').hidden=!boss;
-  if(boss){$('#bossName').textContent=(boss.awakened?'II · WRATH · ':'I · GUARDIAN · ')+boss.bossTitle+' · '+boss.hp+' / '+boss.maxHp+' HP';$('#bossHealth i').style.width=(boss.hp/boss.maxHp*100)+'%';}
+  if(boss){$('#bossName').textContent=(boss.intent?'⚠ BREATH NEXT TURN · ':boss.awakened?'II · WRATH · ':'I · GUARDIAN · ')+boss.bossTitle+' · '+boss.hp+' / '+boss.maxHp+' HP';$('#bossHealth i').style.width=(boss.hp/boss.maxHp*100)+'%';}
 }
 function renderCouncil(){
   $('#chapterArtwork').innerHTML=campaignArtwork(explore.theme,floorDepth(),false);
@@ -3633,7 +3684,7 @@ function renderCouncil(){
   chapter.plans.forEach(p=>{const b=document.createElement('button');b.className='council-choice';b.innerHTML='<strong>'+escapeHTML(p.name)+'</strong><small>'+escapeHTML(p.preview)+'</small>';b.onclick=()=>chooseCouncil(p.id);root.appendChild(b);});
 }
 function chooseCouncil(pick){
-  if(mode!=='explore'||!$('#townScreen').classList.contains('show')||['levelScreen','partyScreen','saveScreen','eventScreen','fateScreen','journalScreen','tacticsScreen'].some(id=>$('#'+id).classList.contains('show'))||campaign.decisions[nodeId])return false;
+  if(mode!=='explore'||!$('#townScreen').classList.contains('show')||['levelScreen','partyScreen','saveScreen','eventScreen','fateScreen','journalScreen','tacticsScreen','codexScreen'].some(id=>$('#'+id).classList.contains('show'))||campaign.decisions[nodeId])return false;
   const chapter=STORY[nodeId],plan=chapter&&chapter.plans.find(p=>p.id===pick);if(!plan)return false;
   campaign.decisions[nodeId]=plan.id;bag.gold+=plan.gold||0;bag.rations+=plan.rations||0;for(let i=0;i<(plan.potions||0);i++)bag.items.push('potion_heal');
   applyBoons();exploreFeed.push({t:plan.result,k:'flavor'});renderTown();render();autosave();const next=$('#forkBox button');if(next&&typeof next.focus==='function')next.focus({preventScroll:true});return true;
@@ -3666,7 +3717,7 @@ function campaignEpilogue(id){
   const home=storyPlan('entrance')&&storyPlan('entrance').id==='lanterns'?'Ilyra and the refugees line the lantern road, alive because you stopped for them.':'Ilyra opens the ruined gate. The last watch has kept its promise.';
   const route=worldPath.includes('warren')?(storyPlan('warren')&&storyPlan('warren').id==='flood'?'Nessa returns at sunrise with an empty boat and a smile.':'The flooded standard flies above the gate once more.'):'Eren begins a new register, leaving room for every name the king tried to erase.';
   const last=id==='bind'?keeper+' remains as Warden. The others carry that name into the daylight.':id==='wear'?keeper+' takes the throne. The company must now teach a ruler how to let the kingdom live.':names+' walk into a morning no crown can ever command.';
-  return fate.story+' '+home+' '+route+' '+last;
+  return fate.story+' '+home+' '+route+' '+last+(campaign.hunt?' Above the gate, Astrax’s freed constellations shine. Eren records that even a dragon’s oldest chain was broken.':'');
 }
 
 function openJournal(){
@@ -3676,7 +3727,7 @@ function openJournal(){
   $('#journalStats').innerHTML=[['Battles won',campaign.battles],['Foes vanquished',campaign.foes],['Steps taken',campaign.steps],['Secrets found',campaign.secrets],['Events resolved',campaign.events],['Embers carried',campaign.boons.length],['Chapters crossed',campaign.completedFloors.length+'/'+(WORLD_MAXDEPTH-1)],['Successful checks',campaign.successes]].map(([label,n])=>'<div class="journal-stat"><b>'+n+'</b>'+label+'</div>').join('');
   const root=$('#journalRoute');root.innerHTML='';
   worldPath.forEach((id,i)=>{const el=document.createElement('div');el.className='route-stop'+(id===nodeId?' current':'');el.innerHTML='<b>'+String(i+1).padStart(2,'0')+' · '+WORLD[id].name+'</b><small>'+escapeHTML(WORLD[id].intro||'')+'</small>';root.appendChild(el);});
-  const story=$('#journalStory');story.innerHTML='';for(const id of worldPath){const chapter=STORY[id],plan=storyPlan(id);if(!chapter)continue;const row=document.createElement('div');row.className='route-stop';row.innerHTML='<b>'+escapeHTML(chapter.title)+'</b><p>'+escapeHTML(chapter.arrival)+'</p><small>'+escapeHTML(plan?plan.name+': '+plan.result:campaign.decisions[id]==='legacy'?'A chapter from before this chronicle began.':id===nodeId?'Your next decision waits at the waystation.':'The company marched on.')+'</small>';story.appendChild(row);}
+  const story=$('#journalStory');story.innerHTML='';for(const id of worldPath){const chapter=STORY[id],plan=storyPlan(id);if(!chapter)continue;const row=document.createElement('div');row.className='route-stop';row.innerHTML='<b>'+escapeHTML(chapter.title)+'</b><p>'+escapeHTML(chapterArrival(id))+'</p><small>'+escapeHTML(plan?plan.name+': '+plan.result:campaign.decisions[id]==='legacy'?'A chapter from before this chronicle began.':id===nodeId?'Your next decision waits at the waystation.':'The company marched on.')+'</small>';story.appendChild(row);}
   const quests=$('#journalContracts');quests.innerHTML='';
   for(const [id,q] of Object.entries(CONTRACTS)){const row=document.createElement('div');row.className='route-stop';const done=campaign.contracts.includes(id);row.innerHTML='<b>'+(done?'✓ ':'')+q.name+'</b><small>'+q.desc+' '+Math.min(q.goal,campaign[q.stat]||0)+' / '+q.goal+' · '+q.rewardText+(done?' · Claimed':'')+'</small>';quests.appendChild(row);}
   $('#journalBoons').textContent=campaign.boons.length?campaign.boons.map(id=>BOONS[id].name+': '+BOONS[id].desc).join(' · '):'No embers claimed yet. The old kingdom’s blessings wait at the waystations.';
@@ -3715,6 +3766,74 @@ function openTactics(){
 function closeTactics(){if(!$('#tacticsScreen').classList.contains('show'))return;$('#tacticsScreen').classList.remove('show');if(tacticsOpener&&typeof tacticsOpener.focus==='function')tacticsOpener.focus();if(mode==='combat'){const c=game.current();if(c.side==='party'&&!autoFight&&!game.isIncapacitated(c))render();else beginTurnFlow();}}
 $('#btnHowToPlay').onclick=openTactics;
 $('#btnTacticsClose').onclick=closeTactics;
+let codexTab='bestiary',codexOpener=null;
+function openCodex(tab){
+ if(['levelScreen','eventScreen','fateScreen','restartScreen','settingsScreen','partyScreen','saveScreen'].some(id=>$('#'+id).classList.contains('show')))return false;
+ codexOpener=document.activeElement;closeFieldNotes(false);if(mode==='combat')cancelTurn();codexTab=['bestiary','treasures','legends'].includes(tab)?tab:'bestiary';$('#codexSearch').value='';$('#codexFilter').value='all';$('#codexScreen').classList.add('show');renderCodex();return true;
+}
+function closeCodex(){
+ if(!$('#codexScreen').classList.contains('show'))return;$('#codexScreen').classList.remove('show');
+ if(codexOpener&&typeof codexOpener.focus==='function'){const target=['btnBestiary','btnTreasures'].includes(codexOpener.id)&&$('#btnDetails').getClientRects().length?$('#btnDetails'):codexOpener;const focus=()=>{if(!target.closest('[inert]')&&target.getClientRects().length)target.focus({preventScroll:true});};queueMicrotask(focus);}
+ if(mode==='combat'&&game&&game.phase==='playing'){const c=game.current();if(c.side==='party'&&!autoFight&&!game.isIncapacitated(c))render();else beginTurnFlow();}
+}
+function itemSources(id){
+ const from=[];for(const w of Object.values(WORLD)){if((w.items||[]).includes(id))from.push(w.name);if((w.secretItems||[]).includes(id))from.push(w.name+' hidden caches');}
+ for(const q of Object.values(CONTRACTS))if(q.reward.item===id)from.push('Promise: '+q.name);
+ if(SHOP_STOCK.includes(id))from.push('Waystation trader');if(id==='eclipsescale')from.push('Defeat Astrax in the optional Observatory hunt');
+ 
+ for(const ev of Object.values(EVENTS))if(ev.options.some(o=>o.success?.item===id||o.failure?.item===id))from.push('Event: '+ev.name);if(!from.length)from.push('No current campaign source');return from.join(' · ');
+}
+function itemRules(it){
+ let s=it.slot==='weapon'?'Weapon · +'+(it.atk||0)+' attack · +'+(it.dmg||0)+' weapon damage':it.slot==='armor'?'Armour · +'+it.ac+' AC':it.heal?'Consumable · heals '+it.heal.n+'d'+it.heal.sides+'+'+it.heal.bonus:'Consumable · +'+it.buff.atk+' attack / +'+it.buff.dmg+' damage for '+it.buff.duration+' turns';
+ if(it.onHit)s+=' · '+Math.round(it.onHit.chance*100)+'% poison: '+it.onHit.dmg+' damage/turn for '+it.onHit.duration+' turns';return s;
+}
+function guardianDefeated(id){if(!party||!explore||!['explore','combat'].includes(mode))return false;if(id==='eclipse_wyrm')return campaign.hunt;if(id==='crypt_lord')return campaign.bossSlain;
+ return Object.values(WORLD).some(w=>(w.encounters||[]).some(enc=>enc.lead===id)&&(campaign.completedFloors.includes(w.id)||(nodeId===w.id&&Object.entries(explore.encounters).some(([k,e])=>e.lead===id&&explore.cleared.has(k)))));
+}
+function huntReady(){return mode==='explore'&&$('#townScreen').classList.contains('show')&&campaign.completedFloors.length>=4&&!!campaign.decisions[nodeId]&&!campaign.hunt&&!party.some(h=>h.pendingLevels>0);}
+function beginLegendHunt(){
+ if(!huntReady()||!$('#codexScreen').classList.contains('show')||codexTab!=='legends'||['levelScreen','partyScreen','eventScreen','saveScreen','fateScreen','restartScreen','settingsScreen'].some(id=>$('#'+id).classList.contains('show')))return false;
+ autosave();$('#codexScreen').classList.remove('show');$('#townScreen').classList.remove('show');legendHunt=true;
+ exploreFeed.push({t:'At the Observatory of Ash, Eren cuts the first chain. Astrax unfolds its wings. “I remember the sky,” it says. “Help me remember the way out.”',k:'flavor'});
+ enterCombat({boss:true,lead:'eclipse_wyrm',pool:['skeleton'],budgetMul:.45},null);return true;
+}
+function renderCodex(){
+ const activeRun=['explore','combat'].includes(mode),state=activeRun?campaign:freshCampaign('delver');
+ const select=$('#codexFilter');if(select.dataset.page!==codexTab){select.innerHTML='<option value="all">All entries</option>'+(codexTab==='bestiary'?'<option value="guardians">Guardians</option>':'<option value="relics">Relics</option><option value="potions">Potions</option>');select.dataset.page=codexTab;select.value='all';}const root=$('#codexContent'),query=($('#codexSearch').value||'').trim().toLowerCase(),filter=$('#codexFilter').value;root.innerHTML='';
+ for(const [id,tab]of [['codexBeasts','bestiary'],['codexTreasure','treasures'],['codexLegends','legends']])$('#'+id).setAttribute('aria-pressed',codexTab===tab?'true':'false');
+ $('#codexTitle').textContent=codexTab==='bestiary'?'The Bestiary':codexTab==='treasures'?'Treasure & Relics':'Legends of the Last Dawn';$('#codexTools').hidden=codexTab==='legends';
+ $('#codexNote').textContent=codexTab==='bestiary'?'Complete field guide · base statistics. Elites, guardian phases and council effects can change a live foe.':'treasures'===codexTab?'Exact item rules and known sources. Ownership means currently carried or equipped, not a permanent collection.':'Campaign spoilers · the road, its guardians, and an optional legend beyond the throne’s chains.';
+ let count=0;
+ const add=(title,body,art,kind)=>{const card=document.createElement('article');card.className='atlas-card';card.innerHTML=(art?'<div class="atlas-art" aria-hidden="true">'+art+'</div>':'')+'<div class="atlas-kind">'+escapeHTML(kind)+'</div><h3>'+escapeHTML(title)+'</h3>'+body;root.appendChild(card);count++;};
+ if(codexTab==='bestiary')for(const [id,m]of Object.entries(BESTIARY)){
+  const lore=MONSTER_LORE[id],boss=!!m.bossTitle;if(filter==='guardians'&&!boss||filter==='relics'||filter==='potions')continue;
+  const regions=Object.values(WORLD).filter(w=>(w.encounters||[]).some(e=>e.lead===id||(e.pool||[]).includes(id))).map(w=>w.name);if(id==='eclipse_wyrm')regions.push('Observatory of Ash · optional waystation hunt');
+  const spells=(m.spells||[]).map(s=>SPELLS[s.id].name+' ×'+s.uses).join(' · ')||'No spells';
+  const stats=m.maxHp+' HP · AC '+m.ac+' · +'+m.attackBonus+' attack · '+m.damage.n+'d'+m.damage.sides+'+'+m.damage.bonus+' damage · Move '+m.speed+' · Range '+m.range;
+  if(query&&!(m.name+' '+lore.join(' ')+' '+regions.join(' ')+' '+spells).toLowerCase().includes(query))continue;
+  add(m.name,'<p class="atlas-stats">'+escapeHTML(stats)+'</p><p>'+escapeHTML(lore[1])+'</p><p><b>Counterplay</b> '+escapeHTML(lore[2])+'</p><p class="tag">'+escapeHTML(spells)+'</p><p class="tag">'+escapeHTML(regions.join(' · '))+'</p>'+(boss?'<p class="atlas-state">'+(guardianDefeated(id)?'Defeated in this run':'Guardian legend · not yet defeated in this run')+'</p>':''),SPRITES[m.sprite],(boss?'Guardian · ':'')+lore[0]);
+ }else if(codexTab==='treasures'){
+  for(const [id,it]of Object.entries(ITEMS)){
+   if(filter==='relics'&&!it.legendary||filter==='potions'&&it.slot!=='potion'||filter==='guardians')continue;
+   const source=itemSources(id),lore=RELIC_LORE[id],rules=itemRules(it);if(query&&!(it.name+' '+source+' '+lore+' '+rules).toLowerCase().includes(query))continue;
+   const carried=activeRun&&bag?bag.items.filter(x=>x===id).length:0,wearers=(activeRun?party||[]:[]).filter(h=>Object.values(h.equip||{}).includes(id)).map(h=>h.name);
+   add(it.name,'<p class="atlas-stats">'+escapeHTML(rules)+'</p><p>'+escapeHTML(lore)+'</p><p><b>Source</b> '+escapeHTML(source)+'</p><p class="tag">Usable by '+escapeHTML((it.classes||Object.keys(CLASSES)).join(', '))+' · '+it.cost+' gold value</p><p class="atlas-state">'+(activeRun&&bag?'Carried: '+carried+(wearers.length?' · Equipped: '+escapeHTML(wearers.join(', ')):' · Not equipped'):'Start a run to track carried equipment.')+'</p>',relicArtwork(it.slot),it.legendary?'Legendary relic':it.slot==='potion'?'Consumable':'Equipment');
+  }
+  if(filter==='all'||filter==='relics')if(!query||'sunless crown relic king final tomb'.includes(query))add('The Sunless Crown','<p>Every stolen sunrise is locked inside this circlet. It is a story relic, not equipment: no passive stat bonus.</p><p>Recover it in the Sunless Tomb, defeat the king, and reach the final stairs to choose Break, Bind or Wear.</p><p class="atlas-state">'+(activeRun&&bag&&bag.relic?'Carried by the company':'Not yet carried')+'</p>',relicArtwork('crown'),'Campaign relic');
+ }else{
+  add('Astrax, the Star-Eater','<p>Eren’s forbidden map marks the Observatory of Ash. The king chained a dragon there to swallow the stars that escaped his crown. Freeing the sky means defeating its oldest prisoner.</p><p><b>Optional, dangerous hunt.</b> Opens at a waystation after four chapters and its council decision. Rest and equip first. The guardian marks its breath area one active turn before release. Move off the amber tiles. Its once-only second phase restores one breath and summons a skeleton. Defeat ends the run. Returning to title with Restart abandons the battle and keeps your pre-hunt town Continue when browser storage is available.</p><p><b>Reward:</b> Eclipsescale Mantle (+2 AC, any class), one supply and battle XP. The mantle is granted once; the ending remembers the freed stars.</p><p class="atlas-state">'+(state.hunt?'Astrax is free. The constellations have returned.':huntReady()?'The Observatory is within reach. Your company can accept the hunt.':'The Observatory awaits four completed chapters and a chosen council at a waystation.')+'</p>',SPRITES.eclipse_wyrm,'Optional legendary hunt');
+  const b=document.createElement('button');b.id='btnBeginHunt';b.className='big';b.textContent=state.hunt?'Legend fulfilled':'Accept hunt · enter battle';b.disabled=!huntReady();b.onclick=beginLegendHunt;root.lastElementChild.appendChild(b);
+  for(const [id,chapter]of Object.entries(STORY))add(chapter.title,'<p>'+escapeHTML(SAGAS[id])+'</p><p class="tag">'+escapeHTML(chapter.objective)+'</p><p class="atlas-state">'+(state.completedFloors.includes(id)?'Chapter completed':nodeId===id&&activeRun&&party?'Current chapter':'A road still told in legend')+'</p>',null,WORLD[id].name);
+ }
+ $('#codexCount').textContent=count+' '+(codexTab==='bestiary'?(count===1?'creature':'creatures'):codexTab==='treasures'?'treasures':'legends');if(!count){const p=document.createElement('p');p.textContent='No entries match. Try another search or show all categories.';root.appendChild(p);}
+}
+function relicArtwork(kind){const shape=kind==='weapon'?'<path d="M28 8L32 3L36 8V40H28Z" fill="#e5edf2"/><path d="M22 40H42V45H22Z" fill="#e8b84b"/><path d="M29 45H35V58H29Z" fill="#865433"/>':kind==='armor'?'<path d="M20 12L32 6L44 12L53 52L38 48L32 57L26 48L11 52Z" fill="#755e9f" stroke="#d2b5ee"/><path d="M25 16H39L32 27Z" fill="#edcb7a"/>':kind==='potion'?'<path d="M26 5H38V23L48 38Q55 56 32 58Q9 56 16 38L26 23Z" fill="#76b7a2" stroke="#ccefe0"/><path d="M20 37H44V48Q32 59 20 48Z" fill="#e4be6c"/><path d="M25 4H39V10H25Z" fill="#795638"/>':'<path d="M12 43L6 15L23 27L32 8L41 27L58 15L52 43Z" fill="#e8b84b" stroke="#fff0b7"/><path d="M14 48H50" stroke="#e8b84b" stroke-width="5"/>';
+ return '<svg viewBox="0 0 64 64" focusable="false">'+shape+'</svg>';
+}
+for(const [id,tab]of [['btnTitleBestiary','bestiary'],['btnTitleTreasures','treasures'],['btnBestiary','bestiary'],['btnTreasures','treasures'],['btnTownBestiary','bestiary'],['btnTownTreasures','treasures'],['btnHuntDetails','legends']])$('#'+id).onclick=event=>{if(openCodex(tab))codexOpener=event.currentTarget;};
+for(const [id,tab]of [['codexBeasts','bestiary'],['codexTreasure','treasures'],['codexLegends','legends']])$('#'+id).onclick=()=>{codexTab=tab;$('#codexSearch').value='';$('#codexFilter').value='all';renderCodex();$('#codexScreen .sbox').scrollTop=0;};
+$('#btnCodexClose').onclick=closeCodex;$('#codexSearch').oninput=renderCodex;$('#codexFilter').onchange=renderCodex;
+
 /* Presentation owns preferences and feedback; engines remain deterministic and DOM-free. */
 const PREFERENCE_KEY='goldbox_preferences_v1';
 function readPreferences(){
@@ -3775,6 +3894,7 @@ function inspectTile(x,y){
   const label=$('#tileInspect');label.textContent=text;label.hidden=false;
 }
 function clearPresentation(){
+  legendHunt=false;
   if(presentationTimer!==null)clearTimeout(presentationTimer);presentationTimer=null;presentationToken++;presentationCombat=null;presentationUnits.clear();presentationLogCount=0;$('#tileInspect').hidden=true;$('#battleCue').hidden=true;audioScene(false);
 }
 function showBattleCue(text){
@@ -3821,7 +3941,7 @@ if(typeof MutationObserver!=='undefined'){
   const observer=new MutationObserver(sync);for(const p of panels)observer.observe(p,{attributes:true,attributeFilter:['class']});
   document.addEventListener('focusin',e=>{const next=active();if(next&&!next.contains(e.target)){sync();return;}if(!next)lastFocus=e.target;});
   document.addEventListener('keydown',e=>{const next=active();if(!next)return;if(e.key==='Tab'){const list=focusables(next),i=list.indexOf(document.activeElement);e.preventDefault();if(list.length)list[(i+(e.shiftKey?-1:1)+list.length)%list.length].focus();}
-    if(e.key==='Escape'){const close={settingsScreen:closeSettings,restartScreen:cancelRestart,saveScreen:closeSave,partyScreen:closeParty,journalScreen:()=>$('#btnJournalClose').click(),createScreen:()=>$('#btnBack').click()};if(close[next.id]){e.preventDefault();close[next.id]();}}
+    if(e.key==='Escape'){const close={codexScreen:closeCodex,settingsScreen:closeSettings,restartScreen:cancelRestart,saveScreen:closeSave,partyScreen:closeParty,journalScreen:()=>$('#btnJournalClose').click(),createScreen:()=>$('#btnBack').click()};if(close[next.id]){e.preventDefault();close[next.id]();}}
   },true);
   document.addEventListener('pointerdown',e=>{const next=active();if(next&&(e.target===next||e.target.closest('button:disabled'))){e.preventDefault();const first=focusables(next)[0];if(first)first.focus({preventScroll:true});}},true);
   document.addEventListener('click',e=>{const next=active();if(next&&!next.contains(e.target)){e.preventDefault();e.stopImmediatePropagation();}},true);
