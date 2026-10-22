@@ -234,3 +234,10 @@ Implemented entrance-side encounter placement with stairs excluded from pathfind
 Implemented the accepted next steps: patrol positions now use floor geometry and nearby treasure approaches, retaining access before stairs. Each of eight world nodes receives a distinct signature ordinary arena with two optional, one-action field objectives: barricades, sluices, vigil names, furnace seals, legion shields, pilgrim wells, ash vents and dawn mirrors. Objectives alter shared terrain; defeating all enemies remains the win condition. New scenes use existing encounters and rewards; guardian arenas remain intact.
 
 The release requires eight scene-rule checks, a four-device/all-eight-scene browser suite, existing accessibility audits, full cross-browser CI and unchanged campaign gates. Further work remains map backtracking/exit feedback, physical iPhone/iPad tests and human campaign pacing/balance sessions. The overall assessment stays B+ until those experiential gaps have evidence.
+
+
+### 0.25.0 — less backtracking and clear departures
+
+Implemented the accepted exploration steps. Short service routes appear only where they remove real detours without opening vaults. Warren scouts fit the key outing; Gallery labels follow a more efficient walking circuit. Existing saves retain their layouts and task order.
+
+Before moving to another map or committing the crown, the existing waystation/finale shows known unclaimed finds and supports Return to floor. Chronicle gives the same known-only review and unfinished-task status during exploration. Chapter XP/councils/rewards remain once-only, and explicit crown fate still ends the campaign. Independent paired route probes and complete release gates are required. Battle-aftermath echoes and physical-device/human pacing sessions remain future work; overall B+ remains.

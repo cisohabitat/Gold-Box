@@ -430,6 +430,10 @@
   .cell.field-cover{background-image:linear-gradient(135deg,#43637177,#20333944);}
   .cell.field-sanctum{background-image:radial-gradient(#7fc14f55,#193c2444);}
   .cell.field-ember{background-image:radial-gradient(#e8823944,#61251b77);}
+  .departure-review{margin:12px 0;padding:12px;}
+  .departure-review h3{margin:0 0 8px;color:var(--gold);}
+  .departure-review summary{min-height:44px;display:flex;align-items:center;cursor:pointer;}
+  .return-floor{min-width:44px;min-height:44px;margin-top:8px;}
   #titleLabel.chapter-battle{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
   .field-preview{box-shadow:inset 0 0 0 3px #90e4eb;}
   .field-objective{outline:1px dashed #f4d38a;outline-offset:-3px;}
@@ -636,7 +640,7 @@
   <div class="sbox wide">
     <h2 class="ctitle">Waystation</h2>
     <p class="tag" id="townSub">A safe hollow between the dark. Trade, rest, and ready the party before you go deeper.</p>
-    <div class="townbar" id="townStatus"></div>
+    <div class="townbar" id="townStatus"></div><section class="pane departure-review" id="townDeparture" aria-label="Before leaving this floor"></section>
     <div class="pane council-pane" style="margin-top:14px"><div id="chapterArtwork" class="chapter-art" aria-hidden="true"></div><h2 id="councilTitle">War Council</h2><p id="councilStory" class="story-copy"></p><div id="councilPlans" class="council-plans"></div><p id="councilResult" class="story-copy" role="status"></p></div>
     <section class="pane hero-quest-pane" aria-labelledby="heroQuestHeading"><h2 id="heroQuestHeading">Companion vows</h2><p class="tag">Optional personal quests. Lead the company, then return at a later waystation to keep the promise. Offers appear at waystations 1–4.</p><div id="heroQuestCards"></div><p id="heroQuestStatus" role="status"></p></section>
     <div class="towncols">
@@ -701,14 +705,14 @@
 </div>
 
 <div class="screen" id="aftermathScreen" aria-labelledby="aftermathTitle"><div class="sbox"><div class="eyebrow">A legend falls</div><h2 class="ctitle" id="aftermathTitle"></h2><div id="aftermathArt" class="atlas-art" aria-hidden="true"></div><p id="aftermathStory"></p><button id="btnAftermathClose" class="big">Carry the story onward</button></div></div>
-<div class="screen" id="journalScreen"><div class="sbox wide"><div class="eyebrow">The story so far</div><h2 class="ctitle">The Company’s Chronicle</h2><p class="story-copy" id="journalTask" hidden></p><p class="tag" id="journalOath"></p><div class="journal-grid" id="journalStats"></div><div id="journalRoute"></div><h3>The Last Dawn</h3><div id="journalStory"></div><h3>Companion vows</h3><div id="journalHeroes"></div><h3>Promises to the kingdom</h3><div id="journalContracts"></div><h3>Carried embers</h3><p id="journalBoons" class="tag"></p><div class="crow"><button id="btnJournalClose" class="big">Return to the journey</button></div></div></div>
+<div class="screen" id="journalScreen"><div class="sbox wide"><div class="eyebrow">The story so far</div><h2 class="ctitle">The Company’s Chronicle</h2><p class="story-copy" id="journalTask" hidden></p><section class="pane departure-review" id="journalDeparture" aria-label="Floor review"></section><p class="tag" id="journalOath"></p><div class="journal-grid" id="journalStats"></div><div id="journalRoute"></div><h3>The Last Dawn</h3><div id="journalStory"></div><h3>Companion vows</h3><div id="journalHeroes"></div><h3>Promises to the kingdom</h3><div id="journalContracts"></div><h3>Carried embers</h3><p id="journalBoons" class="tag"></p><div class="crow"><button id="btnJournalClose" class="big">Return to the journey</button></div></div></div>
 <div class="screen" id="tacticsScreen" role="dialog" aria-modal="true" aria-labelledby="tacticsTitle"><div class="sbox wide"><div class="crow tactics-toolbar"><button id="btnTacticsClose" class="big">Return</button></div><h2 class="ctitle" id="tacticsTitle">The Delver’s Field Guide</h2><p class="tag" id="tacticsSubtitle"></p><div id="tacticsContent" class="tactics-copy"></div></div></div>
-<div class="screen" id="fateScreen" role="dialog" aria-modal="true" aria-labelledby="fateTitle"><div class="sbox wide"><div class="eyebrow">The Last Dawn · Final Choice</div><h2 id="fateTitle" class="ctitle">What will you do with the crown?</h2><p id="fateStory" class="story-copy"></p><label class="story-copy" for="crownBearer">If the crown needs a bearer, whose oath will hold it?</label><select id="crownBearer" style="display:block;width:100%;min-height:44px;font-size:18px;margin:12px 0;padding:8px"></select><div id="fateChoices" class="council-plans"></div><p class="tag">The king is defeated. The choice is yours; each path ends this campaign.</p></div></div>
+<div class="screen" id="fateScreen" role="dialog" aria-modal="true" aria-labelledby="fateTitle"><div class="sbox wide"><div class="eyebrow">The Last Dawn · Final Choice</div><h2 id="fateTitle" class="ctitle">What will you do with the crown?</h2><p id="fateStory" class="story-copy"></p><section class="pane departure-review" id="fateDeparture" aria-label="Before leaving this floor"></section><label class="story-copy" for="crownBearer">If the crown needs a bearer, whose oath will hold it?</label><select id="crownBearer" style="display:block;width:100%;min-height:44px;font-size:18px;margin:12px 0;padding:8px"></select><div id="fateChoices" class="council-plans"></div><p class="tag">The king is defeated. The choice is yours; each path ends this campaign.</p></div></div>
 <div class="screen" id="restartScreen" role="dialog" aria-modal="true" aria-labelledby="restartTitle" aria-describedby="restartMessage"><div class="sbox"><h2 id="restartTitle" class="ctitle">Return to the title screen?</h2><p id="restartMessage" class="story-copy"></p><div class="restart-actions"><button id="btnKeepPlaying" class="big">Keep Playing</button><button id="btnConfirmRestart">Return to Title</button></div></div></div>
 <div class="screen" id="settingsScreen" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="sbox"><h2 id="settingsTitle" class="ctitle">Sound &amp; Display</h2><p class="tag">Make the journey your own. Combat pauses while this sheet is open.</p><div class="settings-list"><label><input id="prefSound" type="checkbox"> Synthesized sound effects</label><label><input id="prefMusic" type="checkbox"> Quiet ambient tones (requires sound)</label><label for="prefVolume">Volume <output id="volumeValue">35%</output><input id="prefVolume" type="range" min="0" max="100" step="5" value="35"></label><label><input id="prefEffects" type="checkbox" checked> Visual effects (respects reduced motion)</label><label><input id="prefContrast" type="checkbox"> High contrast / clean display</label><label for="prefPace">Auto pace<select id="prefPace"><option value="normal">Deliberate · normal speed</option><option value="quick">Quick · shorter Auto turns</option></select></label></div><p id="audioStatus" class="tag" role="status">Sound is off by default. No downloads are needed.</p><p id="preferenceStatus" class="tag" role="status"></p><button id="btnSettingsClose" class="big">Back to Game</button></div></div>
 <div class="screen" id="codexScreen" role="dialog" aria-modal="true" aria-labelledby="codexTitle"><div class="sbox wide"><div class="eyebrow">Eren’s field atlas</div><h2 id="codexTitle" class="ctitle">The Bestiary</h2><div class="atlas-nav" role="group" aria-label="Atlas pages"><button id="codexBeasts" aria-pressed="true">Bestiary</button><button id="codexTreasure" aria-pressed="false">Treasure &amp; Relics</button><button id="codexLegends" aria-pressed="false">Legends &amp; Hunt</button><button id="btnCodexClose">Back</button></div><p class="tag" id="codexNote"></p><div id="codexTools" class="atlas-tools"><label for="codexSearch">Search<input id="codexSearch" type="search" maxlength="80" placeholder="Name, spell, source or lore"></label><label for="codexFilter">Show<select id="codexFilter"><option value="all">All entries</option><option value="guardians">Guardians</option><option value="relics">Relics</option><option value="potions">Potions</option></select></label></div><p id="codexCount" class="tag" role="status"></p><div id="codexContent" class="atlas-grid"></div></div></div>
 <script>
-const GAME_BUILD='0.24.0';
+const GAME_BUILD='0.25.0';
 document.querySelectorAll('[data-build]').forEach(el=>el.textContent='Build '+GAME_BUILD);
 /* ===== CROWN CAMPAIGN : data, with controller helpers below ===== */
 const OATHS={wanderer:{name:'Wanderer',budget:0.65,recovery:0.25,desc:'Gentler battles; all heroes earn victory XP and recover 25% HP after a win.'},delver:{name:'Delver',budget:1,desc:'Fortune favours the prepared. Only standing heroes earn victory XP.'},ironbound:{name:'Ironbound',budget:1.25,desc:'Stronger enemy forces. Only standing heroes earn victory XP.'}};
@@ -1378,7 +1382,7 @@ function buildDungeon(cfg){
   // The dungeon's roaming dead (used once the relic wakes the tomb): the set of
   // ordinary foes this floor fields, so wanderers match the place.
   const wanderPool=[...new Set((cfg.encounters||[]).flatMap(e=> e&&!e.boss && e.pool ? e.pool : []))];
-  return { name:cfg.name, theme:cfg.theme, w, h, tiles, start, exit, doors, loot, secrets, encounters, events, wanderPool, task:placeTask(cfg.chapter,tiles,start,exit,doors,loot,encounters,events) };
+  return { name:cfg.name, theme:cfg.theme, w, h, tiles, start, exit, doors, loot, secrets, encounters, events, wanderPool, passages:(cfg.passages||[]).map(route=>route.slice()), task:placeTask(cfg.chapter,tiles,start,exit,doors,loot,encounters,events) };
 }
 // Stairs end a floor: never use them as a bridge to an encounter. Doors may
 // be traversed for authored placement (the key opens them), but live spawns
@@ -1451,6 +1455,31 @@ function _flood(carved, start, blocked){
   while(f.length){ const n=[]; for(const [x,y] of f){ for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
     const a=x+dx,b=y+dy,k=key(a,b); if(!carved.has(k)||seen.has(k)||blocked.has(k)) continue; seen.add(k); n.push([a,b]); } } f=n; }
   return seen;
+}
+// Add at most two short return loops near existing finds. Both ends and every
+// adjacent floor must already be reachable with the vault door/stairs blocked.
+function servicePassages(carved,start,exit,doors,secrets,loot,w,h){
+ const opened=[],stop=new Set([...doors,key(exit.x,exit.y)]);
+ const walk=(a,b)=>{const q=[[a,0]],seen=new Set([a]);for(let i=0;i<q.length;i++){const [k,n]=q[i];if(k===b)return n;const [x,y]=k.split(',').map(Number);for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){const t=key(x+dx,y+dy);if(!carved.has(t)||stop.has(t)||seen.has(t))continue;seen.add(t);q.push([t,n+1]);}}return -1;};
+ const adjacent=(x,y)=>[[1,0],[-1,0],[0,1],[0,-1]].map(([dx,dy])=>key(x+dx,y+dy)).filter(k=>carved.has(k));
+ for(let pass=0;pass<2;pass++){
+  const reach=_flood(carved,start,stop),candidates=[];
+  for(const from of reach){const [x,y]=from.split(',').map(Number);if(stop.has(from))continue;
+   for(const [dx,dy]of [[1,0],[0,1]]){const route=[];
+    for(let n=1;n<=4;n++){const u=x+dx*n,v=y+dy*n,k=key(u,v);if(u<1||v<1||u>=w-1||v>=h-1||stop.has(k))break;
+     if(carved.has(k)){if(route.length&&reach.has(k)){
+       const proximity=Math.min(...Object.keys(loot).map(t=>{const [a,b]=t.split(',').map(Number);return Math.abs(u-a)+Math.abs(v-b);} ),w+h);
+       candidates.push({from,to:k,route:route.slice(),degree:adjacent(x,y).length+adjacent(u,v).length,proximity});
+      }break;}
+     if(n===4||secrets[k]||adjacent(u,v).some(t=>!reach.has(t)||stop.has(t)))break;route.push(k);
+    }
+   }
+  }
+  candidates.sort((a,b)=>a.degree-b.degree||a.proximity-b.proximity||a.route.length-b.route.length||a.from.localeCompare(b.from)||a.to.localeCompare(b.to));let found=null;
+  for(const c of candidates.slice(0,24))if(walk(c.from,c.to)>=c.route.length+9){found=c;break;}
+  if(!found)break;for(const k of found.route)carved.add(k);opened.push(found.route);
+ }
+ return opened;
 }
 function _carveCorr(a,b,carved,corridor){
   let x=a.cx,y=a.cy;
@@ -1608,7 +1637,8 @@ function _tryGen(spec,W,H){
     const adj=[[1,0],[-1,0],[0,1],[0,-1]].map(([a,b])=>[exitT.x+a,exitT.y+b]).filter(([a,b])=>beforeStairs.has(key(a,b)) && !(door&&a===door[0]&&b===door[1]));
     const {guard, ...rest}=e; return {...rest, at: adj[0] || [exitT.x, exitT.y]};
   });
-  return { name:spec.name, theme:spec.theme, w:W, h:H, start:[startT.x,startT.y], exit:[exitT.x,exitT.y], walls, doors: door?[door]:[], loot, secrets, encounters, events:_pickEvents(spec) };
+  const passages=servicePassages(carved,startT,exitT,new Set(door?[key(door[0],door[1])]:[]),secrets,loot,W,H);
+  return { name:spec.name, theme:spec.theme, w:W, h:H, start:[startT.x,startT.y], exit:[exitT.x,exitT.y], walls:walls.filter(([x,y])=>!passages.some(route=>route.includes(key(x,y)))), doors: door?[door]:[], loot, secrets, encounters, passages, events:_pickEvents(spec) };
 }
 // Choose a few distinct events for a floor (spec.events sets the count; default 2).
 function _pickEvents(spec){ const n=(spec.events==null)?2:spec.events; if(n<=0) return [];
@@ -1639,14 +1669,25 @@ const CHAPTER_TASKS={
  ossuary:['The legion’s standard','Recover Dawnblade at D, then carry it to camp C to raise the standard.'],
  shrine_road:['The small gods','Step onto any two shrines to choose: B bread (+1 supply), R rain (+4 party HP), M mercy (one spent spell charge per hero).']
 };
+function floorDistances(tiles,start,exit,doors=new Set()){
+ const q=[start],seen=new Map([[key(start.x,start.y),0]]);for(let i=0;i<q.length;i++){const p=q[i],n=seen.get(key(p.x,p.y));for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){const x=p.x+dx,y=p.y+dy,k=key(x,y);if(tiles[y]?.[x]!=='.'||seen.has(k)||doors.has(k)||k===key(exit.x,exit.y))continue;seen.set(k,n+1);q.push({x,y});}}return seen;
+}
+function orderNameStones(tiles,start,exit,sites){
+ const from=[start,...sites].map(p=>floorDistances(tiles,p,exit)),end=p=>Math.min(...[[1,0],[-1,0],[0,1],[0,-1]].map(([dx,dy])=>(from[p+1].get(key(exit.x+dx,exit.y+dy))??Infinity)+1));
+ let best=[0,1,2],score=Infinity;for(const a of [0,1,2])for(const b of [0,1,2])for(const c of [0,1,2]){if(a===b||a===c||b===c)continue;const cost=from[0].get(key(sites[a].x,sites[a].y))+from[a+1].get(key(sites[b].x,sites[b].y))+from[b+1].get(key(sites[c].x,sites[c].y))+end(c);if(cost<score){score=cost;best=[a,b,c];}}return best.map(i=>sites[i]);
+}
 function placeTask(id,tiles,start,exit,doors,loot,encounters,events){
  if(!CHAPTER_TASKS[id])return null;
  const reach=new Set([key(start.x,start.y)]),queue=[start],candidates=[];
  for(let i=0;i<queue.length;i++){const p=queue[i];for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){const x=p.x+dx,y=p.y+dy,k=key(x,y);if(!reach.has(k)&&tiles[y]?.[x]==='.'&&!doors.has(k)){reach.add(k);queue.push({x,y});}}}
  for(const p of queue){const k=key(p.x,p.y);if(k===key(start.x,start.y)||k===key(exit.x,exit.y)||loot[k]||events[k]||encounters[k])continue;candidates.push(p);}
  for(const p of queue){const k=key(p.x,p.y);if(candidates.length>=3)break;if(k!==key(start.x,start.y)&&k!==key(exit.x,exit.y)&&!loot[k]&&!candidates.includes(p))candidates.push(p);}
+ if(id==='warren'){
+  const at=Object.entries(loot).find(([k,v])=>v.type==='key')?.[0];if(at){const [x,y]=at.split(',').map(Number),home=floorDistances(tiles,start,exit,doors),fromKey=floorDistances(tiles,{x,y},exit,doors),distant=candidates.filter(p=>home.get(key(p.x,p.y))>=6),pool=distant.length?distant:candidates;
+   pool.sort((a,b)=>{const cost=p=>(home.get(key(p.x,p.y))??Infinity)+(fromKey.get(key(p.x,p.y))??Infinity);return cost(a)-cost(b)||(fromKey.get(key(a.x,a.y))??Infinity)-(fromKey.get(key(b.x,b.y))??Infinity)||a.y-b.y||a.x-b.x;});if(pool.length){const p=pool[0];return {id,start:{...start},sites:[key(p.x,p.y)],used:[],done:false};}}
+ }
  const sites=[];for(let i=0;i<(id==='gallery'||id==='shrine_road'?3:1);i++){candidates.sort((a,b)=>{const score=p=>Math.min(...[start,...sites].map(v=>Math.abs(p.x-v.x)+Math.abs(p.y-v.y)));return score(b)-score(a)||a.y-b.y||a.x-b.x;});const p=candidates.shift();if(!p)throw Error('No reachable objective site');sites.push(p);}
- return {id,start:{...start},sites:sites.map(p=>key(p.x,p.y)),used:[],done:false};
+ return {id,start:{...start},sites:(id==='gallery'?orderNameStones(tiles,start,exit,sites):sites).map(p=>key(p.x,p.y)),used:[],done:false};
 }
 const WORLD = {
   entrance:{ id:'entrance', name:'The Upper Crypt', theme:'crypt', gen:{cols:3,rows:3}, tier:0, lockedExit:true, key:true, gold:50, rations:1, items:['fine_sword','leather','pilgrim_boots','smoke_phial','round_shield','iron_helm'], events:3, secrets:1,
@@ -2306,7 +2347,7 @@ const TURN_R = { N:'E', E:'S', S:'W', W:'N' };
 // adjacent steps while a weak party misses some, making perception a real exploration stat.
 const SECRET_DC=13;
 class ExploreEngine{
-  constructor(d){ this.task=d.task||null;this.name=d.name; this.theme=d.theme||'crypt'; this.w=d.w; this.h=d.h; this.tiles=d.tiles; this.exit=d.exit;
+  constructor(d){ this.passages=(d.passages||[]).map(route=>route.slice());this.task=d.task||null;this.name=d.name; this.theme=d.theme||'crypt'; this.w=d.w; this.h=d.h; this.tiles=d.tiles; this.exit=d.exit;
     this.encounters=d.encounters; this.doors=d.doors||new Set(); this.loot=d.loot||{}; this.events=d.events||{};
     this.secrets=d.secrets||{}; this.foundSecrets=new Set();
     this.cleared=new Set(); this.eventsDone=new Set(); this.seen=new Set(); this.found=new Set(); this.spotted=new Set(); this.scoutRadius=2; this.searchBonus=0; this.pos={...d.start};
@@ -2598,12 +2639,12 @@ function b64dec(b64){ return new TextDecoder().decode(Uint8Array.from(atob(b64),
 function encodeSave(obj){ return SAVE_MAGIC + b64enc(JSON.stringify(obj)); }
 function decodeSave(code){ if(typeof code!=='string' || code.length>500000 || !code.startsWith(SAVE_MAGIC)) return null;
   try{ const o=JSON.parse(b64dec(code.slice(SAVE_MAGIC.length))); return (o&&o.v===2)?o:null; }catch(e){ return null; } }
-function serializeExplore(e){ return { task:e.task,name:e.name, w:e.w, h:e.h, tiles:e.tiles, exit:e.exit, pos:e.pos, facing:e.facing||'E',
+function serializeExplore(e){ return { passages:(e.passages||[]).map(route=>route.slice()),task:e.task,name:e.name, w:e.w, h:e.h, tiles:e.tiles, exit:e.exit, pos:e.pos, facing:e.facing||'E',
   doors:[...e.doors], loot:e.loot, encounters:e.encounters, cleared:[...e.cleared], seen:[...e.seen], found:[...(e.found||[])], spotted:[...(e.spotted||[])], theme:e.theme,
   events:e.events||{}, eventsDone:[...(e.eventsDone||[])], secrets:e.secrets||{}, foundSecrets:[...(e.foundSecrets||[])],
   woken:!!e.woken, wokenSteps:e.wokenSteps|0, wanderers:e.wanderers|0, wanderPool:e.wanderPool||[] }; }
 function reviveExplore(s){ const e=Object.create(ExploreEngine.prototype);
-  e.task=s.task||null;e.name=s.name; e.theme=s.theme||'crypt'; e.w=s.w; e.h=s.h; e.tiles=s.tiles; e.exit=s.exit; e.encounters=s.encounters||{}; e.loot=s.loot||{};
+  e.passages=(s.passages||[]).map(route=>route.slice());e.task=s.task||null;e.name=s.name; e.theme=s.theme||'crypt'; e.w=s.w; e.h=s.h; e.tiles=s.tiles; e.exit=s.exit; e.encounters=s.encounters||{}; e.loot=s.loot||{};
   e.events=s.events||{}; e.eventsDone=new Set(s.eventsDone||[]); e.facing=s.facing||'E';
   e.secrets=s.secrets||{}; e.foundSecrets=new Set(s.foundSecrets||[]);
   e.doors=new Set(s.doors||[]); e.cleared=new Set(s.cleared||[]); e.seen=new Set(s.seen||[]); e.found=new Set(s.found||s.seen||[]);
@@ -2676,6 +2717,7 @@ function validSave(s){
     for(const k of ['doors','cleared','seen','found','spotted','eventsDone','foundSecrets'])if(e[k]!==undefined&&!list(e[k],e.w*e.h,coord))return false;
     if(e.facing!==undefined&&!own(FACING,e.facing)||e.theme!==undefined&&!['crypt','catacomb','tomb'].includes(e.theme))return false;
     const entries=(value,check)=>value===undefined||obj(value)&&Object.keys(value).length<=e.w*e.h&&Object.entries(value).every(([k,v])=>coord(k)&&check(v));
+    if(e.passages!==undefined&&(!list(e.passages,2,route=>list(route,3,k=>coord(k)&&k===key(...k.split(',').map(Number))&&e.tiles[k.split(',')[1]][k.split(',')[0]]==='.'&&!(e.doors||[]).includes(k)&&k!==key(e.exit.x,e.exit.y)&&!e.secrets?.[k])&&route.length>0&&route.every((k,i)=>{if(!i)return true;const [x,y]=k.split(',').map(Number),[u,v]=route[i-1].split(',').map(Number);return Math.abs(x-u)+Math.abs(y-v)===1;}))||new Set(e.passages.flat()).size!==e.passages.flat().length))return false;
     if(e.task!=null){const q=e.task;if(s.inTown&&!q.done)return false;if(!obj(q)||q.id!==s.nodeId||!own(CHAPTER_TASKS,q.id)||!pos(q.start)||typeof q.done!=='boolean'||!list(q.sites,3,k=>coord(k)&&e.tiles[k.split(',')[1]][k.split(',')[0]]==='.')||q.sites.length!==(q.id==='gallery'||q.id==='shrine_road'?3:1)||new Set(q.sites).size!==q.sites.length||!list(q.used,3,n=>num(n,0,2))||new Set(q.used).size!==q.used.length||q.used.some(n=>n>=(q.id==='gallery'||q.id==='shrine_road'?3:1))||q.id==='gallery'&&(q.used.some((n,i)=>n!==i)||q.done!==(q.used.length===3))||q.id==='shrine_road'&&(q.used.length>2||q.done!==(q.used.length===2))||q.done&&q.used.length!==(q.id==='gallery'?3:q.id==='shrine_road'?2:1))return false;}
     if(e.task){const q=e.task,reach=new Set([key(q.start.x,q.start.y)]),queue=[q.start];if(e.tiles[q.start.y][q.start.x]!=='.')return false;for(let i=0;i<queue.length;i++){const p=queue[i];for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){const x=p.x+dx,y=p.y+dy,k=key(x,y);if(e.tiles[y]?.[x]==='.'&&!reach.has(k)&&!(e.doors||[]).includes(k)){reach.add(k);queue.push({x,y});}}}if(q.sites.some(k=>!reach.has(k)))return false;}
     if(!entries(e.encounters,enc=>obj(enc)&&(enc.scene===undefined||own(CHAPTER_BATTLES,enc.scene)&&!enc.boss&&!enc.wandering)&&(enc.prize===undefined||['bellheart_aegis','ashen_covenant','mercy_reliquary','nightwarden_bow'].includes(enc.prize))&&(enc.tactic===undefined||own(PATROL_TACTICS,enc.tactic))&&(enc.pool===undefined||list(enc.pool,30,id=>own(BESTIARY,id)))&&(!enc.lead||own(BESTIARY,enc.lead))&&(!enc.budgetMul||typeof enc.budgetMul==='number'&&enc.budgetMul>0&&enc.budgetMul<=5)))return false;
@@ -2963,6 +3005,22 @@ function advanceTask(){
  }
  if(line)exploreFeed.push({t:line,k:'flavor'});if(q.done)exploreFeed.push({t:CHAPTER_TASKS[q.id][0]+' complete. '+(q.id==='warren'?'The scouts reach the refugee camp.':q.id==='ossuary'?'Dawnblade lifts above the legion. You keep the sword.':'The waystation council awaits.'),k:'magic'});
 }
+function departureReview(e=explore,state=campaign,bagState=bag,id=nodeId){
+ const finds=[];for(const [at,v]of Object.entries(e.loot))if(e.seen.has(at)&&e.found.has(at))finds.push({at,label:v.type==='item'?ITEMS[v.item].name:v.type==='choice'?CHOICE_REWARDS[v.offer].name+' (choose one)':v.type==='gold'?v.amount+' gold':v.type==='ration'?(v.amount||1)+' camp supplies':v.type==='key'?'Iron key':'The crown'});
+ for(const at of Object.keys(e.secrets||{}))if(e.seen.has(at)&&e.foundSecrets.has(at))finds.push({at,label:'Discovered hidden cache'});
+ finds.sort((a,b)=>{const [x,y]=a.at.split(',').map(Number),[u,v]=b.at.split(',').map(Number);return y-v||x-u;});
+ const blockers=[];if(e.task&&!e.task.done)blockers.push(CHAPTER_TASKS[e.task.id][0]+' — '+(e.task.id==='gallery'?e.task.used.length+'/3 names':e.task.id==='shrine_road'?e.task.used.length+'/2 shrines':e.task.used.length?'Return to camp C':e.task.id==='warren'?'Find scouts S':'Recover Dawnblade and return to C'));
+ if(!WORLD[id].next.length){if(!bagState.relic)blockers.push('Recover the crown');if(!state.bossSlain)blockers.push('Defeat the Sunless King');}
+ return {finds,blockers,ready:!blockers.length};
+}
+function renderDepartureReview(root,allowReturn=false){
+ const report=departureReview(),origin=explore,originNode=nodeId;root.innerHTML='<h3>Before leaving this floor</h3><p>'+escapeHTML(report.ready?'Chapter objective complete.':report.blockers.join(' · '))+'</p><p>'+report.finds.length+' known unclaimed find'+(report.finds.length===1?'':'s')+'. Known discoveries only.</p>'+(report.finds.length?'<details><summary tabindex="0">Review known finds</summary><ul>'+report.finds.map(f=>{const [x,y]=f.at.split(',').map(Number);return '<li>'+escapeHTML(f.label)+' · column '+(x+1)+', row '+(y+1)+'</li>';}).join('')+'</ul></details>':'');
+ if(allowReturn){const b=document.createElement('button');b.className='return-floor';b.textContent='Return to floor';b.onclick=()=>returnToFloor(origin,originNode);root.appendChild(b);}
+}
+function returnToFloor(origin=explore,originNode=nodeId){
+ if(mode!=='explore'||origin!==explore||originNode!==nodeId||campaign.fate||party.some(h=>h.pendingLevels>0)||!['townScreen','fateScreen'].some(id=>$('#'+id).classList.contains('show'))||['levelScreen','partyScreen','saveScreen','eventScreen','aftermathScreen','journalScreen','tacticsScreen','codexScreen','restartScreen','settingsScreen','banner'].some(id=>$('#'+id).classList.contains('show')))return false;
+ $('#townScreen').classList.remove('show');$('#fateScreen').classList.remove('show');exploreFeed.push({t:'You return to '+explore.name+'. Review known finds in Chronicle before moving on.',k:'sys'});render();const focus=()=>{if(mode==='explore'&&explore===origin&&!overlayOpen())$('#btnParty').focus({preventScroll:true});};if(typeof queueMicrotask==='function')queueMicrotask(focus);else focus();return true;
+}
 function descendOrWin(){
   const node=WORLD[nodeId];advanceTask();
   if(explore.task&&!explore.task.done){exploreFeed.push({t:taskText()+' Follow the blue beacons before leaving.',k:'sys'});render();return;}
@@ -3003,6 +3061,7 @@ function buyItem(id){ const it=ITEMS[id]; if(!it||!SHOP_STOCK.includes(id)||bag.
 function sellItem(i){ const id=bag.items[i]; const it=ITEMS[id]; if(!it) return; const v=Math.floor((it.cost||0)/2);if(bag.gold>10000000-v)return;
   bag.gold+=v; bag.items.splice(i,1); exploreFeed.push({t:'Sold a '+it.name+' for '+v+' gold.',k:'sys'}); renderTown(); }
 function renderTown(){
+  renderDepartureReview($('#townDeparture'),true);
   const totHp=party.reduce((a,p)=>a+Math.max(0,p.hp),0), maxHp=party.reduce((a,p)=>a+p.maxHp,0);
   $('#townStatus').innerHTML=`Gold <b>${bag.gold}</b> &nbsp; Party HP <b>${totHp}/${maxHp}</b> &nbsp; Avg level <b>${partyLevelAvg()}</b> &nbsp; Carried items <b>${bag.items.length}</b>`;
   const shop=$('#shopList'); shop.innerHTML='';
@@ -3521,6 +3580,7 @@ function renderMinimap(){
     else if(e.locked(x,y)) col='#6b4a22';
     else col=_shade(pal.floor,0.7);
     s+='<rect x="'+x+'" y="'+y+'" width="1" height="1" fill="'+col+'"/>';
+    if(e.passages?.some(route=>route[0]===k))s+='<g data-service-passage="'+k+'"><title>Service arch · shorter return route</title><path d="M'+(x+.15)+' '+(y+.85)+'V'+(y+.4)+'Q'+(x+.5)+' '+(y-.05)+' '+(x+.85)+' '+(y+.4)+'V'+(y+.85)+'" fill="none" stroke="#8ad8dd" stroke-width=".1"/></g>';
     let dot=null;
     if(e.spotted.has(k)&&e.encounterAt(x,y)) dot='#e0584d';
     else if(isSecret) dot='#ffe08a';
@@ -3560,6 +3620,7 @@ function renderExplore(){
   $('#btnRest').textContent='Camp ('+bag.rations+')'; $('#btnRest').disabled=bag.rations<1;
   let goal = bag.relic ? 'Relic in hand, and the dead are walking. Cut your way to the stairs '+'\u25BC'+' before the tomb fills.' : 'Find the relic '+'\u2605'+' in the depths.';
   if(explore.task)goal=explore.task.done?'Objective complete. Find the key and take the stairs.':CHAPTER_TASKS[explore.task.id][1]+' Step onto a blue beacon to act; Chronicle has the full briefing.';
+  if(explore.pos.x===explore.exit.x&&explore.pos.y===explore.exit.y){const r=departureReview();goal=(r.ready?'Ready to leave.':r.blockers.join(' · ')+'.')+' '+r.finds.length+' known unclaimed finds; review them in Chronicle.';}
   $('#hint').textContent='Move with the arrows \u25B2\u25BC\u25C0\u25B6 (N/S/W/E). '+goal;
 }
 
@@ -3948,7 +4009,7 @@ function openCrownFate(){
   if(mode!=='explore'||nodeId!=='sunless_tomb'||!bag.relic||!campaign.bossSlain||explore.pos.x!==explore.exit.x||explore.pos.y!==explore.exit.y)return false;
   if(campaign.fate){endRun('win');return true;}
   if($('#fateScreen').classList.contains('show'))return true;
-  autosave();$('#fateStory').textContent='The king is dust. '+party.map(h=>h.name).join(', ')+' stand at the final stair. Ilyra waits above; Eren’s last warning hangs in the air: the dawn must belong to someone, or to everyone. What kind of kingdom have you fought to save?';
+  renderDepartureReview($('#fateDeparture'),true);autosave();$('#fateStory').textContent='The king is dust. '+party.map(h=>h.name).join(', ')+' stand at the final stair. Ilyra waits above; Eren’s last warning hangs in the air: the dawn must belong to someone, or to everyone. What kind of kingdom have you fought to save?';
   const bearer=$('#crownBearer');bearer.innerHTML='';for(const hero of party){if(!hero.alive)continue;const option=document.createElement('option');option.value=hero.id;option.textContent=hero.name+' · '+hero.cls;bearer.appendChild(option);}if(!party.some(h=>h.alive)){const option=document.createElement('option');option.value=party[0].id;option.textContent=party[0].name+' · final oath';bearer.appendChild(option);}
   const root=$('#fateChoices');root.innerHTML='';for(const [id,fate] of Object.entries(CROWN_FATES)){const b=document.createElement('button');b.className='council-choice';b.innerHTML='<strong>'+escapeHTML(fate.name)+'</strong><small>'+escapeHTML(fate.stakes)+'</small>';b.onclick=()=>chooseCrownFate(id);root.appendChild(b);}
   $('#fateScreen').classList.add('show');return true;
@@ -3970,7 +4031,7 @@ function campaignEpilogue(id){
 
 function openJournal(){
   if(mode!=='explore'||overlayOpen())return;
-  $('#journalScreen').classList.add('show');
+  renderDepartureReview($('#journalDeparture'));$('#journalScreen').classList.add('show');
   $('#journalTask').hidden=!explore.task;$('#journalTask').textContent=explore.task?taskText()+': '+CHAPTER_TASKS[explore.task.id][1]:'';
   $('#journalOath').textContent=OATHS[campaign.oath].name+' — '+OATHS[campaign.oath].desc;
   $('#journalStats').innerHTML=[['Battles won',campaign.battles],['Foes vanquished',campaign.foes],['Steps taken',campaign.steps],['Secrets found',campaign.secrets],['Events resolved',campaign.events],['Embers carried',campaign.boons.length],['Chapters crossed',campaign.completedFloors.length+'/'+(WORLD_MAXDEPTH-1)],['Successful checks',campaign.successes]].map(([label,n])=>'<div class="journal-stat"><b>'+n+'</b>'+label+'</div>').join('');

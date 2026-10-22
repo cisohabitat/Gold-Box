@@ -69,3 +69,12 @@ The new strategic post selection and eight ordinary terrain arenas change which 
 Retain the 96-run no-shopping canary and all existing thresholds. Companion (8), treasure (8) and varied-cache (3) campaigns remain separate integration policies. All sixteen authored field actions also require rule/browser coverage, including victories with ignored objectives. Final counts and policy limits are recorded in the release PR. Physical devices and human full-run pacing remain unverified.
 
 Local 0.24.0 canary acceptance (same gameplay rules as the final source): **30/32 Wanderer, 24/32 Delver, 15/32 Ironbound victories**, zero stalls, all unchanged canaries pass. Routes 0–3 W/D/I: 7/6/4, 7/6/2, 8/7/4, 8/5/5 (each out of eight). This seeded loot-first/no-shopping policy is not a human win-rate estimate. Exact-head CI and separate directed campaign evidence are recorded in the release PR.
+
+
+### 0.25.0 exploration changes
+
+Scout/key trips and ordered-name circuits now reduce unnecessary movement. Rare service routes shorten existing detours while preserving locks/secrets. This can change hazards, patrol contacts and seeded RNG; budgets, enemy stats, task rewards and difficulty coefficients remain unchanged. The waystation’s existing free rest/trading can now be followed by a deliberate return to finish exploring the completed floor; finite encounters, XP, councils and loot remain once-only.
+
+Keep all 96-run canary thresholds and the separate 8+8+3 directed policies. Paired graph-distance evidence is not a human-time estimate or a matching-RNG difficulty ablation. Report actual final canaries and directed outcomes in the release PR. Physical-device/human balance remains open.
+
+Paired route audit: 192 maps contain 23 useful service connections on 21 maps, saving at least eight steps per connection; separate entrance-to-find distances change only 17,641→17,637, so no broad shortcut speedup is claimed. In 24 paired probes each, scout/key/camp circuits total 1,168→576 steps and ordered-name circuits 2,563→1,799, with every sampled circuit improved. These fixed-map graph probes are not played-campaign distances or human time estimates.

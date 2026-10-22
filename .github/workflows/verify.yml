@@ -30,6 +30,8 @@ jobs:
           node tests/decisions-rules.cjs
           node tests/placement-rules.cjs
           node tests/setpiece-rules.cjs
+          node tests/exploration-rules.cjs
+          node tests/exploration-audit.cjs
           node tests/treasure-audit.cjs
           node tests/scenario-balance.cjs
       - name: Install development browser tools
@@ -67,6 +69,7 @@ jobs:
           node tests/loadouts.cjs
           node tests/decisions.cjs
           node tests/setpieces.cjs
+          node tests/exploration-flow.cjs
           if [ "$GOLD_BOX_BROWSER" = chromium ]; then
             node tests/balance.cjs
             node tests/companion-campaign.cjs
@@ -85,4 +88,5 @@ jobs:
             artifacts/companions/
             artifacts/treasure/
             artifacts/decisions/
+            artifacts/exploration/
           if-no-files-found: warn
