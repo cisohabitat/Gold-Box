@@ -80,3 +80,16 @@ Keep all 96-run canary thresholds and the separate 8+8+3 directed policies. Pair
 Paired route audit: 192 maps contain 23 useful service connections on 21 maps, saving at least eight steps per connection; separate entrance-to-find distances change only 17,641→17,637, so no broad shortcut speedup is claimed. In 24 paired probes each, scout/key/camp circuits total 1,168→576 steps and ordered-name circuits 2,563→1,799, with every sampled circuit improved. These fixed-map graph probes are not played-campaign distances or human time estimates.
 
 Local full 0.25.0 canary: Wanderer 31/32, Delver 28/32, Ironbound 14/32 victories, zero stalls; all original thresholds pass. The shortcut-search allocation optimization is separately checked against 256 identical passage selections/carved maps; full final-head CI repeats the campaigns.
+
+
+## Bell Warden climax — build 0.26.0
+
+The only guardian combat addition is one half-health Last Toll: 1d4+1 spell damage to a fixed 3×3 area after a normal preparation action, releasing on the next active turn. Movement or damaging weapon interruption counters it. Existing Warden base/elite stats, encounter budget, +1 attack, single skeleton, phase sanctums, XP and other guardians remain unchanged. The bequest replaces its Aegis drop with Aegis-or-Choirglass, never both; default campaigns keep taking Aegis. Choirglass is controlWard2 in the existing accessory slot, without AC/movement/damage bonuses or stacking. No difficulty threshold changes.
+
+Local 288 scripted arena probes complete without stalls. Bell Warden victories are Wanderer 24/24, Delver 11/24, Ironbound 4/24; these are prepared tactical probes, not full-run or human estimates. Three full varied-cache campaigns win 3/3, retain all nine road-cache alternatives and acquire both guardian bequests, including Choirglass through actual map play. Choice policy now uses modulo the current option count, preserving the three road-cache cycles and covering the two guardian options. First-option policies remain unchanged.
+
+The release still requires the full 96-run canary, eight companion-directed, eight treasure-directed and three varied-choice campaigns on the exact tested head, plus all three browser jobs. Final seed/route outcomes, artifact and publication evidence are recorded in the release PR. The guardian/treasure-directed policies are separate evidence; do not mix them into human difficulty claims. Physical-device and human campaign pacing validation remain open; overall grade remains B+.
+
+Runtime for build 0.26.0: **484,417 bytes (473.1 KiB)**, +7,883 over 0.25.0. One offline HTML file, no runtime dependencies or downloaded assets added. The 350 KiB target remains soft.
+
+Local unchanged 96-run canary passes with zero stalls: Wanderer **31/32**, Delver **24/32**, Ironbound **16/32** victories. Per-route W/D/I: 0 = 7/8, 5/8, 2/8; 1 = 8/8, 7/8, 5/8; 2 = 8/8, 6/8, 4/8; 3 = 8/8, 6/8, 5/8. Every Wanderer route has victories; all original difficulty bands/order checks pass. Changing one fight can alter downstream random rolls and Auto choices, so this is not a controlled attribution of each outcome to Last Toll. Final-head CI repeats the full sample and directed checks before publication.

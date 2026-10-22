@@ -8,7 +8,7 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 ## Play
 
-**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.25.0**
+**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.26.0**
 
 Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a fitted board/control shell on every device, with a live sidebar in wide windows and a separate Party & Log panel in smaller windows. **How to Play** on the title screen explains the rules.
 
@@ -43,6 +43,16 @@ Build 0.8.0 adds themed materials, chapter and ending illustrations, battle/vict
 Open **Sound & Display** from the title or Party & Log. Choose high contrast, reduced visual effects, normal/quick Auto pace, volume, and optional synthesized sound and ambient tones. Sound and ambience start off; enabling them requires a gesture and downloads no assets. Preferences persist separately from the campaign, or last for the session when storage is blocked. Settings pause combat; Escape returns to play. OS reduced motion always takes priority.
 
 The quality target is an excellent small standalone tactical RPG. The fresh overall grade is B+; the size target is now a soft 350 KiB, and commercial AAA production remains outside this project’s scope. Physical iPhone/iPad validation and broader human balance/playtesting remain outstanding.
+
+### The Bell Warden — build 0.26.0
+
+The campaign’s first guardian now has two named stages. **Bound Watch** channels its familiar rally. At half health, **Broken Bell** still gains +1 attack, calls one skeleton and opens two sanctums; it also unlocks one **Last Toll**. This attack spends an action marking fixed 3×3 ground, then releases on the Warden’s next active turn for 1d4+1 spell damage to everyone caught there. Move outside the amber tiles or interrupt with a damaging weapon hit. Misses, fully absorbed hits and spells do not interrupt. Sleep, Hold and Silence delay release. There is no extra turn or invulnerability gate; killing the Warden clears its warning.
+
+The named entrance, fractured-bell phase cue, resonating guardian and bell-shaped spell flight respect effects/reduced-motion preferences. Earlier lantern/arsenal and Gallery councils, plus the Fighter’s actual vow, change the dialogue and aftermath without hidden combat bonuses. Chronicle remembers the aftermath; carrying Choirglass Seal adds an ending echo.
+
+Victory leaves **The Warden’s Last Bequest** on its dungeon map tile: choose **Bellheart Aegis** (Fighter off-hand, +1 AC, −1 weapon damage taken per hit, −1 movement) or **Choirglass Seal** (any-class accessory, +2 spell-control/debuff saves, no AC or damage protection). Its control ward uses the strongest source and does not stack with Starweave. Compare both in Party; take one into the satchel or return later. Unclaimed choices and claimed gear survive Continue and portable saves. Existing single-item Aegis drops remain single-item drops; already cleared guardians never gain retroactive rewards.
+
+This release develops the Bell Warden first. The other three guardians retain their established encounters while the same approach is evaluated.
 
 ### Guardian counterplay — build 0.13.0
 
@@ -110,7 +120,7 @@ Build 0.10.1 replaces the shared weapon/cloak/potion pictures with 16 individual
 
 ### Bestiary, treasure and the Star-Eater
 
-Open **Bestiary** or **Treasure & Relics** on the title, in **Party & Log**, or at a waystation. The illustrated field guide covers all 21 creatures with lore, base statistics, spells, habitats and counterplay. The treasure page covers all 27 items plus the Sunless Crown, with exact effects, usable classes, sources, current carried counts and equipped heroes. Search and category filters help find an entry. The complete guide contains campaign spoilers. Combat pauses while it is open; Back or Escape resumes the same battle and preserves spell aim.
+Open **Bestiary** or **Treasure & Relics** on the title, in **Party & Log**, or at a waystation. The illustrated field guide covers all 21 creatures with lore, base statistics, spells, habitats and counterplay. The treasure page covers all 40 items plus the Sunless Crown, with exact effects, usable classes, sources, current carried counts and equipped heroes. Search and category filters help find an entry. The complete guide contains campaign spoilers. Combat pauses while it is open; Back or Escape resumes the same battle and preserves spell aim.
 
 **Legends & Hunt** introduces Astrax, the Star-Eater, a sky-dragon chained beneath the Observatory of Ash. Its hunt opens at a waystation after four chapters and the current council choice. Rest and equip first. Starless Breath marks nine amber tiles, then strikes them on the dragon’s next active turn: move out before it releases. At half health it gains attack, restores one breath charge and summons one skeleton once. The hunt is optional; victory gives the Eclipsescale Mantle (+2 AC and 2 less damage per spell hit, any class), a supply and battle XP once, returns the company to the waystation, and changes the final story acknowledgement. Defeat ends the run. Restart during the battle preserves the latest pre-hunt town Continue when storage is available.
 
@@ -220,7 +230,7 @@ Casters also advance to spell range instead of charging into melee, and incapaci
 
 ## Validation
 
-The current dependency-free suite has **114 engine/controller checks** against the real inline script with DOM stubs. It covers save recovery, pending levels, atomic imports, turn scheduling, friendly fire, guardians, campaign gates, route goals, movement-risk forecasts and immediate inventory persistence. Generator checks include 96 exit/key layouts, 160 all-cache-open vault layouts and 256 objective/fallback layouts.
+The main dependency-free regression suite has **114 engine/controller checks**; the focused treasure/loadout/decision/placement/scene/exploration/Warden suites bring the current total to **176 checks**. The main suite runs against the real inline script with DOM stubs. It covers save recovery, pending levels, atomic imports, turn scheduling, friendly fire, guardians, campaign gates, route goals, movement-risk forecasts and immediate inventory persistence. Generator checks include 96 exit/key layouts, 160 all-cache-open vault layouts and 256 objective/fallback layouts.
 
 Browser suites exercise real touch/keyboard controls, save/Continue, offline interaction, clipboard failure, paused menus, all endings, atlas/hunt recovery and 25 viewport sizes. The confidence suite reloads before closing Party after equip, unequip, Auto Gear and healing; it also checks full-HP potion safeguards and movement/turn previews on phone, short landscape, iPad-sized and desktop windows. Automated WebKit is compatibility evidence; physical iPhone/iPad Safari and human campaign difficulty remain unverified.
 
@@ -276,6 +286,8 @@ node tests/projectiles.cjs
 node tests/companions.cjs
 node tests/balance.cjs
 node tests/companion-campaign.cjs
+node tests/warden-rules.cjs
+node tests/warden.cjs
 ```
 
 These suites cover input safety, storage recovery, campaign choices, route objectives, guardian counterplay, illustrated content and tactical feedback. The release balance gate drives 96 fresh campaigns across all oaths/routes using real controllers and Auto combat; `tests/campaign.cjs` offers a shorter 36-run diagnostic. Read current results in the repository's BALANCE.md; previous release samples are historical evidence, not current win rates.
@@ -481,3 +493,6 @@ Old generated floors keep their contents. The lockboxes replace single items, re
 New checks in `tests/decisions-rules.cjs` and `tests/decisions.cjs` cover truthful overlaps, deterministic replacement, once-only/capacity/class handling, pending and claimed save recovery, malformed-import atomicity, fog limits and safe keyboard focus at four device sizes. Three additional varied-choice campaigns acquire every option in every cache; these are separate from the 96-run first-option/no-shopping canary. Full exact-head cross-browser and Pages/live evidence is recorded in the release PR. The overall grade remains B+ pending physical Safari and human full-campaign testing.
 
 Build 0.22.0 local acceptance: 142 engine/controller checks, four sprite/art and four policy checks, 192-floor source audit, 288 guardian probes and all 19 Chromium browser suites pass. The new decision flow also passes local Firefox at all four device sizes. Unchanged 96-run canaries: wanderer 29/32, delver 20/32, ironbound 18/32 victories, zero stalls. Companion-directed 8/8 and treasure-directed 7/8 victories; all eight vows and all 24 recent item additions acquired across their respective samples. Three varied-choice campaigns win 3/3 and acquire all nine cache alternatives. These diagnostic policies are not human difficulty estimates. Runtime 451,387 bytes (440.8 KiB), +12,792 bytes over 0.21.0; soft size policy, offline single file and overall B+ remain. Exact-head three-browser and Pages/live evidence is recorded in the release PR.
+
+
+Runtime for build 0.26.0: **484,417 bytes (473.1 KiB)**, +7,883 over 0.25.0. One offline HTML file, no runtime dependencies or downloaded assets added. The 350 KiB target remains soft.

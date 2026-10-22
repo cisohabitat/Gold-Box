@@ -1,8 +1,8 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),{harness}=require('./harness.cjs');
 function setup(){const h=harness();h.run("newGame(DEFAULT_BLOCKS.map((b,i)=>buildHero(CLASSES[b.cls],b.name,b.ab,'p'+(i+1),3,b.bg)));$('#startScreen').classList.remove('show');");return h;}
 test('GEAR-01: six slots, twelve sourced additions, unique complete artwork and bounded modifiers',()=>{
- const {run}=setup();assert.equal(run('Object.keys(GEAR_SLOTS).length'),6);assert.equal(run('Object.keys(ITEMS).length'),39);assert.equal(run('Object.keys(TREASURE_ART).length'),40);
- assert(run("Object.values(ITEMS).every(it=>RELIC_LORE[it.id]&&TREASURE_ART[it.id]&&!itemSources(it.id).includes('No current'))"));assert.equal(run('new Set(Object.values(TREASURE_ART).map(a=>a[1])).size'),40);
+ const {run}=setup();assert.equal(run('Object.keys(GEAR_SLOTS).length'),6);assert.equal(run('Object.keys(ITEMS).length'),40);assert.equal(run('Object.keys(TREASURE_ART).length'),41);
+ assert(run("Object.values(ITEMS).every(it=>RELIC_LORE[it.id]&&TREASURE_ART[it.id]&&!itemSources(it.id).includes('No current'))"));assert.equal(run('new Set(Object.values(TREASURE_ART).map(a=>a[1])).size'),41);
  run("const f=party[0];f.equip={weapon:'fine_sword',armor:'eclipsescale',offhand:'bellheart_aegis',head:'dawnwarden_helm',feet:'pilgrim_boots',accessory:'oathkeeper_ring'};game=new CombatEngine(party,[spawnMonster('ogre',0,false)],10,10);");
  assert.equal(run('equipBonuses(f).ac'),3);assert.equal(run('effSpeed(f)'),4);assert.equal(run("gearPower(f,'weaponGuard')"),1);assert.equal(run('game._weaponDamage(game.living(\'enemy\')[0],f,1)'),0);assert.equal(run('game._spellDamage(f,5)'),3);
  run("f.equip.armor='starweave';f.equip.accessory='ward_charm';");assert.equal(run("gearPower(f,'controlWard')"),2);

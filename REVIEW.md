@@ -217,3 +217,13 @@ The larger source of avoidable travel was objective placement: scouts were place
 Departure feedback uses the existing waystation, crown choice and Chronicle. It lists known unclaimed ground finds and sensed caches, with no hidden cache contents. Returning is explicit, preserves chapter/council/reward records and does not commit an ending. The final fate remains necessary to finish. This adds a practical recovery route for full bags or overlooked known treasure. Full browser/save/campaign/publication evidence belongs in the release PR. Physical Safari and human pacing remain unverified; grade stays B+.
 
 CI caught the 2,048-map audit exceeding its existing 15-second execution limit on one runner. Numeric bounded path searches, reused pre-door reachability, tactic-specific scoring, cached loot anchors and one-pass objective selection remove redundant work. The complete audit now takes about 7.9 seconds locally; the 15-second gate and map count remain unchanged. Local 256-map comparisons preserve passage selections, placements, task labels and RNG states; paired route metrics remain identical. Final-head CI repeats all release gates.
+
+
+## Bell Warden review — 0.26.0
+
+The first guardian already had a rally interrupt and a generic once-only bloodied phase, but little stage-specific tactical identity, personalised aftermath or reward decision. Bound Watch/Broken Bell now frames a new one-charge delayed Last Toll. It consumes normal preparation/release turns, marks fixed ground, can be escaped or interrupted, and leaves the prior half-health effects intact. Low 1d4+1 damage and shared sanctums bound its cost; the unchanged full canary must still validate integration.
+
+The bequest trades Fighter physical defence/movement against any-class control saves without giving both. New offline Choirglass art depicts five inscribed glass tongues inside a split silver bell frame. Council/vow reactions and persistent aftermath give the battle personal stakes without new bonuses. Existing drops/saves remain supported. The first guardian is the scope of this release; do not describe all bosses as redesigned or the overall game as AAA. Grade remains B+ pending human pacing and physical iPhone/iPad Safari evidence. Final test, balance and publication evidence belongs in the release PR.
+
+
+Runtime for build 0.26.0: **484,417 bytes (473.1 KiB)**, +7,883 over 0.25.0. One offline HTML file, no runtime dependencies or downloaded assets added. The 350 KiB target remains soft.

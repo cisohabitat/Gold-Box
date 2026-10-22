@@ -241,3 +241,10 @@ The release requires eight scene-rule checks, a four-device/all-eight-scene brow
 Implemented the accepted exploration steps. Short service routes appear only where they remove real detours without opening vaults. Warren scouts fit the key outing; Gallery labels follow a more efficient walking circuit. Existing saves retain their layouts and task order.
 
 Before moving to another map or committing the crown, the existing waystation/finale shows known unclaimed finds and supports Return to floor. Chronicle gives the same known-only review and unfinished-task status during exploration. Chapter XP/councils/rewards remain once-only, and explicit crown fate still ends the campaign. Independent paired route probes and complete release gates are required. Battle-aftermath echoes and physical-device/human pacing sessions remain future work; overall B+ remains.
+
+
+### 0.26.0 — a complete first guardian climax
+
+Implement the accepted guardian-first approach on the Bell Warden: named Bound Watch/Broken Bell stages, once-only delayed Last Toll with clear movement/weapon counterplay, distinctive restrained presentation, real council/vow dialogue and aftermath, and a choose-one physical/control relic bequest. Preserve existing guardian tuning except that one bounded phase spell, and preserve existing drops in saves. Verify complete acquisition/Continue flows and unchanged full balance/release gates before publication.
+
+The Warden slice is implemented. Apply lessons to the Cantor, king and optional dragon only after reviewing the first encounter’s readability and pacing. Physical iPhone/iPad Safari and human campaign sessions remain required evidence for a higher overall grade; automated success alone does not raise B+.

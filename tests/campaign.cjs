@@ -27,7 +27,7 @@ const results=[];for(let sample=0;sample<samples;sample++){results.push(...await
       if(document.querySelector('#banner').classList.contains('show')){stop='victory';break;}
       if(levelUp){autoAssignLevelUp();continue;}
       if(document.querySelector('#aftermathScreen').classList.contains('show')){closeAftermath();continue;}
-      if(treasureAtFeet()&&document.querySelector('#partyScreen').classList.contains('show')){const reward=treasureAtFeet(),index=varyRewards?(sample+floorDepth())%3:0,item=reward.reward.items[index];if(!chooseTreasure(reward.offer,index))throw Error('Diagnostic reward claim failed');rewardChoices.push({offer:reward.offer,index,item});closeParty();continue;}
+      if(treasureAtFeet()&&document.querySelector('#partyScreen').classList.contains('show')){const reward=treasureAtFeet(),index=varyRewards?(sample+floorDepth())%reward.reward.items.length:0,item=reward.reward.items[index];if(!chooseTreasure(reward.offer,index))throw Error('Diagnostic reward claim failed');rewardChoices.push({offer:reward.offer,index,item});closeParty();continue;}
       if(curEvent){const options=EVENTS[curEvent.id].options;let pick=options.findIndex(o=>o.fallback),best=-Infinity;options.forEach((o,i)=>{if(!o.fallback){const score=bestForStat(o.stat).mod-o.dc;if(score>best){best=score;pick=i;}}});resolveEventOption(pick);closeEvent();continue;}
       if(document.querySelector('#townScreen').classList.contains('show')){
         if(pursueTreasure)for(const id of ['smoke_phial','dawn_salt','pilgrim_boots','ward_charm','pilgrim_mace','scout_bow','round_shield','ember_focus','iron_helm','sage_circlet','trail_boots','copper_ring'])if(!campaign.discovered.includes(id)&&bag.gold>=ITEMS[id].cost)buyItem(id);
