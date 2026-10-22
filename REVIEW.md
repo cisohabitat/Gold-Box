@@ -227,3 +227,13 @@ The bequest trades Fighter physical defence/movement against any-class control s
 
 
 Runtime for build 0.26.0: **484,417 bytes (473.1 KiB)**, +7,883 over 0.25.0. One offline HTML file, no runtime dependencies or downloaded assets added. The 350 KiB target remains soft.
+
+
+## Ash Cantor review — 0.27.0
+
+The second guardian had a readable channel but a generic bloodied stat bump and noninteractive fire shift. Measured Hymn/Last Procession now changes its positioning: approach before casting or strike in reach, with ordinary action and reaction rules. Two optional braziers reuse deliberate one-action field interactions; either lane can be cooled before or after half HP, and its quenched tiles stay cool. Council shelters and spell dangers remain distinct.
+
+The choice of offensive Covenant or off-hand healing/ember censer creates a bounded build decision with one reward. Actual choir, road and companion history gives the aftermath personal consequences; no extra bonuses, quest progress or invented legacy decisions are granted. Old single drops and saved exploration remain compatible. The phone review identified a clipped Cancel label, now shortened with its full accessible name retained; previews describe future effects before commitment. The king/dragon remain separate future work. Overall B+ remains until human pacing and physical Safari evidence exist. Exact-head tests/campaigns and publication proof are recorded in the release PR.
+
+
+Runtime for build 0.27.0: **492,132 bytes (480.6 KiB)**, +7,715 over 0.26.0. One offline HTML file; no runtime dependencies or downloaded assets added. The 350 KiB target remains soft.

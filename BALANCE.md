@@ -93,3 +93,16 @@ The release still requires the full 96-run canary, eight companion-directed, eig
 Runtime for build 0.26.0: **484,417 bytes (473.1 KiB)**, +7,883 over 0.25.0. One offline HTML file, no runtime dependencies or downloaded assets added. The 350 KiB target remains soft.
 
 Local unchanged 96-run canary passes with zero stalls: Wanderer **31/32**, Delver **24/32**, Ironbound **16/32** victories. Per-route W/D/I: 0 = 7/8, 5/8, 2/8; 1 = 8/8, 7/8, 5/8; 2 = 8/8, 6/8, 4/8; 3 = 8/8, 6/8, 5/8. Every Wanderer route has victories; all original difficulty bands/order checks pass. Changing one fight can alter downstream random rolls and Auto choices, so this is not a controlled attribution of each outcome to Last Toll. Final-head CI repeats the full sample and directed checks before publication.
+
+
+## Ash Cantor climax — build 0.27.0
+
+Cantor base/elite stats, budget 0.50, original three spell slots/charges and once-only +1 attack/damage/skeleton remain unchanged. Last Procession changes its positioning: advance using normal movement before a ranged cast, or strike in reach. Pending Cinderburst releases first at its original coordinates. Two optional one-action braziers remove four terrain-fire tiles each and keep their lanes cool at ignition; Auto only uses an adjacent station when it immediately protects a standing ally. No extra spell, turn, XP, reward or mandatory gate is added.
+
+The bequest replaces Covenant with Covenant-or-Censer. First-option diagnostics still take Covenant; the support relic appears only in the separate varied-choice sample. Censer is wearer-only emberGuard2/healPower1 in the existing off-hand slot, with strongest-source healing/wards and normal hand conflicts; no AC or spell-damage protection.
+
+The unchanged 96-run canary passes with zero stalls: Wanderer 30/32, Delver 25/32, Ironbound 16/32 victories. Per-route W/D/I: 0 =7/8,5/8,2/8; 1 =7/8,8/8,5/8; 2 =8/8,5/8,4/8; 3 =8/8,7/8,5/8. All original difficulty bands/order and Wanderer route criteria pass. These seeded outcomes are not a controlled attribution to a single tactic or a human difficulty estimate.
+
+All 288 prepared guardian scenarios complete without stalls; Cantor wins are Wanderer 21/24, Delver 6/24, Ironbound 6/24. Three varied-choice full campaigns win 3/3, acquire all nine road-cache alternatives, both Warden alternatives and both Cantor alternatives, including the new censer through actual map play. Full exact-head CI repeats 96+8 companion+8 treasure+3 choice campaigns before publication. Final outcome/artifact/three-browser and Pages/live evidence is recorded in the release PR. Human pacing and physical iPhone/iPad Safari remain unverified; overall B+ remains.
+
+Runtime for build 0.27.0: **492,132 bytes (480.6 KiB)**, +7,715 over 0.26.0. One offline HTML file; no runtime dependencies or downloaded assets added. The 350 KiB target remains soft.

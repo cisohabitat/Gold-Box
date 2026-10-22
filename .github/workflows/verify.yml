@@ -31,6 +31,7 @@ jobs:
           node tests/placement-rules.cjs
           node tests/setpiece-rules.cjs
           node tests/warden-rules.cjs
+          node tests/cantor-rules.cjs
           node tests/exploration-rules.cjs
           node tests/exploration-audit.cjs
           node tests/treasure-audit.cjs
@@ -72,6 +73,7 @@ jobs:
           node tests/setpieces.cjs
           node tests/exploration-flow.cjs
           node tests/warden.cjs
+          node tests/cantor.cjs
           if [ "$GOLD_BOX_BROWSER" = chromium ]; then
             node tests/balance.cjs
             node tests/companion-campaign.cjs
