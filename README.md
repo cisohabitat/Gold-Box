@@ -8,7 +8,7 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 ## Play
 
-**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.24.0**
+**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.25.0**
 
 Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a fitted board/control shell on every device, with a live sidebar in wide windows and a separate Party & Log panel in smaller windows. **How to Play** on the title screen explains the rules.
 
@@ -19,6 +19,12 @@ The live version is served from GitHub Pages: the repo’s **Settings → Pages*
 ### Enemy placement
 
 Build 0.23.0 keeps every newly placed enemy on ground reachable before the stairs, including guardians. Ambushes and awakened patrols also respect locked doors and never reuse cleared fights. Loading an older map repairs inaccessible surviving enemies without resetting cleared battles or treasure. Six placement regressions include an independent audit of 2,048 generated floors.
+
+### Exploration and leaving a floor
+
+Build 0.25.0 reduces unnecessary quest travel: Warren scouts fit into the key outing, and the Gallery’s three name stones follow a more efficient walking order. Where useful, a newly generated map gains up to two short service passages; a blue arch appears once its terrain is seen. Locked vaults and secret caches remain protected. Existing saved maps and task labels stay intact.
+
+**Before leaving this floor** appears in the waystation, final crown review and Chronicle. It lists unfinished objectives and known unclaimed finds with coordinates; discovered hidden caches keep their contents a surprise. Use **Return to floor** from the waystation or crown review to finish exploring. Chapter XP, council choices and treasure stay once-only. An explicit crown fate still finishes the campaign; loading while on the final stairs reopens its review.
 
 ### Tactical chapter battles
 
