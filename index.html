@@ -1715,15 +1715,15 @@ function prepareCrownApproach(r){
  if(!guard)return r;const occupied=new Set(Object.keys(r.loot).filter(k=>k!==original));for(const e of r.encounters)if(e!==guard&&e.at)occupied.add(key(...e.at));
  const predecessor=k=>{const [x,y]=k.split(',').map(Number);return [[1,0],[-1,0],[0,1],[0,-1]].map(([dx,dy])=>key(x+dx,y+dy)).find(n=>reach.has(n)&&reach.get(n)===reach.get(k)-1&&!occupied.has(n)&&n!==key(start.x,start.y));};
  const candidates=[...reach.keys()].filter(k=>distance.get(k)>=8&&distance.get(k)<=12&&!occupied.has(k)&&k!==key(start.x,start.y)&&predecessor(k));const [ox,oy]=original.split(',').map(Number);candidates.sort((a,b)=>Math.abs(distance.get(a)-10)-Math.abs(distance.get(b)-10)||Math.abs(+a.split(',')[0]-ox)+Math.abs(+a.split(',')[1]-oy)-Math.abs(+b.split(',')[0]-ox)-Math.abs(+b.split(',')[1]-oy)||a.localeCompare(b));
- const target=candidates[0];if(!target)return r;delete r.loot[original];r.loot[target]={type:'relic'};guard.at=predecessor(target).split(',').map(Number);return r;
+ const target=candidates[0];if(!target)return null;delete r.loot[original];r.loot[target]={type:'relic'};guard.at=predecessor(target).split(',').map(Number);return r;
 }
 function generateLevel(spec){
   // Canvas scales with the room grid: more or larger room cells make a bigger map.
   // CELL is the tile footprint per room cell; capped so the overhead map stays legible.
   const g=spec.gen||{cols:3,rows:2}, CELL=6;
   const W=Math.min(31, 2 + g.cols*CELL), H=Math.min(27, 2 + g.rows*CELL);
-  for(let attempt=0; attempt<60; attempt++){ const r=_tryGen(spec,W,H); if(r){r.chapter=spec.id;return spec.id==='sunless_tomb'?prepareCrownApproach(r):r;} }
-  const r=_fallbackLevel(spec,W,H);r.chapter=spec.id;return spec.id==='sunless_tomb'?prepareCrownApproach(r):r;
+  for(let attempt=0; attempt<60; attempt++){ const r=_tryGen(spec,W,H); if(r){r.chapter=spec.id;const ready=spec.id==='sunless_tomb'?prepareCrownApproach(r):r;if(ready)return ready;} }
+  const r=_fallbackLevel(spec,W,H);r.chapter=spec.id;const ready=spec.id==='sunless_tomb'?prepareCrownApproach(r):r;if(!ready)throw Error('No valid crown approach');return ready;
 }
 
 
