@@ -22,7 +22,7 @@ let browser;
   await page.setViewportSize({width:s.width,height:s.height});
   await page.evaluate(s=>{const root=document.documentElement;['top','right','bottom','left'].forEach((key,i)=>root.style.setProperty('--safe-'+key,s.safe[i]+'px'));showStart();},s);
   await page.click('#btnDefault');await bounds('Explore '+s.width+'x'+s.height);
-  await page.locator('#btnRestart').dblclick();assert.equal(await page.evaluate(()=>mode),'explore','double click left game');assert.equal(await page.locator('#restartScreen').isVisible(),true);await page.click('#btnKeepPlaying');
+  const beforeRestart=await page.evaluate(()=>JSON.stringify(saveState()));await page.locator('#btnRestart').dblclick();assert.equal(await page.evaluate(()=>mode),'explore','double click left game');assert.equal(await page.locator('#startScreen').isVisible(),false);assert.equal(await page.evaluate(()=>JSON.stringify(saveState())),beforeRestart,'double click changed the run');if(await page.locator('#restartScreen').isVisible())await page.click('#btnKeepPlaying');
   if(await page.locator('#btnDetails').isVisible()){await page.click('#btnDetails');assert.equal(await page.locator('#fieldNotes').isVisible(),true);
   const position=await page.evaluate(()=>JSON.stringify(explore.pos));await page.keyboard.press('ArrowUp');assert.equal(await page.evaluate(()=>JSON.stringify(explore.pos)),position);
   await page.click('#btnDetailsClose');}

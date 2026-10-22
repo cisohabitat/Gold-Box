@@ -255,3 +255,8 @@ The Warden slice is implemented. Apply lessons to the Cantor, king and optional 
 Implement the accepted second guardian slice: named Measured Hymn/Last Procession, an advancing second-stage AI using existing spells/actions, two deliberate extinguishable braziers with lasting cool routes, personalised choir/road/companion aftermath and a Covenant-or-support-censer choice. Reuse field-action and guardian-choice systems; preserve legacy drops, saves, stat/charge budgets and the full release gates.
 
 The slice is implemented. Next planned guardian is the Sunless King, with the optional dragon following separately. Human campaign pacing and physical iPhone/iPad Safari remain evidence gaps; a successful automated gate does not by itself raise the overall B+ assessment.
+
+
+## 0.28.0 — resolve the fresh visual/manual-play review
+
+Deliver explicit Guard & End, precise pannable battle input, inventory-first selected-hero equipment, Council/Trade/Company waystations, known-only map symbols/readable arrival guide, larger desktop boards and decorative guardian staging. Preserve the standalone/offline game, balance rules and saves. Acceptance is recorded in REQUIREMENTS.md; cross-browser release evidence is recorded in REVIEW.md. Physical iPhone/iPad playtesting and broader human campaign pacing remain the next validation work.
