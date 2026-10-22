@@ -74,6 +74,7 @@ jobs:
           node tests/exploration-flow.cjs
           node tests/warden.cjs
           node tests/cantor.cjs
+          node tests/usability.cjs
           if [ "$GOLD_BOX_BROWSER" = chromium ]; then
             node tests/balance.cjs
             node tests/companion-campaign.cjs
@@ -93,4 +94,5 @@ jobs:
             artifacts/treasure/
             artifacts/decisions/
             artifacts/exploration/
+            artifacts/usability/
           if-no-files-found: warn

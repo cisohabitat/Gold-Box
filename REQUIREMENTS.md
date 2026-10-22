@@ -451,3 +451,15 @@ Acceptance: tests/cantor-rules.cjs and four-device tests/cantor.cjs, all 176 pri
 
 
 Runtime for build 0.27.0: **492,132 bytes (480.6 KiB)**, +7,715 over 0.26.0. One offline HTML file; no runtime dependencies or downloaded assets added. The 350 KiB target remains soft.
+
+
+## Visual/gameplay usability acceptance — 0.28.0
+
+1. Guard explicitly says it ends the turn; status identifies the current actor and HP. Preserve its engine semantics.
+2. Provide a touch alternative with cells >=44px and deliberate inspection/execution, legal-target checks, invalidation across actors/actions/instances, and unchanged spell/field confirmations. Support portrait, short landscape, iPad and desktop without page overflow or losing actions/log/build. Desktop board gains useful space.
+3. Place inventory before hero cards; show one chosen loadout; keep all six slots, comparisons, potion safeguards, class/hand rules, saved equipment and keyboard parity. Opening a biography with an item selected must not apply it.
+4. Put the council before optional waystation systems. Provide persistent Council/Trade/Company navigation and a direct Leave jump. Page changes spend nothing, and existing mandatory choices, once-only rewards, buying/selling, companion progress and return-to-floor remain valid.
+5. Give known patrols, keys, treasure, events, stairs and caches distinct silhouettes. Never draw unknown discoveries. Keep fog separate from known-wall masonry. Provide readable movement and chapter-arrival information on phone.
+6. Strengthen guardian/arena/objective identity with offline inline decoration and larger boss emphasis. No extra units, changes to combat stats, hidden cover, extra rewards, RNG use or dependencies. Preserve motion/effects accessibility and HP/danger readability.
+
+Verification: tests/usability.cjs covers six layouts across the four device classes, state-preserving sheet navigation, hero/history interaction, fog integrity/RNG independence, Guard & End, enlarged cells, inspection before movement, explicit execution, rotation and stale area aim. Existing 25-size and 23 prior browser suites remain mandatory, with expected new page/hero navigation expressed through actual controls.

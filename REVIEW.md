@@ -237,3 +237,16 @@ The choice of offensive Covenant or off-hand healing/ember censer creates a boun
 
 
 Runtime for build 0.27.0: **492,132 bytes (480.6 KiB)**, +7,715 over 0.26.0. One offline HTML file; no runtime dependencies or downloaded assets added. The 350 KiB target remains soft.
+
+
+## Fresh visual and manual-play review — 0.28.0
+
+The live 0.27.0 review completed the opening chapter through equipment, a manual battle, the locked exit and level-up. Six viewport sizes and staged Cantor screens exposed six usability/presentation findings: Guard’s unlabelled immediate turn advance; tiny short-landscape targets; inventory below all four biographies/loadouts; a six-screen waystation; weak map guidance; and guardian staging that undersold the writing.
+
+0.28.0 addresses all six. Guard & End names its existing behavior and the actor status includes HP. Enlarge supplies an optional 488px pannable board (~46px cells): inspection is free and the explicit execution checks legal targets plus combat/actor/action/spell identity. Area/field confirmations remain separate. Its inspected-tile panel sits over the board, with panning space underneath, preserving the action area and recent log; actor/action/viewport changes recenter the view. The overview stays available. Desktop moves actions beside a larger board.
+
+Equipment puts the satchel first, bounds long inventory scrolling, shows a chosen hero and collapses biography details. Expanding history with an item selected cannot equip it. Council, Trade and Company pages separate mandatory decisions from optional systems; Leave links to the existing gated routes. The opening council’s two options are visible in the initial 440×780 view. Map symbols distinguish known patrol/key/treasure/event/stairs/cache finds; masonry stays on seen walls, and a scrollable guide exposes movement and chapter arrival. Guardian architecture, larger tokens and field props add visual identity without changing terrain, RNG, rules, enemies or rewards.
+
+Local verification: all 188 existing engine/controller checks, art/policy/source audits, 2,048 generated-floor access checks, paired exploration audits and 288 guardian probes pass. All 23 prior Chromium browser suites pass with real new page/hero navigation, plus tests/usability.cjs covering 440×780, 956×350, 820×1180, 1366×768, 375×667 and 600×350. The existing 25-size overview matrix retains 44px actions, fit, safe areas, menus, keyboard/rotation, log and protected Restart. The new suite checks free touch/keyboard inspection, deliberate execution, invalid/stale selections, actor HP, hero/history safety, state-preserving waystation navigation, fog integrity and RNG independence. The exact-head three-browser CI and unchanged 96+8+8+3 campaigns remain publication gates; final evidence is attached to the release PR.
+
+Runtime is 507,788 bytes (495.9 KiB), +15,656 over 0.27.0, under the user’s soft size policy. Overall B+ remains provisional: these browser checks and scripted Auto campaigns do not certify physical iPhone/iPad Safari or broader human full-campaign balance.

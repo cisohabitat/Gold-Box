@@ -60,8 +60,8 @@
   .minimap{width:100%;height:100%;display:block;image-rendering:pixelated;}
   .fppad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;flex-basis:100%;max-width:360px;margin:6px auto 0;}
   .fppad button{font-size:24px;line-height:1;padding:14px 0;min-height:54px;}
-  .cell{position:relative;min-width:0;min-height:0;background:var(--tile);display:flex;align-items:center;justify-content:center;user-select:none;transition:background .08s;}
-  .cell.alt{background:var(--tile-2);}
+  .cell{position:relative;min-width:0;min-height:0;background:var(--tile);background:color-mix(in srgb,var(--tile) 84%,transparent);display:flex;align-items:center;justify-content:center;user-select:none;transition:background .08s;}
+  .cell.alt{background:var(--tile-2);background:color-mix(in srgb,var(--tile-2) 84%,transparent);}
   .cell.reach{background:#3c3414;cursor:pointer;}
   .cell.reach:hover{background:#554612;}
   .cell.move-risk::after{content:'!';position:absolute;top:1px;right:2px;color:#ffe19a;font-weight:bold;text-shadow:0 1px 2px #000;pointer-events:none;}
@@ -542,6 +542,23 @@
   .cell.breath-zone::before{content:'!';position:absolute;inset:1px;border:2px dashed #ffc276;background:repeating-linear-gradient(135deg,#d7793633 0 3px,transparent 3px 6px);font:bold 12px monospace;color:#fff2ae;text-align:right;pointer-events:none;z-index:3;}
  #btnTownBestiary,#btnTownTreasures,#btnHuntDetails{min-height:44px;}
  .atlas-card.relic-card{border-color:#b49158;background:linear-gradient(145deg,#26283b,#151a21);}.relic-card .atlas-art{float:none;width:100%;height:176px;margin:0 0 14px;padding:6px;border-color:#8d754e;background:radial-gradient(ellipse,#29354b,#0c1522 75%);}.relic-card .atlas-kind{color:#f3d398;}.atlas-art svg[data-item-art]{image-rendering:auto;pointer-events:none;}
+
+  .turn-status{font-size:15px;line-height:17px;}
+  @media(max-width:599px){.combat-active #btnDetails .notes-name{display:none;}.combat-active #btnDetails .notes-short{display:inline;}}
+  /* Review fixes: compact sheets, readable map, and an optional precise battlefield. */
+  .controls.combat-active{grid-template-columns:repeat(3,minmax(0,1fr));}.controls.combat-active>button{font-size:16px;padding:4px;}#partyBag{max-height:220px;overflow-y:auto;overscroll-behavior:contain;}
+  [hidden]{display:none!important;}
+  .sheet-heading{display:flex;justify-content:space-between;align-items:center;gap:8px;position:sticky;top:-12px;z-index:4;background:var(--panel);padding:8px 0;}.sheet-heading h2{font-size:26px;}
+  .sheet-nav{display:flex;gap:6px;position:sticky;top:-12px;z-index:3;background:var(--panel);padding:8px 0;margin:4px 0 10px;}.sheet-nav button{flex:1;min-width:0;min-height:44px;padding:5px;font-size:17px;letter-spacing:0;overflow-wrap:anywhere;}.sheet-nav button[aria-pressed=true]{border-color:#ffe1a3;background:#594323;color:#fff4d3;}
+  #partyHeroTabs{position:static;}#partyHeroes{display:block;}#partyHeroes .pcard{margin-top:8px;}.hero-history{margin:6px 0 8px;}.hero-history summary{min-height:44px;display:flex;align-items:center;color:#d4c7a5;cursor:pointer;}.hero-history summary::before{content:'▸ ';}.hero-history[open] summary::before{content:'▾ ';}
+  #townSub{font-size:17px;margin-bottom:10px;}#townScreen .council-pane{margin-top:0!important;text-align:left;}#townScreen .chapter-art{height:64px;margin-bottom:8px;}#townScreen .story-copy{font-size:18px;line-height:1.3;}#townScreen .departure-review{margin-top:12px;}#townScreen #forkBox{scroll-margin-top:64px;}.towncols{margin-top:0;}
+  .map-guide{position:absolute;top:6px;left:6px;z-index:4;max-width:min(360px,calc(100% - 12px));background:#0b1619ed;border:1px solid #a99565;color:#f1ddaf;font-size:16px;line-height:1.3;}.map-guide summary{min-height:44px;display:flex;align-items:center;gap:8px;padding:6px 10px;cursor:pointer;}.map-guide summary::before{content:'ⓘ';}.map-guide[open]{max-height:calc(100% - 12px);overflow:auto;}.map-guide p{padding:0 10px;margin:8px 0;}#mapBrief{border-top:1px solid #6b624b;padding-top:8px;}
+  #board:not(.mapboard){position:relative;isolation:isolate;}.arena-scenery{position:absolute;inset:0;z-index:-1;pointer-events:none;}.arena-scenery svg{width:100%;height:100%;}
+  #board[data-arena=cinder_choir]{background:#472d27;}#board[data-arena=bell_nave]{background:#28423f;}.token.guardian{width:94%;height:94%;border:1px solid #ffdf8b;box-shadow:0 0 0 1px #291b0a,0 0 12px #ffce6080;}.token.guardian svg{width:95%;height:95%;}.field-mark{font-size:clamp(12px,2vw,18px)!important;left:2px!important;right:auto!important;bottom:2px!important;line-height:1!important;}.field-mark[data-prop=brazier]::before{content:'♨';display:block;color:#ffc08b;font-size:18px;}.field-mark[data-prop=cover]::before{content:'▰';display:block;color:#dfd7b8;}.field-mark[data-prop=sanctum]::before{content:'✚';display:block;color:#d2f1b6;}.field-used .field-mark::before{opacity:.4;}
+  .board-wrap{position:relative;}.board-stage.board-enlarged{padding-bottom:66px;display:block;place-items:start;overflow:auto;touch-action:pan-x pan-y pinch-zoom;overscroll-behavior:contain;scrollbar-color:#d8aa55 #111b20;}.board-stage.board-enlarged .cell{scroll-margin-block-end:58px;}.board-stage.board-enlarged #board{width:488px!important;height:488px!important;max-height:none!important;min-width:488px;min-height:488px;margin:0;justify-self:start;align-self:start;}.precise-selected{outline:3px solid #fff3b0;outline-offset:-3px;}.board-stage.board-enlarged #tileInspect{display:none;}.board-wrap:has(.board-enlarged) #tileInspect{display:none;}.precise-tile{position:absolute;z-index:6;flex:none;display:flex;align-items:center;gap:6px;padding:2px;background:#101c20;border:1px solid #7ca2a7;}.precise-tile p{flex:1;min-width:0;margin:0;font-size:16px;line-height:18px;max-height:54px;overflow-y:auto;}.precise-tile button{min-height:44px;max-width:150px;font-size:16px;padding:4px;white-space:normal;}
+  @media(max-height:600px) and (min-width:600px){.precise-tile{padding:2px;}.precise-tile p{max-height:36px;font-size:15px;}.controls.combat-active{grid-template-columns:repeat(4,minmax(0,1fr));}.controls.combat-active>button{font-size:14px;}.controls.combat-active #btnDetails .notes-name{display:none;}.controls.combat-active #btnDetails .notes-short{display:inline;}.turn-status{font-size:14px;line-height:16px;min-height:18px;}#btnGuard{font-size:15px;}#btnRestart{font-size:12px;line-height:1;padding:4px;}}
+  @media(min-width:1200px) and (min-height:650px){.board-wrap{display:grid;grid-template-columns:minmax(0,1fr) 230px;grid-template-rows:auto auto auto minmax(160px,1fr) auto;gap:6px 12px;}.board-stage{grid-column:1;grid-row:1/5;}.recent-log{grid-column:1/-1;grid-row:5;}.turn-status,.satchel{grid-column:2;grid-row:1;}.hint{grid-column:2;grid-row:2;max-height:64px;}.spellmenu{grid-column:2;grid-row:3;}.controls,.controls.combat-active{grid-column:2;grid-row:4;align-self:start;grid-template-columns:repeat(2,minmax(0,1fr));}.controls .cgrp{grid-template-columns:repeat(2,minmax(0,1fr));}#btnBoardZoom{grid-column:1/-1;}}
+
 </style>
 </head>
 <body>
@@ -554,9 +571,10 @@
   <div id="bossPanel" hidden><span id="bossName"></span><div id="bossHealth"><i></i></div></div>
   <div class="layout">
     <div class="board-wrap">
-      <div class="board-stage"><div id="board"></div><svg id="projectileLayer" aria-hidden="true" focusable="false"></svg><div id="tileInspect" class="tile-inspect" hidden></div><div id="battleCue" class="battle-cue" aria-hidden="true" hidden></div></div>
+      <div class="board-stage"><div id="board"></div><details id="mapGuide" class="map-guide"><summary>Map guide</summary><p>Move with ▲▼◀▶ or WASD. Black is unexplored; masonry marks known walls.</p><p>⚔ Patrol · ⚿ Key · ▣ Treasure · ◇ Event · ▽ Stairs · ✦ Cache · Blue letters: chapter objectives</p><p id="mapBrief"></p></details><svg id="projectileLayer" aria-hidden="true" focusable="false"></svg><div id="tileInspect" class="tile-inspect" hidden></div><div id="battleCue" class="battle-cue" aria-hidden="true" hidden></div></div>
       <div id="recentLog" class="recent-log" role="log" aria-label="Recent events. Full history in Party and Log." aria-live="polite" aria-relevant="additions"></div>
       <div id="turnStatus" class="turn-status" role="status" aria-live="polite" hidden></div>
+      <div id="preciseTile" class="precise-tile" hidden><p id="preciseDescription" role="status" tabindex="0">Tap a tile to inspect it. Drag to pan the enlarged board.</p><button id="btnUseTile" disabled>Use selected tile</button></div>
       <div class="satchel" id="satchel"></div>
       <div class="hint" id="hint" aria-live="polite"></div>
       <div class="spellmenu" id="spellMenu"></div>
@@ -567,7 +585,7 @@
           <button id="btnCast">Cast</button>
           <button id="btnItem">Use Item</button>
           <button id="btnSignature">Signature</button>
-          <button id="btnGuard">Guard</button>
+          <button id="btnGuard" title="Take a guarded stance and immediately end this hero’s turn">Guard &amp; End</button>
           <button id="btnWait">Wait</button>
           <button id="btnEnd">End Turn</button>
           <button id="btnAuto" title="Heroes fight on their own until the battle ends">Auto</button>
@@ -585,7 +603,8 @@
           <button id="btnFpBack" title="South">&#9660;</button>
           <button id="btnStrafeR" title="East">&#9654;</button>
         </div>
-        <button id="btnDetails" aria-controls="fieldNotes" aria-expanded="false"><span class="notes-name">Party &amp; Log</span><span class="notes-short">Log</span></button>
+        <button id="btnBoardZoom" aria-label="Enlarge battlefield for precise touch selection" aria-pressed="false" hidden>Enlarge</button>
+        <button id="btnDetails" aria-label="Party and Log" aria-controls="fieldNotes" aria-expanded="false"><span class="notes-name">Party &amp; Log</span><span class="notes-short">Log</span></button>
         <button id="btnRestart" aria-haspopup="dialog">Restart…</button>
       </div>
     </div>
@@ -653,10 +672,14 @@
   <div class="sbox wide">
     <h2 class="ctitle">Waystation</h2>
     <p class="tag" id="townSub">A safe hollow between the dark. Trade, rest, and ready the party before you go deeper.</p>
-    <div class="townbar" id="townStatus"></div><section class="pane departure-review" id="townDeparture" aria-label="Before leaving this floor"></section>
+    <div class="townbar" id="townStatus"></div>
+    <nav class="sheet-nav" aria-label="Waystation pages"><button id="townCouncilTab" aria-pressed="true" data-town-page="council">Council</button><button id="townTradeTab" aria-pressed="false" data-town-page="trade">Trade</button><button id="townCompanyTab" aria-pressed="false" data-town-page="company">Company</button><button id="btnTownLeave">Leave ↓</button></nav>
+    <section id="townCouncilPage" data-town-panel="council" aria-label="Council">
     <div class="pane council-pane" style="margin-top:14px"><div id="chapterArtwork" class="chapter-art" aria-hidden="true"></div><h2 id="councilTitle">War Council</h2><p id="councilStory" class="story-copy"></p><div id="councilPlans" class="council-plans"></div><p id="councilResult" class="story-copy" role="status"></p></div>
-    <section class="pane hero-quest-pane" aria-labelledby="heroQuestHeading"><h2 id="heroQuestHeading">Companion vows</h2><p class="tag">Optional personal quests. Lead the company, then return at a later waystation to keep the promise. Offers appear at waystations 1–4.</p><div id="heroQuestCards"></div><p id="heroQuestStatus" role="status"></p></section>
-    <div class="towncols">
+    <div class="pane" style="margin-top:14px"><h2>Embers of the old kingdom</h2><p class="tag" style="margin-bottom:8px">Choose one permanent party blessing at each waystation. Each blessing can be claimed once.</p><div id="boonChoices"></div><p id="boonStatus"></p></div>
+    <section class="pane departure-review" id="townDeparture" aria-label="Before leaving this floor"></section>
+    </section>
+    <section id="townTradePage" data-town-panel="trade" aria-label="Trade" hidden>    <div class="towncols">
       <div class="pane">
         <h2>Trader</h2>
         <div id="shopList"></div>
@@ -666,8 +689,10 @@
         <div id="sellList"></div>
       </div>
     </div>
-    <div class="pane" style="margin-top:14px"><h2>Embers of the old kingdom</h2><p class="tag" style="margin-bottom:8px">Choose one permanent party blessing at each waystation. Each blessing can be claimed once.</p><div id="boonChoices"></div><p id="boonStatus"></p></div>
-    <div id="forkBox" class="forkbox"></div>
+</section>
+    <section id="townCompanyPage" data-town-panel="company" aria-label="Company" hidden>    <section class="pane hero-quest-pane" aria-labelledby="heroQuestHeading"><h2 id="heroQuestHeading">Companion vows</h2><p class="tag">Optional personal quests. Lead the company, then return at a later waystation to keep the promise. Offers appear at waystations 1–4.</p><div id="heroQuestCards"></div><p id="heroQuestStatus" role="status"></p></section>
+</section>
+    <div id="forkBox" class="forkbox" tabindex="-1"></div>
     <div class="crow">
       <button id="btnTownRest">Rest (free)</button>
       <button id="btnTownParty">Manage Equipment</button>
@@ -690,12 +715,10 @@
 
 <div class="screen" id="partyScreen">
   <div class="sbox wide">
-    <h2 class="ctitle">Party &amp; Equipment</h2>
-    <p class="tag" id="partySub" role="status" tabindex="-1">Tap an item, then tap a hero to equip or use it. Tap an equipped item to remove it.</p>
+    <div class="sheet-heading"><h2 class="ctitle">Party &amp; Equipment</h2><button id="btnPartyClose">Close</button></div>
+    <p class="tag" id="partySub" role="status" tabindex="-1">Select an item, choose a hero, then Give selected item. Tap equipped gear to stow it.</p>
     <article id="treasureFind" class="treasure-find" hidden aria-labelledby="treasureFindTitle"></article>
     <section id="treasureChoices" class="decision-pane" hidden aria-labelledby="treasureChoiceTitle"></section>
-    <section id="patrolScouts" class="decision-pane" hidden aria-labelledby="patrolScoutTitle"></section>
-    <div id="partyHeroes"></div>
     <div class="pane" style="margin-top:12px;text-align:left">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
         <h2 style="margin:0">Satchel</h2>
@@ -703,7 +726,9 @@
       </div>
       <div id="partyBag"></div>
     </div>
-    <div class="crow"><button id="btnPartyClose" class="big">Close</button></div>
+    <nav id="partyHeroTabs" class="sheet-nav" aria-label="Choose a hero"></nav>
+    <div id="partyHeroes"></div>
+    <section id="patrolScouts" class="decision-pane" hidden aria-labelledby="patrolScoutTitle"></section>
   </div>
 </div>
 
@@ -725,7 +750,7 @@
 <div class="screen" id="settingsScreen" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="sbox"><h2 id="settingsTitle" class="ctitle">Sound &amp; Display</h2><p class="tag">Make the journey your own. Combat pauses while this sheet is open.</p><div class="settings-list"><label><input id="prefSound" type="checkbox"> Synthesized sound effects</label><label><input id="prefMusic" type="checkbox"> Quiet ambient tones (requires sound)</label><label for="prefVolume">Volume <output id="volumeValue">35%</output><input id="prefVolume" type="range" min="0" max="100" step="5" value="35"></label><label><input id="prefEffects" type="checkbox" checked> Visual effects (respects reduced motion)</label><label><input id="prefContrast" type="checkbox"> High contrast / clean display</label><label for="prefPace">Auto pace<select id="prefPace"><option value="normal">Deliberate · normal speed</option><option value="quick">Quick · shorter Auto turns</option></select></label></div><p id="audioStatus" class="tag" role="status">Sound is off by default. No downloads are needed.</p><p id="preferenceStatus" class="tag" role="status"></p><button id="btnSettingsClose" class="big">Back to Game</button></div></div>
 <div class="screen" id="codexScreen" role="dialog" aria-modal="true" aria-labelledby="codexTitle"><div class="sbox wide"><div class="eyebrow">Eren’s field atlas</div><h2 id="codexTitle" class="ctitle">The Bestiary</h2><div class="atlas-nav" role="group" aria-label="Atlas pages"><button id="codexBeasts" aria-pressed="true">Bestiary</button><button id="codexTreasure" aria-pressed="false">Treasure &amp; Relics</button><button id="codexLegends" aria-pressed="false">Legends &amp; Hunt</button><button id="btnCodexClose">Back</button></div><p class="tag" id="codexNote"></p><div id="codexTools" class="atlas-tools"><label for="codexSearch">Search<input id="codexSearch" type="search" maxlength="80" placeholder="Name, spell, source or lore"></label><label for="codexFilter">Show<select id="codexFilter"><option value="all">All entries</option><option value="guardians">Guardians</option><option value="relics">Relics</option><option value="potions">Potions</option></select></label></div><p id="codexCount" class="tag" role="status"></p><div id="codexContent" class="atlas-grid"></div></div></div>
 <script>
-const GAME_BUILD='0.27.0';
+const GAME_BUILD='0.28.0';
 document.querySelectorAll('[data-build]').forEach(el=>el.textContent='Build '+GAME_BUILD);
 /* ===== CROWN CAMPAIGN : data, with controller helpers below ===== */
 const OATHS={wanderer:{name:'Wanderer',budget:0.65,recovery:0.25,desc:'Gentler battles; all heroes earn victory XP and recover 25% HP after a win.'},delver:{name:'Delver',budget:1,desc:'Fortune favours the prepared. Only standing heroes earn victory XP.'},ironbound:{name:'Ironbound',budget:1.25,desc:'Stronger enemy forces. Only standing heroes earn victory XP.'}};
@@ -3078,7 +3103,9 @@ function descendOrWin(){
   else if(bag.relic){exploreFeed.push({t:'The king still binds the crown. Defeat him before you leave.',k:'kill'});render();}
   else { exploreFeed.push({t:'The stairs out are sealed. Recover the relic first.',k:'sys'}); render(); }
 }
-function openTown(){ $('#townScreen').classList.add('show'); renderTown(); autosave(); }
+function openTown(){ townPage='council';$('#townScreen').classList.add('show'); renderTown(); autosave(); }
+function selectTownPage(page){if(!['council','trade','company'].includes(page))return;townPage=page;document.querySelectorAll('[data-town-panel]').forEach(el=>el.hidden=el.dataset.townPanel!==page);document.querySelectorAll('[data-town-page]').forEach(el=>el.setAttribute('aria-pressed',String(el.dataset.townPage===page)));}
+function selectPartyHero(index){if(!Number.isInteger(index)||!party[index])return;partyHero=index;renderParty();$('#partyHeroTab'+index).focus({preventScroll:true});}
 // Descend into a chosen successor node (the fork pick, or the only way on).
 function enterDungeon(nextId){
   if(mode!=='explore'||!$('#townScreen').classList.contains('show')||['levelScreen','partyScreen','saveScreen','eventScreen','fateScreen','aftermathScreen','journalScreen','tacticsScreen','codexScreen'].some(id=>$('#'+id).classList.contains('show'))||explore.task&&!explore.task.done||!campaign.decisions[nodeId]||!WORLD[nextId]||!(WORLD[nodeId].next||[]).includes(nextId))return;
@@ -3121,7 +3148,7 @@ function renderTown(){
     row.innerHTML=`<span class="nm">${it.name}</span><span class="pr">${Math.floor((it.cost||0)/2)}g</span>`;
     const b=document.createElement('button'); b.textContent='Sell'; b.onclick=()=>sellItem(i);
     row.appendChild(b); sell.appendChild(row); });
-  renderBoons();renderCouncil();renderHeroQuests();renderFork();autosave();
+  renderBoons();renderCouncil();renderHeroQuests();renderFork();selectTownPage(townPage);autosave();
 }
 // The way on: a single "Enter the Depths" when the path is straight, or a labelled
 // choice per branch when it forks. Each fork button names the floor and its pitch.
@@ -3267,8 +3294,10 @@ function renderLevelUp(){
 }
 
 /* ----- Party & equipment screen ----- */
+let partyHero=0, townPage='council';
+let boardZoom=false, preciseAim=null, preciseView=null;
 let pickItem=null;   // index into bag.items awaiting a hero
-function openParty(){ if(mode!=='explore')return; pickItem=null;$('#treasureFind').innerHTML=''; $('#partyScreen').classList.add('show'); renderParty(); }
+function openParty(){ if(mode!=='explore')return; partyHero=0;pickItem=null;$('#partyScreen').scrollTop=0;$('#treasureFind').innerHTML=''; $('#partyScreen').classList.add('show'); renderParty(); }
 function closeParty(){ $('#partyScreen').classList.remove('show'); render(); }
 function canUse(it, hero){ return !it.classes || it.classes.includes(hero.cls); }
 function selectItem(i){ pickItem=(pickItem===i)?null:i; renderParty(); }
@@ -3356,7 +3385,7 @@ function chooseTreasure(offer,index){
  // Collection and removal commit together. Rewards are carried, never auto-equipped.
  bag.items.push(id);delete explore.loot[current.at];discoverItem(id);
  exploreFeed.push({t:'From '+current.reward.name+', you choose '+it.name+'. The unchosen bequest stays for the people following you.',k:'magic'});
- pickItem=bag.items.length-1;autosave();renderParty();$('#partySub').textContent='You chose '+it.name+'. Select a hero to equip it, or keep it in the satchel.';$('#partySub').focus();return true;
+ pickItem=bag.items.length-1;autosave();renderParty();$('#partySub').textContent='You chose '+it.name+'. Choose a hero, then Give selected item, or keep it in the satchel.';$('#partySub').focus();return true;
 }
 function renderTreasureChoices(){
  const root=$('#treasureChoices'),current=treasureAtFeet();root.hidden=!current;root.innerHTML='';if(!current)return;
@@ -3389,16 +3418,17 @@ function renderPatrolScouts(){
 }
 function renderParty(){
   renderTreasureFind();renderTreasureChoices();renderPatrolScouts();
+  const tabs=$('#partyHeroTabs');tabs.innerHTML='';party.forEach((h,i)=>{const button=document.createElement('button');button.id='partyHeroTab'+i;button.textContent=h.name+' · '+Math.max(0,h.hp)+'/'+h.maxHp;button.setAttribute('aria-pressed',String(i===partyHero));button.setAttribute('aria-controls','partyHero'+i);button.onclick=()=>selectPartyHero(i);tabs.appendChild(button);});
   const root=$('#partyHeroes'); root.innerHTML='';
   party.forEach((h,hi)=>{
-    const card=document.createElement('div'); card.className='pcard'+(pickItem!==null&&ITEMS[bag.items[pickItem]].slot!=='treasure'&&canUse(ITEMS[bag.items[pickItem]],h)?' sel':'');
+    const card=document.createElement('div'); card.id='partyHero'+hi;card.hidden=hi!==partyHero;card.className='pcard'+(pickItem!==null&&ITEMS[bag.items[pickItem]].slot!=='treasure'&&canUse(ITEMS[bag.items[pickItem]],h)?' sel':'');
     const wId=h.equip.weapon, aId=h.equip.armor;
     const eb=equipBonuses(h), dmg=effDamage(h);
     let html=`<h3>${h.glyph} ${escapeHTML(h.name)} <span class="cls">${h.cls} L${h.level||1}</span></h3>`;
     const bg=h.bg&&BACKGROUNDS[h.bg];
-    if(bg){ html+=`<p class="bgline"><b>${bg.name}</b> &mdash; <i>${escapeHTML(bgFill(bg.drive,h.name))}</i></p>`;
+    if(bg){ html+=`<details class="hero-history"><summary>History &amp; background</summary><p class="bgline"><b>${bg.name}</b> &mdash; <i>${escapeHTML(bgFill(bg.drive,h.name))}</i></p>`;
       html+=`<p class="bgbio">${escapeHTML(bgFill(bg.bio,h.name))}</p>`;
-      const bl=boonLabel(h.bg); if(bl) html+=`<p class="bgtrait">Trait: <b>${bl}</b></p>`; }
+      const bl=boonLabel(h.bg); if(bl) html+=`<p class="bgtrait">Trait: <b>${bl}</b></p>`;html+='</details>'; }
     html+='<div class="loadout-grid">'+Object.entries(GEAR_SLOTS).map(([slot,label])=>{const id=h.equip[slot],blocked=slot==='offhand'&&ITEMS[h.equip.weapon]?.hands===2;return `<div class="gslot" data-hi="${hi}" data-slot="${slot}"><span class="lab">${label}</span><span class="it${id?(ITEMS[id].legendary?' legendary':''):' none'}">${id?ITEMS[id].name:blocked?'Both hands occupied':'—'}</span></div>`;}).join('')+'</div>';
     html+=loadoutSummaryHTML(h);
     if(pickItem!==null&&ITEMS[bag.items[pickItem]])html+='<p class="gear-compare">'+escapeHTML(gearComparison(h,ITEMS[bag.items[pickItem]]))+'</p>';
@@ -3413,7 +3443,7 @@ function renderParty(){
       else unequip(h, slot);                      // tap an equipped slot to remove
     },'.gslot[data-hi="'+hi+'"][data-slot="'+sl.dataset.slot+'"]',h.name+' '+sl.textContent));
     if(pickItem!==null&&ITEMS[bag.items[pickItem]].slot!=='treasure'){const give=document.createElement('button');give.textContent='Give selected item to '+h.name;give.onclick=()=>{applyItem(h);$('#btnAutoGear').focus();};card.appendChild(give);}
-    card.onclick=(e)=>{ if(e.target.closest('.gslot,.loadout-summary'))return; if(pickItem!==null) applyItem(h); };
+    card.onclick=(e)=>{ if(e.target.closest('.gslot,.loadout-summary,.hero-history,button'))return; if(pickItem!==null) applyItem(h); };
     root.appendChild(card);
   });
   const bagEl=$('#partyBag'); bagEl.innerHTML='';
@@ -3424,8 +3454,8 @@ function renderParty(){
     chip.innerHTML=`${it.name} <span class="tag">${tag}</span>`;
     keyboardControl(chip,()=>selectItem(i),'#partyBag .ichip:nth-child('+(i+1)+')','Select '+it.name);bagEl.appendChild(chip); });
   $('#partySub').textContent = pickItem!==null
-    ? ITEMS[bag.items[pickItem]].slot==='treasure'?'Trade treasure: sell at a waystation. Its discovery stays in your guide.':'Tap a hero to give them the '+ITEMS[bag.items[pickItem]].name+'. Class-locked gear only fits some heroes.'
-    : 'Tap an item, then tap a hero to equip or use it. Tap an equipped item to remove it.';
+    ? ITEMS[bag.items[pickItem]].slot==='treasure'?'Trade treasure: sell at a waystation. Its discovery stays in your guide.':'Choose a hero, then Give selected item: '+ITEMS[bag.items[pickItem]].name+'. Compare the changes below; class restrictions still apply.'
+    : 'Select an item, choose a hero, then Give selected item. Tap equipped gear to stow it.';
 }
 function partyGearValue(){ let v=0; for(const h of party){ for(const slot of ['weapon','armor']){const it=ITEMS[h.equip?.[slot]];if(it)v+=it.cost||0;}v+=Math.min(40,Object.keys(GEAR_SLOTS).filter(slot=>!['weapon','armor'].includes(slot)).reduce((n,slot)=>n+(ITEMS[h.equip?.[slot]]?.cost||0)*.25,0)); } return v; }
 // The party scouts foes one tile further when it has a keen eye (a living hero
@@ -3624,7 +3654,8 @@ function renderMinimap(){
     else if(e.isWall(x,y)) col=_shade(pal.wall,0.5);
     else if(e.locked(x,y)) col='#6b4a22';
     else col=_shade(pal.floor,0.7);
-    s+='<rect x="'+x+'" y="'+y+'" width="1" height="1" fill="'+col+'"/>';
+    s+='<rect x="'+x+'" y="'+y+'" width="1" height="1" fill="'+col+'" stroke="'+(e.isWall(x,y)?'#514332':'#a69363')+'" stroke-opacity=".3" stroke-width=".035"/>';
+    if(e.isWall(x,y))s+='<rect data-known-wall="'+k+'" x="'+x+'" y="'+y+'" width="1" height="1" fill="url(#map-stone)"/>';
     if(e.passages?.some(route=>route[0]===k))s+='<g data-service-passage="'+k+'"><title>Service arch · shorter return route</title><path d="M'+(x+.15)+' '+(y+.85)+'V'+(y+.4)+'Q'+(x+.5)+' '+(y-.05)+' '+(x+.85)+' '+(y+.4)+'V'+(y+.85)+'" fill="none" stroke="#8ad8dd" stroke-width=".1"/></g>';
     let dot=null;
     if(e.spotted.has(k)&&e.encounterAt(x,y)) dot='#e0584d';
@@ -3632,11 +3663,10 @@ function renderMinimap(){
     else if(e.found.has(k)&&e.eventAt&&e.eventAt(x,y)) dot='#7fd3ff';
     else if(e.found.has(k)&&e.loot[k]) dot='#f0c860';
     else if(x===e.exit.x&&y===e.exit.y) dot='#9fd8a0';
-    if(dot) s+='<circle cx="'+(x+0.5)+'" cy="'+(y+0.5)+'" r="0.34" fill="'+dot+'"/>';
+    if(dot){const type=e.spotted.has(k)&&e.encounterAt(x,y)?'patrol':isSecret?'cache':e.found.has(k)&&e.eventAt&&e.eventAt(x,y)?'event':e.found.has(k)&&e.loot[k]?e.loot[k].type==='key'?'key':'treasure':'stairs';const paths={patrol:'M.2 .15L.8 .85M.8 .15L.2 .85M.12 .7L.3 .88M.7 .88L.88 .7',cache:'M.5 .08L.6 .38L.92 .5L.6 .62L.5 .92L.4 .62L.08 .5L.4 .38Z',event:'M.5 .12L.84 .5L.5 .88L.16 .5Z',key:'M.4 .3A.18 .18 0 1 1 .04 .3A.18 .18 0 1 1 .4 .3M.36 .4L.83 .87M.63 .67L.78 .52M.74 .78L.89 .63',treasure:'M.14 .22H.86V.82H.14ZM.14 .46H.86M.5 .4V.62',stairs:'M.1 .16H.35V.39H.59V.62H.86V.86H.1Z'};s+='<g data-map-marker="'+type+'" transform="translate('+x+' '+y+')"><title>'+type+'</title><rect x=".04" y=".04" width=".92" height=".92" rx=".1" fill="#091014"/><path d="'+paths[type]+'" fill="none" stroke="'+dot+'" stroke-width=".11" stroke-linejoin="round"/></g>';}
     if(e.found.has(k)&&e.loot[k]?.type==='choice')s+='<g data-choice-cache="'+e.loot[k].offer+'"><title>'+escapeHTML(CHOICE_REWARDS[e.loot[k].offer].name+' · choose one of '+CHOICE_REWARDS[e.loot[k].offer].items.length+' in Party')+'</title><rect x="'+(x+.2)+'" y="'+(y+.22)+'" width=".6" height=".56" fill="#7d5525" stroke="#ffe08a" stroke-width=".1"/></g>';
     const prize=e.spotted.has(k)&&e.encounterAt(x,y)?.prize;if(prize)s+='<g data-guarded-prize="'+prize+'"><title>'+escapeHTML('Guarded treasure: '+(guardianReward(e.encounterAt(x,y))?.name||ITEMS[prize].name))+'</title><rect x="'+(x+.08)+'" y="'+(y+.08)+'" width=".84" height=".84" rx=".1" fill="none" stroke="#ffe08a" stroke-width=".1"/></g>';
   }
-  s+='<rect width="'+e.w+'" height="'+e.h+'" fill="url(#map-stone)" pointer-events="none"/>';
   if(e.task&&!e.task.done){const q=e.task,marks=q.sites.map((k,i)=>[k,q.id==='gallery'?String(i+1):q.id==='shrine_road'?'BRM'[i]:q.id==='warren'?'S':'L',q.used.includes(i)]);if(q.id==='ossuary'&&!q.used.length){const blade=Object.entries(e.loot).find(([k,v])=>v.item==='dawnblade');if(blade)marks.push([blade[0],'D',false]);}if(q.id==='warren'||q.id==='ossuary')marks.push([key(q.start.x,q.start.y),'C',false]);for(const [k,label,used]of marks){if(used||q.id==='ossuary'&&label==='L')continue;const [x,y]=k.split(',').map(Number);s+='<g data-task-site="'+label+'"><title>'+escapeHTML(CHAPTER_TASKS[q.id][0]+' · '+label)+'</title><rect x="'+x+'" y="'+y+'" width="1" height="1" fill="#194853" stroke="#9beaf0" stroke-width=".08"/><text x="'+(x+.5)+'" y="'+(y+.8)+'" text-anchor="middle" font-size=".8" fill="#e5ffff">'+label+'</text></g>';}}
   const v=FACING[e.facing], rt=FACING[TURN_R[e.facing]], px=e.pos.x+0.5, py=e.pos.y+0.5, r=0.5;
   const tip=[px+v.dx*r, py+v.dy*r], bl=[px-v.dx*r*0.6+rt.dx*r*0.55, py-v.dy*r*0.6+rt.dy*r*0.55], br=[px-v.dx*r*0.6-rt.dx*r*0.55, py-v.dy*r*0.6-rt.dy*r*0.55];
@@ -3645,10 +3675,10 @@ function renderMinimap(){
   return '<svg viewBox="0 0 '+e.w+' '+e.h+'" class="minimap" preserveAspectRatio="xMidYMid meet">'+s+'</svg>';
 }
 function renderExplore(){
-  $('#turnStatus').hidden=true;
+  $('#turnStatus').hidden=true;$('#btnBoardZoom').hidden=true;$('#preciseTile').hidden=true;$('#mapGuide').hidden=false;$('#mapBrief').textContent=chapterArrival(nodeId);board.parentElement.classList.remove('board-enlarged');board.removeAttribute('data-arena');
   $('.controls').classList.remove('combat-active');board.removeAttribute('role');board.setAttribute('aria-label','Dungeon map');
   $('#titleLabel').classList.remove('chapter-battle');$('#titleLabel').title=explore.name;$('#titleLabel').textContent=explore.name; $('#roundLabel').textContent='Floor '+floorDepth()+' / '+WORLD_MAXDEPTH; $('#rosterTitle').textContent='The Party';
-  $('#combatControls').style.display='none'; $('#exploreControls').style.display='flex'; $('#fpControls').style.display='grid'; $('#spellMenu').style.display='none';
+  $('#combatControls').style.display='none'; $('#exploreControls').style.display='grid'; $('#fpControls').style.display='grid'; $('#spellMenu').style.display='none';
   $('#satchel').style.display='block';
   $('#satchel').innerHTML=`Avg level <b>${partyLevelAvg()}</b> &nbsp;|&nbsp; Gold <b>${bag.gold}</b> &nbsp; Keys <b>${bag.keys}</b> &nbsp; Supplies <b>${bag.rations}</b> &nbsp; Items <b>${bag.items.length}</b> &nbsp; Relic <b style="color:${bag.relic?'var(--gold)':'var(--dim)'}">${bag.relic?'\u2605':'not found'}</b>`;
   board.setAttribute('data-theme', explore.theme||'crypt');
@@ -3670,17 +3700,33 @@ function renderExplore(){
 }
 
 let gridCursor={x:0,y:0};
+function preciseStamp(){return [game.current().id,mover,selectedSpell?.id,game.current().acted.move,game.current().acted.action].join('|');}
+function validPreciseAim(){return boardZoom&&preciseAim?.combat===game&&preciseAim.stamp===preciseStamp()&&game.phase==='playing'&&game.current().side==='party'&&!autoFight;}
+function pickPreciseTile(x,y){if(overlayOpen()||autoFight||game.current().side!=='party')return;preciseAim={combat:game,stamp:preciseStamp(),x,y};gridCursor={x,y};inspectTile(x,y);renderPreciseTile();}
+function preciseTileReason(){
+ if(!validPreciseAim())return 'Select a tile';const {x,y}=preciseAim,c=game.current(),target=game.at(x,y);
+ if(mover==='move')return reachCache?.has(key(x,y))&&!target?'':'Choose a highlighted empty tile';
+ if(mover==='attack')return target&&game.canAttack(c,target)?'':'Choose a flagged enemy';
+ if(mover==='cast'&&selectedSpell){const sp=selectedSpell;if(sp.target==='point')return game.spellPointTiles(c,sp).some(p=>p.x===x&&p.y===y)?'':'Choose a highlighted spell tile';const targets=sp.target==='ally'?game.spellAllyTargets(c,sp):game.spellEnemyTargets(c,sp);return target&&targets.includes(target)?'':'Choose a highlighted spell target';}
+ return !mover&&game.fieldSites().some(p=>p.x===x&&p.y===y&&!p.used)?'':'Choose Move, Attack or Cast';
+}
+function centerPreciseTile(pos){if(!boardZoom||typeof window==='undefined')return;const cell=cellEls[pos.y*game.w+pos.x],stage=board.parentElement,panel=$('#preciseTile');if(!cell)return;stage.scrollTop=cell.offsetTop+cell.offsetHeight/2-Math.max(44,stage.clientHeight-panel.offsetHeight)/2;stage.scrollLeft=cell.offsetLeft+cell.offsetWidth/2-stage.clientWidth/2;}
+function positionPrecisePanel(){if(!boardZoom||typeof window==='undefined')return;const panel=$('#preciseTile'),stage=board.parentElement,wrap=$('.board-wrap'),r=stage.getBoundingClientRect(),w=wrap.getBoundingClientRect();panel.style.width=Math.max(0,r.width-4)+'px';panel.style.left=(r.left-w.left+wrap.scrollLeft+2)+'px';panel.style.top=(r.bottom-w.top+wrap.scrollTop-Math.max(50,panel.offsetHeight)-2)+'px';}
+function renderPreciseTile(){const panel=$('#preciseTile');panel.hidden=!boardZoom;if(!boardZoom)return;const valid=validPreciseAim();$('#preciseDescription').textContent=valid?'Column '+(preciseAim.x+1)+', row '+(preciseAim.y+1)+'. '+cellEls[preciseAim.y*game.w+preciseAim.x].getAttribute('aria-label').replace(/^Column \d+, row \d+\. /,''):'Drag to pan. Tap a tile to inspect, then use the selected tile. Choose Move, Attack or Cast first.';const reason=preciseTileReason();$('#btnUseTile').disabled=!!reason;$('#btnUseTile').title=reason||'Use the inspected tile with the selected action';for(const el of cellEls)el.classList.toggle('precise-selected',valid&&Number(el.dataset.x)===preciseAim.x&&Number(el.dataset.y)===preciseAim.y);if(typeof requestAnimationFrame==='function')requestAnimationFrame(()=>{if(!boardZoom||mode!=='combat')return;positionPrecisePanel();const stage=board.parentElement,stamp=preciseStamp()+'|'+stage.clientWidth+'|'+stage.clientHeight;if(preciseView?.combat!==game||preciseView.stamp!==stamp){preciseView={combat:game,stamp};centerPreciseTile(game.current().pos);}});}
+function toggleBoardZoom(){if(mode!=='combat'||overlayOpen())return;boardZoom=!boardZoom;preciseAim=null;preciseView=null;render();}
+function usePreciseTile(){if(overlayOpen()||!validPreciseAim()||preciseTileReason())return;const {x,y}=preciseAim;preciseAim=null;combatClick(x,y);renderPreciseTile();}
 function renderCombat(){
   const restoreGridFocus=board.contains(document.activeElement);
   if(!validAim())spellAim=null;if(!validFieldAim())fieldAim=null;if(mover==='field'&&!fieldAim)mover=null;
-  $('.controls').classList.add('combat-active');
+  $('.controls').classList.add('combat-active');$('#mapGuide').hidden=true;$('#mapGuide').open=false;$('#btnBoardZoom').hidden=false;$('#btnBoardZoom').title='Enlarged view uses 46px tiles: drag to pan, tap to inspect, then Use selected tile.';$('#btnBoardZoom').textContent=boardZoom?'Overview':'Enlarge';$('#btnBoardZoom').setAttribute('aria-pressed',String(boardZoom));$('#btnBoardZoom').setAttribute('aria-label',boardZoom?'Return to whole battlefield overview':'Enlarge battlefield for precise touch selection');board.parentElement.classList.toggle('board-enlarged',boardZoom);
+  board.dataset.arena=game.battlefield||'crypt';
   const c=game.current();
   $('#titleLabel').classList.toggle('chapter-battle',!!game.fieldObjective);$('#titleLabel').textContent=game.fieldObjective?fieldDefinition(game.fieldObjective.id).name:'Battle';$('#titleLabel').title=$('#titleLabel').textContent; $('#roundLabel').textContent='Round '+game.round; $('#rosterTitle').textContent='Order of Battle';
-  $('#combatControls').style.display='flex'; $('#exploreControls').style.display='none'; $('#fpControls').style.display='none'; $('#satchel').style.display='none';
+  $('#combatControls').style.display='grid'; $('#exploreControls').style.display='none'; $('#fpControls').style.display='none'; $('#satchel').style.display='none';
   board.setAttribute('role','grid');board.setAttribute('aria-label',(game.battlefield?BATTLEFIELDS[game.battlefield].name:'Battlefield')+(game.tactic?' · '+PATROL_TACTICS[game.tactic].name:''));
   board.removeAttribute('data-theme'); board.classList.remove('fpboard'); board.classList.remove('mapboard');
   board.style.gridTemplateColumns=`repeat(${game.w},minmax(0,1fr))`; board.style.gridTemplateRows=`repeat(${game.h},minmax(0,1fr))`; board.style.aspectRatio='1/1'; board.innerHTML=''; cellEls=[];
-  const status=$('#turnStatus');status.hidden=false;const turnText=c.name+(game.isSilenced(c)?' · Silenced':'')+' · '+(c.side!=='party'?'Enemy turn':autoFight?'Auto playing':(c.acted.move?'Move spent':'Move ready')+' · '+(c.acted.action?'Action spent':'Action ready'));if(status.textContent!==turnText)status.textContent=turnText;
+  const status=$('#turnStatus');status.hidden=false;const turnText=c.name+' '+Math.max(0,c.hp)+'/'+c.maxHp+(game.isSilenced(c)?' · Silenced':'')+' · '+(c.side!=='party'?'Enemy turn':autoFight?'Auto playing':(c.acted.move?'Move spent':'Move ready')+' · '+(c.acted.action?'Action spent':'Action ready'));if(status.textContent!==turnText)status.textContent=turnText;
   const fieldPreview=validFieldAim()?new Set(fieldDefinition(game.fieldObjective.id).edits[fieldAim.index].map(([x,y])=>key(x,y))):new Set();
   const playerTurn = c.alive&&c.side==='party'&&game.phase==='playing'&&!game.isIncapacitated(c);
   const castEnemy=new Set(), castAlly=new Set(), castPoint=new Set();
@@ -3692,20 +3738,20 @@ function renderCombat(){
   for(let y=0;y<game.h;y++){ for(let x=0;x<game.w;x++){
     const cell=document.createElement('div'); cell.className='cell'+(((x+y)%2)?' alt':''); const k=key(x,y); const here=game.at(x,y);
     if(fieldPreview.has(k)){cell.classList.add('field-preview');cell.dataset.fieldPreview='true';}
-    const fieldSite=game.fieldSites().find(p=>p.x===x&&p.y===y);if(fieldSite){cell.dataset.fieldSite=fieldSite.index;cell.classList.add('field-objective');if(fieldSite.used)cell.classList.add('field-used');const mark=document.createElement('span');mark.className='field-mark';mark.textContent=(fieldSite.used?'✓':'◆')+(fieldSite.index+1);mark.setAttribute('aria-hidden','true');cell.appendChild(mark);}
+    const fieldSite=game.fieldSites().find(p=>p.x===x&&p.y===y);if(fieldSite){cell.dataset.fieldSite=fieldSite.index;cell.classList.add('field-objective');if(fieldSite.used)cell.classList.add('field-used');const mark=document.createElement('span');mark.className='field-mark';mark.textContent=(fieldSite.used?'✓':'◆')+(fieldSite.index+1);mark.dataset.prop=game.fieldObjective.id==='cantor_braziers'?'brazier':fieldDefinition(game.fieldObjective.id).effect;mark.setAttribute('aria-hidden','true');cell.appendChild(mark);}
     const terrain=game.terrainAt({x,y});if(game.dangerAt({x,y}).length>0)cell.classList.add('breath-zone');if(terrain){cell.classList.add('field-'+terrain);const mark=document.createElement('span');mark.className='terrain-mark';mark.textContent=TERRAIN[terrain].glyph;cell.appendChild(mark);}
     if(spellAim&&game.cheb({x,y},spellAim)<=selectedSpell.aoe)cell.classList.add('aimed');
     const danger=game.dangerAt({x,y}).length>0;
     const details=(danger?'Danger: '+game.dangerAt({x,y}).map(u=>dangerText(u)).join('; ')+'. ':'')+(here?here.name+' '+here.hp+'/'+here.maxHp+' HP. '+(game.shieldBonus(here)?'Shielded: +2 weapon AC. ':'')+intentText(here):'')+(terrain?TERRAIN[terrain].name+': '+TERRAIN[terrain].desc:'Plain ground');
     const support=(game.arenaShelter?.has(k)?' Council sanctuary: remains lit through the phase change.':'')+(terrain==='ember'&&(gearPower(here||c,'emberGuard'))>=2?' '+gearSource(here||c,'emberGuard')+' prevents this unit’s terrain ember damage.':'');
     cell.setAttribute('role','gridcell');cell.setAttribute('aria-label','Column '+(x+1)+', row '+(y+1)+'. '+details+support);cell.title=details+support;if(fieldPreview.has(k)){const text=' Field action preview: '+(fieldDefinition(game.fieldObjective.id).keepsCool?'clear embers here and prevent phase ignition':fieldDefinition(game.fieldObjective.id).effect+' terrain here')+' after confirmation.';cell.title+=text;cell.setAttribute('aria-label',cell.getAttribute('aria-label')+text);}if(fieldSite){const text=' Optional field objective '+(fieldSite.index+1)+': '+fieldDefinition(game.fieldObjective.id).action+'. '+(fieldSite.used?'Completed.':'Stand on or adjacent, select the diamond, then confirm; costs one action.');cell.title+=text;cell.setAttribute('aria-label',cell.getAttribute('aria-label')+text);}
-    cell.tabIndex=x===gridCursor.x&&y===gridCursor.y?0:-1;
+    cell.dataset.x=x;cell.dataset.y=y;cell.tabIndex=x===gridCursor.x&&y===gridCursor.y?0:-1;
     cell.onfocus=()=>{gridCursor={x,y};for(const el of cellEls)el.tabIndex=el===cell?0:-1;};
     cell.onkeydown=e=>{
       if(overlayOpen()||e.altKey||e.ctrlKey||e.metaKey)return;
       const steps={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};
       if(steps[e.key]){e.preventDefault();const d=steps[e.key];const nx=Math.max(0,Math.min(game.w-1,x+d[0])),ny=Math.max(0,Math.min(game.h-1,y+d[1]));cellEls[ny*game.w+nx].focus();}
-      else if(e.key==='Enter'||e.key===' '){e.preventDefault();if(playerTurn&&!e.repeat)combatClick(x,y);}
+      else if(e.key==='Enter'||e.key===' '){e.preventDefault();if(playerTurn&&!e.repeat){if(boardZoom)pickPreciseTile(x,y);else combatClick(x,y);}}
     };
     cell.onpointerenter=()=>inspectTile(x,y);
     const rememberFocus=cell.onfocus;cell.onfocus=()=>{rememberFocus();inspectTile(x,y);};
@@ -3727,10 +3773,11 @@ function renderCombat(){
         if(hasDebuff){ const d=document.createElement('div'); d.className='stbadge debuff'; d.textContent='\u25BC'; t.appendChild(d); }
       }
       const bar=document.createElement('div'); bar.className='hpbar'; const fill=document.createElement('i'); const pct=Math.max(0,here.hp/here.maxHp); fill.style.width=(pct*100)+'%'; if(pct<=0.34) fill.className='low'; bar.appendChild(fill); t.appendChild(bar); cell.appendChild(t); }
-    if(playerTurn) cell.onclick=()=>combatClick(x,y);
+    if(playerTurn) cell.onclick=()=>{if(boardZoom)pickPreciseTile(x,y);else {inspectTile(x,y);combatClick(x,y);}};
     cellEls.push(cell); board.appendChild(cell);
   } }
   if(restoreGridFocus){const target=cellEls[gridCursor.y*game.w+gridCursor.x];if(target)target.focus({preventScroll:true});}
+  renderPreciseTile();renderArenaScenery();
   roster.innerHTML='';
   game.order.forEach(id=>{ const u=game.byId(id); const row=document.createElement('div'); row.className='row '+u.side+(u===c?' cur':'')+(u.alive?'':' dead');
     const sp=(u.spells&&u.spells.length)?`<span class="sp">${u.spells.reduce((a,s)=>a+s.uses,0)+(u.relicSpell?.uses||0)}sp</span>`:'';
@@ -3793,6 +3840,9 @@ function drawLog(feed){
 
 btnMove.onclick=()=>setMode('move'); btnAttack.onclick=()=>setMode('attack'); btnCast.onclick=()=>setMode('cast'); btnItem.onclick=()=>setMode('item'); btnGuard.onclick=guard; btnWait.onclick=waitTurn; btnEnd.onclick=endTurn;
 $('#btnAuto').onclick=toggleAuto;
+$('#btnBoardZoom').onclick=toggleBoardZoom;$('#btnUseTile').onclick=usePreciseTile;
+for(const page of ['council','trade','company'])$('#town'+page[0].toUpperCase()+page.slice(1)+'Tab').onclick=()=>{selectTownPage(page);$('#townScreen').scrollTop=0;};
+$('#btnTownLeave').onclick=()=>{$('#forkBox').scrollIntoView?.({block:'center'});$('#forkBox').focus({preventScroll:true});};
 function closeFieldNotes(restoreFocus=true){$('#fieldNotes').classList.remove('open');$('#btnDetails').setAttribute('aria-expanded','false');if(restoreFocus)$('#btnDetails').focus();}
 $('#btnDetails').onclick=()=>{if($('#fieldNotes').classList.contains('open'))closeFieldNotes();else{$('#fieldNotes').classList.add('open');$('#btnDetails').setAttribute('aria-expanded','true');$('#btnDetailsClose').focus();}};
 $('#btnDetailsClose').onclick=()=>closeFieldNotes();
@@ -3804,7 +3854,7 @@ $('#btnFpBack').onclick=()=>moveDir(0,1); $('#btnStrafeL').onclick=()=>moveDir(-
 $('#btnTownRest').onclick=townRest; $('#btnTownParty').onclick=openParty;
 $('#btnLevelDone').onclick=confirmLevelUp;
 $('#btnLevelAuto').onclick=autoAssignLevelUp;
-document.addEventListener('keydown', e=>{ if(e.key==='Escape'&&$('#tacticsScreen').classList.contains('show')){closeTactics();return;}if(e.key==='Escape'&&$('#fieldNotes').classList.contains('open')){closeFieldNotes();return;}if(mode!=='explore'||overlayOpen()||e.altKey||e.ctrlKey||e.metaKey||e.target.closest('input,textarea,select,[contenteditable]'))return;
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'&&$('#tacticsScreen').classList.contains('show')){closeTactics();return;}if(e.key==='Escape'&&$('#fieldNotes').classList.contains('open')){closeFieldNotes();return;}if(mode!=='explore'||overlayOpen()||e.altKey||e.ctrlKey||e.metaKey||e.target.closest('input,textarea,select,[contenteditable],#mapGuide[open]'))return;
   const dirs={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],
     w:[0,-1],s:[0,1],a:[-1,0],d:[1,0],W:[0,-1],S:[0,1],A:[-1,0],D:[1,0]};
   const turns={q:'turnL',e:'turnR',Q:'turnL',E:'turnR'};
@@ -4150,6 +4200,7 @@ function openTactics(){
   if(fighting&&game.living('enemy').some(c=>c.cls==='BellWarden'))section('The Warden’s watch',wardenEcho('arrival'));
   if(fighting&&game.living('enemy').some(c=>c.cls==='AshCantor'))section('The last fire',cantorEcho('arrival'));
   if(fighting&&game.arenaShelter?.size)section('Allies on the battlefield',game.arenaAidNotes.join(' ')+' Your council choices protect '+game.arenaShelter.size+' sanctum tile'+(game.arenaShelter.size===1?'':'s')+'. These stay sanctums during the guardian’s phase change.');
+  section('Precise touch','Enlarge gives a pannable board with large tiles. Tap to inspect, then Use selected tile to execute. Area blasts and field objectives still need their own confirmation. Overview returns to the whole map. Arches and aisle engravings are scenery; only labelled terrain changes combat.');
   section('Your turn','Each hero can move once and take one action, in either order. Attack, cast, drink a potion, or use a signature. End Turn advances the order. Guard spends the action and ends the turn, preparing one reaction. Wait delays an untouched turn. Moving away from an adjacent foe can provoke a free strike.');
   section('Prepare before battle','Open Party to read Scouted patrols and current standing-company ward coverage. Reports show only spotted, seen enemies; potential foes and formation are not exact counts. Compare gear and overlapping bonuses before walking onto the patrol. Three marked lockboxes offer one of three finds; close Party to leave a choice for later.');
   section('Guarded treasure','A gold frame around a spotted red patrol marks a treasure guard. Win, then step onto the defeated enemy’s map tile to claim its cache. It stays there if your satchel is full. Party shows a discovery portrait; Treasure & Relics explains sources, tradeoffs and what this run has found.');
@@ -4397,6 +4448,15 @@ function campaignArtwork(theme,chapter,ending){
   const rays=Array.from({length:7},(_,i)=>'<path d="M300 118L'+(75+i*75)+' 8"/>').join('');
   return '<svg viewBox="0 0 600 140" preserveAspectRatio="xMidYMid slice" focusable="false"><rect width="600" height="140" fill="#0b1417"/><g stroke="'+colour+'" stroke-opacity=".2" fill="none">'+rays+'</g><circle cx="300" cy="65" r="47" fill="'+colour+'" opacity=".17"/><g fill="#1f2e30" stroke="'+colour+'" stroke-opacity=".4"><path d="M35 140V57H67V140M533 140V57H565V140M103 140V34H125V140M475 140V34H497V140"/><path d="M218 140V72L300 24L382 72V140Z"/></g><path d="M266 140V90Q300 42 334 90V140" fill="#03090d"/>'+(ending?'<path d="M274 76L268 51L288 60L300 39L312 60L332 51L326 76Z" fill="'+colour+'"/>':'<path d="M286 119L300 80L314 119L300 108Z" fill="'+colour+'"/>')+'<path d="M0 137H600" stroke="'+colour+'"/><text x="300" y="133" fill="'+colour+'" font-family="serif" font-size="11" text-anchor="middle" letter-spacing="5">'+(ending?'THE LAST DAWN':'CHAPTER '+chapter)+'</text></svg>';
 }
+function renderArenaScenery(){
+ const existing=board.querySelector?.('.arena-scenery');if(existing)existing.remove();
+ const id=game.battlefield||'',ash=id==='cinder_choir',bell=id==='bell_nave';
+ const colour=ash?'#d77b47':bell?'#9dd8cf':'#c6ae78';
+ const pillars=[1,3,6,8].map(y=>'<path d="M8 '+(y*40)+'h28v24H8ZM364 '+(y*40)+'h28v24h-28Z"/>').join('');
+ const art=document.createElement('div');art.className='arena-scenery';art.setAttribute('aria-hidden','true');
+ art.innerHTML='<svg viewBox="0 0 400 400" preserveAspectRatio="none" focusable="false"><path d="M115 0H285V400H115Z" fill="'+colour+'" opacity=".08"/><g fill="none" stroke="'+colour+'" stroke-width="2" opacity=".35">'+pillars+'<path d="M165 5Q200 65 235 5M165 395Q200 335 235 395M130 0V400M270 0V400"/><circle cx="200" cy="200" r="66"/><path d="M154 154L246 246M246 154L154 246"/>'+(ash?'<path d="M177 76Q168 58 190 42Q185 61 203 66Q216 47 218 33Q244 79 221 92Q188 110 177 76Z"/>':bell?'<path d="M173 76Q181 70 183 53Q200 20 217 53Q219 70 227 76ZM195 86H205"/>':'')+'</g></svg>';
+ board.appendChild(art);
+}
 function inspectTile(x,y){
   if(mode!=='combat'||!game||overlayOpen())return;
   const unit=game.at(x,y),terrain=game.terrainAt({x,y}),actor=game.current();
@@ -4441,6 +4501,7 @@ function renderProjectiles(first=false){
   }
 }
 function clearPresentation(){
+  boardZoom=false;preciseAim=null;preciseView=null;
   clearProjectiles();projectileSeq=0;legendHunt=false;fieldAim=null;
   if(presentationTimer!==null)clearTimeout(presentationTimer);presentationTimer=null;presentationToken++;presentationCombat=null;presentationUnits.clear();presentationLogCount=0;$('#tileInspect').hidden=true;$('#battleCue').hidden=true;audioScene(false);
 }
@@ -4461,7 +4522,7 @@ for(const [id,key] of [['prefSound','sound'],['prefMusic','music'],['prefEffects
 $('#prefVolume').oninput=()=>{preferences.volume=Number($('#prefVolume').value);$('#volumeValue').textContent=preferences.volume+'%';storePreferences();};
 $('#prefPace').onchange=()=>{preferences.pace=$('#prefPace').value==='quick'?'quick':'normal';storePreferences();};
 if(typeof window!=='undefined'){
-  window.addEventListener('resize',clearProjectiles);
+  window.addEventListener('resize',()=>{clearProjectiles();positionPrecisePanel();if(mode==='combat'&&boardZoom)centerPreciseTile(validPreciseAim()?preciseAim:game.current().pos);});
   const motion=window.matchMedia('(prefers-reduced-motion: reduce)');motion.addEventListener('change',clearProjectiles);
   board.addEventListener('pointerleave',()=>{$('#tileInspect').hidden=true;});
   document.addEventListener('pointerdown',()=>{if(preferences.sound&&!soundState.context)unlockAudio();},{passive:true});

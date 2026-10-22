@@ -106,3 +106,9 @@ The unchanged 96-run canary passes with zero stalls: Wanderer 30/32, Delver 25/3
 All 288 prepared guardian scenarios complete without stalls; Cantor wins are Wanderer 21/24, Delver 6/24, Ironbound 6/24. Three varied-choice full campaigns win 3/3, acquire all nine road-cache alternatives, both Warden alternatives and both Cantor alternatives, including the new censer through actual map play. Full exact-head CI repeats 96+8 companion+8 treasure+3 choice campaigns before publication. Final outcome/artifact/three-browser and Pages/live evidence is recorded in the release PR. Human pacing and physical iPhone/iPad Safari remain unverified; overall B+ remains.
 
 Runtime for build 0.27.0: **492,132 bytes (480.6 KiB)**, +7,715 over 0.26.0. One offline HTML file; no runtime dependencies or downloaded assets added. The 350 KiB target remains soft.
+
+## 0.28.0 — visual/manual-play fixes
+
+The release changes presentation and input only: explicit Guard & End, current-actor HP, optional enlarged targeting, map guidance, equipment/waystation pages and decorative arena architecture. Difficulty tables, encounter budgets, enemy/hero stats, movement/reactions, AI, damage, XP, supply rules, rewards and the 96-run policy remain unchanged. New page navigation spends nothing and precise inspection cannot act until its explicit button passes the normal legality checks. Arena scenery grants no terrain benefit.
+
+Retain all existing 96 release canaries plus 8 companion-directed, 8 treasure-directed and 3 varied-choice campaigns, and 288 prepared guardian probes. The exact-head CI artifact and release PR record the current outcomes; this UI work does not justify retuning thresholds or treating Auto outcomes as human difficulty measurements.

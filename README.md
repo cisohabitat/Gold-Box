@@ -8,13 +8,23 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 ## Play
 
-**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.27.0**
+**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.28.0**
 
 Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a fitted board/control shell on every device, with a live sidebar in wide windows and a separate Party & Log panel in smaller windows. **How to Play** on the title screen explains the rules.
 
 Balance diagnostics remain in the repository for maintenance; the game does not link players to the report.
 
 The live version is served from GitHub Pages: the repo’s **Settings → Pages** source is set to the main branch root. Changes on a pull request branch become live only after they reach `main`; download that branch's `index.html` to play its version locally.
+
+### Review fixes — build 0.28.0
+
+**Guard & End** explicitly ends the active hero’s turn. The turn status includes current HP. Wide desktop windows place actions beside a larger board.
+
+Use **Enlarge** in battle for a pannable board with approximately 46px tiles. Drag to pan, choose an action, tap a tile to inspect, then press **Use selected tile**. Inspection spends nothing. Area spells still need their separate blast confirmation; field objectives still need their own confirmation. **Overview** returns to the whole board. Switching actions or actors invalidates the inspected selection. The overview remains available on every screen.
+
+Party puts the satchel ahead of loadouts, shows one selected hero, and collapses background history. The carried-item list scrolls independently when long. Choose an item, choose the hero’s name, compare the changes, then **Give selected item**. The Close button stays reachable while scrolling. Waystations have persistent **Council**, **Trade**, and **Company** navigation; **Leave** jumps to the descent choices, which remain locked until a council plan is chosen. Trading and page navigation preserve all existing claims and saves.
+
+The **Map guide** explains movement, distinct patrol/key/treasure/event/stairs/cache symbols and the full chapter arrival. Only known walls carry masonry; unexplored ground stays black, and find symbols retain the existing discovery rules. Guardian arenas gain decorative architecture, larger guardian tokens and clearer field props. These decorations grant no cover or other combat effects; labelled terrain remains authoritative. No new dependencies or save format.
 
 ### Enemy placement
 
@@ -38,7 +48,7 @@ Build 0.19.0 redraws all 26 pixel sprites: four heroes, 21 monsters and the comp
 
 ### Presentation and player options
 
-Build 0.8.0 adds themed materials, chapter and ending illustrations, battle/victory cues, and actual HP-change feedback. Hover or keyboard-focus a combat tile to inspect HP, AC, range, and legal attack odds. Feedback is decorative and never delays an action.
+Build 0.8.0 adds themed materials, chapter and ending illustrations, battle/victory cues, and actual HP-change feedback. Hover, keyboard-focus, or tap a combat tile to inspect HP, AC, range, and legal attack odds. Enlarged view additionally requires explicit tile execution. Feedback is decorative and never delays an action.
 
 Open **Sound & Display** from the title or Party & Log. Choose high contrast, reduced visual effects, normal/quick Auto pace, volume, and optional synthesized sound and ambient tones. Sound and ambience start off; enabling them requires a gesture and downloads no assets. Preferences persist separately from the campaign, or last for the session when storage is blocked. Settings pause combat; Escape returns to play. OS reduced motion always takes priority.
 

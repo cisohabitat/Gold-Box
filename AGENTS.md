@@ -358,3 +358,16 @@ Runtime for build 0.27.0: **492,132 bytes (480.6 KiB)**, +7,715 over 0.26.0. One
 
 
 Guardian echo history is strict: resolvedAt must be on an earlier floor, not the guardian’s own floor, because waystation fulfillment follows its fight. Cover earlier/same/future-floor cases for both Warden and Cantor; narrative reads remain RNG-free.
+
+
+## Visual and manual-play review fixes — 0.28.0
+
+- Keep Guard & End explicit: it retains the existing immediate end-turn behavior. Current HP belongs in turn status. Desktop uses a side action well with a larger board; all primary controls remain at least 44px.
+- Enlarge/Overview is transient controller presentation. Its 488px grid provides approximately 46px cells, panning and explicit Use selected tile. Inspection must not move, attack, cast or spend a field action. Validate the selected combat instance, actor, mode, spell and action flags; reject stale, illegal and overlay/Auto selections. Keep separate area-spell/field confirmations and friendly-fire counts. Preserve pinch zoom, keyboard input, reachable controls, log/build, rotation and save state. Never feed zoom or decoration into engine rules or RNG.
+- Party renders all four panels but shows the selected hero only. Satchel precedes loadouts; history expands without accidentally applying a selected item. Hero buttons preserve comparison/equipment semantics, classes, occupied hands, bounded bag capacity and immediate saves. Browser tests must select a hero before interacting with that hero’s panel.
+- Waystation Council/Trade/Company pages change presentation only. Council opens first; Leave scrolls to existing gated descent choices. Trading tests navigate to Trade; companion tests navigate to Company. Keep mandatory council/level gates, nested modal focus, once-only XP/claims, old saves and explicit return-to-floor intact. A rapid second Restart tap may safely cancel the dialog if its new desktop position overlaps Keep Playing; the device test requires unchanged saved state and no title transition in either safe outcome.
+- Map masonry is restricted to seen walls. Distinct map symbols retain found/spotted/seen rules; do not expose hidden loot, patrols, exits or cache contents. Map guide uses chapterArrival without RNG and permits scrolling without exploration shortcuts while focused inside its open content.
+- Arena architecture and enhanced guardian/field props are decorative, pointer-transparent and bounded to the board. Only engine terrain confers benefits. Do not obscure unit HP or blast previews; preserve high contrast, Effects Off and reduced motion.
+- Require all 188 existing engine/controller checks and existing policy/art/source/map/guardian audits, 24 browser suites including tests/usability.cjs in exact-head Chromium/Firefox/WebKit, and unchanged 96+8+8+3 campaign gates before merge. Verify merged blobs, Pages and live build. Overall B+ remains provisional pending broader human pacing and physical Safari validation.
+
+Runtime for build 0.28.0: **507,788 bytes (495.9 KiB)**, +15,656 over 0.27.0. One offline HTML file; no runtime dependencies or downloaded assets added. The 350 KiB target remains soft.
