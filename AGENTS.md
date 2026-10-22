@@ -322,3 +322,5 @@ The shortcut search uses bounded numeric BFS and reuses the already verified pre
 Avoid repeated per-candidate lane/cache calculations and repeated full candidate sorts in generation. Score only the geometry used by the tactic, reuse loot anchors, and select each farthest objective in one pass with identical coordinate ties. Local 256-map comparisons verify the same placements, task order and RNG; keep the full audit and its 15-second execution bound.
 
 The treasure browser fixture authors a fresh 5×5 map and resets passages alongside tiles/loot/events/secrets. Retaining passage metadata from its original generated floor makes its save malformed; keep production validation strict and retain all original treasure/Continue assertions.
+
+The exploration browser flow uses a deterministic service-passage fixture and places its hidden-item control far from the pickup/exit route, so real reveal and Continue do not incidentally discover it. Keep known-only review assertions and real movement unchanged.
