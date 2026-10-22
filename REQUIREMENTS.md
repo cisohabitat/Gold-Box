@@ -467,3 +467,5 @@ Verification: tests/usability.cjs covers six layouts across the four device clas
 Enlarge must preserve or increase the current overview size on every supported layout, including large iPads. CI must use the version-matched preinstalled-browser image and verify its executables rather than depend on per-job Ubuntu mirror downloads; keep the same release gates.
 
 Panning must not displace spell/arrow effects from their grid targets. Keep world-space projectile alignment and viewport-space guardian cues correct, with a real-cast geometry check after a pan.
+
+Map guide correction (0.28.1): movement, map symbols and full chapter arrival must remain accessible through Chronicle. Place the guide outside board-stage in normal document flow; neither its closed header nor expanded content may cover exploration tiles during play. Opening and closing it must preserve save state and map bounds across all six usability layouts, with existing keyboard and modal focus handling.

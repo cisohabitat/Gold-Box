@@ -254,3 +254,7 @@ Runtime is 508,334 bytes (496.4 KiB), +16,202 over 0.27.0, under the user’s so
 Final device review also caught Enlarge reducing an already-large iPad board to the fixed small-screen size. It now takes the larger of the minimum grid and available overview size; the six-layout test explicitly rejects shrinking. The first Firefox/WebKit CI jobs timed out in Ubuntu dependency fetching before browser tests. CI now uses the version-matched official Playwright image with preinstalled browsers/libraries and a loopback Node static server, retaining every test and campaign gate. The final exact-head run is the publication authority.
 
 Enlarged-view integration also verifies an actual targeted cast while both axes are panned. Projectile layers remain in world coordinates with one scroll offset, while guardian cues stay anchored to the visible viewport. Chromium and Firefox reject drift and offscreen cues in the added check.
+
+### Map guide correction — 0.28.1
+
+The 0.28.0 guide covered map tiles even when collapsed. It now lives at the top of Chronicle in normal document flow. Six-layout usability coverage verifies guide access, full arrival text, no guide inside board-stage, unchanged save state and unchanged board bounds on return. Runtime is 508,133 bytes, 201 fewer than 0.28.0. All prior release gates remain unchanged; physical Safari validation remains outstanding.

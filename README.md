@@ -8,7 +8,7 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 ## Play
 
-**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.28.0**
+**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.28.1**
 
 Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a fitted board/control shell on every device, with a live sidebar in wide windows and a separate Party & Log panel in smaller windows. **How to Play** on the title screen explains the rules.
 
@@ -23,6 +23,8 @@ The live version is served from GitHub Pages: the repo’s **Settings → Pages*
 Use **Enlarge** in battle for a pannable board with tiles at least 44px across; already-large boards keep their size. Drag to pan, choose an action, tap a tile to inspect, then press **Use selected tile**. Inspection spends nothing. Spell flights stay attached to their tiles while panning, and guardian cues stay within the visible board. Area spells still need their separate blast confirmation; field objectives still need their own confirmation. **Overview** returns to the whole board. Switching actions or actors invalidates the inspected selection. The overview remains available on every screen.
 
 Party puts the satchel ahead of loadouts, shows one selected hero, and collapses background history. The carried-item list scrolls independently when long. Choose an item, choose the hero’s name, compare the changes, then **Give selected item**. The Close button stays reachable while scrolling. Waystations have persistent **Council**, **Trade**, and **Company** navigation; **Leave** jumps to the descent choices, which remain locked until a council plan is chosen. Trading and page navigation preserve all existing claims and saves.
+
+Open **Chronicle → Map guide** for movement instructions, map symbols and the chapter introduction. The guide sits inside Chronicle and never covers the dungeon. Build 0.28.1 corrects the map overlay from 0.28.0.
 
 The **Map guide** explains movement, distinct patrol/key/treasure/event/stairs/cache symbols and the full chapter arrival. Only known walls carry masonry; unexplored ground stays black, and find symbols retain the existing discovery rules. Guardian arenas gain decorative architecture, larger guardian tokens and clearer field props. These decorations grant no cover or other combat effects; labelled terrain remains authoritative. No new dependencies or save format.
 
