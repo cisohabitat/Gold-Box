@@ -66,3 +66,10 @@ The review demonstrates distinct, legible item illustrations within the standalo
 The twelve new identities use individually authored64×64 offline SVGgeometry: a round road shield; caged coal; closed iron helm; leafy apprentice diadem; scored greaves; blue copper ring; suncrested captain’s helm; broken orbital halo; furnace sabatons with heel lanterns; wing-clasp courier boots; rooted shield signet; and crescent-caged moonwell tear. Their silhouette, material and focal motif distinguish ordinary items and relics. Existing28 artworks remain. The contact sheet is documentation only.
 
 Inspected the enlarged40-image sheet and the actual440×780 phone loadout. Automated atlas checks inspect every art’s bounds, identity and filter count; they do not certify human recognition. Overall game grade stays B+.
+
+
+## Choirglass and the Warden’s bequest — 0.26.0
+
+![Forty-one distinct treasure identities, including Choirglass Seal](Treasure-Art-0.26.png)
+
+The new accessory has a split silver bell-frame surrounding five individually inscribed blue-glass tongues. The hanging chime silhouette distinguishes it from the Aegis shield, ordinary knot charm and moonwell pendant. It carries no physical armour bonus: the exact +2 strongest-source spell-control save is explained beside the image and in both reward comparisons. The guide now has 40 items plus the story crown (41 art identities, 18 relic cards). Keep the older contact sheet as historical evidence. Automated unique-geometry/bounds checks and a visual inspection support legibility; they do not establish human recognition or physical-device results.

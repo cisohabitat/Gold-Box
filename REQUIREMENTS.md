@@ -411,3 +411,22 @@ Build 0.22.0 local acceptance: 142 engine/controller checks, four sprite/art and
 | FLOW-08 | Preserve finale recovery. | Returning from the crown review does not choose a fate or clear crown/king. Continue on final stairs restores the pending review. Only explicit Break/Bind/Wear ends the campaign after all original gates. |
 | FLOW-09 | Measure route improvement honestly. | Independent 192-floor before/after service-path audit and 48 paired scout/name circuits. Every new connection saves ≥8 steps, fixed-find distances never increase, and paired objective totals improve. Report graph distances separately from played steps or human time. |
 | FLOW-10 | Complete release verification. | 166 engine/controller checks, existing access/source/art/policy/288 guardian probes, 21 suites in exact-head Chromium/Firefox/WebKit, unchanged 96-run canary and 8+8+3 directed campaigns, merged blob equality, Pages and live flow. Do not loosen thresholds or claim physical-device/human certification. |
+
+
+## First guardian climax — WARDEN-01…10 (0.26.0)
+
+1. Half-health transition adds one Last Toll charge, once, alongside the existing buffs/summon/sanctums; preserve an in-flight first-stage intent and spent actions. No template mutation, extra turn, invulnerability or other guardian retuning.
+2. Last Toll preparation/release use separate normal actions, fixed range-six 3×3 coordinates and one charge; 1d4+1 spell damage hits either side with ordinary spell wards and actual-damage reporting.
+3. Weapon/reaction damage interrupts and spends the charge. Misses, fully absorbed hits and magic do not. Repeated attempts cannot release twice.
+4. Incapacitation/Silence postpone without charge loss or a free action; death clears intent. Retain ordinary spells and other guardian channels.
+5. Auto selects legal blast ground without friendly collateral and uses existing evasion/reactions. No gameplay randomness in warnings, story or presentation.
+6. A real guardian victory replaces its Aegis drop with one saved choose-one bequest on the same map tile. Both alternatives are reachable and claimable exactly once; existing single drops/cleared saves are never retrofitted.
+7. Reject invalid indices, full destinations, unusable gear, stale/stacked UI and duplicate claims atomically. Reuse Party with non-claim initial focus, 44px keyboard/touch choices and leave-for-later.
+8. Pending cache validation requires the actual cleared Catacombs Bell Warden descriptor with its matching prize. Malformed imports preserve the active run and timer. Portable/Continue support old single drops, pending choices and either claimed relic.
+9. Choirglass Seal is a uniquely illustrated/lored/sourced any-class accessory with +2 spell-control saves only. Wards use the strongest source, never stack; explain the Aegis, current accessory and Starweave tradeoffs truthfully.
+10. Entrance, phase cue, resonating channel and bell flight reflect live state, respect effects/reduced motion and never delay input. Actual council/vow states change safe-text dialogue/aftermath/Chronicle; the discovered relic adds an ending echo without invented legacy choices or extra bonuses.
+
+Executable acceptance: tests/warden-rules.cjs and four-device tests/warden.cjs, alongside all 166 prior checks, 22 browser suites and unchanged release gates. The three full varied-choice campaigns retain all nine road-cache alternatives and additionally acquire both guardian bequests. Exact-head three-browser CI must pass before merge, then verify merged blobs, successful Pages and live bytes/browser flow. Other guardians remain a later slice; human balance and physical-device evidence are still open.
+
+
+Runtime for build 0.26.0: **484,417 bytes (473.1 KiB)**, +7,883 over 0.25.0. One offline HTML file, no runtime dependencies or downloaded assets added. The 350 KiB target remains soft.

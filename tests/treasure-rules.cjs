@@ -2,7 +2,7 @@ const {test}=require('node:test'),assert=require('node:assert/strict');
 const {harness}=require('./harness.cjs');
 function setup(){const h=harness();h.run("newGame(DEFAULT_BLOCKS.map((b,i)=>buildHero(CLASSES[b.cls],b.name,b.ab,'p'+(i+1),3,b.bg)));$('#startScreen').classList.remove('show');");return h;}
 test('LOOT-01: twelve additions have class coverage, art, lore, exact rules and genuine sources',()=>{
- const {run}=setup();assert.equal(run('Object.keys(ITEMS).length'),39);assert.equal(run('Object.values(ITEMS).filter(it=>it.legendary).length'),16);
+ const {run}=setup();assert.equal(run('Object.keys(ITEMS).length'),40);assert.equal(run('Object.values(ITEMS).filter(it=>it.legendary).length'),17);
  assert.equal(run("Object.values(ITEMS).every(it=>TREASURE_ART[it.id]&&RELIC_LORE[it.id]&&itemRules(it)&&!itemSources(it.id).includes('No current'))"),true);
  assert.equal(run("['Fighter','Mage','Cleric','Thief'].every(cls=>Object.values(ITEMS).some(it=>it.legendary&&it.classes?.length===1&&it.classes[0]===cls))"),true);
 });
