@@ -8,13 +8,23 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 ## Play
 
-**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.28.1**
+**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.29.0**
 
 Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a fitted board/control shell on every device, with a live sidebar in wide windows and a separate Party & Log panel in smaller windows. **How to Play** on the title screen explains the rules.
 
 Balance diagnostics remain in the repository for maintenance; the game does not link players to the report.
 
 The live version is served from GitHub Pages: the repo’s **Settings → Pages** source is set to the main branch root. Changes on a pull request branch become live only after they reach `main`; download that branch's `index.html` to play its version locally.
+
+### Fresh playthrough fixes — build 0.29.0
+
+**Auto-assign** at level-up previews ability, spell and perk recommendations. Review or change them, then press **Confirm** to apply them. Sleep previews count affected enemies and explicitly say allies are safe; damaging blasts retain their friendly-fire counts.
+
+Guardian fights have encounter names, illustrated entrances and current counterplay near the top of **Tactics**. Astrax uses its own hunt objective. The Bell Warden has a bronze bell silhouette; Astrax has luminous wing bones and constellation details. [Updated sprite sheet](Sprite-Art-0.29.png).
+
+**Last Procession now begins at two-thirds HP**, giving the Cantor’s second stage more room before a finishing hit. Its stats, spells, once-only buffs/summon and normal action limits are unchanged. Other guardians still change at half HP. Newly generated final maps put the crown 8–12 walking steps from the exit, with the king beside its approach, on reachable ground before the stairs. Existing saves keep their map and reward positions.
+
+Small corner dots mark visible ground that has not been searched at close range. Approach it to discover finds; dots reveal no hidden contents. The guide remains inside Chronicle. Endings use short paragraphs and count all six completed chapters after victory.
 
 ### Review fixes — build 0.28.0
 
@@ -68,7 +78,7 @@ The Bell Warden and Ash Cantor now have distinct stage designs. The king and opt
 
 ### The Ash Cantor — build 0.27.0
 
-**Measured Hymn** uses the Cantor’s existing ranged spells and interruptible Cinderburst. At half HP, **Last Procession** retains its +1 attack/damage, one skeleton and inner-aisle fire, but changes tactics: it uses available movement to advance, strikes foes in reach, and casts when still distant. A pending hymn releases first on its original ground. No new spell charge, immediate attack or extra turn is granted.
+**Measured Hymn** uses the Cantor’s existing ranged spells and interruptible Cinderburst. At two-thirds HP, **Last Procession** retains its +1 attack/damage, one skeleton and inner-aisle fire, but changes tactics: it uses available movement to advance, strikes foes in reach, and casts when still distant. A pending hymn releases first on its original ground. No new spell charge, immediate attack or extra turn is granted.
 
 Two numbered **braziers** offer optional counterplay. From on or adjacent to a diamond, select it to preview four affected tiles, then press **Confirm: Extinguish brazier** to spend one hero action. Each works once. Those tiles lose terrain embers and stay cool through the phase change, so you can prepare a route early or clear one later. The freed choir’s sheltered sanctums remain intact. Both sides can use a cooled route; Cinderburst and other spells still deal damage there. Ignoring the braziers still allows victory. Auto only extinguishes an adjacent brazier when it immediately protects a standing ally on its affected embers.
 
@@ -154,7 +164,7 @@ The campaign now adds route-specific set pieces, guardian aftermaths and a drago
 - **Readable tactics and safe aiming.** Open **Tactics** during combat to pause and read enemy roles, current stats, remaining spells, and statuses. Area spells require an aim tap followed by a second tap or confirmation. The blast is highlighted and the confirmation reports allies and foes in the area, including a friendly-fire warning for damaging spells.
 - **A reward for every chapter.** Each nonfinal chapter exit grants every hero `100 + 50 × floor tier` XP once. It remains separate from survivor-only battle XP on harder oaths. Exits resume after combat and pending level choices without requiring a step off the stairs.
 - **Promises to the kingdom.** Chronicle tracks three optional contracts. Win four battles for Sunshard (Mage/Cleric weapon, +2 attack/+2 damage); open two hidden caches for Lantern Mantle (+2 AC); succeed at three event checks for 120 gold and two supplies. Rewards are automatic, saved, and paid once. Skips and failed checks do not count as successes.
-- **Guardians before the finale.** The Bell Warden rallies its retinue; the Ash Cantor uses hexes and fire. Each gains a small buff and calls one skeleton at half health while alive. Their capped encounter budgets keep these milestones within the existing campaign. The Crypt Lord retains its stronger two-skeleton phase.
+- **Guardians before the finale.** The Bell Warden rallies its retinue; the Ash Cantor uses hexes and fire. Each gains a small buff and calls one skeleton once while alive: the Bell Warden at half health, the Ash Cantor at two-thirds. Their capped encounter budgets keep these milestones within the existing campaign. The Crypt Lord retains its stronger two-skeleton phase.
 - **Choose your oath.** Wanderer starts selected: smaller enemy forces, 25% party HP recovery after victory, and victory XP for downed heroes too. Delver uses the standard encounter multiplier and survivor-only battle XP; Ironbound increases that budget by 25%. Elite rolls and party strength still affect the result.
 - **Class signatures.** Each hero has a special action usable once per battle. Fighter: Rally the Line (+2 party attack and AC for two turns). Cleric: Dawn's Mercy (heal all standing allies for 6 + twice the Cleric's level). Thief: Cloak of Shadows (+4 AC and weapon damage for three turns). Mage: Arcane Wellspring (restore one use per spell and gain +2 AC for two turns). Buff durations tick at the affected actor's turn end. Signatures spend an action, and Auto uses them too.
 - **Embers of the old kingdom.** Each waystation offers three of the remaining blessings. Claim one free blessing there: permanent party attack, armour, or damage bonuses, or immediate supplies, gold, or potions. Each blessing is unique within a run. You may descend without claiming one.

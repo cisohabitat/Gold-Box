@@ -1,3 +1,13 @@
+# Sprite review — current build 0.29.0
+
+The Warden now uses a bronze flared bell body, dark sound chamber, clapper and cold eye slits, separating it from the Fighter’s blue shield silhouette. Astrax retains its broad skeletal wings/coiled tail with luminous wing bones and constellation highlights. Current guardian Tactics briefings and named entrances give their portraits more space. The other 24 identities remain unchanged. These are authored 24×24 grids with the existing palette/compiler, not external assets.
+
+![Current 26 sprites, enlarged and at 24px and 16px](Sprite-Art-0.29.png)
+
+Source integrity and browser visibility checks supplement visual inspection; neither establishes physical Safari recognition or AAA art quality. Overall assessment remains provisional B+.
+
+---
+
 # Sprite review — build 0.19.0
 
 All **26 sprites** have been redrawn: four heroes, 21 monsters (including four guardians), and the company standard. The overall game assessment remains **B+**. This is an editorial art improvement within a small standalone game, not a AAA certification. Earlier 0.9.0 grades did not establish the quality of the present game.

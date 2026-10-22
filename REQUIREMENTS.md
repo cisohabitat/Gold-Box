@@ -435,7 +435,7 @@ Runtime for build 0.26.0: **484,417 bytes (473.1 KiB)**, +7,883 over 0.25.0. One
 ## Ash Cantor climax — CANTOR-01…12 (0.27.0)
 
 1. Activate two authored braziers only in the Cantor’s cinder_choir arena; keep eight ordinary chapter definitions and pure/plain constructors intact. No new persisted scene ID.
-2. An early extinguish removes its lane’s existing embers and prevents later matching-phase ignition. Once-only half-HP buffs/summon/phase remain; no extra charge/action/reward or template mutation.
+2. An early extinguish removes its lane’s existing embers and prevents later matching-phase ignition. Once-only buffs/summon/phase remain (Cantor now triggers at two-thirds HP; other guardians retain half HP); no extra charge/action/reward or template mutation.
 3. A late extinguish clears only its four named tiles. Preserve all sanctums/cover, council shelters and the other lane; the cool route is shared with enemies. Damage spells ignore cooled ground.
 4. Reject wrong actor/side, dead/incapacitated/spent hero, remote/unknown/used station and ended battle without action/state loss or RNG. Both stations remain optional for victory.
 5. The Last Procession uses available normal movement to advance, strikes an adjacent foe, otherwise casts with movement spent. Keep one normal action and all original spells/stats/budget.
@@ -469,3 +469,18 @@ Enlarge must preserve or increase the current overview size on every supported l
 Panning must not displace spell/arrow effects from their grid targets. Keep world-space projectile alignment and viewport-space guardian cues correct, with a real-cast geometry check after a pan.
 
 Map guide correction (0.28.1): movement, map symbols and full chapter arrival must remain accessible through Chronicle. Place the guide outside board-stage in normal document flow; neither its closed header nor expanded content may cover exploration tiles during play. Opening and closing it must preserve save state and map bounds across all six usability layouts, with existing keyboard and modal focus handling.
+
+## Fresh playthrough acceptance — 0.29.0
+
+| ID | Requirement | Acceptance |
+| --- | --- | --- |
+| FRESH-01 | Auto-assign previews; explicit Confirm applies. | No hero/save/pending mutation before Confirm; repeat-safe recommendations; once-only commit; Continue retains unspent levels. |
+| FRESH-02 | Guardian title, objective and illustrated entrance match the current encounter. | Astrax never shows the completed Cantor objective; all four guardians have identity art and a current briefing before general rules, fitting six layouts. |
+| FRESH-03 | Area previews count actually affected sides. | Sleep excludes allies and says they are safe; Fireball retains ally counts and warnings; preview is free and explicit confirmation remains. |
+| FRESH-04 | Cantor Last Procession begins at two-thirds HP. | A 20-damage hit on 43 HP triggers the stage at 23 HP; no repeated summon, new charge/action, invulnerability or template mutation. Other guardian thresholds remain half HP. |
+| FRESH-05 | New final maps provide a short crown approach. | 256 map audit: crown 8–12 shortest walking steps from stairs, guardian adjacent on the approach, both reachable before stairs/doors without relying on shortcut passages. Existing saves unchanged. |
+| FRESH-06 | Seen and closely searched ground are distinguishable without discovery leaks. | Corner dots only on seen unsearched floor; zero state/RNG change; key-search hint only contextual; Chronicle guide explains dots without covering map. |
+| FRESH-07 | Victory counts final chapter and presents a readable epilogue. | Six completed chapters for a full route; no completedFloors mutation; all three endings preserve safe-text story echoes and paragraph breaks; Play Again reachable. |
+| FRESH-08 | Guardian art remains recognizable at game scale. | Bronze bell-shaped Warden differs from Fighter; Astrax retains broad skeletal wings with luminous bones/stars. Updated 26-sprite sheet and real board/Tactics checks; no collision or mechanical art effect. |
+
+All prior gates remain. The new UI suite is the 25th, not a replacement; the new six engine rules supplement the existing 188. Physical Safari remains a separate validation task.

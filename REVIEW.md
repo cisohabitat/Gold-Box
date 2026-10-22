@@ -258,3 +258,11 @@ Enlarged-view integration also verifies an actual targeted cast while both axes 
 ### Map guide correction — 0.28.1
 
 The 0.28.0 guide covered map tiles even when collapsed. It now lives at the top of Chronicle in normal document flow. Six-layout usability coverage verifies guide access, full arrival text, no guide inside board-stage, unchanged save state and unchanged board bounds on return. Runtime is 508,133 bytes, 201 fewer than 0.28.0. All prior release gates remain unchanged; physical Safari validation remains outstanding.
+
+### Fresh live playthrough and corrections — 0.29.0
+
+The 0.28.1 live review completed one unseeded Wanderer/default-party campaign through entrance → Gallery → Catacombs → Ossuary → Descent → Sunless Tomb, including Astrax and Break the Crown: 13 battles, 70 foes, 821 steps, six events, three secrets, four fulfilled companion vows and 30 discovered finds. UI-driven exploration used known map state, with manual tactical decisions and Auto assistance. No health, gold, RNG or progression injection; no uncaught game-script error. Phone/iPad/desktop viewports were emulated, not physical Safari. This is one run, not a human balance sample.
+
+Corrections address the stale hunt objective, immediate Auto-assign commitment, misleading Sleep ally counts, compressed Cantor phase/crown escape, weak guardian hierarchy/silhouette, unclear search coverage, five-chapter ending label and monolithic epilogue. The Cantor trigger moves to two-thirds HP with unchanged stats/actions/charges; new final maps guarantee an 8–12-step crown approach guarded before the stairs. Existing maps remain intact. Contextual briefings and named illustrated entrances support revised Warden/Astrax art; endings retain every narrative echo in separated paragraphs.
+
+Local engine/audit checks and the new six-layout Chromium/Firefox suite pass. All 25 suites and unchanged 115 campaign gates must pass on exact-head three-browser CI before publication. Overall B+ remains provisional pending broader manual pacing/physical Safari. Runtime: **514,326 bytes (502.3 KiB)**, +6,193 bytes versus 0.28.1; no new runtime dependency or save schema. Final exact-head CI and live evidence belong to the release PR.
