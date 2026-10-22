@@ -3338,7 +3338,7 @@ function enterCombat(desc,atKey){ pendingKey=atKey;
   if(desc.boss && desc.lead==='crypt_lord'){ exploreFeed.push({t:'The Crypt Lord rises between you and the way out. There is no leaving but through him.',k:'kill'}); }
   game=new CombatEngine(party,enemies,10,10,encounterBattlefield(desc,explore.theme),deploymentTactic(desc,enemies));applyCouncilArena(game,desc);if(finale&&effects.ward){for(const h of party)if(h.alive)h.statuses.push({type:'dawnward',duration:3,buff:true,ac:effects.ward});storyNotes.push('The remembered names and small gods stand beside you: +2 AC for three turns.');}for(const text of storyNotes)game.log.push({t:text,k:'magic'});game.log.push({t:'Battle begins: '+enemies.map(e=>e.name).join(', ')+'.',k:'sys'});if(desc.prize)game.log.push({t:'Guarded treasure: '+ITEMS[desc.prize].name+'. Victory leaves a cache on the defeated patrol’s tile.',k:'magic'});if(game.tactic)game.log.push({t:PATROL_TACTICS[game.tactic].name+' · '+PATROL_TACTICS[game.tactic].counter,k:'sys'}); if(game.fieldObjective){const b=CHAPTER_BATTLES[game.fieldObjective.id];game.log.push({t:b.name+' · '+b.story,k:'flavor'});game.log.push({t:'Optional field objective: '+b.action+' at diamonds 1 and 2 (on or adjacent; one action each). Tap a diamond, then confirm. Terrain serves both sides; no extra reward. Defeat all enemies to win.',k:'sys'});} mode='combat'; mover=null; reachCache=null; selectedSpell=null; autoFight=false; updateAutoBtn(); render(); beginTurnFlow(); }
 function resolveCombat(){
-  cancelTurn();autoFight=false; updateAutoBtn();
+  fieldAim=null;cancelTurn();autoFight=false; updateAutoBtn();
   if(game.phase==='won'){
     const hunted=legendHunt;legendHunt=false;if(hunted){if(!campaign.hunt){campaign.hunt=true;bag.items.push('eclipsescale');bag.rations++;exploreFeed.push({t:'Astrax folds its wings around the broken chain. Stars rise through the mountain. Eren catches one falling scale: Eclipsescale Mantle (+2 AC, −2 damage per spell hit, any class) and one supply. The Observatory falls silent.',k:'magic'});}}else {const prize=explore.encounters[pendingKey]?.prize;if(prize&&!explore.cleared.has(pendingKey)){explore.loot[pendingKey]={type:'item',item:prize};exploreFeed.push({t:'The guarded cache opens: '+ITEMS[prize].name+'. Claim it on the defeated patrol’s tile.',k:'magic'});}explore.cleared.add(pendingKey);}for(const foe of game.combatants)if(GUARDIAN_AFTERMATH[foe.cls])exploreFeed.push({t:GUARDIAN_AFTERMATH[foe.cls],k:'flavor'});campaign.battles++;campaign.foes+=game.combatants.filter(c=>c.side==='enemy'&&!c.alive).length;if(game.combatants.some(c=>c.cls==='CryptLord'))campaign.bossSlain=true;
     const fallen=game.combatants.find(c=>GUARDIAN_AFTERMATH[c.cls]||c.cls==='EclipseWyrm');
@@ -4305,7 +4305,7 @@ function renderProjectiles(first=false){
   }
 }
 function clearPresentation(){
-  clearProjectiles();projectileSeq=0;legendHunt=false;
+  clearProjectiles();projectileSeq=0;legendHunt=false;fieldAim=null;
   if(presentationTimer!==null)clearTimeout(presentationTimer);presentationTimer=null;presentationToken++;presentationCombat=null;presentationUnits.clear();presentationLogCount=0;$('#tileInspect').hidden=true;$('#battleCue').hidden=true;audioScene(false);
 }
 function showBattleCue(text){
