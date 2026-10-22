@@ -105,4 +105,4 @@ The unchanged 96-run canary passes with zero stalls: Wanderer 30/32, Delver 25/3
 
 All 288 prepared guardian scenarios complete without stalls; Cantor wins are Wanderer 21/24, Delver 6/24, Ironbound 6/24. Three varied-choice full campaigns win 3/3, acquire all nine road-cache alternatives, both Warden alternatives and both Cantor alternatives, including the new censer through actual map play. Full exact-head CI repeats 96+8 companion+8 treasure+3 choice campaigns before publication. Final outcome/artifact/three-browser and Pages/live evidence is recorded in the release PR. Human pacing and physical iPhone/iPad Safari remain unverified; overall B+ remains.
 
-Runtime for build 0.27.0: **492,134 bytes (480.6 KiB)**, +7,717 over 0.26.0. One offline HTML file; no runtime dependencies or downloaded assets added. The 350 KiB target remains soft.
+Runtime for build 0.27.0: **492,132 bytes (480.6 KiB)**, +7,715 over 0.26.0. One offline HTML file; no runtime dependencies or downloaded assets added. The 350 KiB target remains soft.

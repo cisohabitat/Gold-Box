@@ -354,4 +354,7 @@ Runtime for build 0.26.0: **484,417 bytes (473.1 KiB)**, +7,883 over 0.25.0. One
 Guardian field definitions are transient engine content, not valid saved ordinary scene IDs. Preserve strict import validation and all eight prior chapter-action cases. Reward-flow browser fixtures derive the claimed tile from restored exploration position after reload; JavaScript fixture globals do not persist across Continue.
 
 
-Runtime for build 0.27.0: **492,134 bytes (480.6 KiB)**, +7,717 over 0.26.0. One offline HTML file; no runtime dependencies or downloaded assets added. The 350 KiB target remains soft.
+Runtime for build 0.27.0: **492,132 bytes (480.6 KiB)**, +7,715 over 0.26.0. One offline HTML file; no runtime dependencies or downloaded assets added. The 350 KiB target remains soft.
+
+
+Guardian echo history is strict: resolvedAt must be on an earlier floor, not the guardian’s own floor, because waystation fulfillment follows its fight. Cover earlier/same/future-floor cases for both Warden and Cantor; narrative reads remain RNG-free.

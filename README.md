@@ -510,4 +510,4 @@ Build 0.22.0 local acceptance: 142 engine/controller checks, four sprite/art and
 Runtime for build 0.26.0: **484,417 bytes (473.1 KiB)**, +7,883 over 0.25.0. One offline HTML file, no runtime dependencies or downloaded assets added. The 350 KiB target remains soft.
 
 
-Runtime for build 0.27.0: **492,134 bytes (480.6 KiB)**, +7,717 over 0.26.0. One offline HTML file; no runtime dependencies or downloaded assets added. The 350 KiB target remains soft.
+Runtime for build 0.27.0: **492,132 bytes (480.6 KiB)**, +7,715 over 0.26.0. One offline HTML file; no runtime dependencies or downloaded assets added. The 350 KiB target remains soft.

@@ -450,4 +450,4 @@ Runtime for build 0.26.0: **484,417 bytes (473.1 KiB)**, +7,883 over 0.25.0. One
 Acceptance: tests/cantor-rules.cjs and four-device tests/cantor.cjs, all 176 prior checks (188 total), source/art/policy/map/guardian audits and all 23 suites on three exact-head CI browsers. Retain the unchanged 96-run canary, eight companion and eight treasure campaigns. Three varied-cache campaigns must cover every existing alternative plus both Cantor bequests. Merge only after all CI jobs pass; then verify merged files, Pages success and live source/browser flow. Record actual outcomes, runtime growth and remaining human/physical-device limits.
 
 
-Runtime for build 0.27.0: **492,134 bytes (480.6 KiB)**, +7,717 over 0.26.0. One offline HTML file; no runtime dependencies or downloaded assets added. The 350 KiB target remains soft.
+Runtime for build 0.27.0: **492,132 bytes (480.6 KiB)**, +7,715 over 0.26.0. One offline HTML file; no runtime dependencies or downloaded assets added. The 350 KiB target remains soft.

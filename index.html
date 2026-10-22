@@ -4041,7 +4041,7 @@ function wardenEcho(moment){
  if(names?.id==='names')lines.push('Eren reads from the register you carried. The names inside the bell answer, one by one.');
  else if(names?.id==='vigil')lines.push('The ancestral vigil stands in silence. Its watch will end only when his does.');
  const q=campaign.heroQuests.Fighter,hero=q&&WORLD_DEPTHS[q.origin]<WORLD_DEPTHS.catacombs&&party.find(h=>h.id===q.hero);
- if(hero)lines.push(hero.name+(q.plan==='names'?' speaks the names promised to the dead.':' plants a shield between the bell and the living.')+(q.stage==='fulfilled'&&WORLD_DEPTHS[q.resolvedAt]<=WORLD_DEPTHS.catacombs?' The kept vow answers the Warden’s command.':' The unfinished vow has found its witness.'));
+ if(hero)lines.push(hero.name+(q.plan==='names'?' speaks the names promised to the dead.':' plants a shield between the bell and the living.')+(q.stage==='fulfilled'&&WORLD_DEPTHS[q.resolvedAt]<WORLD_DEPTHS.catacombs?' The kept vow answers the Warden’s command.':' The unfinished vow has found its witness.'));
  return lines.join(' ');
 }
 function cantorEcho(moment){
@@ -4051,7 +4051,7 @@ function cantorEcho(moment){
  else if(choir?.id==='belliron')out.push('The bell-forged weapons answer every note. The voices bound in their iron demand an end to the hymn.');
  if(road)out.push(({hearths:'The village hearths you relit answer through the mountain. This fire no longer belongs to the king alone.',procession:'The small gods shelter their last coal as the funeral procession passes.',legion:'The lost legion’s silent march answers the Cantor’s burning procession.',shields:'The shields you carried from the lost legion stand between the last fire and the living.'})[road.id]||'');
  for(const cls of ['Cleric','Mage']){const q=campaign.heroQuests[cls],hero=q&&WORLD_DEPTHS[q.origin]<WORLD_DEPTHS.deep_stair&&party.find(h=>h.id===q.hero);if(!hero)continue;
-  const kept=q.stage==='fulfilled'&&WORLD_DEPTHS[q.resolvedAt]<=WORLD_DEPTHS.deep_stair;
+  const kept=q.stage==='fulfilled'&&WORLD_DEPTHS[q.resolvedAt]<WORLD_DEPTHS.deep_stair;
   out.push(hero.name+' '+({hearth:'holds a remembered hearth against the ash.',witness:'keeps witness to the choir’s final names.',unmake:'names the spell that must end at the throne.',share:'cups a living ember for the people above.'}[q.plan]||'stands beside the last fire.')+(kept?' A kept promise lends the words their weight.':' The promise still has a road to travel.'));
  }return out.filter(Boolean).join(' ');
 }
