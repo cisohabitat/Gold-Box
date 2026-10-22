@@ -320,3 +320,5 @@ Field selection releases its combat reference on title/new game/successful impor
 The shortcut search uses bounded numeric BFS and reuses the already verified pre-door component when available. Preserve shortcut selection semantics and the full 2,048-map audit/15-second harness limit; do not relax the gate for generation overhead.
 
 Avoid repeated per-candidate lane/cache calculations and repeated full candidate sorts in generation. Score only the geometry used by the tactic, reuse loot anchors, and select each farthest objective in one pass with identical coordinate ties. Local 256-map comparisons verify the same placements, task order and RNG; keep the full audit and its 15-second execution bound.
+
+The treasure browser fixture authors a fresh 5×5 map and resets passages alongside tiles/loot/events/secrets. Retaining passage metadata from its original generated floor makes its save malformed; keep production validation strict and retain all original treasure/Continue assertions.
