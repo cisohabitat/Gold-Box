@@ -222,3 +222,8 @@ Implemented the accepted next step: weapon/offhand/armour/head/feet/accessory; r
 Implement accepted priorities 1–3: truthful per-hero loadout summaries/overlap explanations; three bounded choose-one treasure caches using existing loot positions; spotted-patrol counterplay and gear coverage inside Party. Follow DECISION-01…08, retain legacy generated maps and the existing balance/release gates. Campaign pacing and physical Safari/human playtests remain subsequent work.
 
 Equipment-decision implementation: priorities 1–3 are implemented. Acceptance includes once-only map choices, deterministic first-option replacement, truthful gear overlap, fog-limited scouting, safe Continue focus and additional full-campaign alternative coverage. Final counts and publication evidence follow in the release record. Campaign pacing/human physical-device testing remain next.
+
+
+### 0.23.0 — enemy placement safety
+
+Implemented entrance-side encounter placement with stairs excluded from pathfinding, safe guardian relocation, locked-door-aware live spawns, and local legacy repair. Added independent 2,048-floor coverage and adversarial transition/cleared-key regressions. Existing cross-browser, campaign and publication gates remain mandatory; this correctness work does not change the B+ assessment or resolve physical-device/human playtesting gaps.

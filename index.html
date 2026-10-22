@@ -701,7 +701,7 @@
 <div class="screen" id="settingsScreen" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="sbox"><h2 id="settingsTitle" class="ctitle">Sound &amp; Display</h2><p class="tag">Make the journey your own. Combat pauses while this sheet is open.</p><div class="settings-list"><label><input id="prefSound" type="checkbox"> Synthesized sound effects</label><label><input id="prefMusic" type="checkbox"> Quiet ambient tones (requires sound)</label><label for="prefVolume">Volume <output id="volumeValue">35%</output><input id="prefVolume" type="range" min="0" max="100" step="5" value="35"></label><label><input id="prefEffects" type="checkbox" checked> Visual effects (respects reduced motion)</label><label><input id="prefContrast" type="checkbox"> High contrast / clean display</label><label for="prefPace">Auto pace<select id="prefPace"><option value="normal">Deliberate · normal speed</option><option value="quick">Quick · shorter Auto turns</option></select></label></div><p id="audioStatus" class="tag" role="status">Sound is off by default. No downloads are needed.</p><p id="preferenceStatus" class="tag" role="status"></p><button id="btnSettingsClose" class="big">Back to Game</button></div></div>
 <div class="screen" id="codexScreen" role="dialog" aria-modal="true" aria-labelledby="codexTitle"><div class="sbox wide"><div class="eyebrow">Eren’s field atlas</div><h2 id="codexTitle" class="ctitle">The Bestiary</h2><div class="atlas-nav" role="group" aria-label="Atlas pages"><button id="codexBeasts" aria-pressed="true">Bestiary</button><button id="codexTreasure" aria-pressed="false">Treasure &amp; Relics</button><button id="codexLegends" aria-pressed="false">Legends &amp; Hunt</button><button id="btnCodexClose">Back</button></div><p class="tag" id="codexNote"></p><div id="codexTools" class="atlas-tools"><label for="codexSearch">Search<input id="codexSearch" type="search" maxlength="80" placeholder="Name, spell, source or lore"></label><label for="codexFilter">Show<select id="codexFilter"><option value="all">All entries</option><option value="guardians">Guardians</option><option value="relics">Relics</option><option value="potions">Potions</option></select></label></div><p id="codexCount" class="tag" role="status"></p><div id="codexContent" class="atlas-grid"></div></div></div>
 <script>
-const GAME_BUILD='0.22.0';
+const GAME_BUILD='0.23.0';
 document.querySelectorAll('[data-build]').forEach(el=>el.textContent='Build '+GAME_BUILD);
 /* ===== CROWN CAMPAIGN : data, with controller helpers below ===== */
 const OATHS={wanderer:{name:'Wanderer',budget:0.65,recovery:0.25,desc:'Gentler battles; all heroes earn victory XP and recover 25% HP after a win.'},delver:{name:'Delver',budget:1,desc:'Fortune favours the prepared. Only standing heroes earn victory XP.'},ironbound:{name:'Ironbound',budget:1.25,desc:'Stronger enemy forces. Only standing heroes earn victory XP.'}};
@@ -1358,28 +1358,31 @@ function buildDungeon(cfg){
   const wanderPool=[...new Set((cfg.encounters||[]).flatMap(e=> e&&!e.boss && e.pool ? e.pool : []))];
   return { name:cfg.name, theme:cfg.theme, w, h, tiles, start, exit, doors, loot, secrets, encounters, events, wanderPool, task:placeTask(cfg.chapter,tiles,start,exit,doors,loot,encounters,events) };
 }
-// Scatter encounter descriptors onto random tiles reachable from the start
-// (doors count as passable). A descriptor with an `at:[x,y]` is pinned to that
-// tile; the rest roam to random tiles clear of the start vicinity, exit, doors,
-// loot, and each other. The stored value is the descriptor; the composer turns
-// it into monsters at fight time.
-function placeEncounters(list, tiles, w, h, start, exit, doors, loot){
-  const isWall=(x,y)=> tiles[y][x]==='#';
-  const fixed=list.filter(e=>e&&e.at), roamers=list.filter(e=>e&&!e.at);
-  const out={};
-  const fixedKeys=new Set();
-  fixed.forEach(e=>{ const [x,y]=e.at; if(!isWall(x,y)){ const k=key(x,y); out[k]=e; fixedKeys.add(k); } });
-  // reachable floor tiles from start, treating doors as passable
-  const reach=new Set([key(start.x,start.y)]); let frontier=[[start.x,start.y]];
-  while(frontier.length){ const nx=[]; for(const [x,y] of frontier){
-    for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const a=x+dx,b=y+dy,k=key(a,b);
-      if(a<0||b<0||a>=w||b>=h||isWall(a,b)||reach.has(k)) continue; reach.add(k); nx.push([a,b]); } } frontier=nx; }
-  const blocked=new Set([key(start.x,start.y), key(exit.x,exit.y), ...doors, ...Object.keys(loot), ...fixedKeys]);
-  const cand=[...reach].filter(k=>{ if(blocked.has(k)) return false;
-    const [x,y]=k.split(',').map(Number);
-    return Math.max(Math.abs(x-start.x), Math.abs(y-start.y))>1; });  // keep a buffer around the entrance
-  for(let i=cand.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [cand[i],cand[j]]=[cand[j],cand[i]]; }
-  roamers.forEach((desc,i)=>{ const k=cand[i]; if(k) out[k]=desc; });
+// Stairs end a floor: never use them as a bridge to an encounter. Doors may
+// be traversed for authored placement (the key opens them), but live spawns
+// use the currently unlocked component. No random rolls in this path search.
+function beforeExitReach(tiles,start,exit,blocked=new Set()){
+  const floor=new Set();tiles.forEach((row,y)=>row.forEach((t,x)=>{if(t==='.')floor.add(key(x,y));}));
+  const stop=new Set([...blocked,key(exit.x,exit.y)]);
+  if(key(start.x,start.y)!==key(exit.x,exit.y))return _flood(floor,start,stop);
+  // Legacy saves may already stand on the stairs. Use the largest adjacent
+  // component until they step off; never cross the stairs to join components.
+  let best=new Set();for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){const p={x:start.x+dx,y:start.y+dy},k=key(p.x,p.y);if(!floor.has(k)||stop.has(k))continue;const r=_flood(floor,p,stop);if(r.size>best.size)best=r;}return best;
+}
+function placeEncounters(list,tiles,w,h,start,exit,doors,loot){
+  const reach=beforeExitReach(tiles,start,exit),out={};
+  const blocked=new Set([key(start.x,start.y),...doors,...Object.keys(loot)]);
+  const legal=[...reach].filter(k=>!blocked.has(k));
+  const fixed=list.filter(e=>e&&e.at),roamers=list.filter(e=>e&&!e.at);
+  for(const e of fixed){
+    const [x,y]=e.at,wanted=key(x,y);
+    const k=legal.includes(wanted)&&!out[wanted]?wanted:legal.filter(k=>!out[k]).sort((a,b)=>{const dist=k=>{const [px,py]=k.split(',').map(Number);return Math.abs(px-x)+Math.abs(py-y);};return dist(a)-dist(b)||a.localeCompare(b);})[0];
+    if(!k)throw Error('No reachable encounter tile before stairs');
+    out[k]=k===wanted?e:{...e,at:k.split(',').map(Number)};
+  }
+  const cand=legal.filter(k=>{if(out[k])return false;const [x,y]=k.split(',').map(Number);return Math.max(Math.abs(x-start.x),Math.abs(y-start.y))>1;});
+  for(let i=cand.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[cand[i],cand[j]]=[cand[j],cand[i]];}
+  roamers.forEach((desc,i)=>{const k=cand[i];if(!k)throw Error('No reachable patrol tile before stairs');out[k]=desc;});
   return out;
 }
 // Scatter stat-check events onto reachable tiles clear of the start vicinity,
@@ -1521,6 +1524,9 @@ function _tryGen(spec,W,H){
     }
     if(!door) return null;
   }
+  const beforeStairs=_flood(carved,startT,new Set([key(exitT.x,exitT.y)]));
+  const encounterRoom=[...beforeStairs].filter(k=>{const [x,y]=k.split(',').map(Number);return !(door&&k===key(door[0],door[1]))&&Math.max(Math.abs(x-startT.x),Math.abs(y-startT.y))>1;});
+  if(encounterRoom.length<(spec.encounters||[]).length+12)return null;
   const walls=[]; for(let yy=1; yy<H-1; yy++) for(let xx=1; xx<W-1; xx++){ if(!carved.has(key(xx,yy))) walls.push([xx,yy]); }
   // tiles reachable before the door is opened -> safe for all loot and the key
   const reach=_flood(carved, startT, door? new Set([key(door[0],door[1])]) : new Set());
@@ -1564,7 +1570,7 @@ function _tryGen(spec,W,H){
   // encounters: a guard pins inside the vault by the exit; the rest roam
   const encounters=(spec.encounters||[]).map(e=>{
     if(!e.guard) return e;
-    const adj=[[1,0],[-1,0],[0,1],[0,-1]].map(([a,b])=>[exitT.x+a,exitT.y+b]).filter(([a,b])=>carved.has(key(a,b)) && !(a===exitT.x&&b===exitT.y));
+    const adj=[[1,0],[-1,0],[0,1],[0,-1]].map(([a,b])=>[exitT.x+a,exitT.y+b]).filter(([a,b])=>beforeStairs.has(key(a,b)) && !(door&&a===door[0]&&b===door[1]));
     const {guard, ...rest}=e; return {...rest, at: adj[0] || [exitT.x, exitT.y]};
   });
   return { name:spec.name, theme:spec.theme, w:W, h:H, start:[startT.x,startT.y], exit:[exitT.x,exitT.y], walls, doors: door?[door]:[], loot, secrets, encounters, events:_pickEvents(spec) };
@@ -2344,11 +2350,12 @@ class ExploreEngine{
     this.wokenSteps++;
     if(this.wanderers>=this.wanderCap) return null;
     if(this.wokenSteps % this.wanderCadence !== 0) return null;
+    const reach=beforeExitReach(this.tiles,this.pos,this.exit,this.doors);
     const p=this.pos, ex=this.exit, pDE=Math.abs(p.x-ex.x)+Math.abs(p.y-ex.y), cands=[];
     for(let y=1;y<this.h-1;y++) for(let x=1;x<this.w-1;x++){
       if(this.isWall(x,y)||this.locked(x,y)) continue;
       const k=key(x,y);
-      if(this.encounterAt(x,y)||this.loot[k]||this.eventAt(x,y)) continue;
+      if(!reach.has(k)||this.encounters[k]||this.loot[k]||this.eventAt(x,y)) continue;
       if(x===ex.x&&y===ex.y) continue;
       const dP=Math.max(Math.abs(x-p.x),Math.abs(y-p.y)), dE=Math.abs(x-ex.x)+Math.abs(y-ex.y);
       if(dP<3||dP>7||dE<3) continue;
@@ -2367,10 +2374,11 @@ class ExploreEngine{
   // anything already placed. Used by a failed scout check; works whether or not the
   // tomb has woken. Solvability is untouched (it sits on a floor tile, never a wall).
   spawnAmbush(){
+    const reach=beforeExitReach(this.tiles,this.pos,this.exit,this.doors);
     const p=this.pos, cands=[];
     for(let y=1;y<this.h-1;y++) for(let x=1;x<this.w-1;x++){
       if(this.isWall(x,y)||this.locked(x,y)) continue; const k=key(x,y);
-      if(this.encounterAt(x,y)||this.loot[k]||this.eventAt(x,y)) continue;
+      if(!reach.has(k)||this.encounters[k]||this.loot[k]||this.eventAt(x,y)) continue;
       if(x===this.exit.x&&y===this.exit.y) continue;
       const dP=Math.max(Math.abs(x-p.x),Math.abs(y-p.y));
       if(dP<2||dP>4) continue;
@@ -2540,6 +2548,16 @@ function reviveExplore(s){ const e=Object.create(ExploreEngine.prototype);
   e.doors=new Set(s.doors||[]); e.cleared=new Set(s.cleared||[]); e.seen=new Set(s.seen||[]); e.found=new Set(s.found||s.seen||[]);
   e.spotted=new Set(s.spotted||s.found||s.seen||[]); e.scoutRadius=2; e.searchBonus=0; e.pos={...s.pos};
   e.woken=!!s.woken; e.wokenSteps=s.wokenSteps|0; e.wanderers=s.wanderers|0; e.wanderPool=s.wanderPool||['skeleton']; e.wanderCap=3; e.wanderCadence=2;
+  const reach=beforeExitReach(e.tiles,e.pos,e.exit),occupied=new Set(Object.keys(e.encounters));
+  const encounters={...e.encounters};
+  for(const [k,desc]of Object.entries(encounters)){
+    if(e.cleared.has(k)||reach.has(k))continue;
+    const [x,y]=k.split(',').map(Number),dest=[...reach].filter(t=>!occupied.has(t)&&!e.loot[t]&&!e.events[t]&&!e.doors.has(t)&&t!==key(e.pos.x,e.pos.y)).sort((a,b)=>{const dist=t=>{const [px,py]=t.split(',').map(Number);return Math.abs(px-x)+Math.abs(py-y);};return dist(a)-dist(b)||a.localeCompare(b);})[0];
+    if(!dest)throw Error('No reachable tile for saved encounter');
+    delete encounters[k];encounters[dest]=desc.at?{...desc,at:dest.split(',').map(Number)}:desc;occupied.add(dest);
+    if(e.spotted.has(k))e.spotted.add(dest);if(e.found.has(k))e.found.add(dest);
+  }
+  e.encounters=encounters;
   return e; }
 function reviveHero(s){ const tpl=CLASSES[s.cls]; const h=buildHero(tpl, s.name, s.ab, s.id, s.lvl||1, s.bg||null);
   h.pendingLevels=Math.max(0,Math.min(MAX_LEVEL-1,Number(s.pending)||0));
