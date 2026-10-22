@@ -20,7 +20,7 @@ The live version is served from GitHub Pages: the repo’s **Settings → Pages*
 
 **Guard & End** explicitly ends the active hero’s turn. The turn status includes current HP. Wide desktop windows place actions beside a larger board.
 
-Use **Enlarge** in battle for a pannable board with approximately 46px tiles. Drag to pan, choose an action, tap a tile to inspect, then press **Use selected tile**. Inspection spends nothing. Area spells still need their separate blast confirmation; field objectives still need their own confirmation. **Overview** returns to the whole board. Switching actions or actors invalidates the inspected selection. The overview remains available on every screen.
+Use **Enlarge** in battle for a pannable board with tiles at least 44px across; already-large boards keep their size. Drag to pan, choose an action, tap a tile to inspect, then press **Use selected tile**. Inspection spends nothing. Area spells still need their separate blast confirmation; field objectives still need their own confirmation. **Overview** returns to the whole board. Switching actions or actors invalidates the inspected selection. The overview remains available on every screen.
 
 Party puts the satchel ahead of loadouts, shows one selected hero, and collapses background history. The carried-item list scrolls independently when long. Choose an item, choose the hero’s name, compare the changes, then **Give selected item**. The Close button stays reachable while scrolling. Waystations have persistent **Council**, **Trade**, and **Company** navigation; **Leave** jumps to the descent choices, which remain locked until a council plan is chosen. Trading and page navigation preserve all existing claims and saves.
 
@@ -521,3 +521,5 @@ Runtime for build 0.26.0: **484,417 bytes (473.1 KiB)**, +7,883 over 0.25.0. One
 
 
 Runtime for build 0.27.0: **492,132 bytes (480.6 KiB)**, +7,715 over 0.26.0. One offline HTML file; no runtime dependencies or downloaded assets added. The 350 KiB target remains soft.
+
+For development, `node tests/serve.cjs` serves this repository on loopback port 8000 without Python. Set `GOLD_BOX_PORT` for another port. CI uses a pinned Playwright image matching the npm browser tools so system-library downloads cannot stall the game checks. This does not add a game runtime dependency.

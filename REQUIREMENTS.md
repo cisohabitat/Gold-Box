@@ -463,3 +463,5 @@ Runtime for build 0.27.0: **492,132 bytes (480.6 KiB)**, +7,715 over 0.26.0. One
 6. Strengthen guardian/arena/objective identity with offline inline decoration and larger boss emphasis. No extra units, changes to combat stats, hidden cover, extra rewards, RNG use or dependencies. Preserve motion/effects accessibility and HP/danger readability.
 
 Verification: tests/usability.cjs covers six layouts across the four device classes, state-preserving sheet navigation, hero/history interaction, fog integrity/RNG independence, Guard & End, enlarged cells, inspection before movement, explicit execution, rotation and stale area aim. Existing 25-size and 23 prior browser suites remain mandatory, with expected new page/hero navigation expressed through actual controls.
+
+Enlarge must preserve or increase the current overview size on every supported layout, including large iPads. CI must use the version-matched preinstalled-browser image and verify its executables rather than depend on per-job Ubuntu mirror downloads; keep the same release gates.
