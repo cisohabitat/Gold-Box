@@ -260,3 +260,7 @@ The slice is implemented. Next planned guardian is the Sunless King, with the op
 ## 0.28.0 — resolve the fresh visual/manual-play review
 
 Deliver explicit Guard & End, precise pannable battle input, inventory-first selected-hero equipment, Council/Trade/Company waystations, known-only map symbols/readable arrival guide, larger desktop boards and decorative guardian staging. Preserve the standalone/offline game, balance rules and saves. Acceptance is recorded in REQUIREMENTS.md; cross-browser release evidence is recorded in REVIEW.md. Physical iPhone/iPad playtesting and broader human campaign pacing remain the next validation work.
+
+### Delivered: fresh playthrough corrections — 0.29.0
+
+Resolve all eight recorded findings: level-up preview/Confirm, effect-aware area counts, named hunt and guardian presentation, early contextual boss briefing, Cantor phase headroom, a bounded new-map crown approach, fog-safe search coverage, and complete/readable ending summaries. Preserve old saves, all existing release gates and the standalone runtime. Next validation remains broader manual runs on other routes/oaths and physical iPhone/iPad Safari; do not infer an A or AAA grade from automated counts.
