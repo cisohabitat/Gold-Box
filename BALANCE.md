@@ -78,3 +78,5 @@ Scout/key trips and ordered-name circuits now reduce unnecessary movement. Rare 
 Keep all 96-run canary thresholds and the separate 8+8+3 directed policies. Paired graph-distance evidence is not a human-time estimate or a matching-RNG difficulty ablation. Report actual final canaries and directed outcomes in the release PR. Physical-device/human balance remains open.
 
 Paired route audit: 192 maps contain 23 useful service connections on 21 maps, saving at least eight steps per connection; separate entrance-to-find distances change only 17,641→17,637, so no broad shortcut speedup is claimed. In 24 paired probes each, scout/key/camp circuits total 1,168→576 steps and ordered-name circuits 2,563→1,799, with every sampled circuit improved. These fixed-map graph probes are not played-campaign distances or human time estimates.
+
+Local full 0.25.0 canary: Wanderer 31/32, Delver 28/32, Ironbound 14/32 victories, zero stalls; all original thresholds pass. The shortcut-search allocation optimization is separately checked against 256 identical passage selections/carved maps; full final-head CI repeats the campaigns.
