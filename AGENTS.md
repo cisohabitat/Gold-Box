@@ -373,3 +373,5 @@ Guardian echo history is strict: resolvedAt must be on an earlier floor, not the
 Runtime for build 0.28.0: **507,862 bytes (496.0 KiB)**, +15,730 over 0.27.0. One offline HTML file; no runtime dependencies or downloaded assets added. The 350 KiB target remains soft.
 
 CI uses the official mcr.microsoft.com/playwright:v1.62.1-noble image, matching the pinned 1.62.1 npm tools. Verify all three bundled browser executables exist; do not fetch Ubuntu system dependencies during the job. tests/serve.cjs is a development-only, loopback Node static server, replacing Python in CI. Preserve all 24 suites, all engine/audit checks and unchanged 115 campaigns; this setup change resolves observed Ubuntu mirror stalls without relaxing gates. tests/usability.cjs must also assert that Enlarge never shrinks a large iPad/desktop overview.
+
+Run the CI image as UID 1001, matching GitHub’s mounted workspace/home ownership. Firefox rejects a root browser using the runner’s non-root home; keep the runner’s HOME unchanged. This is CI setup only and does not alter the game or its gates.
