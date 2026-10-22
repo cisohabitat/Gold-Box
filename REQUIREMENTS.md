@@ -430,3 +430,24 @@ Executable acceptance: tests/warden-rules.cjs and four-device tests/warden.cjs, 
 
 
 Runtime for build 0.26.0: **484,417 bytes (473.1 KiB)**, +7,883 over 0.25.0. One offline HTML file, no runtime dependencies or downloaded assets added. The 350 KiB target remains soft.
+
+
+## Ash Cantor climax — CANTOR-01…12 (0.27.0)
+
+1. Activate two authored braziers only in the Cantor’s cinder_choir arena; keep eight ordinary chapter definitions and pure/plain constructors intact. No new persisted scene ID.
+2. An early extinguish removes its lane’s existing embers and prevents later matching-phase ignition. Once-only half-HP buffs/summon/phase remain; no extra charge/action/reward or template mutation.
+3. A late extinguish clears only its four named tiles. Preserve all sanctums/cover, council shelters and the other lane; the cool route is shared with enemies. Damage spells ignore cooled ground.
+4. Reject wrong actor/side, dead/incapacitated/spent hero, remote/unknown/used station and ended battle without action/state loss or RNG. Both stations remain optional for victory.
+5. The Last Procession uses available normal movement to advance, strikes an adjacent foe, otherwise casts with movement spent. Keep one normal action and all original spells/stats/budget.
+6. Normal movement reactions remain authoritative; a lethal Guard arrival stops further action/casting. Retain the existing escape/opportunity behavior and scheduler.
+7. Preserve pending Cinderburst coordinates, next-active-turn release, weapon interruption, Silence/incapacitation delays and death cleanup through the phase change. No recharge or extra turn.
+8. Genuine guardian victory replaces its Covenant drop with a once-only choose-one bequest on the same cleared map tile. Both alternatives survive portable/Continue recovery and remain carried until explicit equipment use.
+9. Reject malformed pending bequests before active run/timer mutation; retain full-bag/index/class/overlay/stale guards. Existing single Covenant drops and cleared saves remain intact.
+10. Censer of the Last Hearth is a uniquely illustrated/lored/sourced any-class off-hand with wearer-only emberGuard2/healPower1. Strongest-source/max2 healing and hand/capacity swaps remain; no AC, spell damage ward, aura or potion/signature benefit.
+11. Actual choir/bell-iron, legion/small-god and Cleric/Mage promises affect safe-text dialogue/aftermath/Chronicle. Skip invented legacy/future choices and later fulfillment projected backwards. Discovered censer adds an ending remembrance without bonuses.
+12. Reuse explicit field preview/Confirm/Cancel with current actor/range/overlay checks, exact affected coordinates, 44px controls and retained focus. Named entrance/phase/channel visuals respect effects/reduced motion; keep mobile fit, build/recent log and optionality.
+
+Acceptance: tests/cantor-rules.cjs and four-device tests/cantor.cjs, all 176 prior checks (188 total), source/art/policy/map/guardian audits and all 23 suites on three exact-head CI browsers. Retain the unchanged 96-run canary, eight companion and eight treasure campaigns. Three varied-cache campaigns must cover every existing alternative plus both Cantor bequests. Merge only after all CI jobs pass; then verify merged files, Pages success and live source/browser flow. Record actual outcomes, runtime growth and remaining human/physical-device limits.
+
+
+Runtime for build 0.27.0: **492,134 bytes (480.6 KiB)**, +7,717 over 0.26.0. One offline HTML file; no runtime dependencies or downloaded assets added. The 350 KiB target remains soft.

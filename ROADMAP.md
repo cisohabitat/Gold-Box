@@ -248,3 +248,10 @@ Before moving to another map or committing the crown, the existing waystation/fi
 Implement the accepted guardian-first approach on the Bell Warden: named Bound Watch/Broken Bell stages, once-only delayed Last Toll with clear movement/weapon counterplay, distinctive restrained presentation, real council/vow dialogue and aftermath, and a choose-one physical/control relic bequest. Preserve existing guardian tuning except that one bounded phase spell, and preserve existing drops in saves. Verify complete acquisition/Continue flows and unchanged full balance/release gates before publication.
 
 The Warden slice is implemented. Apply lessons to the Cantor, king and optional dragon only after reviewing the first encounter’s readability and pacing. Physical iPhone/iPad Safari and human campaign sessions remain required evidence for a higher overall grade; automated success alone does not raise B+.
+
+
+### 0.27.0 — the Ash Cantor’s last procession
+
+Implement the accepted second guardian slice: named Measured Hymn/Last Procession, an advancing second-stage AI using existing spells/actions, two deliberate extinguishable braziers with lasting cool routes, personalised choir/road/companion aftermath and a Covenant-or-support-censer choice. Reuse field-action and guardian-choice systems; preserve legacy drops, saves, stat/charge budgets and the full release gates.
+
+The slice is implemented. Next planned guardian is the Sunless King, with the optional dragon following separately. Human campaign pacing and physical iPhone/iPad Safari remain evidence gaps; a successful automated gate does not by itself raise the overall B+ assessment.

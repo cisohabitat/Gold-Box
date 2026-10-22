@@ -73,3 +73,10 @@ Inspected the enlarged40-image sheet and the actual440×780 phone loadout. Autom
 ![Forty-one distinct treasure identities, including Choirglass Seal](Treasure-Art-0.26.png)
 
 The new accessory has a split silver bell-frame surrounding five individually inscribed blue-glass tongues. The hanging chime silhouette distinguishes it from the Aegis shield, ordinary knot charm and moonwell pendant. It carries no physical armour bonus: the exact +2 strongest-source spell-control save is explained beside the image and in both reward comparisons. The guide now has 40 items plus the story crown (41 art identities, 18 relic cards). Keep the older contact sheet as historical evidence. Automated unique-geometry/bounds checks and a visual inspection support legibility; they do not establish human recognition or physical-device results.
+
+
+## Censer of the Last Hearth — 0.27.0
+
+![Forty-two distinct treasure identities, including the Last Hearth censer](Treasure-Art-0.27.png)
+
+The new censer hangs from three silver chains around a pierced, angular hearth. A blue-green living coal, pale inner flame and warm cutout windows distinguish it from the Covenant’s burning book, the Choirglass chimes, ordinary shield and moonwell pendant. It has its own inline 64×64 geometry; no downloaded/runtime asset is added. The current guide has 41 items plus the story crown (42 unique art identities, 19 relic cards). Inspect the contact sheet and actual phone reward page; unique-geometry/bounds tests support integrity, while human recognition and physical-device evidence remain separate.
