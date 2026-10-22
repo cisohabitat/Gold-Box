@@ -5,7 +5,11 @@ const assert=require('node:assert/strict'),name=process.env.GOLD_BOX_BROWSER||'c
  for(const size of [{width:440,height:780},{width:956,height:350},{width:820,height:1180},{width:1366,height:768},{width:375,height:667},{width:600,height:350}]){
   console.log('Review layout',size.width,size.height);await page.setViewportSize(size);await page.evaluate(()=>showStart());await page.click('#btnDefault');
   // Guide is readable and drawing never reveals unknown ground or consumes RNG.
-  await page.locator('#mapGuide summary').click();assert.match(await page.locator('#mapBrief').innerText(),/Ilyra/);await page.locator('#mapGuide summary').click();
+  assert.equal(await page.locator('.board-stage #mapGuide').count(),0);assert.equal(await page.locator('#mapGuide').isVisible(),false);
+  const guideState=await page.evaluate(()=>JSON.stringify(saveState())),boardBefore=await page.locator('#board').boundingBox();
+  await page.click('#btnJournal');assert(await page.locator('#journalScreen #mapGuide').isVisible());await page.locator('#mapGuide summary').click();assert.match(await page.locator('#mapBrief').innerText(),/Ilyra/);
+  await page.locator('#mapBrief').focus();await page.keyboard.press('ArrowDown');await page.keyboard.press('Escape');
+  assert.equal(await page.locator('#mapGuide').isVisible(),false);assert.equal(await page.evaluate(()=>JSON.stringify(saveState())),guideState);assert.deepEqual(await page.locator('#board').boundingBox(),boardBefore);
   const map=await page.evaluate(()=>{const old=Math.random;Math.random=()=>{throw Error('cosmetic RNG');};try{const state=JSON.stringify(serializeExplore(explore)),html=renderMinimap();return {same:state===JSON.stringify(serializeExplore(explore)),walls:[...html.matchAll(/data-known-wall="([^"]+)"/g)].map(x=>explore.seen.has(x[1])),globalPattern:/<rect width="\d+" height="\d+" fill="url\(#map-stone\)"/.test(html)};}finally{Math.random=old;}});assert(map.same&&map.walls.every(Boolean)&&!map.globalPattern);
   // Only the chosen hero is shown. History disclosure cannot equip the selected item.
   await page.evaluate(()=>{bag.items=['fine_sword','potion_heal'];});await page.click('#btnParty');assert.equal(await page.locator('#partyHeroes .pcard:visible').count(),1);assert(await page.locator('#partyBag').evaluate(e=>e.compareDocumentPosition(document.querySelector('#partyHeroes'))&Node.DOCUMENT_POSITION_FOLLOWING));
