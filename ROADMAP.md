@@ -227,3 +227,10 @@ Equipment-decision implementation: priorities 1–3 are implemented. Acceptance 
 ### 0.23.0 — enemy placement safety
 
 Implemented entrance-side encounter placement with stairs excluded from pathfinding, safe guardian relocation, locked-door-aware live spawns, and local legacy repair. Added independent 2,048-floor coverage and adversarial transition/cleared-key regressions. Existing cross-browser, campaign and publication gates remain mandatory; this correctness work does not change the B+ assessment or resolve physical-device/human playtesting gaps.
+
+
+### 0.24.0 — tactical map posts and chapter encounters
+
+Implemented the accepted next steps: patrol positions now use floor geometry and nearby treasure approaches, retaining access before stairs. Each of eight world nodes receives a distinct signature ordinary arena with two optional, one-action field objectives: barricades, sluices, vigil names, furnace seals, legion shields, pilgrim wells, ash vents and dawn mirrors. Objectives alter shared terrain; defeating all enemies remains the win condition. New scenes use existing encounters and rewards; guardian arenas remain intact.
+
+The release requires eight scene-rule checks, a four-device/all-eight-scene browser suite, existing accessibility audits, full cross-browser CI and unchanged campaign gates. Further work remains map backtracking/exit feedback, physical iPhone/iPad tests and human campaign pacing/balance sessions. The overall assessment stays B+ until those experiential gaps have evidence.

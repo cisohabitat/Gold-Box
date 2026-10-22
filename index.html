@@ -430,6 +430,13 @@
   .cell.field-cover{background-image:linear-gradient(135deg,#43637177,#20333944);}
   .cell.field-sanctum{background-image:radial-gradient(#7fc14f55,#193c2444);}
   .cell.field-ember{background-image:radial-gradient(#e8823944,#61251b77);}
+  #titleLabel.chapter-battle{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+  .field-preview{box-shadow:inset 0 0 0 3px #90e4eb;}
+  .field-objective{outline:1px dashed #f4d38a;outline-offset:-3px;}
+  .field-mark{position:absolute;right:1px;bottom:1px;z-index:0;background:#171320;color:#ffe2a2;font-size:clamp(9px,1.4vw,14px);line-height:1.1;padding:1px;pointer-events:none;}
+  .field-objective .token{z-index:1;}
+  .field-used .field-mark{color:#b9d3bc;}
+  .field-used{outline-style:solid;}
   .terrain-mark{position:absolute;top:1px;left:2px;font-size:clamp(9px,1.4vw,15px);line-height:1;color:#f4e6ba;pointer-events:none;}
   .cell.aimed{box-shadow:inset 0 0 0 2px #e69bdf;}
   #tacticsScreen{z-index:95;}
@@ -701,7 +708,7 @@
 <div class="screen" id="settingsScreen" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="sbox"><h2 id="settingsTitle" class="ctitle">Sound &amp; Display</h2><p class="tag">Make the journey your own. Combat pauses while this sheet is open.</p><div class="settings-list"><label><input id="prefSound" type="checkbox"> Synthesized sound effects</label><label><input id="prefMusic" type="checkbox"> Quiet ambient tones (requires sound)</label><label for="prefVolume">Volume <output id="volumeValue">35%</output><input id="prefVolume" type="range" min="0" max="100" step="5" value="35"></label><label><input id="prefEffects" type="checkbox" checked> Visual effects (respects reduced motion)</label><label><input id="prefContrast" type="checkbox"> High contrast / clean display</label><label for="prefPace">Auto pace<select id="prefPace"><option value="normal">Deliberate · normal speed</option><option value="quick">Quick · shorter Auto turns</option></select></label></div><p id="audioStatus" class="tag" role="status">Sound is off by default. No downloads are needed.</p><p id="preferenceStatus" class="tag" role="status"></p><button id="btnSettingsClose" class="big">Back to Game</button></div></div>
 <div class="screen" id="codexScreen" role="dialog" aria-modal="true" aria-labelledby="codexTitle"><div class="sbox wide"><div class="eyebrow">Eren’s field atlas</div><h2 id="codexTitle" class="ctitle">The Bestiary</h2><div class="atlas-nav" role="group" aria-label="Atlas pages"><button id="codexBeasts" aria-pressed="true">Bestiary</button><button id="codexTreasure" aria-pressed="false">Treasure &amp; Relics</button><button id="codexLegends" aria-pressed="false">Legends &amp; Hunt</button><button id="btnCodexClose">Back</button></div><p class="tag" id="codexNote"></p><div id="codexTools" class="atlas-tools"><label for="codexSearch">Search<input id="codexSearch" type="search" maxlength="80" placeholder="Name, spell, source or lore"></label><label for="codexFilter">Show<select id="codexFilter"><option value="all">All entries</option><option value="guardians">Guardians</option><option value="relics">Relics</option><option value="potions">Potions</option></select></label></div><p id="codexCount" class="tag" role="status"></p><div id="codexContent" class="atlas-grid"></div></div></div>
 <script>
-const GAME_BUILD='0.23.0';
+const GAME_BUILD='0.24.0';
 document.querySelectorAll('[data-build]').forEach(el=>el.textContent='Build '+GAME_BUILD);
 /* ===== CROWN CAMPAIGN : data, with controller helpers below ===== */
 const OATHS={wanderer:{name:'Wanderer',budget:0.65,recovery:0.25,desc:'Gentler battles; all heroes earn victory XP and recover 25% HP after a win.'},delver:{name:'Delver',budget:1,desc:'Fortune favours the prepared. Only standing heroes earn victory XP.'},ironbound:{name:'Ironbound',budget:1.25,desc:'Stronger enemy forces. Only standing heroes earn victory XP.'}};
@@ -748,6 +755,20 @@ const BATTLEFIELDS={
   sunless_throne:{name:'Throne of the Stolen Dawn',desc:'The central sanctums offer a risky foothold. At half health the king turns four throne tiles into embers; the western refuge remains.',cover:[[3,2],[3,7],[5,1],[5,8]],sanctum:[[4,4],[4,5],[2,5]],ember:[[6,3],[6,6]],shift:{boss:'CryptLord',ember:[[4,4],[4,5],[5,4],[5,5]],text:'The stolen dawn gutters: the central throne tiles become embers. The western refuge remains lit.'}},
   star_observatory:{name:'Observatory of Broken Stars',desc:'Spread around the covered meridian and two sanctums. At half health four star-fall tiles ignite. Starless Breath still marks a fixed area before release.',cover:[[3,2],[3,7],[5,1],[5,8]],sanctum:[[2,4],[2,6]],ember:[],shift:{boss:'EclipseWyrm',ember:[[4,2],[4,7],[5,4],[5,5]],text:'Four fallen stars kindle beneath the Observatory. The sanctums remain safe from terrain fire.'}}
 };
+// One signature ordinary encounter per chapter; guardians retain their arenas.
+// Field actions change shared terrain only, never grant permanent rewards.
+const CHAPTER_BATTLES={
+ entrance:{name:'The Lantern Gate',story:'The last watch falls back through a broken gate. Raise its fallen barricades before the bows find the refugees.',action:'Raise barricade',effect:'cover',result:'The gate shields lock together. New cover protects either side against ranged weapons.',cover:[[4,1],[4,8]],sanctum:[[2,5]],ember:[],sites:[{x:3,y:3},{x:3,y:6}],edits:[[[3,2],[4,2],[4,3]],[[3,7],[4,7],[4,6]]]},
+ warren:{name:'The Blackwater Sluice',story:'Burning oil rides the flood. Turn the two sluice wheels to wash the central approaches clear.',action:'Open sluice',effect:'clear',result:'Blackwater sweeps the burning oil away. Those tiles are plain ground for both sides.',cover:[[2,2],[2,7]],sanctum:[[2,5]],ember:[[4,2],[4,3],[5,3],[4,6],[4,7],[5,6]],sites:[{x:3,y:2},{x:3,y:7}],edits:[[[4,2],[4,3],[5,3]],[[4,6],[4,7],[5,6]]]},
+ gallery:{name:'The Hall of Unspoken Names',story:'The dead watch a register scraped blank by the king. Speak its two surviving inscriptions to wake the vigil lights.',action:'Speak the names',effect:'sanctum',result:'The vigil remembers. New sanctums heal any standing unit ending its turn there.',cover:[[3,1],[3,8],[5,5]],sanctum:[],ember:[],sites:[{x:3,y:3},{x:3,y:6}],edits:[[[3,3],[4,3]],[[3,6],[4,6]]]},
+ catacombs:{name:'The Cinder Foundry',story:'The Warden’s smiths fed their furnaces with funeral oil. Break the two feed seals to darken the killing aisles.',action:'Break furnace seal',effect:'clear',result:'The oil feed snaps shut. The furnace aisle cools to plain ground for both sides.',cover:[[3,1],[3,8]],sanctum:[[2,4]],ember:[[4,2],[4,3],[5,2],[4,6],[4,7],[5,7]],sites:[{x:3,y:2},{x:3,y:7}],edits:[[[4,2],[4,3],[5,2]],[[4,6],[4,7],[5,7]]]},
+ ossuary:{name:'The Legion’s Broken Causeway',story:'A procession advances across the stacked bones of its own soldiers. Raise the legion’s abandoned shields into a firing line.',action:'Raise legion shields',effect:'cover',result:'The fallen shields form a bulwark. Either side can use the new ranged-weapon cover.',cover:[[2,2],[2,7]],sanctum:[[4,5]],ember:[[5,4],[5,5]],sites:[{x:3,y:3},{x:3,y:6}],edits:[[[4,2],[4,3],[5,3]],[[4,6],[4,7],[5,6]]]},
+ shrine_road:{name:'The Pilgrims’ Last Wells',story:'The small gods have no armies. Kindle their two dry wells and make a refuge within the enemy’s bow line.',action:'Kindle pilgrim well',effect:'sanctum',result:'A small god answers. The rekindled sanctums heal either side at turn end.',cover:[[3,2],[3,7]],sanctum:[],ember:[[5,4],[5,5]],sites:[{x:3,y:4},{x:3,y:5}],edits:[[[3,3],[4,3]],[[3,6],[4,6]]]},
+ deep_stair:{name:'The Ashen Switchback',story:'The Cantor’s ash chokes the last descent. Open the old stone vents to carve two cool routes through the procession.',action:'Open ash vent',effect:'clear',result:'The mountain draws a breath. The vented tiles become plain ground for both sides.',cover:[[2,1],[2,8],[5,4]],sanctum:[[2,5]],ember:[[4,1],[4,2],[4,3],[4,6],[4,7],[4,8]],sites:[{x:3,y:2},{x:3,y:7}],edits:[[[4,1],[4,2],[4,3]],[[4,6],[4,7],[4,8]]]},
+ sunless_tomb:{name:'The Mirrors Before Morning',story:'The king’s outer watch stands between the company and the stolen dawn. Turn the two tarnished mirrors toward the last living light.',action:'Turn dawn mirror',effect:'sanctum',result:'A thread of dawn crosses the tomb. Mirror-lit sanctums heal either side at turn end.',cover:[[3,2],[3,7],[5,1],[5,8]],sanctum:[],ember:[[5,4],[5,5]],sites:[{x:3,y:3},{x:3,y:6}],edits:[[[3,4],[4,4]],[[3,5],[4,5]]]}
+};
+for(const [id,b]of Object.entries(CHAPTER_BATTLES))BATTLEFIELDS['chapter_'+id]={...b,desc:b.story+' Optional: '+b.action+' at each numbered diamond, from on or adjacent to it; one hero action each. '+(b.effect==='clear'?'Remove the marked ember groups.':b.effect==='cover'?'Create ranged-weapon cover.':'Create turn-end healing sanctums.')+' Shared terrain benefits both sides. Defeating all enemies still wins; there is no extra XP or treasure.'};
+function encounterBattlefield(desc,theme){return GUARDIAN_ARENAS[desc.lead]||(!desc.boss&&CHAPTER_BATTLES[desc.scene]?'chapter_'+desc.scene:theme);}
 const GUARDIAN_ARENAS={bell_warden:'bell_nave',ash_cantor:'cinder_choir',crypt_lord:'sunless_throne',eclipse_wyrm:'star_observatory'};
 const CONTRACTS={
   vanquisher:{name:'Break the Watch',stat:'battles',goal:4,desc:'Win four battles.',reward:{item:'sunshard'},rewardText:'Sunshard staff'},
@@ -1351,7 +1372,8 @@ function buildDungeon(cfg){
   const secrets={}; for(const [k,v] of Object.entries(cfg.secrets||{})) secrets[k]={...v};
   const start={x:cfg.start[0], y:cfg.start[1]}, exit={x:cfg.exit[0], y:cfg.exit[1]};
   const doors=new Set((cfg.doors||[]).map(([x,y])=>key(x,y)));
-  const encounters=placeEncounters(cfg.encounters||[], tiles, w, h, start, exit, doors, loot);
+  const authored=(cfg.encounters||[]).map((e,i,list)=>CHAPTER_BATTLES[cfg.chapter]&&i===list.findIndex(v=>v&&!v.boss)?{...e,scene:cfg.chapter}:e);
+  const encounters=placeEncounters(authored, tiles, w, h, start, exit, doors, loot);
   const events=placeEvents(cfg.events||[], tiles, w, h, start, exit, doors, loot, encounters);
   // The dungeon's roaming dead (used once the relic wakes the tomb): the set of
   // ordinary foes this floor fields, so wanderers match the place.
@@ -1369,6 +1391,14 @@ function beforeExitReach(tiles,start,exit,blocked=new Set()){
   // component until they step off; never cross the stairs to join components.
   let best=new Set();for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){const p={x:start.x+dx,y:start.y+dy},k=key(p.x,p.y);if(!floor.has(k)||stop.has(k))continue;const r=_flood(floor,p,stop);if(r.size>best.size)best=r;}return best;
 }
+function encounterSiteScore(desc,k,tiles,reach,start,exit,loot){
+ const [x,y]=k.split(',').map(Number),open=(x,y)=>tiles[y]?.[x]==='.'&&reach.has(key(x,y)),degree=[[1,0],[-1,0],[0,1],[0,-1]].filter(([dx,dy])=>open(x+dx,y+dy)).length;
+ const lane=(dx,dy)=>{let n=0;for(let i=1;i<=7&&open(x+dx*i,y+dy*i);i++)n++;return n;};
+ const axis=Math.max(lane(1,0)+lane(-1,0),lane(0,1)+lane(0,-1)),tactic=encounterTactic(desc);
+ const cache=Object.keys(loot).some(k=>{const [a,b]=k.split(',').map(Number);const d=Math.abs(a-x)+Math.abs(b-y);return d>=2&&d<=4;});
+ const distance=Math.max(Math.abs(x-start.x),Math.abs(y-start.y));
+ return (distance<4?-30:0)+(Math.max(Math.abs(x-exit.x),Math.abs(y-exit.y))<3?-12:0)+(tactic==='volley'?Math.min(10,axis)*3+(degree===2?4:0):tactic==='pincer'?(degree>=3?24:0)+Math.min(axis,5):cache?20:0)+(tactic==='hexnet'&&degree<=2?8:0);
+}
 function placeEncounters(list,tiles,w,h,start,exit,doors,loot){
   const reach=beforeExitReach(tiles,start,exit),out={};
   const blocked=new Set([key(start.x,start.y),...doors,...Object.keys(loot)]);
@@ -1382,7 +1412,12 @@ function placeEncounters(list,tiles,w,h,start,exit,doors,loot){
   }
   const cand=legal.filter(k=>{if(out[k])return false;const [x,y]=k.split(',').map(Number);return Math.max(Math.abs(x-start.x),Math.abs(y-start.y))>1;});
   for(let i=cand.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[cand[i],cand[j]]=[cand[j],cand[i]];}
-  roamers.forEach((desc,i)=>{const k=cand[i];if(!k)throw Error('No reachable patrol tile before stairs');out[k]=desc;});
+  for(const desc of roamers){
+    const available=cand.filter(k=>!out[k]),spaced=available.filter(k=>{const [x,y]=k.split(',').map(Number);return Object.keys(out).every(t=>{const [a,b]=t.split(',').map(Number);return Math.max(Math.abs(a-x),Math.abs(b-y))>2;});});
+    const choices=spaced.length?spaced:available;let k=null,best=-Infinity;
+    for(const tile of choices){const score=encounterSiteScore(desc,tile,tiles,reach,start,exit,loot);if(score>best){best=score;k=tile;}}
+    if(!k)throw Error('No reachable patrol tile before stairs');out[k]=desc;
+  }
   return out;
 }
 // Scatter stat-check events onto reachable tiles clear of the start vicinity,
@@ -1740,7 +1775,32 @@ class CombatEngine{
     this.order=this.combatants.map(c=>({id:c.id,init:Rules.initiative(c)})).sort((a,b)=>b.init-a.init).map(o=>o.id);
     this.terrain=new Map();this.battlefield=BATTLEFIELDS[battlefield]?battlefield:null;
     if(this.battlefield)for(const type of Object.keys(TERRAIN))for(const [x,y] of BATTLEFIELDS[this.battlefield][type])if(this.inBounds(x,y)&&!this.at(x,y))this.terrain.set(key(x,y),type);
-    this.visualEvents=[];this.visualSeq=0;this.echoes=[];this.turnIndex=0; this.round=1; this.phase='playing'; this.log=[]; this.xpEarned=0; this._summonSeq=0;this.battleReport={startHp:party.reduce((n,c)=>n+Math.max(0,c.hp),0),maxHp:party.reduce((n,c)=>n+c.maxHp,0),damage:{weapon:0,spell:0,ember:0,poison:0},friendlyFire:0,controlTurns:0,strikes:0,misses:0,firstFall:null}; this._begin();
+    this.fieldObjective=this.battlefield?.startsWith('chapter_')?{id:this.battlefield.slice(8),used:[]}:null;this.visualEvents=[];this.visualSeq=0;this.echoes=[];this.turnIndex=0; this.round=1; this.phase='playing'; this.log=[]; this.xpEarned=0; this._summonSeq=0;this.battleReport={startHp:party.reduce((n,c)=>n+Math.max(0,c.hp),0),maxHp:party.reduce((n,c)=>n+c.maxHp,0),damage:{weapon:0,spell:0,ember:0,poison:0},friendlyFire:0,controlTurns:0,strikes:0,misses:0,firstFall:null}; this._begin();
+  }
+  fieldSites(){const b=CHAPTER_BATTLES[this.fieldObjective?.id];return b?b.sites.map((p,index)=>({...p,index,used:this.fieldObjective.used.includes(index)})).filter(p=>this.inBounds(p.x,p.y)):[];}
+  fieldActionReason(c,index){
+    const site=this.fieldSites().find(p=>p.index===index);
+    if(this.phase!=='playing'||c!==this.current()||!c?.alive||c.side!=='party')return 'Not this hero’s turn';
+    if(!site||site.used)return 'Already completed';
+    if(this.isIncapacitated(c))return 'Hero is incapacitated';
+    if(c.acted.action)return 'Action already spent';
+    if(this.cheb(c.pos,site)>1)return 'Move on or adjacent to diamond '+(index+1);
+    return '';
+  }
+  useFieldAction(c,index){
+    if(this.fieldActionReason(c,index))return false;
+    const b=CHAPTER_BATTLES[this.fieldObjective.id];c.acted.action=true;this.fieldObjective.used.push(index);
+    for(const [x,y]of b.edits[index])if(this.inBounds(x,y)&&!this.blocked.has(key(x,y))){const k=key(x,y);if(b.effect==='clear'){if(this.terrain.get(k)==='ember')this.terrain.delete(k);}else this.terrain.set(k,b.effect);}
+    this.log.push({t:c.name+' · '+b.action+' '+(index+1)+' ('+this.fieldObjective.used.length+'/'+this.fieldSites().length+'). '+b.result,k:'magic'});return true;
+  }
+  _autoFieldAction(c){
+    if(c.side!=='party'||!this.fieldObjective)return false;const b=CHAPTER_BATTLES[this.fieldObjective.id];
+    for(const site of this.fieldSites()){
+      if(this.fieldActionReason(c,site.index))continue;
+      const targets=new Set(b.edits[site.index].map(([x,y])=>key(x,y))),allies=this._allies(c),bows=this._foes(c).some(e=>effRange(e)>1);
+      const useful=allies.some(a=>targets.has(key(a.pos.x,a.pos.y))&&(b.effect==='clear'?this.terrainAt(a.pos)==='ember'&&gearPower(a,'emberGuard')<2:b.effect==='sanctum'?a.maxHp-a.hp>=3:bows&&this.terrainAt(a.pos)!=='cover'));
+      if(useful)return this.useFieldAction(c,site.index);
+    }return false;
   }
   _visual(kind,actor,target,spell=null,hit=true){
     this.visualEvents.push({seq:++this.visualSeq,kind,from:{...actor.pos},to:{...(target.pos||target)},spell,hit});
@@ -2044,6 +2104,7 @@ class CombatEngine{
     if(this._buffSpells(c).length && this._rallyTurn(c)) return;
     // A summoner raises reinforcements when its side is thin, then defends.
     if(this._summonSpells(c).length && this._summonerTurn(c, foes)) return;
+    if(this._autoFieldAction(c))return;
     if(this._hasRangedSpell(c)) this._casterTurn(c, foes);
     else if(this._isRangedAttacker(c)) this._rangedTurn(c, foes);
     else this._meleeTurn(c, foes);
@@ -2517,7 +2578,7 @@ function queueTurn(fn,delay){
   cancelTurn();const epoch=turnEpoch,combat=game,actor=game.current();
   turnTimer=setTimeout(()=>{turnTimer=null;if(epoch!==turnEpoch||mode!=='combat'||game!==combat||game.current()!==actor||game.phase!=='playing')return;fn();},Math.round(delay*(preferences.pace==='quick'?.6:1)));
 }
-let spellAim=null,tacticsOpener=null,legendHunt=false;
+let spellAim=null,fieldAim=null,tacticsOpener=null,legendHunt=false;
 let autoFight=false;   // when on, heroes take their own turns until the fight ends
 let nodeId=WORLD_START, worldPath=[], bag=null;
 // The party's effective level (for the difficulty budget and display) is the
@@ -2617,7 +2678,7 @@ function validSave(s){
     const entries=(value,check)=>value===undefined||obj(value)&&Object.keys(value).length<=e.w*e.h&&Object.entries(value).every(([k,v])=>coord(k)&&check(v));
     if(e.task!=null){const q=e.task;if(s.inTown&&!q.done)return false;if(!obj(q)||q.id!==s.nodeId||!own(CHAPTER_TASKS,q.id)||!pos(q.start)||typeof q.done!=='boolean'||!list(q.sites,3,k=>coord(k)&&e.tiles[k.split(',')[1]][k.split(',')[0]]==='.')||q.sites.length!==(q.id==='gallery'||q.id==='shrine_road'?3:1)||new Set(q.sites).size!==q.sites.length||!list(q.used,3,n=>num(n,0,2))||new Set(q.used).size!==q.used.length||q.used.some(n=>n>=(q.id==='gallery'||q.id==='shrine_road'?3:1))||q.id==='gallery'&&(q.used.some((n,i)=>n!==i)||q.done!==(q.used.length===3))||q.id==='shrine_road'&&(q.used.length>2||q.done!==(q.used.length===2))||q.done&&q.used.length!==(q.id==='gallery'?3:q.id==='shrine_road'?2:1))return false;}
     if(e.task){const q=e.task,reach=new Set([key(q.start.x,q.start.y)]),queue=[q.start];if(e.tiles[q.start.y][q.start.x]!=='.')return false;for(let i=0;i<queue.length;i++){const p=queue[i];for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){const x=p.x+dx,y=p.y+dy,k=key(x,y);if(e.tiles[y]?.[x]==='.'&&!reach.has(k)&&!(e.doors||[]).includes(k)){reach.add(k);queue.push({x,y});}}}if(q.sites.some(k=>!reach.has(k)))return false;}
-    if(!entries(e.encounters,enc=>obj(enc)&&(enc.prize===undefined||['bellheart_aegis','ashen_covenant','mercy_reliquary','nightwarden_bow'].includes(enc.prize))&&(enc.tactic===undefined||own(PATROL_TACTICS,enc.tactic))&&(enc.pool===undefined||list(enc.pool,30,id=>own(BESTIARY,id)))&&(!enc.lead||own(BESTIARY,enc.lead))&&(!enc.budgetMul||typeof enc.budgetMul==='number'&&enc.budgetMul>0&&enc.budgetMul<=5)))return false;
+    if(!entries(e.encounters,enc=>obj(enc)&&(enc.scene===undefined||own(CHAPTER_BATTLES,enc.scene)&&!enc.boss&&!enc.wandering)&&(enc.prize===undefined||['bellheart_aegis','ashen_covenant','mercy_reliquary','nightwarden_bow'].includes(enc.prize))&&(enc.tactic===undefined||own(PATROL_TACTICS,enc.tactic))&&(enc.pool===undefined||list(enc.pool,30,id=>own(BESTIARY,id)))&&(!enc.lead||own(BESTIARY,enc.lead))&&(!enc.budgetMul||typeof enc.budgetMul==='number'&&enc.budgetMul>0&&enc.budgetMul<=5)))return false;
     if(!entries(e.loot,v=>obj(v)&&['gold','key','ration','relic','item','choice'].includes(v.type)&&(v.amount===undefined||num(v.amount,1))&&(v.type!=='item'||own(ITEMS,v.item))))return false;
     const offered=new Set();for(const [k,v] of Object.entries(e.loot||{}))if(v.type==='choice'){const r=CHOICE_REWARDS[v.offer],[x,y]=k.split(',').map(Number);if(!own(CHOICE_REWARDS,v.offer)||r.node!==s.nodeId||offered.has(v.offer)||Object.keys(v).some(f=>!['type','offer'].includes(f))||k!==key(x,y)||e.tiles[y][x]!=='.'||(e.doors||[]).includes(k)||k===key(e.exit.x,e.exit.y))return false;offered.add(v.offer);}
     if(!entries(e.events,id=>own(EVENTS,id))||!entries(e.secrets,v=>obj(v)&&(v.gold===undefined||num(v.gold))&&(!v.item||own(ITEMS,v.item))))return false;
@@ -3212,6 +3273,7 @@ function patrolIntel(desc){
  if(foes.some(m=>m.shieldAura))notes.push('Sentinel protection possible: separate or defeat the sentinel; its weapon-AC aura does not protect against spells.');
  if(desc.lead==='bell_warden')notes.push('The Warden’s toll can be interrupted by a damaging weapon hit. Misses, spells and fully absorbed hits do not interrupt.');
  if(desc.lead==='ash_cantor'||desc.lead==='eclipse_wyrm')notes.push('Leave fixed blast warnings. Lantern/Ashwalker protects against terrain embers, not the spell blast itself.'+(desc.lead==='ash_cantor'?' A damaging weapon hit can interrupt the Cantor.':' The dragon’s breath cannot be interrupted.'));
+ if(CHAPTER_BATTLES[desc.scene]){const b=CHAPTER_BATTLES[desc.scene];notes.push(b.name+': '+b.story+' Optional: '+b.action+' at numbered diamonds; one action each, shared terrain, no extra reward.');}
  if(!notes.length)notes.push('Weapon pressure possible: shields improve AC, weapon wards reduce each hit. Keep healing in reach and focus one foe.');
  return {types,formation:desc.boss?'Guardian and possible retinue':PATROL_TACTICS[encounterTactic(desc)]?.name||'Uncertain patrol',notes};
 }
@@ -3274,7 +3336,7 @@ function enterCombat(desc,atKey){ pendingKey=atKey;
   const enemies=composeEncounter(tuned,{floor:floorTier(),partyLevel:partyLevelAvg(),gear:partyGearValue(),difficulty:OATHS[campaign.oath].budget});
   const storyNotes=prepareStoryBattle(enemies,desc);
   if(desc.boss && desc.lead==='crypt_lord'){ exploreFeed.push({t:'The Crypt Lord rises between you and the way out. There is no leaving but through him.',k:'kill'}); }
-  game=new CombatEngine(party,enemies,10,10,GUARDIAN_ARENAS[desc.lead]||explore.theme,deploymentTactic(desc,enemies));applyCouncilArena(game,desc);if(finale&&effects.ward){for(const h of party)if(h.alive)h.statuses.push({type:'dawnward',duration:3,buff:true,ac:effects.ward});storyNotes.push('The remembered names and small gods stand beside you: +2 AC for three turns.');}for(const text of storyNotes)game.log.push({t:text,k:'magic'});game.log.push({t:'Battle begins: '+enemies.map(e=>e.name).join(', ')+'.',k:'sys'});if(desc.prize)game.log.push({t:'Guarded treasure: '+ITEMS[desc.prize].name+'. Victory leaves a cache on the defeated patrol’s tile.',k:'magic'});if(game.tactic)game.log.push({t:PATROL_TACTICS[game.tactic].name+' · '+PATROL_TACTICS[game.tactic].counter,k:'sys'}); mode='combat'; mover=null; reachCache=null; selectedSpell=null; autoFight=false; updateAutoBtn(); render(); beginTurnFlow(); }
+  game=new CombatEngine(party,enemies,10,10,encounterBattlefield(desc,explore.theme),deploymentTactic(desc,enemies));applyCouncilArena(game,desc);if(finale&&effects.ward){for(const h of party)if(h.alive)h.statuses.push({type:'dawnward',duration:3,buff:true,ac:effects.ward});storyNotes.push('The remembered names and small gods stand beside you: +2 AC for three turns.');}for(const text of storyNotes)game.log.push({t:text,k:'magic'});game.log.push({t:'Battle begins: '+enemies.map(e=>e.name).join(', ')+'.',k:'sys'});if(desc.prize)game.log.push({t:'Guarded treasure: '+ITEMS[desc.prize].name+'. Victory leaves a cache on the defeated patrol’s tile.',k:'magic'});if(game.tactic)game.log.push({t:PATROL_TACTICS[game.tactic].name+' · '+PATROL_TACTICS[game.tactic].counter,k:'sys'}); if(game.fieldObjective){const b=CHAPTER_BATTLES[game.fieldObjective.id];game.log.push({t:b.name+' · '+b.story,k:'flavor'});game.log.push({t:'Optional field objective: '+b.action+' at diamonds 1 and 2 (on or adjacent; one action each). Tap a diamond, then confirm. Terrain serves both sides; no extra reward. Defeat all enemies to win.',k:'sys'});} mode='combat'; mover=null; reachCache=null; selectedSpell=null; autoFight=false; updateAutoBtn(); render(); beginTurnFlow(); }
 function resolveCombat(){
   cancelTurn();autoFight=false; updateAutoBtn();
   if(game.phase==='won'){
@@ -3322,8 +3384,15 @@ function endRun(kind){ $('#endingArtwork').innerHTML=campaignArtwork(kind==='win
   $('#endingStats').textContent=OATHS[campaign.oath].name+' · '+campaign.battles+' battles won · '+campaign.foes+' foes vanquished · '+campaign.secrets+' secrets found · '+campaign.boons.length+' embers claimed · '+campaign.contracts.length+' contracts fulfilled · '+campaign.completedFloors.length+' chapters crossed';
   renderDefeatReview(kind==='lose'?game:null);$('#banner').dataset.result=kind;$('#banner').classList.add('show');const box=$('#banner .box');box.scrollTop=0;if(kind==='lose'&&!$('#defeatReview').hidden)$('#defeatHeading').focus({preventScroll:true}); }
 
+function validFieldAim(){return mode==='combat'&&game&&mover==='field'&&fieldAim?.combat===game&&fieldAim.actorId===game.current()?.id&&game.phase==='playing'&&!autoFight&&game.current()?.side==='party'&&game.fieldSites().some(p=>p.index===fieldAim.index);}
+function confirmFieldAction(){
+ if(overlayOpen()||!validFieldAim())return false;
+ const c=game.current(),site=game.fieldSites().find(p=>p.index===fieldAim.index);
+ if(!game.useFieldAction(c,fieldAim.index))return false;
+ fieldAim=null;mover=null;selectedSpell=null;reachCache=null;render();const el=cellEls[site.y*game.w+site.x];if(el)el.focus({preventScroll:true});return true;
+}
 function setMode(m){if(overlayOpen())return;
-  spellAim=null;
+  spellAim=null;fieldAim=null;
   const c=game.current(); if(c.side!=='party'||game.phase!=='playing')return;
   mover=(mover===m)?null:m; reachCache=(mover==='move')?game.reachable(c):null;
   if(mover!=='cast') selectedSpell=null; render();
@@ -3357,6 +3426,7 @@ function aoePreview(cx,cy,on){
 }
 function combatClick(x,y){if(overlayOpen())return;
   if(game.phase!=='playing'||autoFight)return; const c=game.current(); if(c.side!=='party'||game.isIncapacitated(c))return;
+  if(mover===null||mover==='field'){const site=game.fieldSites().find(p=>p.x===x&&p.y===y&&!p.used);if(site){fieldAim={combat:game,actorId:c.id,index:site.index};mover='field';selectedSpell=null;reachCache=null;render();return;}}
   if(mover==='move'&&reachCache&&reachCache.has(key(x,y))){ game.moveTo(c,x,y); mover=null; reachCache=null; render(); if(game.phase!=='playing') resolveCombat();else if(!c.alive)beginTurnFlow(); return; }
   if(mover==='attack'){ const def=game.at(x,y); if(def&&game.canAttack(c,def)){ game.doAttack(c,def); mover=null; render(); if(game.phase!=='playing')resolveCombat(); return; } }
   if(mover==='cast'&&selectedSpell){
@@ -3472,7 +3542,7 @@ function renderMinimap(){
 function renderExplore(){
   $('#turnStatus').hidden=true;
   $('.controls').classList.remove('combat-active');board.removeAttribute('role');board.setAttribute('aria-label','Dungeon map');
-  $('#titleLabel').textContent=explore.name; $('#roundLabel').textContent='Floor '+floorDepth()+' / '+WORLD_MAXDEPTH; $('#rosterTitle').textContent='The Party';
+  $('#titleLabel').classList.remove('chapter-battle');$('#titleLabel').title=explore.name;$('#titleLabel').textContent=explore.name; $('#roundLabel').textContent='Floor '+floorDepth()+' / '+WORLD_MAXDEPTH; $('#rosterTitle').textContent='The Party';
   $('#combatControls').style.display='none'; $('#exploreControls').style.display='flex'; $('#fpControls').style.display='grid'; $('#spellMenu').style.display='none';
   $('#satchel').style.display='block';
   $('#satchel').innerHTML=`Avg level <b>${partyLevelAvg()}</b> &nbsp;|&nbsp; Gold <b>${bag.gold}</b> &nbsp; Keys <b>${bag.keys}</b> &nbsp; Supplies <b>${bag.rations}</b> &nbsp; Items <b>${bag.items.length}</b> &nbsp; Relic <b style="color:${bag.relic?'var(--gold)':'var(--dim)'}">${bag.relic?'\u2605':'not found'}</b>`;
@@ -3496,15 +3566,16 @@ function renderExplore(){
 let gridCursor={x:0,y:0};
 function renderCombat(){
   const restoreGridFocus=board.contains(document.activeElement);
-  if(!validAim())spellAim=null;
+  if(!validAim())spellAim=null;if(!validFieldAim())fieldAim=null;if(mover==='field'&&!fieldAim)mover=null;
   $('.controls').classList.add('combat-active');
   const c=game.current();
-  $('#titleLabel').textContent='Battle'; $('#roundLabel').textContent='Round '+game.round; $('#rosterTitle').textContent='Order of Battle';
+  $('#titleLabel').classList.toggle('chapter-battle',!!game.fieldObjective);$('#titleLabel').textContent=game.fieldObjective?CHAPTER_BATTLES[game.fieldObjective.id].name:'Battle';$('#titleLabel').title=$('#titleLabel').textContent; $('#roundLabel').textContent='Round '+game.round; $('#rosterTitle').textContent='Order of Battle';
   $('#combatControls').style.display='flex'; $('#exploreControls').style.display='none'; $('#fpControls').style.display='none'; $('#satchel').style.display='none';
   board.setAttribute('role','grid');board.setAttribute('aria-label',(game.battlefield?BATTLEFIELDS[game.battlefield].name:'Battlefield')+(game.tactic?' · '+PATROL_TACTICS[game.tactic].name:''));
   board.removeAttribute('data-theme'); board.classList.remove('fpboard'); board.classList.remove('mapboard');
   board.style.gridTemplateColumns=`repeat(${game.w},minmax(0,1fr))`; board.style.gridTemplateRows=`repeat(${game.h},minmax(0,1fr))`; board.style.aspectRatio='1/1'; board.innerHTML=''; cellEls=[];
   const status=$('#turnStatus');status.hidden=false;const turnText=c.name+(game.isSilenced(c)?' · Silenced':'')+' · '+(c.side!=='party'?'Enemy turn':autoFight?'Auto playing':(c.acted.move?'Move spent':'Move ready')+' · '+(c.acted.action?'Action spent':'Action ready'));if(status.textContent!==turnText)status.textContent=turnText;
+  const fieldPreview=validFieldAim()?new Set(CHAPTER_BATTLES[game.fieldObjective.id].edits[fieldAim.index].map(([x,y])=>key(x,y))):new Set();
   const playerTurn = c.alive&&c.side==='party'&&game.phase==='playing'&&!game.isIncapacitated(c);
   const castEnemy=new Set(), castAlly=new Set(), castPoint=new Set();
   if(mover==='cast'&&selectedSpell&&playerTurn){
@@ -3514,12 +3585,14 @@ function renderCombat(){
   }
   for(let y=0;y<game.h;y++){ for(let x=0;x<game.w;x++){
     const cell=document.createElement('div'); cell.className='cell'+(((x+y)%2)?' alt':''); const k=key(x,y); const here=game.at(x,y);
+    if(fieldPreview.has(k)){cell.classList.add('field-preview');cell.dataset.fieldPreview='true';}
+    const fieldSite=game.fieldSites().find(p=>p.x===x&&p.y===y);if(fieldSite){cell.dataset.fieldSite=fieldSite.index;cell.classList.add('field-objective');if(fieldSite.used)cell.classList.add('field-used');const mark=document.createElement('span');mark.className='field-mark';mark.textContent=(fieldSite.used?'✓':'◆')+(fieldSite.index+1);mark.setAttribute('aria-hidden','true');cell.appendChild(mark);}
     const terrain=game.terrainAt({x,y});if(game.dangerAt({x,y}).length>0)cell.classList.add('breath-zone');if(terrain){cell.classList.add('field-'+terrain);const mark=document.createElement('span');mark.className='terrain-mark';mark.textContent=TERRAIN[terrain].glyph;cell.appendChild(mark);}
     if(spellAim&&game.cheb({x,y},spellAim)<=selectedSpell.aoe)cell.classList.add('aimed');
     const danger=game.dangerAt({x,y}).length>0;
     const details=(danger?'Danger: '+game.dangerAt({x,y}).map(u=>dangerText(u)).join('; ')+'. ':'')+(here?here.name+' '+here.hp+'/'+here.maxHp+' HP. '+(game.shieldBonus(here)?'Shielded: +2 weapon AC. ':'')+intentText(here):'')+(terrain?TERRAIN[terrain].name+': '+TERRAIN[terrain].desc:'Plain ground');
     const support=(game.arenaShelter?.has(k)?' Council sanctuary: remains lit through the phase change.':'')+(terrain==='ember'&&(gearPower(here||c,'emberGuard'))>=2?' '+gearSource(here||c,'emberGuard')+' prevents this unit’s terrain ember damage.':'');
-    cell.setAttribute('role','gridcell');cell.setAttribute('aria-label','Column '+(x+1)+', row '+(y+1)+'. '+details+support);cell.title=details+support;
+    cell.setAttribute('role','gridcell');cell.setAttribute('aria-label','Column '+(x+1)+', row '+(y+1)+'. '+details+support);cell.title=details+support;if(fieldPreview.has(k)){const text=' Field action preview: '+CHAPTER_BATTLES[game.fieldObjective.id].effect+' terrain here after confirmation.';cell.title+=text;cell.setAttribute('aria-label',cell.getAttribute('aria-label')+text);}if(fieldSite){const text=' Optional field objective '+(fieldSite.index+1)+': '+CHAPTER_BATTLES[game.fieldObjective.id].action+'. '+(fieldSite.used?'Completed.':'Stand on or adjacent, select the diamond, then confirm; costs one action.');cell.title+=text;cell.setAttribute('aria-label',cell.getAttribute('aria-label')+text);}
     cell.tabIndex=x===gridCursor.x&&y===gridCursor.y?0:-1;
     cell.onfocus=()=>{gridCursor={x,y};for(const el of cellEls)el.tabIndex=el===cell?0:-1;};
     cell.onkeydown=e=>{
@@ -3569,6 +3642,9 @@ function renderCombat(){
     const list=game.usableSpells(c);
     if(!list.length) sm.innerHTML='<span style="color:var(--dim)">No spells remaining.</span>';
     list.forEach(({slot,def})=>{ const b=document.createElement('button'); b.className='spellbtn'+(selectedSpell&&selectedSpell.id===def.id?' on':''); b.textContent=def.name+' ('+slot.uses+')'; b.onclick=()=>selectSpell(def.id); sm.appendChild(b); });
+  } else if(validFieldAim()&&playerTurn){
+    sm.style.display='flex';sm.innerHTML='';const index=fieldAim.index,b=CHAPTER_BATTLES[game.fieldObjective.id],reason=game.fieldActionReason(c,index),confirm=document.createElement('button'),cancel=document.createElement('button');
+    confirm.id='btnConfirmField';confirm.className='spellbtn';confirm.disabled=!!reason;confirm.textContent=reason||'Confirm: '+b.action+' '+(index+1)+' · 1 action';confirm.title=b.result;confirm.onclick=confirmFieldAction;cancel.className='spellbtn';cancel.id='btnCancelField';cancel.textContent='Cancel field action';cancel.onclick=()=>{fieldAim=null;mover=null;render();cellEls[gridCursor.y*game.w+gridCursor.x]?.focus({preventScroll:true});};sm.appendChild(confirm);sm.appendChild(cancel);
   } else if(mover==='item'&&playerTurn){ sm.style.display='flex'; sm.innerHTML='';
     const counts={}; combatPotions().forEach(p=>{ counts[p.item.id]=counts[p.item.id]||{name:p.item.name, idx:p.idx, n:0}; counts[p.item.id].n++; });
     const groups=Object.values(counts);
@@ -3592,6 +3668,7 @@ function renderCombat(){
   let hint='';
   if(game.phase!=='playing') hint='';
   else if(!playerTurn) hint=c.name+' is acting...';
+  else if(validFieldAim())hint=CHAPTER_BATTLES[game.fieldObjective.id].result+' Optional; one action, no extra reward.';
   else if(mover==='move') hint='Choose a highlighted tile. Amber ! marks free strikes, a blast or embers; focus or hover for details.';
   else if(mover==='attack') hint='Click a flagged enemy to strike.';
   else if(mover==='cast'&&!selectedSpell) hint='Choose a spell.';
@@ -3599,6 +3676,7 @@ function renderCombat(){
   else if(mover==='cast'&&selectedSpell){ hint = selectedSpell.target==='ally' ? 'Click an ally in range to heal.' : selectedSpell.target==='point' ? (selectedSpell.effect.kind==='buff' ? 'Click a tile. Allies near it are blessed.' : 'Click a tile. The blast hits everything near it, friend or foe.') : 'Click an enemy in range.'; }
   else hint=c.name+' (you) : Move, Attack'+(knows?', Cast':'')+', Guard, Wait.'+(sig&&!c.signatureUsed?' '+sig.desc:'');
   if(validAim()){const caught=aimSummary();hint=(selectedSpell.effect.kind==='damage'&&caught.allies?'FRIENDLY FIRE · ':'Aim · ')+selectedSpell.name+': '+caught.foes+' foes / '+caught.allies+' allies in area. Tap again or Confirm cast.';}
+  if(game.fieldObjective&&!mover&&playerTurn){const b=CHAPTER_BATTLES[game.fieldObjective.id];hint='Optional: '+b.action+' · '+game.fieldObjective.used.length+'/2. Select a numbered diamond, then confirm from on or adjacent.';}
   $('#hint').classList.toggle('aim-warning',!!spellAim);$('#hint').textContent=hint;
 }
 
@@ -3937,6 +4015,7 @@ function openTactics(){
   if(fighting&&game.echoes.length)section('Dying sparks',game.echoes.map(dangerText).join('; ')+'. Leave the marked 3×3 tiles. Each burst deals 4 spell damage to both sides; victory disperses it.');
   if(fighting)section('Turn order',game.turnPreview().map((t,i)=>(i===0?'Now: ':'')+t.unit.name+' ['+(t.unit.side==='party'?'Ally':'Enemy')+', round '+t.round+(game.isIncapacitated(t.unit)?', incapacitated':'')+']').join(' → ')+'. Current order; Wait and new summons can change it.');
   if(fighting&&game.tactic)section(PATROL_TACTICS[game.tactic].name,PATROL_TACTICS[game.tactic].counter+' Living patrol: '+game.living('enemy').map(c=>c.name+' — '+patrolRole(c)).join('; ')+'.');
+  if(fighting&&game.fieldObjective){const b=CHAPTER_BATTLES[game.fieldObjective.id];section('Optional field objective · '+game.fieldObjective.used.length+'/2',b.action+'. On or adjacent to a numbered diamond, select it and press Confirm to spend one action. '+b.result+' Defeating all enemies still wins; no extra XP or treasure. Auto uses an adjacent objective only when it would immediately help a standing ally. '+game.fieldSites().map(p=>'Diamond '+(p.index+1)+' at column '+(p.x+1)+', row '+(p.y+1)+(p.used?' (complete)':'')+' affects '+b.edits[p.index].map(([x,y])=>'('+ (x+1)+','+(y+1)+')').join(', ')).join('; ')+'. Selecting a diamond previews its affected tiles.');}
   if(fighting&&BATTLEFIELDS[game.battlefield]?.desc)section(BATTLEFIELDS[game.battlefield].name,BATTLEFIELDS[game.battlefield].desc);
   if(fighting&&game.arenaShelter?.size)section('Allies on the battlefield',game.arenaAidNotes.join(' ')+' Your council choices protect '+game.arenaShelter.size+' sanctum tile'+(game.arenaShelter.size===1?'':'s')+'. These stay sanctums during the guardian’s phase change.');
   section('Your turn','Each hero can move once and take one action, in either order. Attack, cast, drink a potion, or use a signature. End Turn advances the order. Guard spends the action and ends the turn, preparing one reaction. Wait delays an untouched turn. Moving away from an adjacent foe can provoke a free strike.');
@@ -4186,6 +4265,7 @@ function inspectTile(x,y){
   if(mode!=='combat'||!game||overlayOpen())return;
   const unit=game.at(x,y),terrain=game.terrainAt({x,y}),actor=game.current();
   let text=unit?unit.name+' · '+unit.hp+'/'+unit.maxHp+' HP · AC '+effAc(unit)+' · Range '+effRange(unit):'Tile '+(x+1)+', '+(y+1)+' · '+(terrain?TERRAIN[terrain].name:'Plain ground');
+  const site=game.fieldSites().find(p=>p.x===x&&p.y===y);if(site)text+=' · ◆'+(site.index+1)+' '+CHAPTER_BATTLES[game.fieldObjective.id].action+(site.used?' · Completed':' · Select, then confirm from on or adjacent; costs 1 action');
   if(unit)text+=' '+intentText(unit);else if(game.dangerAt({x,y}).length)text+=' · Leave this marked tile before the blast.';
   if(!unit&&mover==='move'&&reachCache?.has(key(x,y)))text+=' · '+(movementRiskText(actor,{x,y})||'No unprotected movement risk detected.');
   if(game.arenaShelter?.has(key(x,y)))text+=' · Council sanctuary: protected during the phase change.';
