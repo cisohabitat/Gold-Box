@@ -8,13 +8,17 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 ## Play
 
-**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.22.0**
+**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.23.0**
 
 Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a fitted board/control shell on every device, with a live sidebar in wide windows and a separate Party & Log panel in smaller windows. **How to Play** on the title screen explains the rules.
 
 Balance diagnostics remain in the repository for maintenance; the game does not link players to the report.
 
 The live version is served from GitHub Pages: the repo’s **Settings → Pages** source is set to the main branch root. Changes on a pull request branch become live only after they reach `main`; download that branch's `index.html` to play its version locally.
+
+### Enemy placement
+
+Build 0.23.0 keeps every newly placed enemy on ground reachable before the stairs, including guardians. Ambushes and awakened patrols also respect locked doors and never reuse cleared fights. Loading an older map repairs inaccessible surviving enemies without resetting cleared battles or treasure. Six placement regressions include an independent audit of 2,048 generated floors.
 
 ### Sprite art
 

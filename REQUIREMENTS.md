@@ -369,3 +369,13 @@ Build 0.21.0 local acceptance: 134 engine/controller checks, four sprite/art che
 8. Run all existing engine, source, guardian, browser and campaign gates plus targeted decision/save/fog/RNG/capacity tests and four-size browser flows. Preserve canary thresholds and report the explicit reward-choice diagnostic policy. Exact-head three-browser success, merged-file equality and Pages/live verification precede automatic publication.
 
 Build 0.22.0 local acceptance: 142 engine/controller checks, four sprite/art and four policy checks, 192-floor source audit, 288 guardian probes and all 19 Chromium browser suites pass. The new decision flow also passes local Firefox at all four device sizes. Unchanged 96-run canaries: wanderer 29/32, delver 20/32, ironbound 18/32 victories, zero stalls. Companion-directed 8/8 and treasure-directed 7/8 victories; all eight vows and all 24 recent item additions acquired across their respective samples. Three varied-choice campaigns win 3/3 and acquire all nine cache alternatives. These diagnostic policies are not human difficulty estimates. Runtime 451,387 bytes (440.8 KiB), +12,792 bytes over 0.21.0; soft size policy, offline single file and overall B+ remain. Exact-head three-browser and Pages/live evidence is recorded in the release PR.
+
+
+## Enemy access — ACCESS-01…06 (0.23.0)
+
+1. Every generated enemy tile must be reachable from the entrance without stepping onto the exit. Locked doors count as eventually open for authored placements. Preserve encounter counts, unique non-loot/non-door coordinates and entrance safety buffer.
+2. Pinned guardians on the wrong side of stairs must relocate deterministically to a free reachable tile nearest their authored position; retain boss/prize metadata and update coordinates.
+3. Ambushes and awakened patrols must be reachable from the current position without crossing stairs or currently locked doors. Keep cadence, budgets and caps. Never reuse cleared encounter keys.
+4. Restore valid legacy maps without resetting them: relocate only inaccessible uncleared encounters locally; retain cleared history, ground drops, rewards and original input. Because old saves omit entrance coordinates, repairs use the current component; saves on stairs select the largest adjacent component deterministically.
+5. Independently flood-fill 2,048 seeded generated maps across eight chapters, plus stair-articulation, locked-door, legacy, fallback and cleared-key cases. Require no lost descriptors or inaccessible enemies.
+6. Preserve existing full release gates and balance thresholds; verify exact-head three-browser CI, main/Pages and live bytes before calling the release published.

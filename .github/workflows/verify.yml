@@ -28,6 +28,7 @@ jobs:
           node tests/treasure-rules.cjs
           node tests/loadout-rules.cjs
           node tests/decisions-rules.cjs
+          node tests/placement-rules.cjs
           node tests/treasure-audit.cjs
           node tests/scenario-balance.cjs
       - name: Install development browser tools
