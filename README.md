@@ -8,7 +8,7 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 ## Play
 
-**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.23.0**
+**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.24.0**
 
 Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a fitted board/control shell on every device, with a live sidebar in wide windows and a separate Party & Log panel in smaller windows. **How to Play** on the title screen explains the rules.
 
@@ -19,6 +19,12 @@ The live version is served from GitHub Pages: the repo’s **Settings → Pages*
 ### Enemy placement
 
 Build 0.23.0 keeps every newly placed enemy on ground reachable before the stairs, including guardians. Ambushes and awakened patrols also respect locked doors and never reuse cleared fights. Loading an older map repairs inaccessible surviving enemies without resetting cleared battles or treasure. Six placement regressions include an independent audit of 2,048 generated floors.
+
+### Tactical chapter battles
+
+Build 0.24.0 places bow patrols along long lanes, split watches at junctions and support groups near treasure approaches, while keeping enemies reachable before the stairs. Each of the eight map nodes has a named signature ordinary arena: the Lantern Gate, Blackwater Sluice, Hall of Unspoken Names, Cinder Foundry, Legion’s Broken Causeway, Pilgrims’ Last Wells, Ashen Switchback and Mirrors Before Morning. Guardian arenas stay intact.
+
+**Optional field objectives:** select a numbered diamond to preview its affected tiles. From on or adjacent to it, press **Confirm** to spend one hero action raising cover, lighting sanctums or quenching embers. Each diamond works once per battle; the changed terrain helps either side. You can ignore these objectives and win by defeating all enemies. They grant no extra XP or treasure. Tactics gives the full briefing and coordinates; Auto only claims an adjacent objective when it immediately helps an ally already on an affected tile. Newly generated maps carry these scenes; older saved maps keep their existing encounters. Battle progress remains unsaved, as before.
 
 ### Sprite art
 

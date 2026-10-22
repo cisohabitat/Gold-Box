@@ -60,3 +60,12 @@ Build 0.22.0 local acceptance: 142 engine/controller checks, four sprite/art and
 ### 0.23.0 placement correction
 
 No encounter budgets, enemy stats, reward quantities, difficulty coefficients or canary thresholds change. Reachability excludes stairs; dynamic spawns also exclude locked doors and cleared encounter keys. Rare unsafe pinned placements move to the accessible side without losing their prizes. The full 96-run canary and 19 browser suites remain release requirements, alongside the separate 8 companion, 8 treasure and 3 varied-choice campaigns. Record actual new evidence in the release PR; previous samples remain historical.
+
+
+### 0.24.0 tactical chapter encounters
+
+The new strategic post selection and eight ordinary terrain arenas change which battles the loot-first route meets and how those battles unfold. Optional one-action stations alter shared cover/sanctum/ember tiles; Auto claims only immediately helpful adjacent stations, without pursuing remote ones. Enemy composition budgets/stats, fight counts, XP/prizes, guardian arenas and difficulty coefficients are unchanged. This is not a matching-RNG ablation of difficulty.
+
+Retain the 96-run no-shopping canary and all existing thresholds. Companion (8), treasure (8) and varied-cache (3) campaigns remain separate integration policies. All sixteen authored field actions also require rule/browser coverage, including victories with ignored objectives. Final counts and policy limits are recorded in the release PR. Physical devices and human full-run pacing remain unverified.
+
+Local 0.24.0 canary acceptance (same gameplay rules as the final source): **30/32 Wanderer, 24/32 Delver, 15/32 Ironbound victories**, zero stalls, all unchanged canaries pass. Routes 0–3 W/D/I: 7/6/4, 7/6/2, 8/7/4, 8/5/5 (each out of eight). This seeded loot-first/no-shopping policy is not a human win-rate estimate. Exact-head CI and separate directed campaign evidence are recorded in the release PR.

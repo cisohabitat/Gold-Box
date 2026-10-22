@@ -197,3 +197,12 @@ Build 0.22.0 local acceptance: 142 engine/controller checks, four sprite/art and
 A 1,024-floor seeded baseline found zero unreachable enemies (1,792 encounter placements). Adversarial corridor inspection nevertheless reproduced a real defect: pathfinding treated the automatic exit as an ordinary bridge, and pinned coordinates bypassed reachability checks. Live spawns also selected by proximity without connectivity, and could overwrite cleared keys while leaving the replacement cleared.
 
 Placement now blocks stairs, relocates unsafe pinned enemies, and checks current unlocked connectivity for dynamic spawns. Legacy repair preserves cleared records/reward drops and runs before active-save mutation. Old saves lack entrance coordinates, so repair uses the current side; on stairs it chooses the largest neighboring component. New independent tests cover 2,048 generated floors and targeted counterexamples. Overall grade remains B+; publication evidence belongs in the release PR.
+
+
+### Tactical chapter review — 0.24.0
+
+The preceding access fix proved enemies could be reached but did not give random patrol sites a tactical purpose. Patrol placement now scores existing reachable ground by formation: bow lanes, junctions, narrow controller posts and treasure approaches, with spacing when possible. This changes campaign paths and therefore seeded battle RNG; evaluate the full canaries rather than claiming a controlled difficulty comparison.
+
+Eight authored ordinary arenas add optional terrain objectives to existing fights. Raising barricades, opening sluices/vents and kindling vigils changes cover, embers or sanctums with one hero action per numbered station. The same terrain serves enemies; previewing exact edited tiles and explicit confirmation makes the tradeoff reviewable. They are secondary battlefield goals, not alternate win conditions or extra loot. Old floors keep their descriptors. Existing guardian phases, crown gates and composition budgets remain.
+
+New rule checks exercise all sixteen actions, shared effects, once-only/action costs, invalid/stale confirmations, Auto opportunities and atomic legacy/portable handling. Browser coverage exercises remote rejection, real movement, exact previews, keyboard/touch confirmation, Tactics, weapon victories and Continue at phone, short landscape, tablet and desktop sizes. Final balance/cross-browser/publication evidence belongs in the release PR. Overall B+ remains; no claim of AAA production, human pacing certification or physical Safari testing.
