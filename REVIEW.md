@@ -266,3 +266,10 @@ The 0.28.1 live review completed one unseeded Wanderer/default-party campaign th
 Corrections address the stale hunt objective, immediate Auto-assign commitment, misleading Sleep ally counts, compressed Cantor phase/crown escape, weak guardian hierarchy/silhouette, unclear search coverage, five-chapter ending label and monolithic epilogue. The Cantor trigger moves to two-thirds HP with unchanged stats/actions/charges; new final maps guarantee an 8–12-step crown approach guarded before the stairs. Existing maps remain intact. Contextual briefings and named illustrated entrances support revised Warden/Astrax art; endings retain every narrative echo in separated paragraphs.
 
 Local engine/audit checks and the new six-layout Chromium/Firefox suite pass. All 25 suites and unchanged 115 campaign gates must pass on exact-head three-browser CI before publication. Overall B+ remains provisional pending broader manual pacing/physical Safari. Runtime: **514,326 bytes (502.3 KiB)**, +6,193 bytes versus 0.28.1; no new runtime dependency or save schema. Final exact-head CI and live evidence belong to the release PR.
+
+
+## Review corrections — 0.29.1
+
+The fresh live 0.29.0 review reproduced conflicting Cantor instructions (half HP in the arena section versus two-thirds in the briefing) and a clipped king entrance at 956×350. Build 0.29.1 corrects the arena text and gives banners explicit available width with compact short-landscape typography/art. The existing six-layout suite now checks all four guardian entrances for full containment and rejects the stale Cantor text. Gameplay, saves and balance are unchanged. Overall grade remains provisional B+; physical Safari remains unverified.
+
+Runtime: **514,597 bytes (502.5 KiB)**. One offline HTML file; no added runtime dependency.

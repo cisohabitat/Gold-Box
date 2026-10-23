@@ -396,3 +396,10 @@ Runtime: **508,133 bytes (496.2 KiB)**, -201 bytes against 0.28.0. No runtime de
 - Retain all 188 prior engine/controller checks and all policy/art/source/2,048-floor/288-guardian/exploration audits; add six fresh-review rules, including 256 crown-approach maps. Keep all existing 24 browser suites and add tests/fresh-review.cjs (25 suites), required on exact-head Chromium/Firefox/WebKit. Retain unchanged 96+8+8+3 campaign gates, merge/tree equality, Pages and live verification. No threshold weakening. The overall grade stays provisional B+ pending broader human pacing and physical Safari evidence.
 
 Runtime: **514,326 bytes (502.3 KiB)**, +6,193 bytes versus 0.28.1. One offline HTML file with no new runtime dependency, save version or downloaded asset. Sprite-Art-0.29.png is repository review documentation only.
+
+
+## Review corrections — 0.29.1
+
+Keep Cantor arena instructions aligned with its two-thirds HP trigger. Guardian entrance banners must fit the visible board on short landscape as well as portrait/tablet/desktop. Preserve named portraits, pointer transparency, pan anchoring, effects settings and the 1.4-second lifetime. tests/fresh-review.cjs checks all four entrances at all six existing layouts and the current Cantor arena text. All existing 25-suite, exact-head three-browser, unchanged 115-campaign and publication gates remain required.
+
+Runtime: **514,597 bytes (502.5 KiB)**. One offline HTML file; no added runtime dependency.
