@@ -403,3 +403,14 @@ Runtime: **514,326 bytes (502.3 KiB)**, +6,193 bytes versus 0.28.1. One offline 
 Keep Cantor arena instructions aligned with its two-thirds HP trigger. Guardian entrance banners must fit the visible board on short landscape as well as portrait/tablet/desktop. Preserve named portraits, pointer transparency, pan anchoring, effects settings and the 1.4-second lifetime. tests/fresh-review.cjs checks all four entrances at all six existing layouts and the current Cantor arena text. All existing 25-suite, exact-head three-browser, unchanged 115-campaign and publication gates remain required.
 
 Runtime: **514,597 bytes (502.5 KiB)**. One offline HTML file; no added runtime dependency.
+
+
+## Ten-run playtest corrections — 0.29.2
+
+- closeParty refreshes an open waystation through renderTown before returning to play. Preserve townPage, council/boon/vow claims and immediate equipment saves. Sale buttons capture both index and item ID; reject and refresh stale callbacks before gold or satchel mutation. Do not sell an item different from the displayed row.
+- eventScreen and banner use aria-labelledby pointing at eventTitle/bannerText. Keep dynamic dialog names tied to visible headings; never snapshot those headings into a persistent aria-label.
+- Level-up ability choices are native buttons. Disable capped stats and spent allocations, show Maximum 20, and explain Confirm's remaining-point requirement. When an allocation disables its own button, move keyboard focus to an available level choice or Confirm. Retain keyboard activation, preview-only UI Auto-assign and once-only Confirm.
+- R08's exact final-exit blocker remains unresolved without its separate reproduction save. No production map generation, save geometry, balance or recovery change was justified. tests/playtest-rules.cjs independently probes 1,024 final floors and walks/revives 32; this is bounded negative evidence, not a fix or independent reproduction of R08.
+- Retain all existing release gates and add five playtest rules and tests/playtest.cjs on exact-head Chromium/Firefox/WebKit (26 browser suites). The latter covers equipment/stow/Auto Gear→Trade→sale→Continue, stale event and consecutive ending names, native disabled caps and keyboard allocation at four layouts. Preserve all unchanged 115 campaigns and exact-head quality/merge/Pages verification before publication.
+
+Runtime: **515,366 bytes (503.3 KiB)**, +769 bytes over 0.29.1. One offline HTML file; no new runtime dependency or save version.
