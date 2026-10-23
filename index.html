@@ -3958,7 +3958,7 @@ function previewHero(h){ return allAssigned(h) ? buildHero(CLASSES[h.cls], h.nam
 
 function keyboardControl(el,action,selector,label){
   el.tabIndex=0;el.setAttribute('role','button');if(label)el.setAttribute('aria-label',label);
-  const activate=()=>{action();const replacement=selector&&document.querySelector(selector);if(replacement)replacement.focus({preventScroll:true});};
+  const activate=()=>{action();const replacement=selector&&document.querySelector(selector);const target=replacement?.disabled?(replacement.closest('.lvcard')?.querySelector('button:not(:disabled)')||document.querySelector('#levelHeroes button:not(:disabled),#btnLevelDone:not(:disabled)')):replacement;if(target)target.focus({preventScroll:true});};
   el.onclick=activate;el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();if(!e.repeat)activate();}};
 }
 
