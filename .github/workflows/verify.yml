@@ -36,6 +36,7 @@ jobs:
           node tests/warden-rules.cjs
           node tests/cantor-rules.cjs
           node tests/fresh-review-rules.cjs
+          node tests/playtest-rules.cjs
           node tests/exploration-rules.cjs
           node tests/exploration-audit.cjs
           node tests/treasure-audit.cjs
@@ -80,6 +81,7 @@ jobs:
           node tests/cantor.cjs
           node tests/usability.cjs
           node tests/fresh-review.cjs
+          node tests/playtest.cjs
           if [ "$GOLD_BOX_BROWSER" = chromium ]; then
             node tests/balance.cjs
             node tests/companion-campaign.cjs
@@ -101,4 +103,5 @@ jobs:
             artifacts/exploration/
             artifacts/usability/
             artifacts/fresh-review/
+            artifacts/playtest/
           if-no-files-found: warn

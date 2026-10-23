@@ -242,7 +242,7 @@
   .lvab.prime{border-color:#6b5a2e;}
   .lvab.bumped{border-color:var(--heal);}
   .lvab.maxed{opacity:0.45;cursor:default;}
-  .lvab .k{color:var(--dim);} .lvab .v{color:var(--parch);font-variant-numeric:tabular-nums;}
+  .lvab .k{color:var(--dim);} .lvab .k small{display:block;font-size:10px;line-height:1.2;letter-spacing:normal;text-transform:none;} .lvab .v{color:var(--parch);font-variant-numeric:tabular-nums;}
   .lvab .v .up{color:var(--heal);}
   .lvcard .eff{color:var(--dim);font-size:15px;margin-top:6px;border-top:1px solid #3a2c18;padding-top:4px;}
   .lvspell{margin-top:7px;border-top:1px solid #3a2c18;padding-top:6px;}
@@ -621,7 +621,7 @@
     </div>
   </div>
 </div>
-<div class="banner" id="banner">
+<div class="banner" id="banner" aria-labelledby="bannerText">
   <div class="box"><div id="endingArtwork" class="ending-art" aria-hidden="true"></div><h2 id="bannerText"></h2><p id="endingStory"></p><section id="defeatReview" hidden aria-labelledby="defeatHeading"><h3 id="defeatHeading" tabindex="-1">Learn from this battle</h3><p id="defeatFacts"></p><h4>Try next run</h4><ul id="defeatAdvice"></ul></section><div id="endingStats"></div><button id="bannerBtn">Play Again</button></div>
 </div>
 
@@ -738,7 +738,7 @@
   </div>
 </div>
 
-<div class="screen" id="eventScreen">
+<div class="screen" id="eventScreen" aria-labelledby="eventTitle">
   <div class="sbox">
     <h2 class="ctitle" id="eventTitle">Event</h2>
     <p class="tag" id="eventPrompt"></p>
@@ -756,7 +756,7 @@
 <div class="screen" id="settingsScreen" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="sbox"><h2 id="settingsTitle" class="ctitle">Sound &amp; Display</h2><p class="tag">Make the journey your own. Combat pauses while this sheet is open.</p><div class="settings-list"><label><input id="prefSound" type="checkbox"> Synthesized sound effects</label><label><input id="prefMusic" type="checkbox"> Quiet ambient tones (requires sound)</label><label for="prefVolume">Volume <output id="volumeValue">35%</output><input id="prefVolume" type="range" min="0" max="100" step="5" value="35"></label><label><input id="prefEffects" type="checkbox" checked> Visual effects (respects reduced motion)</label><label><input id="prefContrast" type="checkbox"> High contrast / clean display</label><label for="prefPace">Auto pace<select id="prefPace"><option value="normal">Deliberate · normal speed</option><option value="quick">Quick · shorter Auto turns</option></select></label></div><p id="audioStatus" class="tag" role="status">Sound is off by default. No downloads are needed.</p><p id="preferenceStatus" class="tag" role="status"></p><button id="btnSettingsClose" class="big">Back to Game</button></div></div>
 <div class="screen" id="codexScreen" role="dialog" aria-modal="true" aria-labelledby="codexTitle"><div class="sbox wide"><div class="eyebrow">Eren’s field atlas</div><h2 id="codexTitle" class="ctitle">The Bestiary</h2><div class="atlas-nav" role="group" aria-label="Atlas pages"><button id="codexBeasts" aria-pressed="true">Bestiary</button><button id="codexTreasure" aria-pressed="false">Treasure &amp; Relics</button><button id="codexLegends" aria-pressed="false">Legends &amp; Hunt</button><button id="btnCodexClose">Back</button></div><p class="tag" id="codexNote"></p><div id="codexTools" class="atlas-tools"><label for="codexSearch">Search<input id="codexSearch" type="search" maxlength="80" placeholder="Name, spell, source or lore"></label><label for="codexFilter">Show<select id="codexFilter"><option value="all">All entries</option><option value="guardians">Guardians</option><option value="relics">Relics</option><option value="potions">Potions</option></select></label></div><p id="codexCount" class="tag" role="status"></p><div id="codexContent" class="atlas-grid"></div></div></div>
 <script>
-const GAME_BUILD='0.29.1';
+const GAME_BUILD='0.29.2';
 document.querySelectorAll('[data-build]').forEach(el=>el.textContent='Build '+GAME_BUILD);
 /* ===== CROWN CAMPAIGN : data, with controller helpers below ===== */
 const OATHS={wanderer:{name:'Wanderer',budget:0.65,recovery:0.25,desc:'Gentler battles; all heroes earn victory XP and recover 25% HP after a win.'},delver:{name:'Delver',budget:1,desc:'Fortune favours the prepared. Only standing heroes earn victory XP.'},ironbound:{name:'Ironbound',budget:1.25,desc:'Stronger enemy forces. Only standing heroes earn victory XP.'}};
@@ -3144,7 +3144,7 @@ function townRest(){
 }
 function buyItem(id){ const it=ITEMS[id]; if(!it||!SHOP_STOCK.includes(id)||bag.gold<it.cost||bag.items.length>=1000) return; bag.gold-=it.cost; bag.items.push(id);discoverItem(id);
   exploreFeed.push({t:'Bought a '+it.name+' for '+it.cost+' gold.',k:'sys'}); renderTown(); }
-function sellItem(i){ const id=bag.items[i]; const it=ITEMS[id]; if(!it) return; const v=Math.floor((it.cost||0)/2);if(bag.gold>10000000-v)return;
+function sellItem(i,expectedId=bag.items[i]){ if(bag.items[i]!==expectedId){renderTown();return;}const id=bag.items[i]; const it=ITEMS[id]; if(!it) return; const v=Math.floor((it.cost||0)/2);if(bag.gold>10000000-v)return;
   bag.gold+=v; bag.items.splice(i,1); exploreFeed.push({t:'Sold a '+it.name+' for '+v+' gold.',k:'sys'}); renderTown(); }
 function renderTown(){
   renderDepartureReview($('#townDeparture'),true);
@@ -3160,7 +3160,7 @@ function renderTown(){
   if(!bag.items.length){ sell.innerHTML='<span class="ibag-empty">Nothing to sell.</span>'; }
   else bag.items.forEach((id,i)=>{ const it=ITEMS[id]; const row=document.createElement('div'); row.className='shrow';
     row.innerHTML=`<span class="nm">${it.name}</span><span class="pr">${Math.floor((it.cost||0)/2)}g</span>`;
-    const b=document.createElement('button'); b.textContent='Sell'; b.onclick=()=>sellItem(i);
+    const b=document.createElement('button'); b.textContent='Sell'; b.onclick=()=>sellItem(i,id);
     row.appendChild(b); sell.appendChild(row); });
   renderBoons();renderCouncil();renderHeroQuests();renderFork();selectTownPage(townPage);autosave();
 }
@@ -3277,7 +3277,7 @@ function renderLevelUp(){
     html+='<div class="lvgrid">';
     ABILITIES.forEach(k=>{ const add=e.picks[k]; const val=h.abilities[k]+add;
       const maxed=val>=ABIL_CAP; const cls='lvab'+(prime.includes(k)?' prime':'')+(add>0?' bumped':'')+(maxed?' maxed':'');
-      html+=`<div class="${cls}" data-i="${i}" data-k="${k}"><span class="k">${k.toUpperCase()}</span><span class="v">${val}${add>0?' <span class="up">(+'+add+')</span>':''}</span></div>`; });
+      html+=`<button class="${cls}" data-i="${i}" data-k="${k}" aria-label="Increase ${k.toUpperCase()}: ${val}${maxed?' · Maximum '+ABIL_CAP:''}"${maxed||left<=0?' disabled':''}><span class="k">${k.toUpperCase()}${maxed?'<small>Maximum '+ABIL_CAP+'</small>':''}</span><span class="v">${val}${add>0?' <span class="up">(+'+add+')</span>':''}</span></button>`; });
     html+='</div>';
     html+=`<div class="eff">HP <b>${d.maxHp}</b> &nbsp; AC <b>${d.ac}</b> &nbsp; Atk <b>+${d.attackBonus}</b> &nbsp; Dmg <b>${d.damage.n}d${d.damage.sides}+${d.damage.bonus}</b></div>`;
     const pool=learnableFor(h), cap=lvLearnCap(i);
@@ -3296,7 +3296,7 @@ function renderLevelUp(){
       html+=`</div></div>`;
     }
     card.innerHTML=html;
-    card.querySelectorAll('.lvab').forEach(el=>keyboardControl(el,()=>lvAdd(+el.dataset.i,el.dataset.k),'.lvab[data-i="'+el.dataset.i+'"][data-k="'+el.dataset.k+'"]','Increase '+el.dataset.k.toUpperCase()+': '+el.textContent));
+    card.querySelectorAll('.lvab:not(:disabled)').forEach(el=>keyboardControl(el,()=>lvAdd(+el.dataset.i,el.dataset.k),'.lvab[data-i="'+el.dataset.i+'"][data-k="'+el.dataset.k+'"]','Increase '+el.dataset.k.toUpperCase()+': '+el.textContent));
     card.querySelectorAll('.lvspellbtn[data-sp]').forEach(el=>keyboardControl(el,()=>lvToggleLearn(+el.dataset.i,el.dataset.sp),'.lvspellbtn[data-i="'+el.dataset.i+'"][data-sp="'+el.dataset.sp+'"]',el.textContent));
     card.querySelectorAll('.lvspellbtn[data-pk]').forEach(el=>keyboardControl(el,()=>lvTogglePerk(+el.dataset.i,el.dataset.pk),'.lvspellbtn[data-i="'+el.dataset.i+'"][data-pk="'+el.dataset.pk+'"]',el.textContent));
     root.appendChild(card);
@@ -3304,7 +3304,7 @@ function renderLevelUp(){
   const allSpent=levelUp.entries.every((_,i)=>lvSpent(i)>=levelUp.entries[i].points);
   $('#btnLevelDone').disabled=!allSpent;
   const who = levelUp.entries.length===1 ? levelUp.entries[0].hero.name+' has' : levelUp.entries.length+' heroes have';
-  $('#levelSub').textContent = allSpent ? 'Every point spent. Confirm to continue.' : who+' levelled up. Tap a stat to raise it, or tap Auto-assign to preview recommended choices. Confirm applies them. Gold-bordered stats are the class strengths.';
+  $('#levelSub').textContent = allSpent ? 'Every point spent. Confirm to continue.' : who+' levelled up. Spend all remaining ability points to enable Confirm. Stats stop at '+ABIL_CAP+'. Tap a stat to raise it, or tap Auto-assign to preview recommended choices. Confirm applies them. Gold-bordered stats are the class strengths.';
 }
 
 /* ----- Party & equipment screen ----- */
@@ -3312,7 +3312,7 @@ let partyHero=0, townPage='council';
 let boardZoom=false, preciseAim=null, preciseView=null;
 let pickItem=null;   // index into bag.items awaiting a hero
 function openParty(){ if(mode!=='explore')return; partyHero=0;pickItem=null;$('#partyScreen').scrollTop=0;$('#treasureFind').innerHTML=''; $('#partyScreen').classList.add('show'); renderParty(); }
-function closeParty(){ $('#partyScreen').classList.remove('show'); render(); }
+function closeParty(){ $('#partyScreen').classList.remove('show'); if($('#townScreen').classList.contains('show'))renderTown();render(); }
 function canUse(it, hero){ return !it.classes || it.classes.includes(hero.cls); }
 function selectItem(i){ pickItem=(pickItem===i)?null:i; renderParty(); }
 function equipmentPlan(hero,it){

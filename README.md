@@ -8,13 +8,23 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 ## Play
 
-**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.29.1**
+**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.29.2**
 
 Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a fitted board/control shell on every device, with a live sidebar in wide windows and a separate Party & Log panel in smaller windows. **How to Play** on the title screen explains the rules.
 
 Balance diagnostics remain in the repository for maintenance; the game does not link players to the report.
 
 The live version is served from GitHub Pages: the repo’s **Settings → Pages** source is set to the main branch root. Changes on a pull request branch become live only after they reach `main`; download that branch's `index.html` to play its version locally.
+
+### Ten-run playtest fixes — build 0.29.2
+
+Closing equipment at a waystation refreshes Trade's item count, sale rows and prices while preserving the selected town page. Sale callbacks verify the displayed item before changing the satchel. Equipping, stowing, Auto Gear and consuming a potion retain their existing immediate saves.
+
+Event and ending dialogs take their accessible names from their current visible headings, including successive campaigns in one tab. Level-up stats at 20 are disabled and visibly say **Maximum 20**; the instructions explain why Confirm requires all ability points to be spent. Save format, map generation, combat and balance are unchanged.
+
+The reported R08 final-exit blocker remains **unresolved**. Independent cardinal path checks passed on 1,024 generated final floors, and 32 of those maps passed movement/unlock and save/revive traversal checks. Those checks do not reproduce or disprove the original saved campaign. Its separate `Gold-Box-Run-08-Reproduction-Save.txt` is needed to inspect the exact blocked state; no speculative map recovery or alteration of existing saves was added.
+
+`tests/playtest-rules.cjs` checks stale sales and final-map routes; `tests/playtest.cjs` checks real equipment→Trade→sale→Continue, successive event/ending names and keyboard level allocation at four device sizes. Both join the existing release gates; browser fixtures are automated checks, not new human campaign attempts.
 
 ### Review corrections — build 0.29.1
 
