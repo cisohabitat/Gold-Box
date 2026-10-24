@@ -439,3 +439,12 @@ Runtime: **508,960 bytes (497.0 KiB)**, -6,406 bytes versus 0.29.2. One offline 
 - Keep v2 save compatibility and all existing release gates. Add sixteen footprint rules (215 engine/controller checks total) and tests/footprints.cjs as the 27th browser suite in exact-head Chromium/Firefox/WebKit. Retain the 288 guardian scenarios, all map/art/source/policy checks and unchanged 96+8+8+3 campaigns; inspect actual new balance results rather than reusing the previous sample. Existing bow-cover and art fixtures must author/inspect complete footprints, retaining their original assertions.
 
 Runtime: **512,641 bytes (500.6 KiB)**, +3,681 bytes versus 0.29.3. Existing inline art is reused; no runtime dependency or save-version change.
+
+
+## Rectangular footprints — 0.30.1
+
+This supersedes the square-only size data above. BESTIARY.size is now {w,h}: Ogre {w:1,h:2}, Giant Spider {w:2,h:1}, Astrax {w:2,h:2}; absent dimensions default to one. combatWidth/combatHeight drive all geometry; combatSize is only the maximum-dimension classification for large tokens. combatPosition retains both axes, and combatFootprint labels width × height. Reserve bodies in descending area, preserving registry/initiative order and RNG. Footprints never rotate. Long-axis corridors must fit; no phantom fourth square may block movement, range, cover, danger or target selection.
+
+Spanning tokens use independent grid-column/grid-row spans. Rectangular battle SVGs stretch to that shape, with canonical atlas/roster art unchanged. Keep one token, HP bar, action/reaction economy and once-per-actor area/terrain rules. Existing square-body fixtures remain as explicit synthetic geometry cases; four new rectangle cases bring the engine/controller total to 219. Four-layout browser tests must target every cell of all three shapes, inspect their bounds/labels/catalog dimensions, and exercise partial-overlap spells and zoom. Keep all 27 exact-head three-browser suites, existing audits/288 guardian probes, unchanged 115 campaigns, merged-tree comparison and Pages/live verification.
+
+Runtime: **513,240 bytes (501.2 KiB)**, +599 bytes over 0.30.0. No dependency or v2 save-format change.

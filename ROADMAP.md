@@ -269,3 +269,6 @@ Resolve all eight recorded findings: level-up preview/Confirm, effect-aware area
 ## Large creature positioning — 0.30.0
 
 Give Astrax, ogres and giant spiders real 2×2 battle footprints with shared HP/action economy, full-body occupancy and nearest-edge targeting. Preserve humanoid sizes, stats, encounter budgets and v2 saves. Deliver through geometry helpers and the existing board/Tactics/Bestiary; no new map or modal. Acceptance lives in REQUIREMENTS.md SIZE-01…05 and VERIFY-30, with sixteen engine regressions and four-layout mouse/touch/keyboard coverage. Broader human balance remains follow-up evidence.
+
+
+Rectangular correction — 0.30.1: ogres use 1×2 and giant spiders 2×1 (width × height), with fixed orientation; Astrax keeps 2×2. Generalize every geometry path and token/label to separate dimensions, preserve square regressions, add rectangular corridor/edge/terrain coverage, and retain the complete publication gate.

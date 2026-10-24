@@ -486,13 +486,13 @@ Map guide correction (0.28.1): movement, map symbols and full chapter arrival mu
 All prior gates remain. The new UI suite is the 25th, not a replacement; the new six engine rules supplement the existing 188. Physical Safari remains a separate validation task.
 
 
-## Large creature battle footprints — 0.30.0
+## Large creature battle footprints — 0.30.1
 
 | ID | Acceptance |
 | --- | --- |
-| SIZE-01 | Registry-backed 2×2 Astrax, ogres and giant spiders; all other current creatures 1×1. Elite and old-save spawning derive the current size without new saved fields. |
+| SIZE-01 | Registry-backed 2×2 Astrax, tall 1×2 ogres and wide 2×1 giant spiders (width × height, no rotation); all other current creatures 1×1. Elite and old-save spawning derive the current size without new saved fields. |
 | SIZE-02 | One actor/turn/HP bar occupies four unique, in-bounds squares. Deterministic deployment, movement, summoning and pulls require full clearance; one-cell gaps and blocked diagonal corners reject large movement. |
 | SIZE-03 | Any body square selects the actor. Range, auras, melee pressure and reactions use nearest edges. A spell or delayed echo affects each actor once, including when just its far corner overlaps. Shared wards and actual HP-loss reports remain authoritative. |
 | SIZE-04 | Auto uses full-body range, passability, collateral and danger. Terrain ticks once per actor; fire death precedes sanctum healing, and ranged cover requires every occupied square covered. No separate size stat bonuses or extra actions. |
 | SIZE-05 | One spanning, pointer-transparent portrait and HP rail; accessible size labels on all four interactive cells, shared target/aim feedback, precise zoom/pan, centred projectiles and matching Bestiary/Tactics rules. Preserve phone controls and reduced-motion/effects preferences. |
-| VERIFY-30 | 215 engine/controller checks, all current audits, 288 guardian probes, 27 exact-head three-browser suites and unchanged 115 campaign simulations. Report measured balance, size and hardware/human limits; verify tested/merged/live identity before publication. |
+| VERIFY-30 | 219 engine/controller checks, all current audits, 288 guardian probes, 27 exact-head three-browser suites and unchanged 115 campaign simulations. Report measured balance, size and hardware/human limits; verify tested/merged/live identity before publication. |
