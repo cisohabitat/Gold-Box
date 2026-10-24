@@ -12,7 +12,7 @@ test('every sprite has valid palette, square geometry, distinct art and bounded 
  }
 });
 test('all class and monster sprite references resolve; guardians use unique identities',()=>{
- const registry=html.slice(html.indexOf('const CLASSES ='),html.indexOf('const BACKGROUNDS ='))+html.slice(html.indexOf('const BESTIARY ='),html.indexOf('function makeGroup'));
+ const registry=html.slice(html.indexOf('const CLASSES ='),html.indexOf('const BACKGROUNDS ='))+html.slice(html.indexOf('const BESTIARY ='),html.indexOf('const DIFFICULTY ='));
  for(const [,id]of registry.matchAll(/sprite:\s*'([^']+)'/g))assert(SPRITES[id],id);
  for(const id of ['bell_warden','ash_cantor','crypt_lord','eclipse_wyrm']){assert.match(registry,new RegExp(id+':[^\n]*sprite:\\s*\''+id+'\''));assert(SPRITES[id]);}
 });

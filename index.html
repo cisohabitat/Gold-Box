@@ -43,20 +43,12 @@
     #btnRestart{margin-left:0;flex:1 1 100%;min-height:50px;font-size:22px;}
     .fppad{max-width:none;gap:12px;}
     .fppad button{font-size:34px;padding:22px 0;min-height:70px;}
-    .mmwrap{width:38%;max-width:150px;}
     .spellmenu{width:100%;}
     .spellbtn{flex:1 1 40%;min-height:46px;font-size:20px;}}
   .board-wrap{display:flex;flex-direction:column;gap:10px;}
   #board{display:grid;gap:2px;background:var(--grid);border:2px solid var(--frame);padding:2px;width:100%;}
-  /* First-person exploration view */
-  #board.fpboard{display:block;position:relative;padding:0;gap:0;background:#07070b;aspect-ratio:100/72;overflow:hidden;}
   /* Top-down overhead map as the main exploration view */
   #board.mapboard{display:block;position:relative;padding:4px;gap:0;background:#07070b;border:2px solid var(--frame);aspect-ratio:var(--mmar,1);max-height:62vh;margin-inline:auto;overflow:hidden;}
-  .fpview{position:absolute;inset:0;width:100%;height:100%;display:block;}
-  @keyframes fpflicker{0%{opacity:1}18%{opacity:0.82}34%{opacity:1}52%{opacity:0.76}70%{opacity:0.94}86%{opacity:0.84}100%{opacity:1}}
-  .fpflame{animation:fpflicker 1.5s ease-in-out infinite;}
-  @media (prefers-reduced-motion: reduce){ .fpflame{animation:none;} }
-  .mmwrap{position:absolute;top:8px;right:8px;width:32%;max-width:168px;aspect-ratio:var(--mmar,1);background:rgba(8,8,12,0.78);border:1px solid var(--frame);border-radius:4px;padding:3px;box-shadow:0 2px 10px rgba(0,0,0,0.5);}
   .minimap{width:100%;height:100%;display:block;image-rendering:pixelated;}
   .fppad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;flex-basis:100%;max-width:360px;margin:6px auto 0;}
   .fppad button{font-size:24px;line-height:1;padding:14px 0;min-height:54px;}
@@ -756,7 +748,7 @@
 <div class="screen" id="settingsScreen" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="sbox"><h2 id="settingsTitle" class="ctitle">Sound &amp; Display</h2><p class="tag">Make the journey your own. Combat pauses while this sheet is open.</p><div class="settings-list"><label><input id="prefSound" type="checkbox"> Synthesized sound effects</label><label><input id="prefMusic" type="checkbox"> Quiet ambient tones (requires sound)</label><label for="prefVolume">Volume <output id="volumeValue">35%</output><input id="prefVolume" type="range" min="0" max="100" step="5" value="35"></label><label><input id="prefEffects" type="checkbox" checked> Visual effects (respects reduced motion)</label><label><input id="prefContrast" type="checkbox"> High contrast / clean display</label><label for="prefPace">Auto pace<select id="prefPace"><option value="normal">Deliberate · normal speed</option><option value="quick">Quick · shorter Auto turns</option></select></label></div><p id="audioStatus" class="tag" role="status">Sound is off by default. No downloads are needed.</p><p id="preferenceStatus" class="tag" role="status"></p><button id="btnSettingsClose" class="big">Back to Game</button></div></div>
 <div class="screen" id="codexScreen" role="dialog" aria-modal="true" aria-labelledby="codexTitle"><div class="sbox wide"><div class="eyebrow">Eren’s field atlas</div><h2 id="codexTitle" class="ctitle">The Bestiary</h2><div class="atlas-nav" role="group" aria-label="Atlas pages"><button id="codexBeasts" aria-pressed="true">Bestiary</button><button id="codexTreasure" aria-pressed="false">Treasure &amp; Relics</button><button id="codexLegends" aria-pressed="false">Legends &amp; Hunt</button><button id="btnCodexClose">Back</button></div><p class="tag" id="codexNote"></p><div id="codexTools" class="atlas-tools"><label for="codexSearch">Search<input id="codexSearch" type="search" maxlength="80" placeholder="Name, spell, source or lore"></label><label for="codexFilter">Show<select id="codexFilter"><option value="all">All entries</option><option value="guardians">Guardians</option><option value="relics">Relics</option><option value="potions">Potions</option></select></label></div><p id="codexCount" class="tag" role="status"></p><div id="codexContent" class="atlas-grid"></div></div></div>
 <script>
-const GAME_BUILD='0.29.2';
+const GAME_BUILD='0.29.3';
 document.querySelectorAll('[data-build]').forEach(el=>el.textContent='Build '+GAME_BUILD);
 /* ===== CROWN CAMPAIGN : data, with controller helpers below ===== */
 const OATHS={wanderer:{name:'Wanderer',budget:0.65,recovery:0.25,desc:'Gentler battles; all heroes earn victory XP and recover 25% HP after a win.'},delver:{name:'Delver',budget:1,desc:'Fortune favours the prepared. Only standing heroes earn victory XP.'},ironbound:{name:'Ironbound',budget:1.25,desc:'Stronger enemy forces. Only standing heroes earn victory XP.'}};
@@ -1312,14 +1304,6 @@ const BESTIARY = {
   // exit, so the run climaxes in a fight to escape rather than a quiet stairwell.
   crypt_lord:{ bossTitle:'THE SUNLESS KING',bloodied:{id:'sunless_wrath',atk:2,dmg:2,count:2,summon:'skeleton',text:'THE THRONE CRACKS. The Sunless King rises in wrath (+2 attack and damage), calling his last honour guard!'},name:'The Crypt Lord', cls:'CryptLord', glyph:'L', sprite:'crypt_lord', side:'enemy', xp:200, threat:42, abilities:{str:12,dex:12,con:15,int:16,wis:15,cha:16}, maxHp:32, ac:15, attackBonus:5, damage:{n:1,sides:8,bonus:2}, speed:4, range:1, spells:[{id:'spirit_bolt',uses:3,max:3},{id:'hold',uses:2,max:2},{id:'raise_dead',uses:1,max:1}] }
 };
-function makeGroup(list){
-  const out=[]; let i=0;
-  for(const [type,count] of list){ const t=BESTIARY[type];
-    for(let k=0;k<count;k++) out.push(spawnMonster(type, i++, false)); }
-  return out;
-}
-
-
 const DIFFICULTY = { base:49, perFloor:26, perLevel:11, perGear:0.12, bossMul:2.0, maxEnemies:8, slack:6, eliteTier:0.15, eliteBoss:0.22 };
 const ELITE = { hp:1.8, atk:2, dmg:2, ac:1, xp:2, threat:1.6 };
 // A ranged attacker harried in melee shoots wild: this to-hit penalty applies to
@@ -1539,17 +1523,11 @@ function servicePassages(carved,start,exit,doors,secrets,loot,w,h,allowed=null){
  }
  return opened;
 }
-function _carveCorr(a,b,carved,corridor){
+function _carveCorr(a,b,carved){
   let x=a.cx,y=a.cy;
-  while(x!==b.cx){ const k=key(x,y); if(!carved.has(k)){ carved.add(k); corridor.add(k); } x+=Math.sign(b.cx-x); }
-  while(y!==b.cy){ const k=key(x,y); if(!carved.has(k)){ carved.add(k); corridor.add(k); } y+=Math.sign(b.cy-y); }
-  const k=key(x,y); if(!carved.has(k)){ carved.add(k); corridor.add(k); }
-}
-function _overlap(a,b){ return !(a.x+a.w+1<=b.x || b.x+b.w+1<=a.x || a.y+a.h+1<=b.y || b.y+b.h+1<=a.y); }
-function _splits(total, n, minSize){
-  const sizes=new Array(n).fill(minSize); let extra=total-n*minSize;
-  while(extra>0){ sizes[Math.floor(Math.random()*n)]++; extra--; }
-  return sizes;
+  while(x!==b.cx){ carved.add(key(x,y)); x+=Math.sign(b.cx-x); }
+  while(y!==b.cy){ carved.add(key(x,y)); y+=Math.sign(b.cy-y); }
+  carved.add(key(x,y));
 }
 // Carve a room with one of several outlines so rooms do not all read as plain
 // squares: notched corners, a circular/disc chamber, a pillared hall, or a
@@ -1612,7 +1590,7 @@ function _tryGen(spec,W,H){
   const startR=roomAt(corners[ci][0],corners[ci][1]), exitR=roomAt(corners[3-ci][0],corners[3-ci][1]);
   const startT={x:startR.cx, y:startR.cy}, exitT={x:exitR.cx, y:exitR.cy};
   if(startT.x===exitT.x && startT.y===exitT.y) return null;
-  const carved=new Set(), corridor=new Set();
+  const carved=new Set();
   for(const r of rooms) _carveRoom(r, carved, r!==startR && r!==exitR);
   // occasionally fuse two adjacent interior rooms into one big hall (breaks the grid)
   const interiorRooms=rooms.filter(r=>r!==startR && r!==exitR);
@@ -1625,7 +1603,7 @@ function _tryGen(spec,W,H){
     }
   }
   for(const r of rooms){ const right=roomAt(r.sx+1,r.sy), down=roomAt(r.sx,r.sy+1);
-    if(right) _carveCorr(r,right,carved,corridor); if(down) _carveCorr(r,down,carved,corridor); }
+    if(right) _carveCorr(r,right,carved); if(down) _carveCorr(r,down,carved); }
   const inExit=(x,y)=> x>=exitR.x && x<exitR.x+exitR.w && y>=exitR.y && y<exitR.y+exitR.h;
   // Seal the exit room into a vault: keep exactly one entrance (the door), wall the rest.
   let door=null;
@@ -2402,7 +2380,6 @@ class CombatEngine{
       && !this.isIncapacitated(h) && this.cheb(h.pos,mover.pos)<=effRange(h));
     for(const h of guards){ h.guardUsed=true; this._reactStrike(h, mover, 'guard'); if(!mover.alive) break; }
   }
-  _guardAttack(att, def){ this._reactStrike(att, def, 'guard'); }
   // Shared free-strike for both reactions (guard on entry, opportunity on exit).
   // Resolves with the normal to-hit and damage, outside the action economy.
   _reactStrike(att, def, kind){
@@ -2420,7 +2397,7 @@ class CombatEngine{
 }
 
 /* ===== EXPLORE ENGINE : pure logic, no DOM ===== */
-// Facing for the first-person view. Right vector is the facing rotated clockwise.
+// Map-arrow facing; Q/E rotate it without moving the party.
 const FACING = { N:{dx:0,dy:-1}, E:{dx:1,dy:0}, S:{dx:0,dy:1}, W:{dx:-1,dy:0} };
 const TURN_L = { N:'W', W:'S', S:'E', E:'N' };
 const TURN_R = { N:'E', E:'S', S:'W', W:'N' };
@@ -2438,7 +2415,7 @@ class ExploreEngine{
     this.woken=false; this.wokenSteps=0; this.wanderers=0; this.wanderPool=d.wanderPool||['skeleton'];
     this.wanderCap=3; this.wanderCadence=2;
     this.facing=this._defaultFacing(); this.reveal(); }
-  // Face the first open direction so the opening view is down a corridor, not a wall.
+  // Point the map arrow toward the first open direction.
   _defaultFacing(){ for(const f of ['E','S','N','W']){ const v=FACING[f]; if(!this.isWall(this.pos.x+v.dx, this.pos.y+v.dy)) return f; } return 'E'; }
   tile(x,y){ return (x<0||y<0||x>=this.w||y>=this.h)?'#':this.tiles[y][x]; }
   isWall(x,y){ return this.tile(x,y)==='#'; }
@@ -2552,27 +2529,6 @@ class ExploreEngine{
     this.seen.add(pick.k); this.found.add(pick.k); this.spotted.add(pick.k);
     this.wanderers++;
     return { at:pick.k };
-  }
-  // A hazard ambush: drop one small wandering group a couple of tiles off the party,
-  // close enough to feel like being caught out but never on top of you, the exit, or
-  // anything already placed. Used by a failed scout check; works whether or not the
-  // tomb has woken. Solvability is untouched (it sits on a floor tile, never a wall).
-  spawnAmbush(){
-    const reach=beforeExitReach(this.tiles,this.pos,this.exit,this.doors);
-    const p=this.pos, cands=[];
-    for(let y=1;y<this.h-1;y++) for(let x=1;x<this.w-1;x++){
-      if(this.isWall(x,y)||this.locked(x,y)) continue; const k=key(x,y);
-      if(!reach.has(k)||this.encounters[k]||this.loot[k]||this.eventAt(x,y)) continue;
-      if(x===this.exit.x&&y===this.exit.y) continue;
-      const dP=Math.max(Math.abs(x-p.x),Math.abs(y-p.y));
-      if(dP<2||dP>4) continue;
-      cands.push({x,y,k});
-    }
-    if(!cands.length) return null;
-    const pick=cands[Math.floor(Math.random()*cands.length)];
-    this.encounters[pick.k]={ pool:(this.wanderPool&&this.wanderPool.length)?this.wanderPool:['skeleton'], budgetMul:0.5, wandering:true };
-    this.seen.add(pick.k); this.found.add(pick.k); this.spotted.add(pick.k);
-    return pick.k;
   }
   _enter(x,y){ this.pos={x,y}; this.reveal(); const k=key(x,y);
     const near=this.encounterNear(x,y); if(near) return {type:'combat', spec:near.enc, at:near.at};
@@ -2918,9 +2874,7 @@ function fpAct(action){
   else if(action==='strafeL') tryMove(left.dx, left.dy);
   else if(action==='strafeR') tryMove(right.dx, right.dy);
 }
-// Top-down map movement: step in an absolute compass direction and face that way, so the
-// map arrow stays in sync (and the retained first-person view would too, if re-enabled).
-// fpAct remains a movement helper; exploration uses the overhead map.
+// Step in an absolute compass direction and keep the map arrow in sync.
 function moveDir(dx,dy){
   if(mode!=='explore'||overlayOpen()||!explore) return;
   for(const f in FACING){ if(FACING[f].dx===dx && FACING[f].dy===dy){ explore.facing=f; break; } }
@@ -2936,7 +2890,6 @@ function handleEnter(r){
   if(r.woke){ const lines=['Bone scrapes on stone, ahead. The tomb sends its dead to bar your way.','Cold air stirs. Something shambles into the passage between you and the way out.','The dark ahead fills with the woken dead.','A grave-cold presence rises on the road out.']; exploreFeed.push({t:lines[Math.floor(Math.random()*lines.length)],k:'kill'}); }
   if(r.sensed && r.sensed.length){ const one=r.sensed.length===1;
     exploreFeed.push({t: one ? 'A draught from the wall catches your eye \u2014 a hidden cache. Step into it to take it.' : 'You sense hidden caches worked into the walls nearby. Step into one to take it.', k:'magic'}); }
-  if(r.type==='move') hazardCheck();
   render();
 }
 function collect(item){
@@ -3024,47 +2977,6 @@ function applyEventOutcome(out, hero){
     if(leveled.length) eventLevelUp=(eventLevelUp||[]).concat(leveled); }
 }
 
-// Per-step hazard scouting is currently DISABLED. Everything below is intact; flip this
-// flag to true to switch the feature back on (no other change needed).
-const HAZARDS_ENABLED=false;
-const HAZARD_DC=12, HAZARD_COOLDOWN=2, HAZARD_CHANCE=0.20;
-const HAZARDS=[
-  { text:'A hidden dart springs from the wall and catches {hero}.', hurt:{n:1,sides:3} },
-  { text:'{hero}\u2019s foot comes down on a spiked tile.', hurt:{n:1,sides:4} },
-  { text:'A chunk of ceiling drops without warning.', hurt:{n:1,sides:3}, target:'random' },
-  { text:'The floor gives way; {hero} scrambles out of a shallow pit.', hurt:{n:1,sides:4} },
-  { text:'A puffball bursts, stinging the party with spores.', hurt:{n:1,sides:3}, target:'random' },
-  { text:'Loose stone tips a pack, and supplies scatter into the dark.', loseRation:true },
-  { text:'Skittering in the dark \u2014 something has found your trail.', ambush:true },
-  { text:'{hero} halts the party a step short of a tripwire. Lucky.' },
-  { text:'A cold draft, a creak underfoot \u2014 but the passage holds.' }
-];
-function randomLivingHero(){ const live=(party||[]).filter(h=>h.alive!==false); return live.length?live[Math.floor(Math.random()*live.length)]:null; }
-function applyHazard(hz, scout){
-  const who = scout?scout.name:'the party';
-  if(hz.text) exploreFeed.push({t: hz.text.replace(/\{hero\}/g, who), k:(hz.hurt||hz.ambush||hz.loseRation)?'kill':'flavor'});
-  if(hz.hurt){ const tgt = hz.target==='random' ? randomLivingHero() : scout;
-    if(tgt){ const dmg=Dice.roll(hz.hurt.n, hz.hurt.sides)+(hz.hurt.bonus||0); tgt.hp=Math.max(1, tgt.hp-dmg);
-      exploreFeed.push({t:'('+tgt.name+' takes '+dmg+' damage)',k:'kill'}); } }
-  if(hz.loseRation){ if(bag.rations>0){ bag.rations--; exploreFeed.push({t:'(a camp supply is lost)',k:'sys'}); }
-    else exploreFeed.push({t:'(nothing spills \u2014 your packs are already bare)',k:'sys'}); }
-  if(hz.ambush){ if(explore.spawnAmbush()) exploreFeed.push({t:'(a foe closes in nearby)',k:'kill'}); }
-}
-// Each empty step the nimblest hero reads the ground. A clean read (passing the DEX check)
-// keeps the party clear; on a miss, a fraction of ground is actually treacherous and a
-// hazard springs, with a short cooldown so they never chain. Because the check is the lever
-// and not the cooldown, a high-DEX party suffers far fewer mishaps. Skipped once the tomb
-// wakes (the roaming dead are threat enough).
-function hazardCheck(){
-  if(!HAZARDS_ENABLED) return;                             // feature disabled; kept for easy re-enable
-  if(!explore || explore.woken) return;
-  if((explore.hazardCD|0) > 0){ explore.hazardCD--; return; }
-  const scout=bestForStat('dex');
-  if(Dice.d20()+scout.mod >= HAZARD_DC) return;            // the scout reads the danger and steps the party clear
-  if(Math.random() >= HAZARD_CHANCE) return;               // a missed read, but this stretch happened to be safe
-  applyHazard(HAZARDS[Math.floor(Math.random()*HAZARDS.length)], scout.hero);
-  explore.hazardCD=HAZARD_COOLDOWN;
-}
 function closeEvent(){ curEvent=null; $('#eventScreen').classList.remove('show');
   const lv=eventLevelUp; eventLevelUp=null;
   if(lv && lv.length) openLevelUp(lv); else resumeExplore(); }
@@ -3648,18 +3560,15 @@ function toggleAuto(){if(overlayOpen())return;
 
 function render(){if(mode==='combat')renderCombat();else{renderExplore();autosave();}renderCampaign();updatePresentation();}
 
-// ---- Shared overhead map palettes ----
-// Theme palettes for the projected surfaces, picked off the floor's `theme`. `glow`
-// is the floor's light colour: warm torchlight in the crypt, a cold phosphor in the
-// catacombs, an arcane violet in the tomb, used for the light pool and wall torches.
-const FP_THEME = {
-  crypt:   { wall:[150,138,112], floor:[70,64,52],  ceil:[34,30,24], glow:[255,176,92] },
-  catacomb:{ wall:[120,140,152], floor:[58,68,76],  ceil:[26,32,38], glow:[150,200,230] },
-  tomb:    { wall:[156,128,176], floor:[74,62,88],  ceil:[34,28,44], glow:[200,150,235] }
+// Overhead map wall and floor colours, selected by the current chapter theme.
+const MAP_PALETTE = {
+  crypt:   { wall:[150,138,112], floor:[70,64,52] },
+  catacomb:{ wall:[120,140,152], floor:[58,68,76] },
+  tomb:    { wall:[156,128,176], floor:[74,62,88] }
 };
 function _shade(rgb, f){ return 'rgb('+rgb.map(v=>Math.max(0,Math.round(v*f))).join(',')+')'; }
 function renderMinimap(){
-  const e=explore, pal=FP_THEME[e.theme]||FP_THEME.crypt;let s='<defs><pattern id="map-stone" width="2" height="2" patternUnits="userSpaceOnUse"><path d="M0 0H2M0 1H2M1 0V1M.5 1V2" fill="none" stroke="#d2b675" stroke-opacity=".15" stroke-width=".06"/></pattern></defs>';
+  const e=explore, pal=MAP_PALETTE[e.theme]||MAP_PALETTE.crypt;let s='<defs><pattern id="map-stone" width="2" height="2" patternUnits="userSpaceOnUse"><path d="M0 0H2M0 1H2M1 0V1M.5 1V2" fill="none" stroke="#d2b675" stroke-opacity=".15" stroke-width=".06"/></pattern></defs>';
   s+='<rect x="0" y="0" width="'+e.w+'" height="'+e.h+'" fill="#07070b"/>';
   for(let y=0;y<e.h;y++) for(let x=0;x<e.w;x++){ const k=key(x,y); if(!e.seen.has(k)) continue;
     const isSecret=e.secrets&&e.secrets[k]&&e.foundSecrets&&e.foundSecrets.has(k);
@@ -3697,7 +3606,7 @@ function renderExplore(){
   $('#satchel').style.display='block';
   $('#satchel').innerHTML=`Avg level <b>${partyLevelAvg()}</b> &nbsp;|&nbsp; Gold <b>${bag.gold}</b> &nbsp; Keys <b>${bag.keys}</b> &nbsp; Supplies <b>${bag.rations}</b> &nbsp; Items <b>${bag.items.length}</b> &nbsp; Relic <b style="color:${bag.relic?'var(--gold)':'var(--dim)'}">${bag.relic?'\u2605':'not found'}</b>`;
   board.setAttribute('data-theme', explore.theme||'crypt');
-  board.removeAttribute('style'); board.classList.remove('fpboard'); board.classList.add('mapboard');
+  board.removeAttribute('style'); board.classList.add('mapboard');
   board.style.setProperty('--mmar', explore.w+'/'+explore.h);
   board.innerHTML = renderMinimap();   // overhead exploration map
   roster.innerHTML='';
@@ -3740,7 +3649,7 @@ function renderCombat(){
   $('#titleLabel').classList.toggle('chapter-battle',!!game.fieldObjective);$('#titleLabel').textContent=guardianIdentity()?.title||(game.fieldObjective?fieldDefinition(game.fieldObjective.id).name:'Battle');$('#titleLabel').title=$('#titleLabel').textContent; $('#roundLabel').textContent='Round '+game.round; $('#rosterTitle').textContent='Order of Battle';
   $('#combatControls').style.display='grid'; $('#exploreControls').style.display='none'; $('#fpControls').style.display='none'; $('#satchel').style.display='none';
   board.setAttribute('role','grid');board.setAttribute('aria-label',(game.battlefield?BATTLEFIELDS[game.battlefield].name:'Battlefield')+(game.tactic?' · '+PATROL_TACTICS[game.tactic].name:''));
-  board.removeAttribute('data-theme'); board.classList.remove('fpboard'); board.classList.remove('mapboard');
+  board.removeAttribute('data-theme'); board.classList.remove('mapboard');
   board.style.gridTemplateColumns=`repeat(${game.w},minmax(0,1fr))`; board.style.gridTemplateRows=`repeat(${game.h},minmax(0,1fr))`; board.style.aspectRatio='1/1'; board.innerHTML=''; cellEls=[];
   const status=$('#turnStatus');status.hidden=false;const turnText=c.name+' '+Math.max(0,c.hp)+'/'+c.maxHp+(game.isSilenced(c)?' · Silenced':'')+' · '+(c.side!=='party'?'Enemy turn':autoFight?'Auto playing':(c.acted.move?'Move spent':'Move ready')+' · '+(c.acted.action?'Action spent':'Action ready'));if(status.textContent!==turnText)status.textContent=turnText;
   const fieldPreview=validFieldAim()?new Set(fieldDefinition(game.fieldObjective.id).edits[fieldAim.index].map(([x,y])=>key(x,y))):new Set();

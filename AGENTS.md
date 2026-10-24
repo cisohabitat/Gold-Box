@@ -410,7 +410,19 @@ Runtime: **514,597 bytes (502.5 KiB)**. One offline HTML file; no added runtime 
 - closeParty refreshes an open waystation through renderTown before returning to play. Preserve townPage, council/boon/vow claims and immediate equipment saves. Sale buttons capture both index and item ID; reject and refresh stale callbacks before gold or satchel mutation. Do not sell an item different from the displayed row.
 - eventScreen and banner use aria-labelledby pointing at eventTitle/bannerText. Keep dynamic dialog names tied to visible headings; never snapshot those headings into a persistent aria-label.
 - Level-up ability choices are native buttons. Disable capped stats and spent allocations, show Maximum 20, and explain Confirm's remaining-point requirement. When an allocation disables its own button, move keyboard focus to an available level choice or Confirm. Retain keyboard activation, preview-only UI Auto-assign and once-only Confirm.
-- R08's exact final-exit blocker remains unresolved without its separate reproduction save. No production map generation, save geometry, balance or recovery change was justified. tests/playtest-rules.cjs independently probes 1,024 final floors and walks/revives 32; this is bounded negative evidence, not a fix or independent reproduction of R08.
+- The user dropped the R08 follow-up. Retain the general final-map connectivity and traversal checks as regression coverage.
 - Retain all existing release gates and add five playtest rules and tests/playtest.cjs on exact-head Chromium/Firefox/WebKit (26 browser suites). The latter covers equipment/stow/Auto Gear→Trade→sale→Continue, stale event and consecutive ending names, native disabled caps and keyboard allocation at four layouts. Preserve all unchanged 115 campaigns and exact-head quality/merge/Pages verification before publication.
 
 Runtime: **515,366 bytes (503.3 KiB)**, +769 bytes over 0.29.1. One offline HTML file; no new runtime dependency or save version.
+
+
+## Unused-code cleanup — 0.29.3
+
+- The disabled per-step hazard system and its only production ambush caller are removed. Retain active awakened-crown patrols and their stairs/locked-door/cleared-key guards. Placement regressions cover that active path; do not restore dormant code merely for old fixtures.
+- makeGroup was only used by a regression fixture. Construct that test's monsters through spawnMonster in the test; sprites.cjs delimits the Bestiary at const DIFFICULTY rather than a removed helper. Obsolete hazardCD fixture assignments are gone.
+- _overlap, _splits, the unused _guardAttack alias and write-only corridor bookkeeping are removed. _carveCorr preserves carved-cell insertion order and consumes no RNG. Do not change geometry, encounter placement or save output as part of this cleanup.
+- Old fpboard/fpview/flame/minimap-overlay CSS and ceiling/glow palette fields are removed. MAP_PALETTE retains the exact wall/floor colours. Preserve active map arrows, Q/E rotation, the fpAct/moveDir movement helpers, visible controls and v2 save migration; these still have real callers.
+- Paired comparison against 0.29.2 passed 512 generated floors with identical saved exploration and next RNG values, all six fpAct actions with identical SVG/save output, and four pre-cleanup portable imports. This is deterministic equivalence evidence, not new human playtesting.
+- Keep all 199 engine/controller regressions, 26 browser suites across exact-head Chromium/Firefox/WebKit, all existing map/art/source/policy/guardian audits and unchanged 115 campaign gates. Retain exact merged-tree equality and Pages/live verification before publication.
+
+Runtime: **508,960 bytes (497.0 KiB)**, -6,406 bytes versus 0.29.2. One offline HTML file; no runtime dependency, save version or gameplay feature added.
