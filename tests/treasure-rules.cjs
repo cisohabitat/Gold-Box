@@ -15,7 +15,7 @@ test('LOOT-02: Bellheart applies weapon ward and movement loss to normal/reactio
 });
 test('LOOT-03: bows share range, cover, melee pressure, distance damage, reactions and arrows',()=>{
  const {run}=setup();run("const t=party.find(h=>h.cls==='Thief');t.equip.weapon='nightwarden_bow';const e=spawnMonster('ogre',0,false);e.maxHp=500;game=new CombatEngine(party,[e],10,10);t.pos={x:2,y:2};e.pos={x:6,y:2};Rules.attack=()=>({hit:true,crit:false});Rules.damage=()=>5;const start=e.hp;game.doAttack(t,e);farLoss=start-e.hp;");assert.equal(run('effRange(t)'),6);assert.equal(run('farLoss'),7);assert.equal(run('game.visualEvents.at(-1).kind'),'arrow');
- run("t.acted.action=false;e.pos={x:3,y:2};game.terrain.set(key(3,2),'cover');const before=e.hp;game.doAttack(t,e);nearLoss=before-e.hp;");assert.equal(run('nearLoss'),3);assert.equal(run('game.attackPreview(t,e).penalty'),4);assert.equal(run('game.attackPreview(t,e).cover'),2);
+ run("t.acted.action=false;e.pos={x:3,y:2};combatTiles(e).forEach(p=>game.terrain.set(key(p.x,p.y),'cover'));const before=e.hp;game.doAttack(t,e);nearLoss=before-e.hp;");assert.equal(run('nearLoss'),3);assert.equal(run('game.attackPreview(t,e).penalty'),4);assert.equal(run('game.attackPreview(t,e).cover'),2);
  run("e.pos={x:6,y:2};const beforeReact=e.hp;game._reactStrike(t,e,'guard');reactLoss=beforeReact-e.hp;");assert.equal(run('reactLoss'),7);
  run("t.equip.weapon='scout_bow';e.pos={x:7,y:2};");assert.equal(run('effRange(t)'),4);assert.equal(run('game.canAttack(t,e)'),false);run('t.equip.weapon=null;');assert.equal(run('effRange(t)'),1);
 });

@@ -30,6 +30,9 @@ const results=[];for(let sample=0;sample<samples;sample++){results.push(...await
       if(treasureAtFeet()&&document.querySelector('#partyScreen').classList.contains('show')){const reward=treasureAtFeet(),index=varyRewards?(sample+floorDepth())%reward.reward.items.length:0,item=reward.reward.items[index];if(!chooseTreasure(reward.offer,index))throw Error('Diagnostic reward claim failed');rewardChoices.push({offer:reward.offer,index,item});closeParty();continue;}
       if(curEvent){const options=EVENTS[curEvent.id].options;let pick=options.findIndex(o=>o.fallback),best=-Infinity;options.forEach((o,i)=>{if(!o.fallback){const score=bestForStat(o.stat).mod-o.dc;if(score>best){best=score;pick=i;}}});resolveEventOption(pick);closeEvent();continue;}
       if(document.querySelector('#townScreen').classList.contains('show')){
+        // A guardian can fall while the party stands on the stairs. Claim its
+        // pending choice through the normal Return to floor action before descending.
+        if(varyRewards&&Object.values(explore.loot).some(v=>v.type==='choice')){if(!returnToFloor())throw Error('Diagnostic reward return failed');continue;}
         if(pursueTreasure)for(const id of ['smoke_phial','dawn_salt','pilgrim_boots','ward_charm','pilgrim_mace','scout_bow','round_shield','ember_focus','iron_helm','sage_circlet','trail_boots','copper_ring'])if(!campaign.discovered.includes(id)&&bag.gold>=ITEMS[id].cost)buyItem(id);
         const offers=[...document.querySelectorAll('.boon-card')];if(offers.length)offers[0].click();townRest();autoAssignGear();document.querySelector('#partyScreen').classList.remove('show');
         if(!campaign.decisions[nodeId])chooseCouncil(STORY[nodeId].plans[(sample+branch)%2].id);
@@ -38,7 +41,8 @@ const results=[];for(let sample=0;sample<samples;sample++){results.push(...await
       }
       autoAssignGear();document.querySelector('#partyScreen').classList.remove('show');
       if(party.reduce((n,h)=>n+h.hp,0)<party.reduce((n,h)=>n+h.maxHp,0)*.7&&bag.rations>0)makeCamp();
-      const loot=Object.entries(explore.loot).sort((a,b)=>(a[1].type==='key'?-1:0)-(b[1].type==='key'?-1:0));
+      const lootPriority=v=>varyRewards&&v.type==='choice'?-2:v.type==='key'?-1:0;
+      const loot=Object.entries(explore.loot).sort((a,b)=>lootPriority(a[1])-lootPriority(b[1]));
       const task=explore.task;let objectives=[];if(task&&!task.done){if(task.id==='gallery')objectives=[task.sites[task.used.length]];else if(task.id==='shrine_road')objectives=task.sites.filter((k,i)=>!task.used.includes(i));else if(task.used.length)objectives=[key(task.start.x,task.start.y)];else if(task.id==='warren')objectives=[task.sites[0]];}
       const vowTargets=[];
       if(pursueVows||pursueTreasure){const needed=metric=>Object.entries(campaign.heroQuests).some(([cls,q])=>q.stage==='pledged'&&heroQuestPlan(cls,q).metric===metric&&heroQuestProgress(cls,q)<heroQuestPlan(cls,q).goal);
