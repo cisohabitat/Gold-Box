@@ -43,3 +43,6 @@ Run `node tests/sprites.cjs` and, against a local server, `node tests/sprite-bro
 ## Large battle tokens — 0.30.0
 
 The authored 24×24 sprite grids and contact sheet remain unchanged. Astrax, ogres and giant spiders now render once across their actual 2×2 battle footprint, using one shared HP bar. A pointer-transparent grid-spanning token preserves access to every underlying square. Updated sprite-browser checks inspect the spanning token as well as single-cell portraits; tests/footprints.cjs covers real targeting, partial-overlap spell damage, zoom and four device layouts. Generated review screenshots live in CI artifacts/footprints; this is Chromium emulation, not physical-device validation.
+
+
+Rectangular correction — 0.30.1: Ogre spans one column/two rows, Giant Spider two columns/one row, and Astrax two/two. Battle SVGs stretch to those token proportions; original 24×24 data, atlas/roster portraits and shared HP rails remain. Reviewed the desktop screenshot and four-layout browser bounds/targeting checks; no physical-device claim.

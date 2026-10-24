@@ -16,7 +16,7 @@ const assert=require('node:assert/strict'),name=process.env.GOLD_BOX_BROWSER||'c
    await page.evaluate(group=>{cancelTurn();game=new CombatEngine(party,group.map((id,i)=>spawnMonster(id,i,false)),10,10,explore.theme);mode='combat';render();},group);
    assert.equal(await page.locator('.token.enemy').count(),group.length);
    assert.equal(await page.locator('.token .hpbar i').count(),group.length+4);
-   assert(await page.evaluate(()=>game.combatants.every(u=>{const holder=document.createElement('span');holder.innerHTML=SPRITES[u.sprite];return (combatSize(u)>1?document.querySelector('#board>.token[data-unit-id="'+u.id+'"] svg'):cellEls[u.pos.y*game.w+u.pos.x].querySelector('.token svg')).isEqualNode(holder.firstChild);})),group.join(','));
+   assert(await page.evaluate(()=>game.combatants.every(u=>{const holder=document.createElement('span');holder.innerHTML=combatWidth(u)!==combatHeight(u)?SPRITES[u.sprite].replace('<svg ','<svg preserveAspectRatio="none" '):SPRITES[u.sprite];return (combatSize(u)>1?document.querySelector('#board>.token[data-unit-id="'+u.id+'"] svg'):cellEls[u.pos.y*game.w+u.pos.x].querySelector('.token svg')).isEqualNode(holder.firstChild);})),group.join(','));
    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   }
   // Effects Off and contrast must retain all artwork and the visible HP rail.

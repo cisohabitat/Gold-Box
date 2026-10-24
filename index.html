@@ -753,7 +753,7 @@
 <div class="screen" id="settingsScreen" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="sbox"><h2 id="settingsTitle" class="ctitle">Sound &amp; Display</h2><p class="tag">Make the journey your own. Combat pauses while this sheet is open.</p><div class="settings-list"><label><input id="prefSound" type="checkbox"> Synthesized sound effects</label><label><input id="prefMusic" type="checkbox"> Quiet ambient tones (requires sound)</label><label for="prefVolume">Volume <output id="volumeValue">35%</output><input id="prefVolume" type="range" min="0" max="100" step="5" value="35"></label><label><input id="prefEffects" type="checkbox" checked> Visual effects (respects reduced motion)</label><label><input id="prefContrast" type="checkbox"> High contrast / clean display</label><label for="prefPace">Auto pace<select id="prefPace"><option value="normal">Deliberate · normal speed</option><option value="quick">Quick · shorter Auto turns</option></select></label></div><p id="audioStatus" class="tag" role="status">Sound is off by default. No downloads are needed.</p><p id="preferenceStatus" class="tag" role="status"></p><button id="btnSettingsClose" class="big">Back to Game</button></div></div>
 <div class="screen" id="codexScreen" role="dialog" aria-modal="true" aria-labelledby="codexTitle"><div class="sbox wide"><div class="eyebrow">Eren’s field atlas</div><h2 id="codexTitle" class="ctitle">The Bestiary</h2><div class="atlas-nav" role="group" aria-label="Atlas pages"><button id="codexBeasts" aria-pressed="true">Bestiary</button><button id="codexTreasure" aria-pressed="false">Treasure &amp; Relics</button><button id="codexLegends" aria-pressed="false">Legends &amp; Hunt</button><button id="btnCodexClose">Back</button></div><p class="tag" id="codexNote"></p><div id="codexTools" class="atlas-tools"><label for="codexSearch">Search<input id="codexSearch" type="search" maxlength="80" placeholder="Name, spell, source or lore"></label><label for="codexFilter">Show<select id="codexFilter"><option value="all">All entries</option><option value="guardians">Guardians</option><option value="relics">Relics</option><option value="potions">Potions</option></select></label></div><p id="codexCount" class="tag" role="status"></p><div id="codexContent" class="atlas-grid"></div></div></div>
 <script>
-const GAME_BUILD='0.30.0';
+const GAME_BUILD='0.30.1';
 document.querySelectorAll('[data-build]').forEach(el=>el.textContent='Build '+GAME_BUILD);
 /* ===== CROWN CAMPAIGN : data, with controller helpers below ===== */
 const OATHS={wanderer:{name:'Wanderer',budget:0.65,recovery:0.25,desc:'Gentler battles; all heroes earn victory XP and recover 25% HP after a win.'},delver:{name:'Delver',budget:1,desc:'Fortune favours the prepared. Only standing heroes earn victory XP.'},ironbound:{name:'Ironbound',budget:1.25,desc:'Stronger enemy forces. Only standing heroes earn victory XP.'}};
@@ -1289,19 +1289,19 @@ const BESTIARY = {
   grave_leech:{"name":"Grave Leech","cls":"GraveLeech","glyph":"V","maxHp":13,"ac":12,"attackBonus":2,"damage":{"n":1,"sides":4,"bonus":0},"speed":3,"range":1,"spells":[{"id":"grave_siphon","uses":3,"max":3}],"threat":28,"xp":75,"role":"Siphoner — three base ranged drains deal 1d4+1 spell damage and restore up to three actual HP lost to one wounded ally within three tiles, including itself. Focus it or separate its wounded allies; Eclipsescale reduces the drain.","sprite":"grave_leech","side":"enemy","abilities":{"str":13,"dex":12,"con":12,"int":12,"wis":12,"cha":8}},
   chain_warden:{"name":"Chain Warden","cls":"ChainWarden","glyph":"C","maxHp":18,"ac":14,"attackBonus":3,"damage":{"n":1,"sides":6,"bonus":1},"speed":3,"range":1,"spells":[{"id":"chain_hook","uses":2,"max":2}],"threat":31,"xp":85,"role":"Displacer — two base range-four hooks deal 1d4 spell damage and pull a surviving hero one tile toward it if that square is free. Forced pulls do not provoke; terrain still ticks at turn end. Keep a safe tile behind your front line.","sprite":"chain_warden","side":"enemy","abilities":{"str":13,"dex":12,"con":12,"int":12,"wis":12,"cha":8}},
 
-  eclipse_wyrm:{size:2,name:'Astrax, the Star-Eater',cls:'EclipseWyrm',bossTitle:'ASTRAX · STAR-EATER',role:'Sky-dragon — telegraphed 3×3 breath punishes clusters; move off the amber tiles before its next active turn. At half health it gains +1 attack and calls one skeleton once.',glyph:'D',sprite:'eclipse_wyrm',side:'enemy',xp:180,threat:50,abilities:{str:17,dex:10,con:16,int:14,wis:13,cha:16},maxHp:46,ac:14,attackBonus:4,damage:{n:1,sides:8,bonus:1},speed:4,range:1,spells:[{id:'starless_breath',uses:2,max:2}],bloodied:{id:'star_wrath',recharge:'starless_breath',atk:1,count:1,summon:'skeleton',text:'ASTRAX BREAKS ITS LAST CHAIN. The dragon gains +1 attack and regains one breath; one star-bound watchman rises for a final defence.'}},
+  eclipse_wyrm:{size:{w:2,h:2},name:'Astrax, the Star-Eater',cls:'EclipseWyrm',bossTitle:'ASTRAX · STAR-EATER',role:'Sky-dragon — telegraphed 3×3 breath punishes clusters; move off the amber tiles before its next active turn. At half health it gains +1 attack and calls one skeleton once.',glyph:'D',sprite:'eclipse_wyrm',side:'enemy',xp:180,threat:50,abilities:{str:17,dex:10,con:16,int:14,wis:13,cha:16},maxHp:46,ac:14,attackBonus:4,damage:{n:1,sides:8,bonus:1},speed:4,range:1,spells:[{id:'starless_breath',uses:2,max:2}],bloodied:{id:'star_wrath',recharge:'starless_breath',atk:1,count:1,summon:'skeleton',text:'ASTRAX BREAKS ITS LAST CHAIN. The dragon gains +1 attack and regains one breath; one star-bound watchman rises for a final defence.'}},
   bell_warden:{channel:'war_chant',name:'The Bell Warden',cls:'BellWarden',bossTitle:'BELL WARDEN',role:'Bound Watch — channels War Chant; a damaging weapon hit interrupts it. At half HP: Broken Bell, +1 attack, one skeleton and one Last Toll. Last Toll marks a fixed 3×3 area for its next active turn (1d4+1 spell damage to either side); leave it or interrupt with weapon damage.',glyph:'W',sprite:'bell_warden',side:'enemy',xp:100,threat:31,abilities:{str:16,dex:10,con:15,int:10,wis:12,cha:12},maxHp:22,ac:14,attackBonus:4,damage:{n:1,sides:8,bonus:2},speed:4,range:1,spells:[{id:'war_chant',uses:1,max:1}],bloodied:{id:'bell_wrath',spell:'bell_requiem',atk:1,count:1,summon:'skeleton',text:'THE BROKEN BELL. One last watchman rises; the Warden gains +1 attack and one Last Toll. It must spend an action marking a fixed 3×3 blast before releasing it on its next active turn. Leave the tiles or interrupt with weapon damage!'}},
   ash_cantor:{channel:'cinder',name:'The Ash Cantor',cls:'AshCantor',bossTitle:'ASH CANTOR',role:'Measured Hymn — hexes and casts from range; Cinderburst marks a fixed 3×3 area for its next active turn. Move out or interrupt with weapon damage. Last Procession at two-thirds HP: +1 attack/damage, one skeleton, and an advance before casting or striking in reach. Extinguish either brazier for one action to keep its marked ground cool; spells ignore cool routes.',glyph:'A',sprite:'ash_cantor',side:'enemy',xp:130,threat:35,abilities:{str:10,dex:12,con:13,int:16,wis:14,cha:15},maxHp:24,ac:14,attackBonus:4,damage:{n:1,sides:6,bonus:1},speed:4,range:1,spells:[{id:'hex',uses:2,max:2},{id:'cinder',uses:1,max:1},{id:'spirit_bolt',uses:3,max:3}],bloodied:{id:'ash_wrath',threshold:2/3,advance:true,atk:1,dmg:1,count:1,summon:'skeleton',text:'THE LAST PROCESSION. One skeleton rises; the Cantor gains +1 attack and damage. It advances before casting and strikes foes in reach. Extinguish the braziers or use sanctums to outlast the fire!'}},
   goblin:{ name:'Goblin', cls:'Goblin', glyph:'g', sprite:'goblin', side:'enemy', xp:25, abilities:{str:11,dex:13,con:12,int:8,wis:9,cha:7}, maxHp:8, ac:13, attackBonus:2, damage:{n:1,sides:6,bonus:0}, speed:4, range:1, spells:[] },
   orc:{ name:'Orc', cls:'Orc', glyph:'o', sprite:'orc', side:'enemy', xp:60, abilities:{str:16,dex:12,con:14,int:9,wis:10,cha:9}, maxHp:15, ac:14, attackBonus:4, damage:{n:1,sides:8,bonus:1}, speed:4, range:1, spells:[] },
   shaman:{ name:'Goblin Shaman', cls:'Shaman', glyph:'s', sprite:'shaman', side:'enemy', xp:70, threat:24, abilities:{str:10,dex:13,con:12,int:11,wis:13,cha:11}, maxHp:10, ac:13, attackBonus:2, damage:{n:1,sides:4,bonus:0}, speed:4, range:1, spells:[{id:'spirit_bolt',uses:3,max:3},{id:'war_chant',uses:2,max:2}] },
   skeleton:{ name:'Skeleton', cls:'Skeleton', glyph:'k', sprite:'skeleton', side:'enemy', xp:45, abilities:{str:13,dex:12,con:12,int:6,wis:8,cha:5}, maxHp:14, ac:15, attackBonus:3, damage:{n:1,sides:8,bonus:1}, speed:4, range:1, spells:[] },
-  spider:{size:2, name:'Giant Spider', cls:'Spider', glyph:'x', sprite:'spider', side:'enemy', xp:50, abilities:{str:12,dex:15,con:12,int:3,wis:10,cha:4}, maxHp:11, ac:13, attackBonus:3, damage:{n:1,sides:4,bonus:0}, speed:6, range:1, spells:[], onHit:{status:'poison', duration:3, dmg:2, chance:0.6} },
+  spider:{size:{w:2,h:1}, name:'Giant Spider', cls:'Spider', glyph:'x', sprite:'spider', side:'enemy', xp:50, abilities:{str:12,dex:15,con:12,int:3,wis:10,cha:4}, maxHp:11, ac:13, attackBonus:3, damage:{n:1,sides:4,bonus:0}, speed:6, range:1, spells:[], onHit:{status:'poison', duration:3, dmg:2, chance:0.6} },
   necromancer:{ name:'Necromancer', cls:'Necromancer', glyph:'n', sprite:'necromancer', side:'enemy', xp:85, abilities:{str:8,dex:11,con:11,int:14,wis:14,cha:12}, maxHp:12, ac:13, attackBonus:2, damage:{n:1,sides:4,bonus:0}, speed:4, range:1, spells:[{id:'hold',uses:2,max:2}] },
   hexer:{ name:'Hexer', cls:'Hexer', glyph:'h', sprite:'hexer', side:'enemy', xp:95, threat:30, abilities:{str:8,dex:12,con:11,int:13,wis:14,cha:13}, maxHp:11, ac:13, attackBonus:2, damage:{n:1,sides:4,bonus:0}, speed:4, range:1, spells:[{id:'sleep',uses:2,max:2},{id:'hex',uses:2,max:2}] },
   acolyte:{ name:'Dark Acolyte', cls:'Acolyte', glyph:'a', sprite:'acolyte', side:'enemy', xp:80, threat:22, abilities:{str:9,dex:11,con:12,int:12,wis:14,cha:12}, maxHp:13, ac:13, attackBonus:2, damage:{n:1,sides:4,bonus:0}, speed:4, range:1, spells:[{id:'mend',uses:3,max:3}] },
   archer:{ name:'Goblin Archer', cls:'Archer', glyph:'r', sprite:'archer', side:'enemy', xp:55, abilities:{str:10,dex:15,con:11,int:9,wis:11,cha:8}, maxHp:9, ac:13, attackBonus:4, damage:{n:1,sides:6,bonus:1}, speed:5, range:5, spells:[] },
-  ogre:{size:2, name:'Ogre', cls:'Ogre', glyph:'O', sprite:'ogre', side:'enemy', xp:120, abilities:{str:18,dex:9,con:16,int:6,wis:8,cha:7}, maxHp:30, ac:13, attackBonus:5, damage:{n:1,sides:12,bonus:3}, speed:4, range:1, spells:[] },
+  ogre:{size:{w:1,h:2}, name:'Ogre', cls:'Ogre', glyph:'O', sprite:'ogre', side:'enemy', xp:120, abilities:{str:18,dex:9,con:16,int:6,wis:8,cha:7}, maxHp:30, ac:13, attackBonus:5, damage:{n:1,sides:12,bonus:3}, speed:4, range:1, spells:[] },
   bonecaller:{ name:'Bone Caller', cls:'Bonecaller', glyph:'B', sprite:'bonecaller', side:'enemy', xp:110, threat:30, abilities:{str:9,dex:11,con:13,int:15,wis:14,cha:13}, maxHp:16, ac:13, attackBonus:2, damage:{n:1,sides:4,bonus:0}, speed:4, range:1, spells:[{id:'raise_dead',uses:2,max:2}] },
   // The campaign's finale boss: a sorcerer-king of the dead who blasts with
   // spirit-bolts, locks down a hero with Hold, and raises the fallen when his
@@ -1861,12 +1861,15 @@ function floorTier(){ return (WORLD[nodeId]&&WORLD[nodeId].tier)||0; }
 
 /* ===== COMBAT ENGINE : pure logic, no DOM ===== */
 const DIRS8=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
-// Battle positions are top-left anchors; large creatures occupy every tile in their square.
-function combatSize(c){return c?.size===2?2:1;}
-function combatPosition(c,pos=c.pos||c){return {x:pos.x,y:pos.y,size:combatSize(c)};}
-function combatTiles(c,pos=c.pos||c){const out=[],n=combatSize(c);for(let y=0;y<n;y++)for(let x=0;x<n;x++)out.push({x:pos.x+x,y:pos.y+y});return out;}
-function combatCenter(c){const p=c.pos||c,n=(combatSize(c)-1)/2;return {x:p.x+n,y:p.y+n};}
-function combatDistance(a,b){const p=a.pos||a,q=b.pos||b,sa=combatSize(a)-1,sb=combatSize(b)-1;return Math.max(0,p.x-q.x-sb,q.x-p.x-sa,p.y-q.y-sb,q.y-p.y-sa);}
+// Battle positions are top-left anchors; width and height stay fixed while moving.
+function combatWidth(c){return c?.size?.w===2?2:1;}
+function combatHeight(c){return c?.size?.h===2?2:1;}
+function combatSize(c){return Math.max(combatWidth(c),combatHeight(c));}
+function combatPosition(c,pos=c.pos||c){return {x:pos.x,y:pos.y,size:c.size};}
+function combatTiles(c,pos=c.pos||c){const out=[],w=combatWidth(c),h=combatHeight(c);for(let y=0;y<h;y++)for(let x=0;x<w;x++)out.push({x:pos.x+x,y:pos.y+y});return out;}
+function combatCenter(c){const p=c.pos||c;return {x:p.x+(combatWidth(c)-1)/2,y:p.y+(combatHeight(c)-1)/2};}
+function combatDistance(a,b){const p=a.pos||a,q=b.pos||b;return Math.max(0,p.x-q.x-combatWidth(b)+1,q.x-p.x-combatWidth(a)+1,p.y-q.y-combatHeight(b)+1,q.y-p.y-combatHeight(a)+1);}
+function combatFootprint(c){return combatWidth(c)+'×'+combatHeight(c);}
 class CombatEngine{
   constructor(party, enemies, w, h, battlefield=null,tactic=null){
     this.w=w; this.h=h; this.blocked=new Set(); this.combatants=[];
@@ -1876,7 +1879,7 @@ class CombatEngine{
     const occupied=new Set(party.flatMap(c=>combatTiles(c).map(p=>key(p.x,p.y)))),fallback=[];
     for(let x=w-1;x>=0;x--)for(let y=0;y<h;y++)fallback.push({x,y});
     // Reserve complete large footprints first; initiative and registry order remain unchanged.
-    enemies.map((e,i)=>({e,i})).sort((a,b)=>combatSize(b.e)-combatSize(a.e)||a.i-b.i).forEach(({e,i})=>{
+    enemies.map((e,i)=>({e,i})).sort((a,b)=>combatWidth(b.e)*combatHeight(b.e)-combatWidth(a.e)*combatHeight(a.e)||a.i-b.i).forEach(({e,i})=>{
       const pos=[deployment[i],...spots,...fallback].filter(Boolean).find(p=>combatTiles(e,p).every(t=>this.inBounds(t.x,t.y)&&!occupied.has(key(t.x,t.y))));
       if(!pos)throw Error('No room for enemy footprint');e.pos={...pos};for(const p of combatTiles(e))occupied.add(key(p.x,p.y));
     });
@@ -1945,9 +1948,9 @@ class CombatEngine{
     return {facts,advice};
   }
   byId(id){ return this.combatants.find(c=>c.id===id); }
-  at(x,y){ return this.combatants.find(c=>c.alive&&x>=c.pos.x&&y>=c.pos.y&&x<c.pos.x+combatSize(c)&&y<c.pos.y+combatSize(c)); }
+  at(x,y){ return this.combatants.find(c=>c.alive&&x>=c.pos.x&&y>=c.pos.y&&x<c.pos.x+combatWidth(c)&&y<c.pos.y+combatHeight(c)); }
   inBounds(x,y){ return x>=0&&y>=0&&x<this.w&&y<this.h; }
-  passable(x,y,self={}){const n=combatSize(self);for(let dy=0;dy<n;dy++)for(let dx=0;dx<n;dx++){const a=x+dx,b=y+dy;if(!this.inBounds(a,b)||this.blocked.has(key(a,b)))return false;const o=this.at(a,b);if(o&&o!==self)return false;}return true;}
+  passable(x,y,self={}){const w=combatWidth(self),h=combatHeight(self);for(let dy=0;dy<h;dy++)for(let dx=0;dx<w;dx++){const a=x+dx,b=y+dy;if(!this.inBounds(a,b)||this.blocked.has(key(a,b)))return false;const o=this.at(a,b);if(o&&o!==self)return false;}return true;}
   cheb(a,b){ return combatDistance(a,b); }
   current(){ return this.byId(this.order[this.turnIndex]); }
   turnPreview(limit=12){
@@ -1964,14 +1967,14 @@ class CombatEngine{
   }
   living(side){ return this.combatants.filter(c=>c.alive&&c.side===side); }
   reachable(c){
-    const occupied=new Set(this.combatants.filter(o=>o.alive&&o!==c).flatMap(o=>combatTiles(o).map(p=>key(p.x,p.y)))),size=combatSize(c);
-    const fits=(x,y)=>{for(let dy=0;dy<size;dy++)for(let dx=0;dx<size;dx++){const a=x+dx,b=y+dy,k=key(a,b);if(!this.inBounds(a,b)||this.blocked.has(k)||occupied.has(k))return false;}return true;};
+    const occupied=new Set(this.combatants.filter(o=>o.alive&&o!==c).flatMap(o=>combatTiles(o).map(p=>key(p.x,p.y)))),w=combatWidth(c),h=combatHeight(c);
+    const fits=(x,y)=>{for(let dy=0;dy<h;dy++)for(let dx=0;dx<w;dx++){const a=x+dx,b=y+dy,k=key(a,b);if(!this.inBounds(a,b)||this.blocked.has(k)||occupied.has(k))return false;}return true;};
     const seen=new Map([[key(c.pos.x,c.pos.y),0]]); let f=[c.pos];
     while(f.length){ const n=[]; for(const p of f){ const d=seen.get(key(p.x,p.y)); if(d>=effSpeed(c))continue;
-      for(const [dx,dy] of DIRS8){ const nx=p.x+dx,ny=p.y+dy,k=key(nx,ny); if(!fits(nx,ny)||size>1&&dx&&dy&&(!fits(p.x+dx,p.y)||!fits(p.x,p.y+dy)))continue; if(!seen.has(k)){ seen.set(k,d+1); n.push({x:nx,y:ny}); } } } f=n; }
+      for(const [dx,dy] of DIRS8){ const nx=p.x+dx,ny=p.y+dy,k=key(nx,ny); if(!fits(nx,ny)||(w>1||h>1)&&dx&&dy&&(!fits(p.x+dx,p.y)||!fits(p.x,p.y+dy)))continue; if(!seen.has(k)){ seen.set(k,d+1); n.push({x:nx,y:ny}); } } } f=n; }
     seen.delete(key(c.pos.x,c.pos.y)); return seen;
   }
-  onTerrain(c,type,pos=c.pos){const n=combatSize(c);for(let y=0;y<n;y++)for(let x=0;x<n;x++)if(this.terrainAt({x:pos.x+x,y:pos.y+y})===type)return true;return false;}
+  onTerrain(c,type,pos=c.pos){const w=combatWidth(c),h=combatHeight(c);for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(this.terrainAt({x:pos.x+x,y:pos.y+y})===type)return true;return false;}
   terrainAt(pos){return this.terrain.get(key(pos.x,pos.y))||null;}
   shieldBonus(def){return this.combatants.some(c=>c!==def&&c.alive&&c.side===def.side&&c.shieldAura&&!this.isIncapacitated(c)&&this.cheb(c,def)<=1)?2:0;}
   weaponWard(att,def){return this.coverBonus(att,def)+this.shieldBonus(def);}
@@ -3685,7 +3688,7 @@ function renderCombat(){
     const terrain=game.terrainAt({x,y});if(game.dangerAt({x,y}).length>0)cell.classList.add('breath-zone');if(terrain){cell.classList.add('field-'+terrain);const mark=document.createElement('span');mark.className='terrain-mark';mark.textContent=TERRAIN[terrain].glyph;cell.appendChild(mark);}
     if(spellAim&&game.cheb({x,y},spellAim)<=selectedSpell.aoe)cell.classList.add('aimed');
     const danger=game.dangerAt({x,y}).length>0;
-    const details=(danger?'Danger: '+game.dangerAt({x,y}).map(u=>dangerText(u)).join('; ')+'. ':'')+(here?here.name+(combatSize(here)>1?' · 2×2 footprint':'')+' '+here.hp+'/'+here.maxHp+' HP. '+(game.shieldBonus(here)?'Shielded: +2 weapon AC. ':'')+intentText(here):'')+(terrain?TERRAIN[terrain].name+': '+TERRAIN[terrain].desc:'Plain ground');
+    const details=(danger?'Danger: '+game.dangerAt({x,y}).map(u=>dangerText(u)).join('; ')+'. ':'')+(here?here.name+(combatSize(here)>1?' · '+combatFootprint(here)+' footprint':'')+' '+here.hp+'/'+here.maxHp+' HP. '+(game.shieldBonus(here)?'Shielded: +2 weapon AC. ':'')+intentText(here):'')+(terrain?TERRAIN[terrain].name+': '+TERRAIN[terrain].desc:'Plain ground');
     const support=(game.arenaShelter?.has(k)?' Council sanctuary: remains lit through the phase change.':'')+(terrain==='ember'&&(gearPower(here||c,'emberGuard'))>=2?' '+gearSource(here||c,'emberGuard')+' prevents this unit’s terrain ember damage.':'');
     cell.setAttribute('role','gridcell');cell.setAttribute('aria-label','Column '+(x+1)+', row '+(y+1)+'. '+details+support);cell.title=details+support;if(fieldPreview.has(k)){const text=' Field action preview: '+(fieldDefinition(game.fieldObjective.id).keepsCool?'clear embers here and prevent phase ignition':fieldDefinition(game.fieldObjective.id).effect+' terrain here')+' after confirmation.';cell.title+=text;cell.setAttribute('aria-label',cell.getAttribute('aria-label')+text);}if(fieldSite){const text=' Optional field objective '+(fieldSite.index+1)+': '+fieldDefinition(game.fieldObjective.id).action+'. '+(fieldSite.used?'Completed.':'Stand on or adjacent, select the diamond, then confirm; costs one action.');cell.title+=text;cell.setAttribute('aria-label',cell.getAttribute('aria-label')+text);}
     cell.dataset.x=x;cell.dataset.y=y;cell.tabIndex=x===gridCursor.x&&y===gridCursor.y?0:-1;
@@ -3705,7 +3708,7 @@ function renderCombat(){
     if(castAlly.has(k)) cell.classList.add('cast-ally');
     if(castPoint.has(k)){ cell.classList.add('cast-point'); cell.onmouseenter=()=>aoePreview(x,y,true); cell.onmouseleave=()=>aoePreview(x,y,false); }
     if(here&&here.pos.x===x&&here.pos.y===y){ const t=document.createElement('div');t.dataset.boss=here.cls;t.dataset.procession=String(here.awakened===true);t.dataset.bell=here.intent?.spell==='bell_requiem'?'requiem':here.awakened?'broken':'bound'; t.className='token '+here.side+(here===c?' active':'')+(here.alive?'':' dead')+(here.elite?' elite':'')+(here.bossTitle?' guardian':'')+(here.awakened?' awakened':'')+(here.intent?' channeling':'');
-      if(SPRITES[here.sprite]) t.innerHTML=SPRITES[here.sprite]; else t.textContent=here.glyph;
+      if(SPRITES[here.sprite]) t.innerHTML=combatWidth(here)!==combatHeight(here)?SPRITES[here.sprite].replace('<svg ','<svg preserveAspectRatio="none" '):SPRITES[here.sprite]; else t.textContent=here.glyph;
       if(here.alive&&here.guarding){ const g=document.createElement('div'); g.className='stbadge guard'; g.textContent='\u26E8'; t.appendChild(g); }
       if(here.alive&&here.statuses&&here.statuses.length){
         const hasSleep=here.statuses.some(s=>s.type==='sleep'), hasHold=here.statuses.some(s=>s.type==='hold'), hasPoison=here.statuses.some(s=>s.type==='poison');
@@ -3715,7 +3718,7 @@ function renderCombat(){
         if(hasBuff){ const b=document.createElement('div'); b.className='stbadge buff'; b.textContent='\u25B2'; t.appendChild(b); }
         if(hasDebuff){ const d=document.createElement('div'); d.className='stbadge debuff'; d.textContent='\u25BC'; t.appendChild(d); }
       }
-      const bar=document.createElement('div'); bar.className='hpbar'; const fill=document.createElement('i'); const pct=Math.max(0,here.hp/here.maxHp); fill.style.width=(pct*100)+'%'; if(pct<=0.34) fill.className='low'; bar.appendChild(fill);t.appendChild(bar);if(combatSize(here)>1){t.classList.add('large');if(game.dangerAt(here).length)t.classList.add('in-danger');if(validAim()&&game.cheb(here,spellAim)<=selectedSpell.aoe)t.classList.add('in-blast');t.dataset.unitId=here.id;t.setAttribute('aria-hidden','true');t.style.gridColumn=(x+1)+' / span '+combatSize(here);t.style.gridRow=(y+1)+' / span '+combatSize(here);board.appendChild(t);}else cell.appendChild(t); }
+      const bar=document.createElement('div'); bar.className='hpbar'; const fill=document.createElement('i'); const pct=Math.max(0,here.hp/here.maxHp); fill.style.width=(pct*100)+'%'; if(pct<=0.34) fill.className='low'; bar.appendChild(fill);t.appendChild(bar);if(combatSize(here)>1){t.classList.add('large');if(game.dangerAt(here).length)t.classList.add('in-danger');if(validAim()&&game.cheb(here,spellAim)<=selectedSpell.aoe)t.classList.add('in-blast');t.dataset.unitId=here.id;t.setAttribute('aria-hidden','true');t.style.gridColumn=(x+1)+' / span '+combatWidth(here);t.style.gridRow=(y+1)+' / span '+combatHeight(here);board.appendChild(t);}else cell.appendChild(t); }
     if(playerTurn) cell.onclick=()=>{if(boardZoom)pickPreciseTile(x,y);else {inspectTile(x,y);combatClick(x,y);}};
     cellEls.push(cell); board.appendChild(cell);
   } }
@@ -4154,7 +4157,7 @@ function openTactics(){
   section('Guarded treasure','A gold frame around a spotted red patrol marks a treasure guard. Win, then step onto the defeated enemy’s map tile to claim its cache. It stays there if your satchel is full. Party shows a discovery portrait; Treasure & Relics explains sources, tradeoffs and what this run has found.');
   section('Mouse, touch, and keyboard','Choose actions with a click or tap. Explore with arrows or WASD. In combat, Tab to the grid, use arrows to move focus, and press Enter or Space to use the selected action. Area spells still need confirmation. Party & Log opens the roster in smaller windows.');
   section('Aim before you cast','Select an area spell, then tap a tile to preview it. The pink outline shows the blast; the hint counts allies and foes. Tap that tile again or Confirm cast to commit. Fireball and other damage blasts hit friends too; Sleep only affects enemies. Cover protects against ranged weapons, not magic.');
-  section('Large creatures','Astrax, ogres and giant spiders occupy 2×2 squares. Select any part of their body. Range is measured from the nearest occupied square; each creature takes one turn and is hit once per spell. The full body must fit when moving. Embers and sanctums affect it once per turn when any part touches; cover protects only a fully covered body.');
+  section('Large creatures','Ogres occupy 1×2 squares (tall), giant spiders 2×1 (wide), and Astrax 2×2. Footprints are width × height and do not rotate. Select any part of their body. Range is measured from the nearest occupied square; each creature takes one turn and is hit once per spell. The full body must fit when moving. Embers and sanctums affect it once per turn when any part touches; cover protects only a fully covered body.');
   section('Ground that matters',Object.values(TERRAIN).map(t=>t.glyph+' '+t.name+': '+t.desc).join(' '));
   section('The Last Dawn','At each waystation, choose one war-council plan before descending. Ilyra and Eren remember your decisions. Supplies and permanent party bonuses help on the road; other plans change the king’s final battle. The Chronicle records your choices. After the king falls and the crown reaches the final stairs, decide whether to break, bind, or wear it.');
   section('The road below','Find keys and stairs. Camp supplies restore HP and spells; waystation rests are free. Each completed chapter grants XP once. Claim a free ember before descending. Chronicle tracks optional promises: win battles, find caches, and succeed at events. Each completed promise grants one reward.');
@@ -4162,7 +4165,7 @@ function openTactics(){
   section('Relic choices','Lantern Mantle blocks up to 2 terrain ember damage. Starweave adds +2 saves against spell control and debuffs. Eclipsescale reduces each damaging spell hit by 2. These wards do not replace each other. Select gear in Party to compare its rules with the current item.');
   section('Your company','Fighter rallies the line; Cleric heals standing allies; Thief gains a shadow ward; Mage restores spell uses. Each signature is one action and usable once per battle. Wanderer recovers HP and shares victory XP; the harder oaths award battle XP only to standing heroes.');
   if(fighting){section(game.battlefield?BATTLEFIELDS[game.battlefield].name:'Current opposition','These are the foes still standing. Their remaining resources and positions determine what they can do.');
-    for(const u of game.living('enemy')){const card=document.createElement('div');card.className='tactics-enemy';const spellText=(u.spells||[]).map(sp=>SPELLS[sp.id].name+' '+sp.uses+'/'+sp.max).join(' · ')||'No spells';const status=(u.statuses||[]).map(st=>st.type+' '+st.duration+'t').join(', ')||'No statuses';const c=game.current();const preview=c.side==='party'&&game.canAttack(c,u)?' · Your attack: '+game.attackPreview(c,u).chance+'% hit':'';card.innerHTML='<span class="tactics-portrait" aria-hidden="true">'+(SPRITES[u.sprite]||escapeHTML(u.glyph))+'</span><strong>'+escapeHTML(u.name)+'</strong><small>'+u.hp+'/'+u.maxHp+' HP · AC '+effAc(u)+(game.shieldBonus(u)?' (+2 vs weapons from sentinel)':'')+' · Range '+effRange(u)+preview+'</small><p>'+escapeHTML(game.describeRole(u))+(combatSize(u)>1?' Large · occupies 2×2 squares. Range uses the nearest occupied square; area effects hit once.':'')+'</p><small>'+escapeHTML(spellText)+'<br>'+escapeHTML(status)+'</small>';root.appendChild(card);}
+    for(const u of game.living('enemy')){const card=document.createElement('div');card.className='tactics-enemy';const spellText=(u.spells||[]).map(sp=>SPELLS[sp.id].name+' '+sp.uses+'/'+sp.max).join(' · ')||'No spells';const status=(u.statuses||[]).map(st=>st.type+' '+st.duration+'t').join(', ')||'No statuses';const c=game.current();const preview=c.side==='party'&&game.canAttack(c,u)?' · Your attack: '+game.attackPreview(c,u).chance+'% hit':'';card.innerHTML='<span class="tactics-portrait" aria-hidden="true">'+(SPRITES[u.sprite]||escapeHTML(u.glyph))+'</span><strong>'+escapeHTML(u.name)+'</strong><small>'+u.hp+'/'+u.maxHp+' HP · AC '+effAc(u)+(game.shieldBonus(u)?' (+2 vs weapons from sentinel)':'')+' · Range '+effRange(u)+preview+'</small><p>'+escapeHTML(game.describeRole(u))+(combatSize(u)>1?' Large · occupies '+combatFootprint(u)+' squares. Range uses the nearest occupied square; area effects hit once.':'')+'</p><small>'+escapeHTML(spellText)+'<br>'+escapeHTML(status)+'</small>';root.appendChild(card);}
   }
   $('#tacticsScreen').classList.add('show');$('#btnTacticsClose').focus({preventScroll:true});$('#tacticsScreen').scrollTop=0;
 }
@@ -4264,7 +4267,7 @@ function renderCodex(){
   const lore=MONSTER_LORE[id],boss=!!m.bossTitle;if(filter==='guardians'&&!boss||filter==='relics'||filter==='potions')continue;
   const regions=Object.values(WORLD).filter(w=>(w.encounters||[]).some(e=>e.lead===id||(e.pool||[]).includes(id))).map(w=>w.name);if(id==='eclipse_wyrm')regions.push('Observatory of Ash · optional waystation hunt');
   const spells=(m.spells||[]).map(s=>SPELLS[s.id].name+' ×'+s.uses).join(' · ')||'No spells';
-  const stats=m.maxHp+' HP · AC '+m.ac+' · +'+m.attackBonus+' attack · '+m.damage.n+'d'+m.damage.sides+'+'+m.damage.bonus+' damage · Move '+m.speed+' · Range '+m.range+' · Footprint '+combatSize(m)+'×'+combatSize(m);
+  const stats=m.maxHp+' HP · AC '+m.ac+' · +'+m.attackBonus+' attack · '+m.damage.n+'d'+m.damage.sides+'+'+m.damage.bonus+' damage · Move '+m.speed+' · Range '+m.range+' · Footprint '+combatFootprint(m);
   if(query&&!(m.name+' '+lore.join(' ')+' '+regions.join(' ')+' '+spells).toLowerCase().includes(query))continue;
   add(m.name,'<p class="atlas-stats">'+escapeHTML(stats)+'</p><p>'+escapeHTML(lore[1])+'</p><p><b>Counterplay</b> '+escapeHTML(lore[2])+'</p><p class="tag">'+escapeHTML(spells)+'</p><p class="tag">'+escapeHTML(regions.join(' · '))+'</p>'+(boss?'<p class="atlas-state">'+(guardianDefeated(id)?'Defeated in this run':'Guardian legend · not yet defeated in this run')+'</p>':''),SPRITES[m.sprite],(boss?'Guardian · ':'')+lore[0]);
  }else if(codexTab==='treasures'){
@@ -4409,7 +4412,7 @@ function renderArenaScenery(){
 function inspectTile(x,y){
   if(mode!=='combat'||!game||overlayOpen())return;
   const unit=game.at(x,y),terrain=game.terrainAt({x,y}),actor=game.current();
-  let text=unit?unit.name+(combatSize(unit)>1?' · 2×2 footprint':'')+' · '+unit.hp+'/'+unit.maxHp+' HP · AC '+effAc(unit)+' · Range '+effRange(unit):'Tile '+(x+1)+', '+(y+1)+' · '+(terrain?TERRAIN[terrain].name:'Plain ground');
+  let text=unit?unit.name+(combatSize(unit)>1?' · '+combatFootprint(unit)+' footprint':'')+' · '+unit.hp+'/'+unit.maxHp+' HP · AC '+effAc(unit)+' · Range '+effRange(unit):'Tile '+(x+1)+', '+(y+1)+' · '+(terrain?TERRAIN[terrain].name:'Plain ground');
   const site=game.fieldSites().find(p=>p.x===x&&p.y===y);if(site)text+=' · ◆'+(site.index+1)+' '+fieldDefinition(game.fieldObjective.id).action+(site.used?' · Completed':' · Select, then confirm from on or adjacent; costs 1 action');
   if(unit)text+=' '+intentText(unit);else if(game.dangerAt({x,y}).length)text+=' · Leave this marked tile before the blast.';
   if(!unit&&mover==='move'&&reachCache?.has(key(x,y)))text+=' · '+(movementRiskText(actor,{x,y})||'No unprotected movement risk detected.');

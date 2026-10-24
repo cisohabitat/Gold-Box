@@ -8,7 +8,7 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 ## Play
 
-**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.30.0**
+**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.30.1**
 
 Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a fitted board/control shell on every device, with a live sidebar in wide windows and a separate Party & Log panel in smaller windows. **How to Play** on the title screen explains the rules.
 
@@ -16,11 +16,11 @@ Balance diagnostics remain in the repository for maintenance; the game does not 
 
 The live version is served from GitHub Pages: the repo’s **Settings → Pages** source is set to the main branch root. Changes on a pull request branch become live only after they reach `main`; download that branch's `index.html` to play its version locally.
 
-### Large monster footprints — build 0.30.0
+### Large monster footprints — build 0.30.1
 
-**Astrax, ogres and giant spiders occupy 2×2 battle squares.** Each has one spanning portrait, one HP bar and one turn. Select any occupied square to attack or target it; range uses the closest occupied edges. A blast or control spell affects a creature once, even when it overlaps several of its squares. Bestiary and Tactics show the footprint.
+**Ogres occupy 1×2 battle squares (tall), giant spiders 2×1 (wide), and Astrax 2×2.** Dimensions are width × height and stay fixed during movement. Each has one spanning portrait, one HP bar and one turn. Select any occupied square to attack or target it; range uses the closest occupied edges. A blast or control spell affects a creature once, even when it overlaps several of its squares. Bestiary and Tactics show the footprint.
 
-Movement, deployment, summons and forced pulls require the entire body to fit. Large creatures cannot squeeze through a one-square passage or clip a blocked diagonal corner. Opportunity attacks and Guard use the whole footprint. Auto plans movement, range and blast avoidance with the same rules.
+Movement, deployment, summons and forced pulls require the entire body to fit. Rectangular creatures fit passages aligned with their long axis; blocked diagonal corners still require full clearance. Opportunity attacks and Guard use the whole footprint. Auto plans movement, range and blast avoidance with the same rules.
 
 Embers and sanctums each tick once when any part touches their terrain; lethal fire resolves before healing. Ranged cover requires the whole footprint to be covered. Humanoid foes, including the king, Cantor and Bell Warden, remain 1×1. Base HP, damage, speed, spell charges, encounter budgets and version 2 saves are unchanged; the new footprint itself changes tactical positioning.
 
