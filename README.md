@@ -8,13 +8,21 @@ The whole game is one HTML file. No build step, no install, no dependencies. Ope
 
 ## Play
 
-**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.29.3**
+**[▶ Play it now](https://cisohabitat.github.io/Gold-Box/)** · **Build 0.30.0**
 
 Or just open `index.html` in any modern browser. It works offline (the only network calls are optional Google Fonts; without them it falls back to system fonts). The layout adapts to the screen — a fitted board/control shell on every device, with a live sidebar in wide windows and a separate Party & Log panel in smaller windows. **How to Play** on the title screen explains the rules.
 
 Balance diagnostics remain in the repository for maintenance; the game does not link players to the report.
 
 The live version is served from GitHub Pages: the repo’s **Settings → Pages** source is set to the main branch root. Changes on a pull request branch become live only after they reach `main`; download that branch's `index.html` to play its version locally.
+
+### Large monster footprints — build 0.30.0
+
+**Astrax, ogres and giant spiders occupy 2×2 battle squares.** Each has one spanning portrait, one HP bar and one turn. Select any occupied square to attack or target it; range uses the closest occupied edges. A blast or control spell affects a creature once, even when it overlaps several of its squares. Bestiary and Tactics show the footprint.
+
+Movement, deployment, summons and forced pulls require the entire body to fit. Large creatures cannot squeeze through a one-square passage or clip a blocked diagonal corner. Opportunity attacks and Guard use the whole footprint. Auto plans movement, range and blast avoidance with the same rules.
+
+Embers and sanctums each tick once when any part touches their terrain; lethal fire resolves before healing. Ranged cover requires the whole footprint to be covered. Humanoid foes, including the king, Cantor and Bell Warden, remain 1×1. Base HP, damage, speed, spell charges, encounter budgets and version 2 saves are unchanged; the new footprint itself changes tactical positioning.
 
 ### Unused-code cleanup — build 0.29.3
 
@@ -278,7 +286,7 @@ Casters also advance to spell range instead of charging into melee, and incapaci
 
 ## Validation
 
-The main dependency-free regression suite has **114 engine/controller checks**; the focused treasure/loadout/decision/placement/scene/exploration/Warden/Cantor/fresh-review/playtest suites bring the current total to **199 checks**. The main suite runs against the real inline script with DOM stubs. It covers save recovery, pending levels, atomic imports, turn scheduling, friendly fire, guardians, campaign gates, route goals, movement-risk forecasts and immediate inventory persistence. Generator checks include 96 exit/key layouts, 160 all-cache-open vault layouts and 256 objective/fallback layouts.
+The main dependency-free regression suite has **114 engine/controller checks**; the focused treasure/loadout/decision/placement/scene/exploration/Warden/Cantor/fresh-review/playtest/footprint suites bring the current total to **215 checks**. The main suite runs against the real inline script with DOM stubs. It covers save recovery, pending levels, atomic imports, turn scheduling, friendly fire, guardians, campaign gates, route goals, movement-risk forecasts and immediate inventory persistence. Generator checks include 96 exit/key layouts, 160 all-cache-open vault layouts and 256 objective/fallback layouts.
 
 Browser suites exercise real touch/keyboard controls, save/Continue, offline interaction, clipboard failure, paused menus, all endings, atlas/hunt recovery and 25 viewport sizes. The confidence suite reloads before closing Party after equip, unequip, Auto Gear and healing; it also checks full-HP potion safeguards and movement/turn previews on phone, short landscape, iPad-sized and desktop windows. Automated WebKit is compatibility evidence; physical iPhone/iPad Safari and human campaign difficulty remain unverified.
 

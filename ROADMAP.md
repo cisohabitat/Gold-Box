@@ -264,3 +264,8 @@ Deliver explicit Guard & End, precise pannable battle input, inventory-first sel
 ### Delivered: fresh playthrough corrections — 0.29.0
 
 Resolve all eight recorded findings: level-up preview/Confirm, effect-aware area counts, named hunt and guardian presentation, early contextual boss briefing, Cantor phase headroom, a bounded new-map crown approach, fog-safe search coverage, and complete/readable ending summaries. Preserve old saves, all existing release gates and the standalone runtime. Next validation remains broader manual runs on other routes/oaths and physical iPhone/iPad Safari; do not infer an A or AAA grade from automated counts.
+
+
+## Large creature positioning — 0.30.0
+
+Give Astrax, ogres and giant spiders real 2×2 battle footprints with shared HP/action economy, full-body occupancy and nearest-edge targeting. Preserve humanoid sizes, stats, encounter budgets and v2 saves. Deliver through geometry helpers and the existing board/Tactics/Bestiary; no new map or modal. Acceptance lives in REQUIREMENTS.md SIZE-01…05 and VERIFY-30, with sixteen engine regressions and four-layout mouse/touch/keyboard coverage. Broader human balance remains follow-up evidence.

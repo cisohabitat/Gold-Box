@@ -38,3 +38,8 @@ Static checks validate geometry, palette symbols, unique artwork, registry resol
 Runtime: **403,193 bytes (393.7 KiB)**, 26 bytes smaller than 0.18.0. No runtime dependency or save-schema change. The target remains a soft 350 KiB. Physical iPhone/iPad Safari, human art-recognition studies and human campaign pacing remain unverified.
 
 Run `node tests/sprites.cjs` and, against a local server, `node tests/sprite-browser.cjs`. The full release workflow remains mandatory.
+
+
+## Large battle tokens — 0.30.0
+
+The authored 24×24 sprite grids and contact sheet remain unchanged. Astrax, ogres and giant spiders now render once across their actual 2×2 battle footprint, using one shared HP bar. A pointer-transparent grid-spanning token preserves access to every underlying square. Updated sprite-browser checks inspect the spanning token as well as single-cell portraits; tests/footprints.cjs covers real targeting, partial-overlap spell damage, zoom and four device layouts. Generated review screenshots live in CI artifacts/footprints; this is Chromium emulation, not physical-device validation.

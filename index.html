@@ -525,6 +525,11 @@
   @keyframes cantor-hymn{to{filter:brightness(1.25);box-shadow:0 0 0 3px #ffc08099,0 0 18px #ffbc6b;}}
   @media(prefers-reduced-motion:reduce){.token[data-boss="AshCantor"]{animation:none!important;}}
   .token.channeling{outline:2px dashed #ffe19a;outline-offset:1px;}.token.guardian.awakened{border-color:#ffb397;background:radial-gradient(circle at 50% 30%,#7c3b3a,#33182c);}
+  #board>.token.large{width:94%;height:94%;align-self:center;justify-self:center;z-index:3;pointer-events:none;min-width:0;min-height:0;box-sizing:border-box;}
+  #board>.token.large.in-danger{outline:2px solid #ffad65;outline-offset:1px;}
+  #board>.token.large.in-blast{outline:2px dashed #ffe19a;outline-offset:-4px;}
+  .large-footprint{box-shadow:inset 0 0 0 1px #d9b57755;}
+  .large-footprint.target::before,.large-footprint.cast-enemy::before{content:'';position:absolute;inset:1px;border:2px dashed #ffe19a;z-index:4;pointer-events:none;}
   .token.dead{opacity:.45;filter:grayscale(1);border-style:dashed;}
   .token .hpbar{left:8%;right:8%;bottom:-1px;height:3px;border:1px solid #111827;box-sizing:content-box;}
   html[data-contrast=high] .token.party{background:#061e2e;border-color:#a9eeff;}
@@ -748,7 +753,7 @@
 <div class="screen" id="settingsScreen" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="sbox"><h2 id="settingsTitle" class="ctitle">Sound &amp; Display</h2><p class="tag">Make the journey your own. Combat pauses while this sheet is open.</p><div class="settings-list"><label><input id="prefSound" type="checkbox"> Synthesized sound effects</label><label><input id="prefMusic" type="checkbox"> Quiet ambient tones (requires sound)</label><label for="prefVolume">Volume <output id="volumeValue">35%</output><input id="prefVolume" type="range" min="0" max="100" step="5" value="35"></label><label><input id="prefEffects" type="checkbox" checked> Visual effects (respects reduced motion)</label><label><input id="prefContrast" type="checkbox"> High contrast / clean display</label><label for="prefPace">Auto pace<select id="prefPace"><option value="normal">Deliberate · normal speed</option><option value="quick">Quick · shorter Auto turns</option></select></label></div><p id="audioStatus" class="tag" role="status">Sound is off by default. No downloads are needed.</p><p id="preferenceStatus" class="tag" role="status"></p><button id="btnSettingsClose" class="big">Back to Game</button></div></div>
 <div class="screen" id="codexScreen" role="dialog" aria-modal="true" aria-labelledby="codexTitle"><div class="sbox wide"><div class="eyebrow">Eren’s field atlas</div><h2 id="codexTitle" class="ctitle">The Bestiary</h2><div class="atlas-nav" role="group" aria-label="Atlas pages"><button id="codexBeasts" aria-pressed="true">Bestiary</button><button id="codexTreasure" aria-pressed="false">Treasure &amp; Relics</button><button id="codexLegends" aria-pressed="false">Legends &amp; Hunt</button><button id="btnCodexClose">Back</button></div><p class="tag" id="codexNote"></p><div id="codexTools" class="atlas-tools"><label for="codexSearch">Search<input id="codexSearch" type="search" maxlength="80" placeholder="Name, spell, source or lore"></label><label for="codexFilter">Show<select id="codexFilter"><option value="all">All entries</option><option value="guardians">Guardians</option><option value="relics">Relics</option><option value="potions">Potions</option></select></label></div><p id="codexCount" class="tag" role="status"></p><div id="codexContent" class="atlas-grid"></div></div></div>
 <script>
-const GAME_BUILD='0.29.3';
+const GAME_BUILD='0.30.0';
 document.querySelectorAll('[data-build]').forEach(el=>el.textContent='Build '+GAME_BUILD);
 /* ===== CROWN CAMPAIGN : data, with controller helpers below ===== */
 const OATHS={wanderer:{name:'Wanderer',budget:0.65,recovery:0.25,desc:'Gentler battles; all heroes earn victory XP and recover 25% HP after a win.'},delver:{name:'Delver',budget:1,desc:'Fortune favours the prepared. Only standing heroes earn victory XP.'},ironbound:{name:'Ironbound',budget:1.25,desc:'Stronger enemy forces. Only standing heroes earn victory XP.'}};
@@ -979,7 +984,7 @@ function effOnHit(c){ if(c.onHit) return c.onHit; const w=c.equip&&ITEMS[c.equip
 function effRange(c){return ITEMS[c.equip?.weapon]?.range||c.range;}
 function effSpeed(c){return Math.max(1,c.speed+Math.max(-1,Math.min(1,equippedItems(c).reduce((n,it)=>n+(it.speedMod||0),0))));}
 function healingPower(c){return Math.min(2,gearPower(c,'healPower'));}
-function weaponDistanceBonus(att,def){const w=ITEMS[att.equip?.weapon],d=Math.max(Math.abs(att.pos.x-def.pos.x),Math.abs(att.pos.y-def.pos.y));return d>=4?(w?.farDmg||0):d<=1?(w?.nearDmg||0):0;}
+function weaponDistanceBonus(att,def){const w=ITEMS[att.equip?.weapon],d=combatDistance(att,def);return d>=4?(w?.farDmg||0):d<=1?(w?.nearDmg||0):0;}
 function consumableReason(it,c){
  if(it.heal&&c.hp>=c.maxHp)return 'Full HP';
  if(it.cleanse&&!c.statuses?.some(st=>it.cleanse.includes(st.type)))return 'No affliction to cleanse';
@@ -1284,19 +1289,19 @@ const BESTIARY = {
   grave_leech:{"name":"Grave Leech","cls":"GraveLeech","glyph":"V","maxHp":13,"ac":12,"attackBonus":2,"damage":{"n":1,"sides":4,"bonus":0},"speed":3,"range":1,"spells":[{"id":"grave_siphon","uses":3,"max":3}],"threat":28,"xp":75,"role":"Siphoner — three base ranged drains deal 1d4+1 spell damage and restore up to three actual HP lost to one wounded ally within three tiles, including itself. Focus it or separate its wounded allies; Eclipsescale reduces the drain.","sprite":"grave_leech","side":"enemy","abilities":{"str":13,"dex":12,"con":12,"int":12,"wis":12,"cha":8}},
   chain_warden:{"name":"Chain Warden","cls":"ChainWarden","glyph":"C","maxHp":18,"ac":14,"attackBonus":3,"damage":{"n":1,"sides":6,"bonus":1},"speed":3,"range":1,"spells":[{"id":"chain_hook","uses":2,"max":2}],"threat":31,"xp":85,"role":"Displacer — two base range-four hooks deal 1d4 spell damage and pull a surviving hero one tile toward it if that square is free. Forced pulls do not provoke; terrain still ticks at turn end. Keep a safe tile behind your front line.","sprite":"chain_warden","side":"enemy","abilities":{"str":13,"dex":12,"con":12,"int":12,"wis":12,"cha":8}},
 
-  eclipse_wyrm:{name:'Astrax, the Star-Eater',cls:'EclipseWyrm',bossTitle:'ASTRAX · STAR-EATER',role:'Sky-dragon — telegraphed 3×3 breath punishes clusters; move off the amber tiles before its next active turn. At half health it gains +1 attack and calls one skeleton once.',glyph:'D',sprite:'eclipse_wyrm',side:'enemy',xp:180,threat:50,abilities:{str:17,dex:10,con:16,int:14,wis:13,cha:16},maxHp:46,ac:14,attackBonus:4,damage:{n:1,sides:8,bonus:1},speed:4,range:1,spells:[{id:'starless_breath',uses:2,max:2}],bloodied:{id:'star_wrath',recharge:'starless_breath',atk:1,count:1,summon:'skeleton',text:'ASTRAX BREAKS ITS LAST CHAIN. The dragon gains +1 attack and regains one breath; one star-bound watchman rises for a final defence.'}},
+  eclipse_wyrm:{size:2,name:'Astrax, the Star-Eater',cls:'EclipseWyrm',bossTitle:'ASTRAX · STAR-EATER',role:'Sky-dragon — telegraphed 3×3 breath punishes clusters; move off the amber tiles before its next active turn. At half health it gains +1 attack and calls one skeleton once.',glyph:'D',sprite:'eclipse_wyrm',side:'enemy',xp:180,threat:50,abilities:{str:17,dex:10,con:16,int:14,wis:13,cha:16},maxHp:46,ac:14,attackBonus:4,damage:{n:1,sides:8,bonus:1},speed:4,range:1,spells:[{id:'starless_breath',uses:2,max:2}],bloodied:{id:'star_wrath',recharge:'starless_breath',atk:1,count:1,summon:'skeleton',text:'ASTRAX BREAKS ITS LAST CHAIN. The dragon gains +1 attack and regains one breath; one star-bound watchman rises for a final defence.'}},
   bell_warden:{channel:'war_chant',name:'The Bell Warden',cls:'BellWarden',bossTitle:'BELL WARDEN',role:'Bound Watch — channels War Chant; a damaging weapon hit interrupts it. At half HP: Broken Bell, +1 attack, one skeleton and one Last Toll. Last Toll marks a fixed 3×3 area for its next active turn (1d4+1 spell damage to either side); leave it or interrupt with weapon damage.',glyph:'W',sprite:'bell_warden',side:'enemy',xp:100,threat:31,abilities:{str:16,dex:10,con:15,int:10,wis:12,cha:12},maxHp:22,ac:14,attackBonus:4,damage:{n:1,sides:8,bonus:2},speed:4,range:1,spells:[{id:'war_chant',uses:1,max:1}],bloodied:{id:'bell_wrath',spell:'bell_requiem',atk:1,count:1,summon:'skeleton',text:'THE BROKEN BELL. One last watchman rises; the Warden gains +1 attack and one Last Toll. It must spend an action marking a fixed 3×3 blast before releasing it on its next active turn. Leave the tiles or interrupt with weapon damage!'}},
   ash_cantor:{channel:'cinder',name:'The Ash Cantor',cls:'AshCantor',bossTitle:'ASH CANTOR',role:'Measured Hymn — hexes and casts from range; Cinderburst marks a fixed 3×3 area for its next active turn. Move out or interrupt with weapon damage. Last Procession at two-thirds HP: +1 attack/damage, one skeleton, and an advance before casting or striking in reach. Extinguish either brazier for one action to keep its marked ground cool; spells ignore cool routes.',glyph:'A',sprite:'ash_cantor',side:'enemy',xp:130,threat:35,abilities:{str:10,dex:12,con:13,int:16,wis:14,cha:15},maxHp:24,ac:14,attackBonus:4,damage:{n:1,sides:6,bonus:1},speed:4,range:1,spells:[{id:'hex',uses:2,max:2},{id:'cinder',uses:1,max:1},{id:'spirit_bolt',uses:3,max:3}],bloodied:{id:'ash_wrath',threshold:2/3,advance:true,atk:1,dmg:1,count:1,summon:'skeleton',text:'THE LAST PROCESSION. One skeleton rises; the Cantor gains +1 attack and damage. It advances before casting and strikes foes in reach. Extinguish the braziers or use sanctums to outlast the fire!'}},
   goblin:{ name:'Goblin', cls:'Goblin', glyph:'g', sprite:'goblin', side:'enemy', xp:25, abilities:{str:11,dex:13,con:12,int:8,wis:9,cha:7}, maxHp:8, ac:13, attackBonus:2, damage:{n:1,sides:6,bonus:0}, speed:4, range:1, spells:[] },
   orc:{ name:'Orc', cls:'Orc', glyph:'o', sprite:'orc', side:'enemy', xp:60, abilities:{str:16,dex:12,con:14,int:9,wis:10,cha:9}, maxHp:15, ac:14, attackBonus:4, damage:{n:1,sides:8,bonus:1}, speed:4, range:1, spells:[] },
   shaman:{ name:'Goblin Shaman', cls:'Shaman', glyph:'s', sprite:'shaman', side:'enemy', xp:70, threat:24, abilities:{str:10,dex:13,con:12,int:11,wis:13,cha:11}, maxHp:10, ac:13, attackBonus:2, damage:{n:1,sides:4,bonus:0}, speed:4, range:1, spells:[{id:'spirit_bolt',uses:3,max:3},{id:'war_chant',uses:2,max:2}] },
   skeleton:{ name:'Skeleton', cls:'Skeleton', glyph:'k', sprite:'skeleton', side:'enemy', xp:45, abilities:{str:13,dex:12,con:12,int:6,wis:8,cha:5}, maxHp:14, ac:15, attackBonus:3, damage:{n:1,sides:8,bonus:1}, speed:4, range:1, spells:[] },
-  spider:{ name:'Giant Spider', cls:'Spider', glyph:'x', sprite:'spider', side:'enemy', xp:50, abilities:{str:12,dex:15,con:12,int:3,wis:10,cha:4}, maxHp:11, ac:13, attackBonus:3, damage:{n:1,sides:4,bonus:0}, speed:6, range:1, spells:[], onHit:{status:'poison', duration:3, dmg:2, chance:0.6} },
+  spider:{size:2, name:'Giant Spider', cls:'Spider', glyph:'x', sprite:'spider', side:'enemy', xp:50, abilities:{str:12,dex:15,con:12,int:3,wis:10,cha:4}, maxHp:11, ac:13, attackBonus:3, damage:{n:1,sides:4,bonus:0}, speed:6, range:1, spells:[], onHit:{status:'poison', duration:3, dmg:2, chance:0.6} },
   necromancer:{ name:'Necromancer', cls:'Necromancer', glyph:'n', sprite:'necromancer', side:'enemy', xp:85, abilities:{str:8,dex:11,con:11,int:14,wis:14,cha:12}, maxHp:12, ac:13, attackBonus:2, damage:{n:1,sides:4,bonus:0}, speed:4, range:1, spells:[{id:'hold',uses:2,max:2}] },
   hexer:{ name:'Hexer', cls:'Hexer', glyph:'h', sprite:'hexer', side:'enemy', xp:95, threat:30, abilities:{str:8,dex:12,con:11,int:13,wis:14,cha:13}, maxHp:11, ac:13, attackBonus:2, damage:{n:1,sides:4,bonus:0}, speed:4, range:1, spells:[{id:'sleep',uses:2,max:2},{id:'hex',uses:2,max:2}] },
   acolyte:{ name:'Dark Acolyte', cls:'Acolyte', glyph:'a', sprite:'acolyte', side:'enemy', xp:80, threat:22, abilities:{str:9,dex:11,con:12,int:12,wis:14,cha:12}, maxHp:13, ac:13, attackBonus:2, damage:{n:1,sides:4,bonus:0}, speed:4, range:1, spells:[{id:'mend',uses:3,max:3}] },
   archer:{ name:'Goblin Archer', cls:'Archer', glyph:'r', sprite:'archer', side:'enemy', xp:55, abilities:{str:10,dex:15,con:11,int:9,wis:11,cha:8}, maxHp:9, ac:13, attackBonus:4, damage:{n:1,sides:6,bonus:1}, speed:5, range:5, spells:[] },
-  ogre:{ name:'Ogre', cls:'Ogre', glyph:'O', sprite:'ogre', side:'enemy', xp:120, abilities:{str:18,dex:9,con:16,int:6,wis:8,cha:7}, maxHp:30, ac:13, attackBonus:5, damage:{n:1,sides:12,bonus:3}, speed:4, range:1, spells:[] },
+  ogre:{size:2, name:'Ogre', cls:'Ogre', glyph:'O', sprite:'ogre', side:'enemy', xp:120, abilities:{str:18,dex:9,con:16,int:6,wis:8,cha:7}, maxHp:30, ac:13, attackBonus:5, damage:{n:1,sides:12,bonus:3}, speed:4, range:1, spells:[] },
   bonecaller:{ name:'Bone Caller', cls:'Bonecaller', glyph:'B', sprite:'bonecaller', side:'enemy', xp:110, threat:30, abilities:{str:9,dex:11,con:13,int:15,wis:14,cha:13}, maxHp:16, ac:13, attackBonus:2, damage:{n:1,sides:4,bonus:0}, speed:4, range:1, spells:[{id:'raise_dead',uses:2,max:2}] },
   // The campaign's finale boss: a sorcerer-king of the dead who blasts with
   // spirit-bolts, locks down a hero with Hold, and raises the fallen when his
@@ -1856,13 +1861,26 @@ function floorTier(){ return (WORLD[nodeId]&&WORLD[nodeId].tier)||0; }
 
 /* ===== COMBAT ENGINE : pure logic, no DOM ===== */
 const DIRS8=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
+// Battle positions are top-left anchors; large creatures occupy every tile in their square.
+function combatSize(c){return c?.size===2?2:1;}
+function combatPosition(c,pos=c.pos||c){return {x:pos.x,y:pos.y,size:combatSize(c)};}
+function combatTiles(c,pos=c.pos||c){const out=[],n=combatSize(c);for(let y=0;y<n;y++)for(let x=0;x<n;x++)out.push({x:pos.x+x,y:pos.y+y});return out;}
+function combatCenter(c){const p=c.pos||c,n=(combatSize(c)-1)/2;return {x:p.x+n,y:p.y+n};}
+function combatDistance(a,b){const p=a.pos||a,q=b.pos||b,sa=combatSize(a)-1,sb=combatSize(b)-1;return Math.max(0,p.x-q.x-sb,q.x-p.x-sa,p.y-q.y-sb,q.y-p.y-sa);}
 class CombatEngine{
   constructor(party, enemies, w, h, battlefield=null,tactic=null){
     this.w=w; this.h=h; this.blocked=new Set(); this.combatants=[];
     party.forEach((c,i)=>{ c.pos={x:0,y:1+i*2}; this.combatants.push(c); });
     const spots=[]; for(let x=w-2;x>=w-4;x--) for(let y=2;y<=6;y++) spots.push({x,y});
     this.tactic=PATROL_TACTICS[tactic]?tactic:null;const deployment=this.tactic?patrolPositions(enemies,party,w,h,this.tactic):spots;
-    enemies.forEach((e,i)=>{ e.pos={...(deployment[i]||{x:w-1,y:1})}; this.combatants.push(e); });
+    const occupied=new Set(party.flatMap(c=>combatTiles(c).map(p=>key(p.x,p.y)))),fallback=[];
+    for(let x=w-1;x>=0;x--)for(let y=0;y<h;y++)fallback.push({x,y});
+    // Reserve complete large footprints first; initiative and registry order remain unchanged.
+    enemies.map((e,i)=>({e,i})).sort((a,b)=>combatSize(b.e)-combatSize(a.e)||a.i-b.i).forEach(({e,i})=>{
+      const pos=[deployment[i],...spots,...fallback].filter(Boolean).find(p=>combatTiles(e,p).every(t=>this.inBounds(t.x,t.y)&&!occupied.has(key(t.x,t.y))));
+      if(!pos)throw Error('No room for enemy footprint');e.pos={...pos};for(const p of combatTiles(e))occupied.add(key(p.x,p.y));
+    });
+    this.combatants.push(...enemies);
     this.combatants.forEach(c=>{ if(c.hp===undefined) c.hp=c.maxHp; c.alive=c.hp>0; if(!c.statuses) c.statuses=[]; c.acted={move:false,action:false}; c.guarding=false; c.guardUsed=false; c.aooUsed=false; c.signatureUsed=false; c.leapUsed=false;const id=ITEMS[c.equip?.weapon]?.relicSpell;c.relicSpell=id?{id,uses:1,max:1}:null; });
     this.order=this.combatants.map(c=>({id:c.id,init:Rules.initiative(c)})).sort((a,b)=>b.init-a.init).map(o=>o.id);
     this.terrain=new Map();this.battlefield=BATTLEFIELDS[battlefield]?battlefield:null;
@@ -1876,7 +1894,7 @@ class CombatEngine{
     if(!site||site.used)return 'Already completed';
     if(this.isIncapacitated(c))return 'Hero is incapacitated';
     if(c.acted.action)return 'Action already spent';
-    if(this.cheb(c.pos,site)>1)return 'Move on or adjacent to diamond '+(index+1);
+    if(this.cheb(c,site)>1)return 'Move on or adjacent to diamond '+(index+1);
     return '';
   }
   useFieldAction(c,index){
@@ -1895,7 +1913,7 @@ class CombatEngine{
     }return false;
   }
   _visual(kind,actor,target,spell=null,hit=true){
-    this.visualEvents.push({seq:++this.visualSeq,kind,from:{...actor.pos},to:{...(target.pos||target)},spell,hit});
+    this.visualEvents.push({seq:++this.visualSeq,kind,from:combatCenter(actor),to:combatCenter(target),spell,hit});
     if(this.visualEvents.length>24)this.visualEvents.shift();
   }
   _recordDamage(target,amount,kind,source=null){
@@ -1927,10 +1945,10 @@ class CombatEngine{
     return {facts,advice};
   }
   byId(id){ return this.combatants.find(c=>c.id===id); }
-  at(x,y){ return this.combatants.find(c=>c.alive&&c.pos.x===x&&c.pos.y===y); }
+  at(x,y){ return this.combatants.find(c=>c.alive&&x>=c.pos.x&&y>=c.pos.y&&x<c.pos.x+combatSize(c)&&y<c.pos.y+combatSize(c)); }
   inBounds(x,y){ return x>=0&&y>=0&&x<this.w&&y<this.h; }
-  passable(x,y,self){ if(!this.inBounds(x,y))return false; if(this.blocked.has(key(x,y)))return false; const o=this.at(x,y); return !o||o===self; }
-  cheb(a,b){ return Math.max(Math.abs(a.x-b.x),Math.abs(a.y-b.y)); }
+  passable(x,y,self={}){const n=combatSize(self);for(let dy=0;dy<n;dy++)for(let dx=0;dx<n;dx++){const a=x+dx,b=y+dy;if(!this.inBounds(a,b)||this.blocked.has(key(a,b)))return false;const o=this.at(a,b);if(o&&o!==self)return false;}return true;}
+  cheb(a,b){ return combatDistance(a,b); }
   current(){ return this.byId(this.order[this.turnIndex]); }
   turnPreview(limit=12){
     const out=[];
@@ -1941,24 +1959,27 @@ class CombatEngine{
     return out;
   }
   movementRisk(c,pos,from=c.pos){
-    const opportunity=this.combatants.filter(o=>o.alive&&o.side!==c.side&&!this.isIncapacitated(o)&&!o.aooUsed&&this.cheb(o.pos,from)<=1&&this.cheb(o.pos,pos)>1);
-    return {opportunity,blast:this.dangerAt(pos),ember:this.terrainAt(pos)==='ember'&&(gearPower(c,'emberGuard'))<2};
+    const opportunity=this.combatants.filter(o=>o.alive&&o.side!==c.side&&!this.isIncapacitated(o)&&!o.aooUsed&&this.cheb(o,combatPosition(c,from))<=1&&this.cheb(o,combatPosition(c,pos))>1);
+    return {opportunity,blast:this.dangerAt(combatPosition(c,pos)),ember:this.onTerrain(c,'ember',pos)&&(gearPower(c,'emberGuard'))<2};
   }
   living(side){ return this.combatants.filter(c=>c.alive&&c.side===side); }
   reachable(c){
+    const occupied=new Set(this.combatants.filter(o=>o.alive&&o!==c).flatMap(o=>combatTiles(o).map(p=>key(p.x,p.y)))),size=combatSize(c);
+    const fits=(x,y)=>{for(let dy=0;dy<size;dy++)for(let dx=0;dx<size;dx++){const a=x+dx,b=y+dy,k=key(a,b);if(!this.inBounds(a,b)||this.blocked.has(k)||occupied.has(k))return false;}return true;};
     const seen=new Map([[key(c.pos.x,c.pos.y),0]]); let f=[c.pos];
     while(f.length){ const n=[]; for(const p of f){ const d=seen.get(key(p.x,p.y)); if(d>=effSpeed(c))continue;
-      for(const [dx,dy] of DIRS8){ const nx=p.x+dx,ny=p.y+dy,k=key(nx,ny); if(!this.passable(nx,ny,c))continue; if(!seen.has(k)){ seen.set(k,d+1); n.push({x:nx,y:ny}); } } } f=n; }
+      for(const [dx,dy] of DIRS8){ const nx=p.x+dx,ny=p.y+dy,k=key(nx,ny); if(!fits(nx,ny)||size>1&&dx&&dy&&(!fits(p.x+dx,p.y)||!fits(p.x,p.y+dy)))continue; if(!seen.has(k)){ seen.set(k,d+1); n.push({x:nx,y:ny}); } } } f=n; }
     seen.delete(key(c.pos.x,c.pos.y)); return seen;
   }
+  onTerrain(c,type,pos=c.pos){const n=combatSize(c);for(let y=0;y<n;y++)for(let x=0;x<n;x++)if(this.terrainAt({x:pos.x+x,y:pos.y+y})===type)return true;return false;}
   terrainAt(pos){return this.terrain.get(key(pos.x,pos.y))||null;}
-  shieldBonus(def){return this.combatants.some(c=>c!==def&&c.alive&&c.side===def.side&&c.shieldAura&&!this.isIncapacitated(c)&&this.cheb(c.pos,def.pos)<=1)?2:0;}
+  shieldBonus(def){return this.combatants.some(c=>c!==def&&c.alive&&c.side===def.side&&c.shieldAura&&!this.isIncapacitated(c)&&this.cheb(c,def)<=1)?2:0;}
   weaponWard(att,def){return this.coverBonus(att,def)+this.shieldBonus(def);}
-  coverBonus(att,def){return effRange(att)>1&&this.terrainAt(def.pos)==='cover'?2:0;}
-  tileScore(c,pos){const type=this.terrainAt(pos);return (this.dangerAt(pos).length?-30:0)+(type==='ember'?((gearPower(c,'emberGuard'))>=2?0:-6):type==='sanctum'&&c.hp<c.maxHp?4:type==='cover'&&(effRange(c)>1||(c.spells||[]).length)?2:0);}
+  coverBonus(att,def){return effRange(att)>1&&combatTiles(def).every(p=>this.terrainAt(p)==='cover')?2:0;}
+  tileScore(c,pos){const ember=this.onTerrain(c,'ember',pos),sanctum=this.onTerrain(c,'sanctum',pos),cover=combatTiles(c,pos).every(p=>this.terrainAt(p)==='cover');return (this.dangerAt(combatPosition(c,pos)).length?-30:0)+(ember?(gearPower(c,'emberGuard')>=2?0:-6):sanctum&&c.hp<c.maxHp?4:cover&&(effRange(c)>1||(c.spells||[]).length)?2:0);}
   dangerAt(pos){return [...this.echoes,...this.combatants.filter(u=>u.alive&&u.intent&&SPELLS[u.intent.spell].effect.kind==='damage')].filter(u=>this.cheb(pos,u.intent)<=SPELLS[u.intent.spell].aoe);}
   _interrupt(c){if(!c.intent?.interrupt)return;const sp=c.spells.find(s=>s.id===c.intent.spell);c.intent=null;if(sp)sp.uses=Math.max(0,sp.uses-1);this.log.push({t:c.name+' is interrupted! The channel breaks and its spell charge is lost.',k:'magic'});}
-  _evade(c){if(c.acted.move||!this.dangerAt(c.pos).length)return;let best=null,score=-Infinity;const foes=this._foes(c);for(const [k,steps]of this.reachable(c)){const [x,y]=k.split(',').map(Number),pos={x,y};if(this.dangerAt(pos).length)continue;const reactions=foes.filter(e=>!this.isIncapacitated(e)&&!e.aooUsed&&this.cheb(e.pos,c.pos)<=1&&this.cheb(e.pos,pos)>1).length;const value=this.tileScore(c,pos)-steps*.1-reactions*20;if(value>score){score=value;best=pos;}}if(best){this.moveTo(c,best.x,best.y);if(c.alive)this._checkGuards(c);if(c.alive)this.log.push({t:c.name+' moves clear of the marked blast.',k:'sys'});}}
+  _evade(c){if(c.acted.move||!this.dangerAt(c).length)return;let best=null,score=-Infinity;const foes=this._foes(c);for(const [k,steps]of this.reachable(c)){const [x,y]=k.split(',').map(Number),pos={x,y};if(this.dangerAt(combatPosition(c,pos)).length)continue;const reactions=foes.filter(e=>!this.isIncapacitated(e)&&!e.aooUsed&&this.cheb(e,c)<=1&&this.cheb(e,combatPosition(c,pos))>1).length;const value=this.tileScore(c,pos)-steps*.1-reactions*20;if(value>score){score=value;best=pos;}}if(best){this.moveTo(c,best.x,best.y);if(c.alive)this._checkGuards(c);if(c.alive)this.log.push({t:c.name+' moves clear of the marked blast.',k:'sys'});}}
   attackPreview(att,def){const cover=this.coverBonus(att,def),shield=this.shieldBonus(def),penalty=effRange(att)>1&&this.meleeThreatened(att)?RANGED_MELEE_PENALTY:0;
     const needed=effAc(def)+cover+shield-effAttack(att)+penalty;
     return {chance:this.isIncapacitated(def)?100:Math.max(5,Math.min(95,(21-needed)*5)),cover,shield,penalty};
@@ -1973,20 +1994,20 @@ class CombatEngine{
     if(effRange(c)>1)return 'Archer — retreats from melee and shoots vulnerable targets. Retreat can provoke reactions.';
     return 'Vanguard — closes into melee and focuses vulnerable or wounded foes.';
   }
-  _terrainTick(c){if(!c||!c.alive)return;const type=this.terrainAt(c.pos);
-    if(type==='sanctum'&&c.hp<c.maxHp){const n=Math.min(3,c.maxHp-c.hp);c.hp+=n;this.log.push({t:c.name+' recovers '+n+' HP in the sanctum.',k:'magic'});}
-    if(type==='ember'){const damage=Math.max(0,2-(gearPower(c,'emberGuard')));if(damage){this._recordDamage(c,damage,'ember');c.hp-=damage;this.log.push({t:c.name+' takes '+damage+' damage from the embers.',k:'kill'});if(c.hp<=0)this._drop(c);}else this.log.push({t:c.name+'’s '+gearSource(c,'emberGuard')+' wards off the terrain embers.',k:'magic'});}
+  _terrainTick(c){if(!c||!c.alive)return;
+    if(this.onTerrain(c,'ember')){const damage=Math.max(0,2-gearPower(c,'emberGuard'));if(damage){this._recordDamage(c,damage,'ember');c.hp-=damage;this.log.push({t:c.name+' takes '+damage+' damage from the embers.',k:'kill'});if(c.hp<=0)this._drop(c);}else this.log.push({t:c.name+'’s '+gearSource(c,'emberGuard')+' wards off the terrain embers.',k:'magic'});}
+    if(c.alive&&this.onTerrain(c,'sanctum')&&c.hp<c.maxHp){const n=Math.min(3,c.maxHp-c.hp);c.hp+=n;this.log.push({t:c.name+' recovers '+n+' HP in the sanctum.',k:'magic'});}
   }
-  canAttack(a,d){ if(!a.alive||this.isIncapacitated(a))return false; return d&&d.alive&&d.side!==a.side&&this.cheb(a.pos,d.pos)<=effRange(a); }
+  canAttack(a,d){ if(!a.alive||this.isIncapacitated(a))return false; return d&&d.alive&&d.side!==a.side&&this.cheb(a,d)<=effRange(a); }
   // True if a living enemy stands in melee reach (one square) of c. A ranged
   // attacker that is melee-threatened shoots at a penalty.
-  meleeThreatened(c){ return this.combatants.some(o=>o.alive&&o.side!==c.side&&this.cheb(o.pos,c.pos)<=1); }
+  meleeThreatened(c){ return this.combatants.some(o=>o.alive&&o.side!==c.side&&this.cheb(o,c)<=1); }
   targetsFor(c){ return this.combatants.filter(d=>this.canAttack(c,d)); }
   isSilenced(c){return c.statuses.some(st=>st.type==='silence'&&st.duration>0);}
   usableSpells(c){ if(this.isSilenced(c))return [];return [...(c.spells||[]),...(c.relicSpell?[c.relicSpell]:[])].filter(s=>s.uses>0).map(s=>({slot:s, def:SPELLS[s.id]})); }
-  spellEnemyTargets(c,sp){ return this.combatants.filter(o=>o.alive&&o.side!==c.side&&this.cheb(c.pos,o.pos)<=sp.range); }
-  spellAllyTargets(c,sp){ return this.combatants.filter(o=>o.alive&&o.side===c.side&&this.cheb(c.pos,o.pos)<=sp.range); }
-  spellPointTiles(c,sp){ const out=[]; for(let y=0;y<this.h;y++) for(let x=0;x<this.w;x++) if(this.cheb(c.pos,{x,y})<=sp.range) out.push({x,y}); return out; }
+  spellEnemyTargets(c,sp){ return this.combatants.filter(o=>o.alive&&o.side!==c.side&&this.cheb(c,o)<=sp.range); }
+  spellAllyTargets(c,sp){ return this.combatants.filter(o=>o.alive&&o.side===c.side&&this.cheb(c,o)<=sp.range); }
+  spellPointTiles(c,sp){ const out=[]; for(let y=0;y<this.h;y++) for(let x=0;x<this.w;x++) if(this.cheb(c,{x,y})<=sp.range) out.push({x,y}); return out; }
   moveTo(c,x,y){ if(!c.alive||this.isIncapacitated(c)||c.acted.move)return false; if(!this.reachable(c).has(key(x,y)))return false; const ox=c.pos.x, oy=c.pos.y; c.pos={x,y}; c.acted.move=true; this.log.push({t:c.name+' moves.',k:'sys'}); this._provoke(c, ox, oy); return true; }
   doAttack(att,def){
     if(att.acted.action||!this.canAttack(att,def))return false;
@@ -2026,19 +2047,19 @@ class CombatEngine{
     } else if(e.kind==='damage'){
       const amt=Math.max(1,Rules.spellAmount(e));
       if(sp.target==='point'){
-        const caught=this.combatants.filter(o=>o.alive&&this.cheb(o.pos,target)<=sp.aoe);
+        const caught=this.combatants.filter(o=>o.alive&&this.cheb(o,target)<=sp.aoe);
         this.log.push({t:c.name+' casts '+sp.name+'. The blast deals '+amt+' to '+caught.length+' caught in it.',k:'magic'});
         caught.forEach(o=>{const dealt=this._spellDamage(o,amt);this._recordDamage(o,dealt,'spell',c);o.hp-=dealt; if(o.hp<=0){ this._drop(o); } });
       } else {
         const dealt=this._spellDamage(target,amt),lost=Math.min(Math.max(0,target.hp),dealt);this._recordDamage(target,dealt,'spell',c);target.hp-=dealt;
-        if(e.siphon&&lost){const ally=this._allies(c).filter(a=>a.hp<a.maxHp&&this.cheb(c.pos,a.pos)<=3).sort((a,b)=>(b.maxHp-b.hp)-(a.maxHp-a.hp))[0];if(ally){const healed=Math.min(e.siphon,lost,ally.maxHp-ally.hp);ally.hp+=healed;this.log.push({t:c.name+' siphons '+healed+' HP to '+ally.name+'.',k:'magic'});}}
+        if(e.siphon&&lost){const ally=this._allies(c).filter(a=>a.hp<a.maxHp&&this.cheb(c,a)<=3).sort((a,b)=>(b.maxHp-b.hp)-(a.maxHp-a.hp))[0];if(ally){const healed=Math.min(e.siphon,lost,ally.maxHp-ally.hp);ally.hp+=healed;this.log.push({t:c.name+' siphons '+healed+' HP to '+ally.name+'.',k:'magic'});}}
         if(e.pull&&target.hp>0){const pos={x:target.pos.x+Math.sign(c.pos.x-target.pos.x),y:target.pos.y+Math.sign(c.pos.y-target.pos.y)};if(this.passable(pos.x,pos.y,target)){target.pos=pos;this.log.push({t:target.name+' is pulled one tile by the chain (no movement reactions).',k:'magic'});}}
         this.log.push({t:c.name+' casts '+sp.name+' on '+target.name+' for '+dealt+' damage.',k:'magic'});
         if(target.hp<=0){ this._drop(target); }
       }
     } else if(e.kind==='status'){
       let victims;
-      if(sp.target==='point'){ victims=this.combatants.filter(o=>o.alive&&o.side!==c.side&&this.cheb(o.pos,target)<=sp.aoe); this.log.push({t:c.name+' casts '+sp.name+' over the area.',k:'magic'}); }
+      if(sp.target==='point'){ victims=this.combatants.filter(o=>o.alive&&o.side!==c.side&&this.cheb(o,target)<=sp.aoe); this.log.push({t:c.name+' casts '+sp.name+' over the area.',k:'magic'}); }
       else { victims=[target]; this.log.push({t:c.name+' casts '+sp.name+' on '+target.name+'.',k:'magic'}); }
       victims.forEach(o=>{
         if(this._controlSave(o,e)) this.log.push({t:o.name+' resists.',k:'sys'});
@@ -2047,7 +2068,7 @@ class CombatEngine{
       });
     } else if(e.kind==='debuff'){
       let victims;
-      if(sp.target==='point'){ victims=this.combatants.filter(o=>o.alive&&o.side!==c.side&&this.cheb(o.pos,target)<=sp.aoe); this.log.push({t:c.name+' casts '+sp.name+' over the area.',k:'magic'}); }
+      if(sp.target==='point'){ victims=this.combatants.filter(o=>o.alive&&o.side!==c.side&&this.cheb(o,target)<=sp.aoe); this.log.push({t:c.name+' casts '+sp.name+' over the area.',k:'magic'}); }
       else { victims=[target]; this.log.push({t:c.name+' casts '+sp.name+' on '+target.name+'.',k:'magic'}); }
       victims.forEach(o=>{
         if(this._controlSave(o,e)) this.log.push({t:o.name+' resists.',k:'sys'});
@@ -2058,7 +2079,7 @@ class CombatEngine{
       });
     } else if(e.kind==='buff'){
       let allies;
-      if(sp.target==='point'){ allies=this.combatants.filter(o=>o.alive&&o.side===c.side&&this.cheb(o.pos,target)<=sp.aoe); }
+      if(sp.target==='point'){ allies=this.combatants.filter(o=>o.alive&&o.side===c.side&&this.cheb(o,target)<=sp.aoe); }
       else if(sp.target==='self'){ allies=[c]; }
       else { allies=[target]; }
       this.log.push({t:c.name+' casts '+sp.name+'.',k:'magic'});
@@ -2081,8 +2102,7 @@ class CombatEngine{
   _summon(summoner, type, count){
     let made=0;
     for(let i=0;i<count;i++){
-      const spot=this._freeTileNear(summoner.pos); if(!spot) break;
-      const m=spawnMonster(type, 0, false);
+      const m=spawnMonster(type, 0, false),spot=this._freeTileNear(summoner.pos,m);if(!spot)break;
       m.id='s'+(this._summonSeq++);                 // unique, cannot collide with 'e'/'p' ids
       m.name=m.name.replace(/\s\d+$/,'')+' (raised)';
       m.pos={...spot}; m.hp=m.maxHp; m.alive=true; m.statuses=[]; m.acted={move:false,action:false}; m.guarding=false; m.guardUsed=false;
@@ -2095,14 +2115,12 @@ class CombatEngine{
     return made;
   }
   // Nearest free, unblocked, unoccupied in-bounds tile to an origin (ring search).
-  _freeTileNear(origin){
+  _freeTileNear(origin,unit={}){
     for(let r=1;r<=4;r++){
       for(let dy=-r;dy<=r;dy++) for(let dx=-r;dx<=r;dx++){
         if(Math.max(Math.abs(dx),Math.abs(dy))!==r) continue;
         const x=origin.x+dx, y=origin.y+dy;
-        if(!this.inBounds(x,y)) continue;
-        if(this.blocked.has(key(x,y))) continue;
-        if(this.at(x,y)) continue;
+        if(!this.passable(x,y,unit))continue;
         return {x,y};
       }
     }
@@ -2130,7 +2148,7 @@ class CombatEngine{
     }
   }
   _checkEnd(){ this._bossPhase(); if(!this.living('enemy').length) this.phase='won'; else if(!this.living('party').length) this.phase='lost';if(this.phase!=='playing')this.echoes=[]; }
-  _burstTick(){const due=this.echoes.filter(e=>e.dueRound<=this.round);this.echoes=this.echoes.filter(e=>e.dueRound>this.round);for(const echo of due){this.log.push({t:echo.name+' erupts: 4 spell damage on the marked tiles.',k:'magic'});for(const target of this.combatants.filter(c=>c.alive&&this.cheb(c.pos,echo.intent)<=1)){const n=this._spellDamage(target,4);this._recordDamage(target,n,'spell',echo);target.hp-=n;if(target.hp<=0)this._drop(target);}}this._checkEnd();}
+  _burstTick(){const due=this.echoes.filter(e=>e.dueRound<=this.round);this.echoes=this.echoes.filter(e=>e.dueRound>this.round);for(const echo of due){this.log.push({t:echo.name+' erupts: 4 spell damage on the marked tiles.',k:'magic'});for(const target of this.combatants.filter(c=>c.alive&&this.cheb(c,echo.intent)<=1)){const n=this._spellDamage(target,4);this._recordDamage(target,n,'spell',echo);target.hp-=n;if(target.hp<=0)this._drop(target);}}this._checkEnd();}
   _drop(o){if(!o.alive)return;if(o.deathBurst){const echo={name:o.name+'’s dying spark',side:o.side,dueRound:this.round+2,intent:{spell:'ember_requiem',...o.pos}};this.echoes.push(echo);this.log.push({t:echo.name+' marks a 3×3 blast: leave before round '+echo.dueRound+'. Victory disperses the sparks.',k:'kill'});}if(o.side==='party'&&!this.battleReport.firstFall)this.battleReport.firstFall={name:o.name,round:this.round}; o.intent=null;o.hp=0; o.alive=false; this.log.push({t:o.name+' falls.',k:'kill'}); if(o.side==='enemy') this.xpEarned += (o.xp||0);
     else { const line=bgLine(o,'fall'); if(line) this.log.push({t:line,k:'flavor'}); } }
   _begin(){ const c=this.current(); if(c){ c.acted={move:false,action:false}; c.guarding=false; c.guardUsed=false; c.aooUsed=false; } }
@@ -2175,7 +2193,7 @@ class CombatEngine{
   _buffSpells(c){ return this.usableSpells(c).filter(({def})=> def.effect.kind==='buff'); }
   _hasRangedSpell(c){ return this._offensiveSpells(c).length>0; }
   _isRangedAttacker(c){ return effRange(c)>1; }
-  _adjacentEnemy(c, heroes){ return heroes.some(h=>this.cheb(c.pos,h.pos)<=1); }
+  _adjacentEnemy(c, heroes){ return heroes.some(h=>this.cheb(c,h)<=1); }
   // The AI is side-relative so it can drive either side: foes are the opposite
   // side of the actor, allies its own. Heroes on auto-fight run the same brain.
   _foes(c){ return this.living(c.side==='party'?'enemy':'party'); }
@@ -2194,8 +2212,8 @@ class CombatEngine{
     if(c.leap&&!c.leapUsed&&!c.acted.move&&!c.acted.action&&!this._adjacentEnemy(c,foes)&&this._leapTurn(c,foes))return;
     if(c.bloodied?.spell&&c.awakened&&!c.acted.action){const sp=this.usableSpells(c).find(s=>s.def.id===c.bloodied.spell);if(sp){const tile=this._bestPointTile(c,sp.def);if(tile&&this._castPoint(c,sp.def,tile))return;}}
     if(c.awakened&&c.bloodied?.advance&&!c.acted.action){
-      const goal=foes.reduce((a,b)=>this._priority(a)-this.cheb(c.pos,a.pos)*.5>=this._priority(b)-this.cheb(c.pos,b.pos)*.5?a:b);
-      if(!this._adjacentEnemy(c,foes)){this._stepToward(c,goal.pos);if(!c.alive||this.phase!=='playing')return;}
+      const goal=foes.reduce((a,b)=>this._priority(a)-this.cheb(c,a)*.5>=this._priority(b)-this.cheb(c,b)*.5?a:b);
+      if(!this._adjacentEnemy(c,foes)){this._stepToward(c,goal);if(!c.alive||this.phase!=='playing')return;}
       if(this._adjacentEnemy(c,this._foes(c)))this._meleeTurn(c,this._foes(c));
       else {c.acted.move=true;this._casterTurn(c,this._foes(c));}return;
     }
@@ -2212,7 +2230,7 @@ class CombatEngine{
   }
   _leapTurn(c,foes){
     if(!c.alive||this.isIncapacitated(c)||!c.leap||c.leapUsed||c.acted.move||c.acted.action)return false;
-    const options=[];for(const target of foes)for(const [dx,dy]of DIRS8){const pos={x:target.pos.x+dx,y:target.pos.y+dy};if(this.passable(pos.x,pos.y,c)&&this.cheb(c.pos,pos)<=4&&this.cheb(c.pos,pos)>1)options.push({target,pos,score:this._priority(target)+this.tileScore(c,pos)});}
+    const options=[];for(const target of foes)for(const edge of combatTiles(target))for(const [dx,dy]of DIRS8){const pos={x:edge.x+dx,y:edge.y+dy};if(this.passable(pos.x,pos.y,c)&&this.cheb(c.pos,pos)<=4&&this.cheb(c.pos,pos)>1)options.push({target,pos,score:this._priority(target)+this.tileScore(c,pos)});}
     options.sort((a,b)=>b.score-a.score);if(!options.length)return false;
     const {target,pos}=options[0],old={...c.pos};c.leapUsed=true;c.acted.move=true;c.pos=pos;this.log.push({t:c.name+' vaults toward '+target.name+'! Its leap is spent.',k:'kill'});this._provoke(c,old.x,old.y);if(c.alive)this._checkGuards(c);if(c.alive&&target.alive)this.doAttack(c,target);return true;
   }
@@ -2245,7 +2263,7 @@ class CombatEngine{
   _rallyTurn(c){
     const buff=this._buffSpells(c)[0]; if(!buff || c.acted.action) return false;
     const st=buff.def.effect.status, aoe=buff.def.aoe||0;
-    const near=this._allies(c).filter(a=>this.cheb(c.pos,a.pos)<=aoe);
+    const near=this._allies(c).filter(a=>this.cheb(c.pos,a)<=aoe);
     const fresh=near.filter(a=>!(a.statuses&&a.statuses.some(s=>s.type===st)));
     if(near.length>=2 && fresh.length>=2){ this._castPoint(c, buff.def, c.pos); return true; }
     return false;
@@ -2256,8 +2274,8 @@ class CombatEngine{
     if(this._adjacentEnemy(c, heroes) && !c.acted.move){
       const r=this.reachable(c); let best=null, bestScore=-Infinity;
       for(const [k] of r){ const [x,y]=k.split(',').map(Number);
-        const nearest=Math.min(...heroes.map(h=>this.cheb({x,y},h.pos)));
-        const inRange=heroes.some(h=>this.cheb({x,y},h.pos)<=effRange(c));
+        const nearest=Math.min(...heroes.map(h=>this.cheb(combatPosition(c,{x,y}),h)));
+        const inRange=heroes.some(h=>this.cheb(combatPosition(c,{x,y}),h)<=effRange(c));
         if(!inRange || nearest<=1) continue;
         const score=nearest+this.tileScore(c,{x,y});if(score>bestScore){ bestScore=score; best={x,y}; } }
       if(best){ const ox=c.pos.x,oy=c.pos.y; c.pos=best; c.acted.move=true; this.log.push({t:c.name+' backs away and draws.',k:'sys'}); this._provoke(c,ox,oy); if(!c.alive)return; this._checkGuards(c); if(!c.alive) return; }
@@ -2265,8 +2283,8 @@ class CombatEngine{
     const inRange=heroes.filter(h=>this.canAttack(c,h));
     if(inRange.length){ const tgt=inRange.reduce((a,b)=> this._priority(a)>=this._priority(b)?a:b); this.doAttack(c,tgt); return; }
     // none in range: close to the most valuable hero, then shoot if able
-    const goal=heroes.reduce((a,b)=>{ const pa=this._priority(a)-this.cheb(c.pos,a.pos)*0.5, pb=this._priority(b)-this.cheb(c.pos,b.pos)*0.5; return pa>=pb?a:b; });
-    this._stepToward(c, goal.pos);
+    const goal=heroes.reduce((a,b)=>{ const pa=this._priority(a)-this.cheb(c,a)*0.5, pb=this._priority(b)-this.cheb(c,b)*0.5; return pa>=pb?a:b; });
+    this._stepToward(c, goal);
     if(c.alive && this.canAttack(c,goal)) this.doAttack(c,goal);
   }
   _meleeTurn(c, heroes){
@@ -2278,8 +2296,8 @@ class CombatEngine{
       this.doAttack(c,tgt); return;
     }
     // nobody in reach: advance on the most valuable hero, nearest as tiebreak
-    const goal=heroes.reduce((a,b)=>{ const pa=this._priority(a)-this.cheb(c.pos,a.pos)*0.5, pb=this._priority(b)-this.cheb(c.pos,b.pos)*0.5; return pa>=pb?a:b; });
-    this._stepToward(c, goal.pos);
+    const goal=heroes.reduce((a,b)=>{ const pa=this._priority(a)-this.cheb(c,a)*0.5, pb=this._priority(b)-this.cheb(c,b)*0.5; return pa>=pb?a:b; });
+    this._stepToward(c, goal);
     if(c.alive && this.canAttack(c,goal)) this.doAttack(c,goal);
   }
   _castPoint(c,sp,tile){if(sp.telegraph||c.channel===sp.id){if(!c.alive||this.isIncapacitated(c)||this.isSilenced(c)||c.acted.action||c.intent||!c.spells.some(s=>s.id===sp.id&&s.uses>0))return false;c.intent={spell:sp.id,x:tile.x,y:tile.y,interrupt:c.channel===sp.id||sp.interruptible===true};c.acted.action=true;this.log.push({t:c.name+' channels '+sp.name+': releases on its next active turn. '+(sp.effect.kind==='damage'?'Leave the marked tiles. ':'')+(c.intent.interrupt?'A weapon hit interrupts and consumes its charge.':'The marked area stays fixed.'),k:'kill'});return true;}return this.castSpell(c,sp,{x:tile.x,y:tile.y});}
@@ -2295,8 +2313,8 @@ class CombatEngine{
     if(this._adjacentEnemy(c, heroes) && !c.acted.move){
       const r=this.reachable(c); let best=null, bestScore=-Infinity;
       for(const [k] of r){ const [x,y]=k.split(',').map(Number);
-        const nearest=Math.min(...heroes.map(h=>this.cheb({x,y},h.pos)));
-        const inRange=heroes.some(h=>this.cheb({x,y},h.pos)<=spellRange);
+        const nearest=Math.min(...heroes.map(h=>this.cheb(combatPosition(c,{x,y}),h)));
+        const inRange=heroes.some(h=>this.cheb(combatPosition(c,{x,y}),h)<=spellRange);
         if(!inRange) continue;
         const sc=nearest+this.tileScore(c,{x,y});                            // maximise distance from the nearest hero
         if(nearest>1 && sc>bestScore){ bestScore=sc; best={x,y}; } }
@@ -2331,12 +2349,12 @@ class CombatEngine{
     for(const s of pointDamage){ const tile=this._bestPointTile(c, s.def);
       if(tile){ this._castPoint(c,s.def,tile); return; } }
     // 8) Approach spell range without charging a fragile caster into melee.
-    const goal=heroes.reduce((a,b)=> this.cheb(c.pos,a.pos)<=this.cheb(c.pos,b.pos)?a:b);
+    const goal=heroes.reduce((a,b)=> this.cheb(c,a)<=this.cheb(c,b)?a:b);
     if(this.canAttack(c,goal)){ this.doAttack(c,goal); return; }
     if(c.acted.move)return;
     const reach=this.reachable(c);let best=null,bestScore=-Infinity;
     for(const [k,steps] of reach){const [x,y]=k.split(',').map(Number),pos={x,y};
-      const distance=Math.min(...heroes.map(h=>this.cheb(pos,h.pos)));
+      const distance=Math.min(...heroes.map(h=>this.cheb(combatPosition(c,pos),h)));
       const score=-Math.abs(distance-spellRange)*10-steps+(distance<=1?-100:0)+this.tileScore(c,pos);
       if(score>bestScore){bestScore=score;best=pos;}
     }
@@ -2347,11 +2365,11 @@ class CombatEngine{
   _bestPointTile(c, sp){
     let best=null, bestScore=0;
     for(let y=0;y<this.h;y++) for(let x=0;x<this.w;x++){
-      if(this.cheb(c.pos,{x,y})>sp.range) continue;
-      const caught=this._foes(c).filter(h=>(sp.effect.kind!=='status'||!this.isIncapacitated(h)) && this.cheb({x,y},h.pos)<=sp.aoe);
+      if(this.cheb(c,{x,y})>sp.range) continue;
+      const caught=this._foes(c).filter(h=>(sp.effect.kind!=='status'||!this.isIncapacitated(h)) && this.cheb({x,y},h)<=sp.aoe);
       if(!caught.length) continue;
       // Damage blasts hit friend and foe. Reject collateral rather than sacrifice allies.
-      if(sp.effect.kind==='damage'&&this._allies(c).some(a=>this.cheb({x,y},a.pos)<=sp.aoe))continue;
+      if(sp.effect.kind==='damage'&&this._allies(c).some(a=>this.cheb({x,y},a)<=sp.aoe))continue;
       const casters=caught.filter(h=>h.spells&&h.spells.length).length;
       const score=caught.length*100 + casters*10 + caught.reduce((a,h)=>a+this._priority(h),0)*0.01;
       if(score>bestScore){ bestScore=score; best={x,y,count:caught.length}; }
@@ -2361,8 +2379,8 @@ class CombatEngine{
   _stepToward(c, dest){
     if(c.acted.move)return;
     const r=this.reachable(c);let best=null,bestScore=-Infinity;
-    for(const [k,steps] of r){const [x,y]=k.split(',').map(Number),pos={x,y},d=this.cheb(pos,dest);const score=-d*10-steps*.1+this.tileScore(c,pos);if(score>bestScore){bestScore=score;best=pos;}}
-    if(best&&this.cheb(best,dest)<this.cheb(c.pos,dest)){const ox=c.pos.x,oy=c.pos.y;c.pos=best;c.acted.move=true;this.log.push({t:c.name+' advances.',k:'sys'});this._provoke(c,ox,oy);if(c.alive)this._checkGuards(c);}
+    for(const [k,steps] of r){const [x,y]=k.split(',').map(Number),pos={x,y},d=this.cheb(combatPosition(c,pos),dest);const score=-d*10-steps*.1+this.tileScore(c,pos);if(score>bestScore){bestScore=score;best=pos;}}
+    if(best&&this.cheb(combatPosition(c,best),dest)<this.cheb(c,dest)){const ox=c.pos.x,oy=c.pos.y;c.pos=best;c.acted.move=true;this.log.push({t:c.name+' advances.',k:'sys'});this._provoke(c,ox,oy);if(c.alive)this._checkGuards(c);}
   }
   // Attack of opportunity: when a unit leaves a tile adjacent to a living enemy
   // for one that is not, each such enemy that still has its reaction this round
@@ -2377,7 +2395,7 @@ class CombatEngine{
   _checkGuards(mover){
     if(!mover.alive || mover.side!=='enemy') return;
     const guards=this.combatants.filter(h=> h.alive && h.side==='party' && h.guarding && !h.guardUsed
-      && !this.isIncapacitated(h) && this.cheb(h.pos,mover.pos)<=effRange(h));
+      && !this.isIncapacitated(h) && this.cheb(h,mover)<=effRange(h));
     for(const h of guards){ h.guardUsed=true; this._reactStrike(h, mover, 'guard'); if(!mover.alive) break; }
   }
   // Shared free-strike for both reactions (guard on entry, opportunity on exit).
@@ -3656,18 +3674,18 @@ function renderCombat(){
   const playerTurn = c.alive&&c.side==='party'&&game.phase==='playing'&&!game.isIncapacitated(c);
   const castEnemy=new Set(), castAlly=new Set(), castPoint=new Set();
   if(mover==='cast'&&selectedSpell&&playerTurn){
-    if(selectedSpell.target==='enemy') game.spellEnemyTargets(c,selectedSpell).forEach(o=>castEnemy.add(key(o.pos.x,o.pos.y)));
-    else if(selectedSpell.target==='ally') game.spellAllyTargets(c,selectedSpell).forEach(o=>castAlly.add(key(o.pos.x,o.pos.y)));
+    if(selectedSpell.target==='enemy') game.spellEnemyTargets(c,selectedSpell).forEach(o=>combatTiles(o).forEach(p=>castEnemy.add(key(p.x,p.y))));
+    else if(selectedSpell.target==='ally') game.spellAllyTargets(c,selectedSpell).forEach(o=>combatTiles(o).forEach(p=>castAlly.add(key(p.x,p.y))));
     else if(selectedSpell.target==='point') game.spellPointTiles(c,selectedSpell).forEach(p=>castPoint.add(key(p.x,p.y)));
   }
   for(let y=0;y<game.h;y++){ for(let x=0;x<game.w;x++){
-    const cell=document.createElement('div'); cell.className='cell'+(((x+y)%2)?' alt':''); const k=key(x,y); const here=game.at(x,y);
+    const cell=document.createElement('div'); cell.className='cell'+(((x+y)%2)?' alt':'');cell.style.gridColumn=x+1;cell.style.gridRow=y+1; const k=key(x,y); const here=game.at(x,y);if(here&&combatSize(here)>1){cell.classList.add('large-footprint');cell.dataset.unitId=here.id;}
     if(fieldPreview.has(k)){cell.classList.add('field-preview');cell.dataset.fieldPreview='true';}
     const fieldSite=game.fieldSites().find(p=>p.x===x&&p.y===y);if(fieldSite){cell.dataset.fieldSite=fieldSite.index;cell.classList.add('field-objective');if(fieldSite.used)cell.classList.add('field-used');const mark=document.createElement('span');mark.className='field-mark';mark.textContent=(fieldSite.used?'✓':'◆')+(fieldSite.index+1);mark.dataset.prop=game.fieldObjective.id==='cantor_braziers'?'brazier':fieldDefinition(game.fieldObjective.id).effect;mark.setAttribute('aria-hidden','true');cell.appendChild(mark);}
     const terrain=game.terrainAt({x,y});if(game.dangerAt({x,y}).length>0)cell.classList.add('breath-zone');if(terrain){cell.classList.add('field-'+terrain);const mark=document.createElement('span');mark.className='terrain-mark';mark.textContent=TERRAIN[terrain].glyph;cell.appendChild(mark);}
     if(spellAim&&game.cheb({x,y},spellAim)<=selectedSpell.aoe)cell.classList.add('aimed');
     const danger=game.dangerAt({x,y}).length>0;
-    const details=(danger?'Danger: '+game.dangerAt({x,y}).map(u=>dangerText(u)).join('; ')+'. ':'')+(here?here.name+' '+here.hp+'/'+here.maxHp+' HP. '+(game.shieldBonus(here)?'Shielded: +2 weapon AC. ':'')+intentText(here):'')+(terrain?TERRAIN[terrain].name+': '+TERRAIN[terrain].desc:'Plain ground');
+    const details=(danger?'Danger: '+game.dangerAt({x,y}).map(u=>dangerText(u)).join('; ')+'. ':'')+(here?here.name+(combatSize(here)>1?' · 2×2 footprint':'')+' '+here.hp+'/'+here.maxHp+' HP. '+(game.shieldBonus(here)?'Shielded: +2 weapon AC. ':'')+intentText(here):'')+(terrain?TERRAIN[terrain].name+': '+TERRAIN[terrain].desc:'Plain ground');
     const support=(game.arenaShelter?.has(k)?' Council sanctuary: remains lit through the phase change.':'')+(terrain==='ember'&&(gearPower(here||c,'emberGuard'))>=2?' '+gearSource(here||c,'emberGuard')+' prevents this unit’s terrain ember damage.':'');
     cell.setAttribute('role','gridcell');cell.setAttribute('aria-label','Column '+(x+1)+', row '+(y+1)+'. '+details+support);cell.title=details+support;if(fieldPreview.has(k)){const text=' Field action preview: '+(fieldDefinition(game.fieldObjective.id).keepsCool?'clear embers here and prevent phase ignition':fieldDefinition(game.fieldObjective.id).effect+' terrain here')+' after confirmation.';cell.title+=text;cell.setAttribute('aria-label',cell.getAttribute('aria-label')+text);}if(fieldSite){const text=' Optional field objective '+(fieldSite.index+1)+': '+fieldDefinition(game.fieldObjective.id).action+'. '+(fieldSite.used?'Completed.':'Stand on or adjacent, select the diamond, then confirm; costs one action.');cell.title+=text;cell.setAttribute('aria-label',cell.getAttribute('aria-label')+text);}
     cell.dataset.x=x;cell.dataset.y=y;cell.tabIndex=x===gridCursor.x&&y===gridCursor.y?0:-1;
@@ -3686,7 +3704,7 @@ function renderCombat(){
     if(castEnemy.has(k)) cell.classList.add('cast-enemy');
     if(castAlly.has(k)) cell.classList.add('cast-ally');
     if(castPoint.has(k)){ cell.classList.add('cast-point'); cell.onmouseenter=()=>aoePreview(x,y,true); cell.onmouseleave=()=>aoePreview(x,y,false); }
-    if(here){ const t=document.createElement('div');t.dataset.boss=here.cls;t.dataset.procession=String(here.awakened===true);t.dataset.bell=here.intent?.spell==='bell_requiem'?'requiem':here.awakened?'broken':'bound'; t.className='token '+here.side+(here===c?' active':'')+(here.alive?'':' dead')+(here.elite?' elite':'')+(here.bossTitle?' guardian':'')+(here.awakened?' awakened':'')+(here.intent?' channeling':'');
+    if(here&&here.pos.x===x&&here.pos.y===y){ const t=document.createElement('div');t.dataset.boss=here.cls;t.dataset.procession=String(here.awakened===true);t.dataset.bell=here.intent?.spell==='bell_requiem'?'requiem':here.awakened?'broken':'bound'; t.className='token '+here.side+(here===c?' active':'')+(here.alive?'':' dead')+(here.elite?' elite':'')+(here.bossTitle?' guardian':'')+(here.awakened?' awakened':'')+(here.intent?' channeling':'');
       if(SPRITES[here.sprite]) t.innerHTML=SPRITES[here.sprite]; else t.textContent=here.glyph;
       if(here.alive&&here.guarding){ const g=document.createElement('div'); g.className='stbadge guard'; g.textContent='\u26E8'; t.appendChild(g); }
       if(here.alive&&here.statuses&&here.statuses.length){
@@ -3697,7 +3715,7 @@ function renderCombat(){
         if(hasBuff){ const b=document.createElement('div'); b.className='stbadge buff'; b.textContent='\u25B2'; t.appendChild(b); }
         if(hasDebuff){ const d=document.createElement('div'); d.className='stbadge debuff'; d.textContent='\u25BC'; t.appendChild(d); }
       }
-      const bar=document.createElement('div'); bar.className='hpbar'; const fill=document.createElement('i'); const pct=Math.max(0,here.hp/here.maxHp); fill.style.width=(pct*100)+'%'; if(pct<=0.34) fill.className='low'; bar.appendChild(fill); t.appendChild(bar); cell.appendChild(t); }
+      const bar=document.createElement('div'); bar.className='hpbar'; const fill=document.createElement('i'); const pct=Math.max(0,here.hp/here.maxHp); fill.style.width=(pct*100)+'%'; if(pct<=0.34) fill.className='low'; bar.appendChild(fill);t.appendChild(bar);if(combatSize(here)>1){t.classList.add('large');if(game.dangerAt(here).length)t.classList.add('in-danger');if(validAim()&&game.cheb(here,spellAim)<=selectedSpell.aoe)t.classList.add('in-blast');t.dataset.unitId=here.id;t.setAttribute('aria-hidden','true');t.style.gridColumn=(x+1)+' / span '+combatSize(here);t.style.gridRow=(y+1)+' / span '+combatSize(here);board.appendChild(t);}else cell.appendChild(t); }
     if(playerTurn) cell.onclick=()=>{if(boardZoom)pickPreciseTile(x,y);else {inspectTile(x,y);combatClick(x,y);}};
     cellEls.push(cell); board.appendChild(cell);
   } }
@@ -4102,7 +4120,7 @@ function checkContracts(){
   }
 }
 function validAim(){return !!(spellAim&&mode==='combat'&&game&&game.phase==='playing'&&spellAim.combat===game&&game.current().id===spellAim.actorId&&!game.current().acted.action&&mover==='cast'&&selectedSpell&&selectedSpell.target==='point'&&selectedSpell.id===spellAim.spellId);}
-function aimSummary(){const summary={allies:0,foes:0};if(!validAim())return summary;const c=game.current();for(const u of game.combatants)if(u.alive&&game.cheb(u.pos,spellAim)<=selectedSpell.aoe&&(selectedSpell.effect.kind==='status'?u.side!==c.side:selectedSpell.effect.kind==='buff'?u.side===c.side:true))summary[u.side===c.side?'allies':'foes']++;return summary;}
+function aimSummary(){const summary={allies:0,foes:0};if(!validAim())return summary;const c=game.current();for(const u of game.combatants)if(u.alive&&game.cheb(u,spellAim)<=selectedSpell.aoe&&(selectedSpell.effect.kind==='status'?u.side!==c.side:selectedSpell.effect.kind==='buff'?u.side===c.side:true))summary[u.side===c.side?'allies':'foes']++;return summary;}
 function confirmAim(){if(overlayOpen())return false;if(!validAim()||autoFight||game.isIncapacitated(game.current()))return false;const target={x:spellAim.x,y:spellAim.y};doCast(target);return true;}
 function movementRiskText(c,pos){
   const r=game.movementRisk(c,pos),parts=[];
@@ -4136,6 +4154,7 @@ function openTactics(){
   section('Guarded treasure','A gold frame around a spotted red patrol marks a treasure guard. Win, then step onto the defeated enemy’s map tile to claim its cache. It stays there if your satchel is full. Party shows a discovery portrait; Treasure & Relics explains sources, tradeoffs and what this run has found.');
   section('Mouse, touch, and keyboard','Choose actions with a click or tap. Explore with arrows or WASD. In combat, Tab to the grid, use arrows to move focus, and press Enter or Space to use the selected action. Area spells still need confirmation. Party & Log opens the roster in smaller windows.');
   section('Aim before you cast','Select an area spell, then tap a tile to preview it. The pink outline shows the blast; the hint counts allies and foes. Tap that tile again or Confirm cast to commit. Fireball and other damage blasts hit friends too; Sleep only affects enemies. Cover protects against ranged weapons, not magic.');
+  section('Large creatures','Astrax, ogres and giant spiders occupy 2×2 squares. Select any part of their body. Range is measured from the nearest occupied square; each creature takes one turn and is hit once per spell. The full body must fit when moving. Embers and sanctums affect it once per turn when any part touches; cover protects only a fully covered body.');
   section('Ground that matters',Object.values(TERRAIN).map(t=>t.glyph+' '+t.name+': '+t.desc).join(' '));
   section('The Last Dawn','At each waystation, choose one war-council plan before descending. Ilyra and Eren remember your decisions. Supplies and permanent party bonuses help on the road; other plans change the king’s final battle. The Chronicle records your choices. After the king falls and the crown reaches the final stairs, decide whether to break, bind, or wear it.');
   section('The road below','Find keys and stairs. Camp supplies restore HP and spells; waystation rests are free. Each completed chapter grants XP once. Claim a free ember before descending. Chronicle tracks optional promises: win battles, find caches, and succeed at events. Each completed promise grants one reward.');
@@ -4143,7 +4162,7 @@ function openTactics(){
   section('Relic choices','Lantern Mantle blocks up to 2 terrain ember damage. Starweave adds +2 saves against spell control and debuffs. Eclipsescale reduces each damaging spell hit by 2. These wards do not replace each other. Select gear in Party to compare its rules with the current item.');
   section('Your company','Fighter rallies the line; Cleric heals standing allies; Thief gains a shadow ward; Mage restores spell uses. Each signature is one action and usable once per battle. Wanderer recovers HP and shares victory XP; the harder oaths award battle XP only to standing heroes.');
   if(fighting){section(game.battlefield?BATTLEFIELDS[game.battlefield].name:'Current opposition','These are the foes still standing. Their remaining resources and positions determine what they can do.');
-    for(const u of game.living('enemy')){const card=document.createElement('div');card.className='tactics-enemy';const spellText=(u.spells||[]).map(sp=>SPELLS[sp.id].name+' '+sp.uses+'/'+sp.max).join(' · ')||'No spells';const status=(u.statuses||[]).map(st=>st.type+' '+st.duration+'t').join(', ')||'No statuses';const c=game.current();const preview=c.side==='party'&&game.canAttack(c,u)?' · Your attack: '+game.attackPreview(c,u).chance+'% hit':'';card.innerHTML='<span class="tactics-portrait" aria-hidden="true">'+(SPRITES[u.sprite]||escapeHTML(u.glyph))+'</span><strong>'+escapeHTML(u.name)+'</strong><small>'+u.hp+'/'+u.maxHp+' HP · AC '+effAc(u)+(game.shieldBonus(u)?' (+2 vs weapons from sentinel)':'')+' · Range '+effRange(u)+preview+'</small><p>'+escapeHTML(game.describeRole(u))+'</p><small>'+escapeHTML(spellText)+'<br>'+escapeHTML(status)+'</small>';root.appendChild(card);}
+    for(const u of game.living('enemy')){const card=document.createElement('div');card.className='tactics-enemy';const spellText=(u.spells||[]).map(sp=>SPELLS[sp.id].name+' '+sp.uses+'/'+sp.max).join(' · ')||'No spells';const status=(u.statuses||[]).map(st=>st.type+' '+st.duration+'t').join(', ')||'No statuses';const c=game.current();const preview=c.side==='party'&&game.canAttack(c,u)?' · Your attack: '+game.attackPreview(c,u).chance+'% hit':'';card.innerHTML='<span class="tactics-portrait" aria-hidden="true">'+(SPRITES[u.sprite]||escapeHTML(u.glyph))+'</span><strong>'+escapeHTML(u.name)+'</strong><small>'+u.hp+'/'+u.maxHp+' HP · AC '+effAc(u)+(game.shieldBonus(u)?' (+2 vs weapons from sentinel)':'')+' · Range '+effRange(u)+preview+'</small><p>'+escapeHTML(game.describeRole(u))+(combatSize(u)>1?' Large · occupies 2×2 squares. Range uses the nearest occupied square; area effects hit once.':'')+'</p><small>'+escapeHTML(spellText)+'<br>'+escapeHTML(status)+'</small>';root.appendChild(card);}
   }
   $('#tacticsScreen').classList.add('show');$('#btnTacticsClose').focus({preventScroll:true});$('#tacticsScreen').scrollTop=0;
 }
@@ -4245,7 +4264,7 @@ function renderCodex(){
   const lore=MONSTER_LORE[id],boss=!!m.bossTitle;if(filter==='guardians'&&!boss||filter==='relics'||filter==='potions')continue;
   const regions=Object.values(WORLD).filter(w=>(w.encounters||[]).some(e=>e.lead===id||(e.pool||[]).includes(id))).map(w=>w.name);if(id==='eclipse_wyrm')regions.push('Observatory of Ash · optional waystation hunt');
   const spells=(m.spells||[]).map(s=>SPELLS[s.id].name+' ×'+s.uses).join(' · ')||'No spells';
-  const stats=m.maxHp+' HP · AC '+m.ac+' · +'+m.attackBonus+' attack · '+m.damage.n+'d'+m.damage.sides+'+'+m.damage.bonus+' damage · Move '+m.speed+' · Range '+m.range;
+  const stats=m.maxHp+' HP · AC '+m.ac+' · +'+m.attackBonus+' attack · '+m.damage.n+'d'+m.damage.sides+'+'+m.damage.bonus+' damage · Move '+m.speed+' · Range '+m.range+' · Footprint '+combatSize(m)+'×'+combatSize(m);
   if(query&&!(m.name+' '+lore.join(' ')+' '+regions.join(' ')+' '+spells).toLowerCase().includes(query))continue;
   add(m.name,'<p class="atlas-stats">'+escapeHTML(stats)+'</p><p>'+escapeHTML(lore[1])+'</p><p><b>Counterplay</b> '+escapeHTML(lore[2])+'</p><p class="tag">'+escapeHTML(spells)+'</p><p class="tag">'+escapeHTML(regions.join(' · '))+'</p>'+(boss?'<p class="atlas-state">'+(guardianDefeated(id)?'Defeated in this run':'Guardian legend · not yet defeated in this run')+'</p>':''),SPRITES[m.sprite],(boss?'Guardian · ':'')+lore[0]);
  }else if(codexTab==='treasures'){
@@ -4390,7 +4409,7 @@ function renderArenaScenery(){
 function inspectTile(x,y){
   if(mode!=='combat'||!game||overlayOpen())return;
   const unit=game.at(x,y),terrain=game.terrainAt({x,y}),actor=game.current();
-  let text=unit?unit.name+' · '+unit.hp+'/'+unit.maxHp+' HP · AC '+effAc(unit)+' · Range '+effRange(unit):'Tile '+(x+1)+', '+(y+1)+' · '+(terrain?TERRAIN[terrain].name:'Plain ground');
+  let text=unit?unit.name+(combatSize(unit)>1?' · 2×2 footprint':'')+' · '+unit.hp+'/'+unit.maxHp+' HP · AC '+effAc(unit)+' · Range '+effRange(unit):'Tile '+(x+1)+', '+(y+1)+' · '+(terrain?TERRAIN[terrain].name:'Plain ground');
   const site=game.fieldSites().find(p=>p.x===x&&p.y===y);if(site)text+=' · ◆'+(site.index+1)+' '+fieldDefinition(game.fieldObjective.id).action+(site.used?' · Completed':' · Select, then confirm from on or adjacent; costs 1 action');
   if(unit)text+=' '+intentText(unit);else if(game.dangerAt({x,y}).length)text+=' · Leave this marked tile before the blast.';
   if(!unit&&mover==='move'&&reachCache?.has(key(x,y)))text+=' · '+(movementRiskText(actor,{x,y})||'No unprotected movement risk detected.');

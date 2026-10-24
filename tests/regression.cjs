@@ -131,7 +131,7 @@ test('legendary equipment remains class compatible and hero names escape HTML',(
 
 test('casters advance to casting range and cast instead of rushing into melee',()=>{
   const {run}=harness();
-  run("const h=party[3],foe=spawnMonster('ogre',0,false),battle=new CombatEngine([h],[foe],10,10);h.pos={x:0,y:0};foe.pos={x:9,y:9};h.signatureUsed=true;h.spells=[{id:'magic_missile',uses:1,max:1}];battle.actAuto(h);");
+  run("const h=party[3],foe=spawnMonster('ogre',0,false),battle=new CombatEngine([h],[foe],10,10);h.pos={x:0,y:0};foe.pos={x:8,y:8};h.signatureUsed=true;h.spells=[{id:'magic_missile',uses:1,max:1}];battle.actAuto(h);");
   assert.equal(run('battle.cheb(h.pos,foe.pos)>1'),true);
   assert.equal(run('h.spells[0].uses'),0);
   assert.equal(run('foe.hp<foe.maxHp'),true);
@@ -433,7 +433,7 @@ test('SAGA-05: every later council plan changes the epilogue without inventing l
 });
 
 test('RELIC-04: Eclipsescale reduces spell hits only, clamps at zero, and follows equipment',()=>{
- const {run}=harness();run("const caster=party[3],wearer=party[0],other=party[1],foe=spawnMonster('ogre',0,false),battle=new CombatEngine(party,[foe],10,10);wearer.equip.armor='eclipsescale';wearer.hp=other.hp=100;Rules.spellAmount=()=>5;caster.spells=[{id:'fireball',uses:4,max:4},{id:'magic_missile',uses:4,max:4}];wearer.pos={x:4,y:4};other.pos={x:5,y:4};foe.pos={x:9,y:9};battle.castSpell(caster,SPELLS.fireball,{x:4,y:4});");
+ const {run}=harness();run("const caster=party[3],wearer=party[0],other=party[1],foe=spawnMonster('ogre',0,false),battle=new CombatEngine(party,[foe],10,10);wearer.equip.armor='eclipsescale';wearer.hp=other.hp=100;Rules.spellAmount=()=>5;caster.spells=[{id:'fireball',uses:4,max:4},{id:'magic_missile',uses:4,max:4}];wearer.pos={x:4,y:4};other.pos={x:5,y:4};foe.pos={x:8,y:8};battle.castSpell(caster,SPELLS.fireball,{x:4,y:4});");
  assert.equal(run('wearer.hp'),97);assert.equal(run('other.hp'),95);
  run("caster.acted.action=false;battle.castSpell(caster,SPELLS.magic_missile,wearer);");assert.equal(run('wearer.hp'),94);
  run("Rules.spellAmount=()=>1;caster.acted.action=false;battle.castSpell(caster,SPELLS.magic_missile,wearer);");assert.equal(run('wearer.hp'),94);
