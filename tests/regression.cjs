@@ -205,7 +205,7 @@ test('PROG-02: older town saves infer completed chapters without granting retroa
 
 test('FIELD-01: every theme has valid terrain and leaves spawn cells plain',()=>{
   const {run}=harness();
-  assert.equal(run("Object.keys(BATTLEFIELDS).every(theme=>{const g=new CombatEngine(makeParty(),makeGroup([['goblin',8]]),10,10,theme);return g.terrain.size>0&&g.combatants.every(c=>!g.terrainAt(c.pos))&&[...g.terrain.values()].every(t=>TERRAIN[t]);})"),true);
+  assert.equal(run("Object.keys(BATTLEFIELDS).every(theme=>{const g=new CombatEngine(makeParty(),Array.from({length:8},(_,i)=>spawnMonster('goblin',i,false)),10,10,theme);return g.terrain.size>0&&g.combatants.every(c=>!g.terrainAt(c.pos))&&[...g.terrain.values()].every(t=>TERRAIN[t]);})"),true);
 });
 
 test('FIELD-02: cover changes ranged hit odds by ten points and does not protect against melee',()=>{
